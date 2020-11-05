@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pydantic = "*"
+pytest = "*"
+pre-commit = "*"
+flake8 = "*"
+flake8-docstrings = "*"
+coverage = "*"
+pytest-cov = "*"
+coveralls = "*"
+twine = "*"
+jupyterlab = "*"
+fastapi = "*"
+uvicorn = "*"
+click = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
