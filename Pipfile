@@ -17,6 +17,7 @@ jupyterlab = "*"
 fastapi = "*"
 uvicorn = "*"
 click = "*"
+civicpy = "*"
 
 [dev-packages]
 
