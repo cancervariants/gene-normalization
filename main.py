@@ -17,15 +17,16 @@ def custom_openapi():
         description="TODO Description here",  # TODO
         routes=app.routes
     )
-    openapi_schema['info']['license'] = {  # TODO
-        "name": "name of our license",
-        "url": "link to it"
-    }
-    openapi_schema['info']['contact'] = {  # TODO
-        "name": "alex wagner",
-        "email": "his email"
-    }
-    return openapi_schema
+    # openapi_schema['info']['license'] = {  # TODO
+    #     "name": "name of our license",
+    #     "url": "link to it"
+    # }
+    # openapi_schema['info']['contact'] = {  # TODO
+    #     "name": "alex wagner",
+    #     "email": "his email"
+    # }
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
 
 
 app.openapi = custom_openapi
