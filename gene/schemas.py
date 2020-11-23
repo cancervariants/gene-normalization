@@ -6,6 +6,14 @@ from pydantic import BaseModel
 from enum import Enum, IntEnum
 
 
+class ApprovalStatus(str, Enum):
+    """Define string constraints for approval status attribute."""
+
+    WITHDRAWN = "withdrawn"
+    APPROVED = "approved"
+    INVESTIGATIONAL = "investigational"
+
+
 class Gene(BaseModel):
     """Gene"""
 
@@ -13,30 +21,8 @@ class Gene(BaseModel):
     concept_id: str
     aliases: List[str]
     other_identifiers: List[str]
-
-
-class ApprovalStatus(str, Enum):
-    """Define string constraints for approval status attribute."""
-
-    WITHDRAWN = "withdrawn"
-    APPROVED = "approved"
-    INVESTIGATIONAL = "investigational"
-
-
-class GeneSubclass(BaseModel):  # TODO: Is there a subclass for Gene?
-    """Subclass for Gene."""
-
     approval_status: Optional[ApprovalStatus]
     trade_names: Optional[List[str]]
-    label: Optional[str]
-
-
-class ApprovalStatus(str, Enum):
-    """Define string constraints for approval status attribute."""
-
-    WITHDRAWN = "withdrawn"
-    APPROVED = "approved"
-    INVESTIGATIONAL = "investigational"
 
 
 class GeneGroup(Gene):
@@ -44,7 +30,7 @@ class GeneGroup(Gene):
 
     description: str
     type_identifier: str
-    drugs: List[Gene]
+    genes: List[Gene]
 
 
 class MatchType(IntEnum):
@@ -97,7 +83,7 @@ class MatchesKeyed(BaseModel):
     """
 
     match_type: MatchType
-    records: List[GeneSubclass]
+    records: List[Gene]
     meta_: Meta
 
 
@@ -108,7 +94,7 @@ class MatchesListed(BaseModel):
 
     source: SourceName
     match_type: MatchType
-    records: List[GeneSubclass]
+    records: List[Gene]
     meta_: Meta
 
 
