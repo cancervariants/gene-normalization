@@ -19,6 +19,7 @@ uvicorn = "*"
 click = "*"
 civicpy = "*"
 boto3 = "*"
+beautifulsoup4 = "*"
 
 [dev-packages]
 gene = {editable = true, path = "."}

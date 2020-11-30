@@ -1,11 +1,11 @@
 """This module creates the database."""
 import boto3
 
-DYNAMODB = boto3.resource('dynamodb', endpoint_url="http://localhost:8000")
+DYNAMODB = boto3.resource('dynamodb', endpoint_url="http://localhost:8001")
 DYNAMODBCLIENT = \
-    boto3.client('dynamodb', endpoint_url="http://localhost:8000")
-GENES_TABLE = DYNAMODB.Table('Genes')
-METADATA_TABLE = DYNAMODB.Table('Metadata')
+    boto3.client('dynamodb', endpoint_url="http://localhost:8001")
+GENES_TABLE = DYNAMODB.Table('gene_concepts')
+METADATA_TABLE = DYNAMODB.Table('gene_metadata')
 cached_sources = dict()
 
 
@@ -20,7 +20,7 @@ class Database:
 
     def create_genes_table(self, dynamodb, existing_tables):
         """Create Genes table if not exists."""
-        table_name = 'Genes'
+        table_name = 'gene_concepts'
         if table_name not in existing_tables:
             dynamodb.create_table(
                 TableName=table_name,
@@ -75,7 +75,7 @@ class Database:
 
     def create_meta_data_table(self, dynamodb, existing_tables):
         """Create MetaData table if not exists."""
-        table_name = 'Metadata'
+        table_name = 'gene_metadata'
         if table_name not in existing_tables:
             dynamodb.create_table(
                 TableName=table_name,

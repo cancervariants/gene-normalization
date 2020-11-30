@@ -37,8 +37,10 @@ class MatchType(IntEnum):
     """Define string constraints for use in Match Type attributes."""
 
     CONCEPT_ID = 100
+    APPROVED_SYMBOL = 100
     PRIMARY_LABEL = 80
     TRADE_NAME = 80
+    PREVIOUS_SYMBOL = 80  # TODO: CHECK
     ALIAS = 60
     FUZZY_MATCH = 20
     NO_MATCH = 0
@@ -66,6 +68,26 @@ class NamespacePrefix(Enum):
     HGNC = "hgnc"
     ENSEMBL = "ensembl"
     NCBI = "ncbigene"  # TODO: Check if just ncbi
+    VEGA = "vega"  # not on identifiers.org
+    UCSC = "ucsc"  # not on identifiers.org
+    CCDS = "ccds"
+    UNIPROT = "uniprot"  # .chain? .isoform? leave as is?
+    PUBMED = "pubmed"
+    COSMIC = "cosmic"
+    OMIM = "omim"  # not on identifiers.org
+    MIRBASE = "mirbase"
+    HOMEODB = "homeodb"  # not on identifiers.org
+    SNORNABASE = "snornabase"  # not on identifiers.org
+    ORPHANET = "orphanet"
+    HORDE = "horde"  # not on identifiers.org
+    MEROPS = "merops"
+    IMGT = "imgt"  # .hla? .ligm? leave as is?
+    IUPHAR = "iuphar"  # .family? .ligand? .receptor?
+    KZNF_GENE_CATALOG = "knzfgc"  # not on identifiers.org
+    MAMIT_TRNADB = "mamittrnadb"  # not on identifiers.org
+    CD = "cd"  # not on identifiers.org
+    LNCRNADB = "lncrnadb"  # not on identifiers.org
+    HUMAN_INTERMEDIATE_FILAMENT = "hifdb"  # not on identifiers.org
 
 
 class Meta(BaseModel):
