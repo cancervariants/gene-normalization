@@ -19,6 +19,8 @@ class Gene(BaseModel):
 
     label: str
     concept_id: str
+    approved_symbol: str  # might be optional
+    previous_symbols: Optional[list]
     aliases: List[str]
     other_identifiers: List[str]
     approval_status: Optional[ApprovalStatus]
@@ -50,8 +52,8 @@ class SourceName(Enum):
     """Define string constraints to ensure consistent capitalization."""
 
     HGNC = "HGNC"
-    ENSEMBL = "Ensembl"
-    NCBI = "NCBI"
+    # ENSEMBL = "Ensembl"
+    # NCBI = "NCBI"
 
 
 class SourceIDAfterNamespace(Enum):

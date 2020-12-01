@@ -1,7 +1,9 @@
 """Main application for FastAPI"""
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.openapi.utils import get_openapi
 from typing import Optional
+from gene.query import normalize, InvalidParameterException
+import html
 
 
 app = FastAPI()
@@ -42,4 +44,9 @@ def read_query(q: str,  # noqa: D103
                keyed: Optional[bool] = False,
                incl: Optional[str] = '',
                excl: Optional[str] = ''):
-    return {"TODO"}
+    try:
+        resp = normalize(html.unescape(q), keyed=keyed, incl=incl, excl=excl)
+    except InvalidParameterException as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
+    return resp

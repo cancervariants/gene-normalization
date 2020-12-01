@@ -68,10 +68,11 @@ class HGNC(Base):
         with GENES_TABLE.batch_writer() as batch:
             for r in records:
                 record = dict()
-                record['concept_id'] = r['hgnc_id']
-                record['label_and_type'] = f"{record['concept_id']}##identity"
-                record['label'] = r['name']
+                record['concept_id'] = r['hgnc_id'].lower()
+                record['label_and_type'] = \
+                    f"{record['concept_id']}##identity"
                 record['approved_symbol'] = r['symbol']
+                record['label'] = r['name']
                 if r['status']:
                     if r['status'] == 'Approved':
                         record['approval_status'] = \
@@ -79,49 +80,80 @@ class HGNC(Base):
                     elif r['status'] == 'Entry Withdrawn':
                         record['approval_status'] =\
                             ApprovalStatus.WITHDRAWN.value
-                record['other_identifiers'] = self._load_other_identifiers(r)
+
                 if 'entrez_id' in r:  # TODO: Include?
                     record['entrez_id'] = r['entrez_id']
                 if 'enzyme_id' in r:  # TODO: Include?
                     record['enzyme_id'] = r['enzyme_id']
-                symbols = self._load_symbols(r)
-                if symbols:
-                    record['aliases'] = symbols
-                    self._load_aliases(record, batch)
+                record['src_name'] = SourceName.HGNC.value
+
+                self._load_other_identifiers(r, record)
+                self._load_approved_symbol(record, batch)
+                self._load_aliases(r, record, batch)
+                self._load_previous_symbols(r, record, batch)
+                self._load_label(record, batch)
                 batch.put_item(Item=record)
 
-    def _load_aliases(self, record, batch):
+    def _load_label(self, record, batch):
+        """Insert label data into the database."""
+        label = {
+            'label_and_type':
+                f"{record['label'].lower()}##label",
+            'concept_id': f"{record['concept_id']}",
+            'src_name': SourceName.HGNC.value
+        }
+        batch.put_item(Item=label)
+
+    def _load_approved_symbol(self, record, batch):
+        """Insert approved symbol data into the database."""
+        symbol = {
+            'label_and_type':
+                f"{record['approved_symbol'].lower()}##symbol",
+            'concept_id': f"{record['concept_id']}",
+            'src_name': SourceName.HGNC.value
+        }
+        batch.put_item(Item=symbol)
+
+    def _load_aliases(self, r, record, batch):
         """Insert alias data into the database."""
-        aliases = set({t.casefold(): t for t in record['aliases']})
+        if 'alias_symbol' in r and r['alias_symbol']:
+            alias_symbols = r['alias_symbol']
+            record['aliases'] = list(set(alias_symbols))
 
-        if len(aliases) > 20:
-            del record['aliases']
-        else:
-            for alias in aliases:
-                alias = {
-                    'label_and_type': f"{alias}##alias",
-                    'concept_id': f"{record['concept_id'].lower()}",
-                    'src_name': SourceName.HGNC.value
-                }
-                batch.put_item(Item=alias)
+            aliases = set({t.casefold(): t for t in record['aliases']})
 
-    def _load_symbols(self, record):
-        """Load aliases to a record."""
-        alias_symbols = list()
-        if 'alias_symbol' in record and record['alias_symbol']:
-            alias_symbols = record['alias_symbol']
+            if len(aliases) > 20:
+                del record['aliases']
+            else:
+                for alias in aliases:
+                    alias = {
+                        'label_and_type': f"{alias}##alias",
+                        'concept_id': f"{record['concept_id']}",
+                        'src_name': SourceName.HGNC.value
+                    }
+                    batch.put_item(Item=alias)
 
-        prev_symbols = list()
-        if 'prev_symbol' in record and record['prev_symbol']:
-            prev_symbols = record['prev_symbol']
+    def _load_previous_symbols(self, r, record, batch):
+        """Load previous symbols to a record."""
+        if 'prev_symbol' in r and r['prev_symbol']:
+            prev_symbols = r['prev_symbol']
+            record['previous_symbols'] = list(set(prev_symbols))
 
-        aliases = alias_symbols + prev_symbols
+            prev_symbols = set(
+                {t.casefold(): t for t in record['previous_symbols']})
 
-        if aliases:
-            return list(set(aliases))
-        return None
+            if len(prev_symbols) > 20:
+                del record['previous_symbols']
+            else:
+                for prev_symbol in prev_symbols:
+                    prev_symbol = {
+                        'label_and_type': f"{prev_symbol}##prev_symbol",
+                        'concept_id': f"{record['concept_id']}",
+                        'src_name': SourceName.HGNC.value
+                    }
+                    batch.put_item(Item=prev_symbol)
 
-    def _load_other_identifiers(self, record):
+    def _load_other_identifiers(self, r, record):
         """Load other identifiers to a record."""
         other_ids = list()
         sources = [
@@ -133,29 +165,30 @@ class HGNC(Base):
         ]
 
         for src in sources:
-            if src in record:
+            if src in r:
                 key = src.split("_")[0]
-                if type(record[src]) == list:
-                    other_ids.append(f"{key}:{record[src][0]}")
+                if type(r[src]) == list:
+                    other_ids.append(f"{key}:{r[src][0]}")
                 else:
                     if src == 'kznf_gene_catalog':
                         other_ids.append(f"{NamespacePrefix.KZNF_GENE_CATALOG.value}"  # noqa: E501
-                                         f":{record[src]}")
+                                         f":{r[src]}")
                     elif src == 'intermediate_filament_db':
                         other_ids.append(f"{NamespacePrefix.HUMAN_INTERMEDIATE_FILAMENT.value}"  # noqa: E501
-                                         f":{record[src]}")
+                                         f":{r[src]}")
                     elif src == 'mamit-trnadb':
                         other_ids.append(f"{NamespacePrefix.MAMIT_TRNADB.value}"  # noqa: E501
-                                         f":{record[src]}")
+                                         f":{r[src]}")
                     else:
                         other_ids.append(f"{NamespacePrefix[key.upper()].value}"  # noqa: E501
-                                         f":{record[src]}")
+                                         f":{r[src]}")
 
-        return other_ids
+        if other_ids:
+            record['other_identifiers'] = other_ids
 
     def _load_data(self, *args, **kwargs):
         """Load the HGNC source into normalized database."""
-        # self._download_data()
+        self._download_data()
         self._extract_data()
         self._transform_data()
         self._add_meta()
@@ -165,8 +198,8 @@ class HGNC(Base):
         METADATA_TABLE.put_item(
             Item={
                 'src_name': SourceName.HGNC.value,
-                'data_license': '',  # TODO
-                'data_license_url': '',  # TODO
+                'data_license': 'temp',  # TODO
+                'data_license_url': 'temp',  # TODO
                 'version': self._version,
                 'data_url': self._data_url
             }
