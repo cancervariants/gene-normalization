@@ -71,8 +71,7 @@ def add_record(response: Dict[str, Dict],
         of the source of the match
     """
     del item['label_and_type']
-    label_types = ['aliases', 'other_identifiers', 'trade_names',
-                   'previous_symbols']
+    label_types = ['aliases', 'other_identifiers', 'previous_symbols']
     for label_type in label_types:
         if label_type not in item.keys():
             item[label_type] = []
@@ -200,10 +199,10 @@ def check_approved_symbol(query: str,
     return (resp, sources)
 
 
-def check_label_tn_prev_symbol(query: str,
-                               resp: Dict,
-                               sources: Set[str]) -> (Dict, Set):
-    """Check query for label/trade name match.
+def check_prev_symbol(query: str,
+                      resp: Dict,
+                      sources: Set[str]) -> (Dict, Set):
+    """Check query for prev_symbol match.
     Args:
         query: search string
         resp: in-progress response object to return to client
@@ -211,33 +210,16 @@ def check_label_tn_prev_symbol(query: str,
     Returns:
         Tuple with updated resp object and updated unmatched sources set
     """
-    filter_exp = Key('label_and_type').eq(f'{query}##label')
-    items = []
-    try:
-        db_response = GENES_TABLE.query(KeyConditionExpression=filter_exp)
-        items = db_response['Items'][:]
-    except ClientError as e:
-        print(e.response['Error']['Message'])
-
-    filter_exp = Key('label_and_type').eq(f'{query}##trade_name')
-    try:
-        db_response = GENES_TABLE.query(KeyConditionExpression=filter_exp)
-        items += db_response['Items'][:]
-    except ClientError as e:
-        print(e.response['Error']['Message'])
-
     filter_exp = Key('label_and_type').eq(f'{query}##prev_symbol')
     try:
         db_response = GENES_TABLE.query(KeyConditionExpression=filter_exp)
-        items += db_response['Items'][:]
+        if 'Items' in db_response.keys():
+            concept_ids = [i['concept_id'] for i in db_response['Items']]
+            (resp, matched_sources) = fetch_records(resp, concept_ids,
+                                                    MatchType.PREVIOUS_SYMBOL)
+            sources = sources - matched_sources
     except ClientError as e:
         print(e.response['Error']['Message'])
-
-    if len(items) > 0:
-        concept_ids = {i['concept_id'] for i in items}
-        (resp, matched_sources) = fetch_records(resp, concept_ids,
-                                                MatchType.PRIMARY_LABEL)
-        sources = sources - matched_sources
     return (resp, sources)
 
 
@@ -296,8 +278,8 @@ def response_keyed(query: str, sources: Set[str]) -> Dict:
     if len(sources) == 0:
         return resp
 
-    # check if label, trade_name, or prev_symbol match
-    (resp, sources) = check_label_tn_prev_symbol(query_l, resp, sources)
+    # check if prev_symbol match
+    (resp, sources) = check_prev_symbol(query_l, resp, sources)
     if len(sources) == 0:
         return resp
 

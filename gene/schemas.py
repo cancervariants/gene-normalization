@@ -24,7 +24,6 @@ class Gene(BaseModel):
     aliases: List[str]
     other_identifiers: List[str]
     approval_status: Optional[ApprovalStatus]
-    trade_names: Optional[List[str]]
 
 
 class GeneGroup(Gene):
@@ -40,9 +39,7 @@ class MatchType(IntEnum):
 
     CONCEPT_ID = 100
     APPROVED_SYMBOL = 100
-    PRIMARY_LABEL = 80
-    TRADE_NAME = 80
-    PREVIOUS_SYMBOL = 80  # TODO: CHECK
+    PREVIOUS_SYMBOL = 80
     ALIAS = 60
     FUZZY_MATCH = 20
     NO_MATCH = 0
@@ -69,7 +66,7 @@ class NamespacePrefix(Enum):
 
     HGNC = "hgnc"
     ENSEMBL = "ensembl"
-    NCBI = "ncbigene"  # TODO: Check if just ncbi
+    NCBI = "ncbi"  # TODO: Check
     VEGA = "vega"  # not on identifiers.org
     UCSC = "ucsc"  # not on identifiers.org
     CCDS = "ccds"
@@ -90,6 +87,7 @@ class NamespacePrefix(Enum):
     CD = "cd"  # not on identifiers.org
     LNCRNADB = "lncrnadb"  # not on identifiers.org
     HUMAN_INTERMEDIATE_FILAMENT = "hifdb"  # not on identifiers.org
+    ENTREZ = "ncbigene"
 
 
 class Meta(BaseModel):
