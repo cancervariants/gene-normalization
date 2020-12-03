@@ -49,7 +49,7 @@ class SourceName(Enum):
     """Define string constraints to ensure consistent capitalization."""
 
     HGNC = "HGNC"
-    # ENSEMBL = "Ensembl"
+    ENSEMBL = "Ensembl"
     # NCBI = "NCBI"
 
 

@@ -20,6 +20,8 @@ click = "*"
 civicpy = "*"
 boto3 = "*"
 beautifulsoup4 = "*"
+bcbio-gff = "*"
+biopython = "*"
 
 [dev-packages]
 gene = {editable = true, path = "."}
