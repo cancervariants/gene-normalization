@@ -26,6 +26,7 @@ class InvalidParameterException(Exception):
 
     def __init__(self, message):
         """Create new instance
+
         Args:
             message: string describing the nature of the error
         """
@@ -40,10 +41,11 @@ class Normalizer:
     def __init__(self, db_url: str = '', db_region: str = 'us-east-2'):
         """Initialize Normalizer instance.
 
-        :param db_url: URL to database source.
-        :param db_region: AWS default region.
-        :param db_create_tables: flag to try to create tables if they don't
-            already exist.
+        Args:
+            db_url: URL to database source.
+            db_region: AWS default region.
+            db_create_tables: flag to try to create tables if they don't
+                already exist.
         """
         self.db = Database(db_url=db_url, region_name=db_region)
 
@@ -63,9 +65,11 @@ class Normalizer:
     def fetch_meta(self, src_name: str) -> Meta:
         """Fetch metadata for src_name.
 
-        :param src_name: name of source to get metadata for
+        Args:
+            src_name: name of source to get metadata for
 
-        :returns: Meta object containing source metadata
+        Returns:
+            Meta object containing source metadata
         """
         if src_name in self.db.cached_sources.keys():
             return self.db.cached_sources[src_name]
@@ -85,11 +89,13 @@ class Normalizer:
                    match_type: MatchType) -> (Dict, str):
         """Add individual record (i.e. Item in DynamoDB) to response object
 
-        :param response: in-progress response object to return to client
-        :param item: Item retrieved from DynamoDB
-        :param match_type: type of query match
+        Args:
+            response: in-progress response object to return to client
+            item: Item retrieved from DynamoDB
+            match_type: type of query match
 
-        :returns: Tuple containing updated response object, and string
+        Returns:
+            Tuple containing updated response object, and string
             containing name of the source of the match
         """
         del item['label_and_type']
@@ -122,12 +128,14 @@ class Normalizer:
         """Return matched Gene records as a structured response for a given
         collection of concept IDs.
 
-        :param response: in-progress response object to return to client.
-        :param concept_ids: List of concept IDs to build from. Should be all
-            lower-case.
-        :param match_type: level of match current queries are evaluated as
+        Args:
+            response: in-progress response object to return to client.
+            concept_ids: List of concept IDs to build from. Should be all
+                lower-case.
+            match_type: level of match current queries are evaluated as
 
-        :returns: response Dict with records filled in via provided concept
+        Returns:
+            response Dict with records filled in via provided concept
             IDs, and Set of source names of matched records
         """
         matched_sources = set()
@@ -147,9 +155,12 @@ class Normalizer:
     def fill_no_matches(self, resp: Dict) -> Dict:
         """Fill all empty source_matches slots with NO_MATCH results.
 
-        :param resp: incoming response object
-        :returns: response object with empty source slots filled with
-            NO_MATCH results and corresponding source metadata
+        Args:
+            resp: incoming response object
+
+        Returns:
+            response object with empty source slots filled with
+                NO_MATCH results and corresponding source metadata
         """
         for src_name in resp['source_matches'].keys():
             if resp['source_matches'][src_name] is None:
@@ -167,12 +178,14 @@ class Normalizer:
         """Check query for concept ID match. Should only find 0 or 1 matches,
         but stores them as a collection to be safe.
 
-        :param query: search string
-        :param resp: in-progress response object to return to client
-        :param sources: remaining unmatched sources
+        Args:
+            query: search string
+            resp: in-progress response object to return to client
+            sources: remaining unmatched sources
 
-        :returns: Tuple with updated resp object and updated unmatched sources
-            set
+        Returns
+            Tuple with updated resp object and updated unmatched sources
+                set
         """
         concept_id_items = []
         if [p for p in PREFIX_LOOKUP.keys() if query.startswith(p)]:
@@ -209,12 +222,14 @@ class Normalizer:
                               sources: Set[str]) -> (Dict, Set):
         """Check query for approved symbol match.
 
-        :param query: search string
-        :param resp: in-progress response object to return to client
-        :param sources: remaining unmatched sources
+        Args:
+            query: search string
+            resp: in-progress response object to return to client
+            sources: remaining unmatched sources
 
-        :response: tuple with updated resp object and updated unmatched sources
-            set
+        Returns:
+            tuple with updated resp object and updated unmatched sources
+                set
         """
         filter_exp = Key('label_and_type').eq(f'{query}##symbol')
         try:
@@ -237,12 +252,14 @@ class Normalizer:
                           sources: Set[str]) -> (Dict, Set):
         """Check query for prev_symbol match.
 
-        :param query: search string
-        :param resp: in-progress response object to return to client
-        :param sources: remaining unmatched sources
+        Args:
+            query: search string
+            resp: in-progress response object to return to client
+            sources: remaining unmatched sources
 
-        :returns: tuple with updated resp object and updated unmatched sources
-            set
+        Returns:
+            tuple with updated resp object and updated unmatched sources
+                set
         """
         filter_exp = Key('label_and_type').eq(f'{query}##prev_symbol')
         try:
@@ -265,12 +282,14 @@ class Normalizer:
                     sources: Set) -> (Dict, Set):
         """Check query for alias match.
 
-        :param query: search string
-        :param resp: in-progress response object to return to client
-        :param sources: remaining unmatched sources
+        Args:
+            query: search string
+            resp: in-progress response object to return to client
+            sources: remaining unmatched sources
 
-        :returns: tuple with updated resp object and updated unmatched sources
-            set
+        Returns:
+            tuple with updated resp object and updated unmatched sources
+                set
         """
         filter_exp = Key('label_and_type').eq(f'{query}##alias')
         try:
@@ -291,10 +310,12 @@ class Normalizer:
         """Return response as dict where key is source name and value
         is a list of records. Corresponds to `keyed=true` API parameter.
 
-        :param query: string to match against
-        :param sources: sources to match from
+        Args:
+            query: string to match against
+            sources: sources to match from
 
-        :returns: completed response object to return to client
+        Returns:
+            completed response object to return to client
         """
         resp = {
             'query': query,
@@ -337,10 +358,12 @@ class Normalizer:
         """Return response as list, where the first key-value in each item
         is the source name. Corresponds to `keyed=false` API parameter.
 
-        :param query: string to match against
-        :param sources: sources to match from
+        Args:
+            query: string to match against
+            sources: sources to match from
 
-        :returns: completed response object to return to client
+        Returns:
+            completed response object to return to client
         """
         response_dict = self.response_keyed(query, sources)
         source_list = []
@@ -360,19 +383,21 @@ class Normalizer:
                   incl: str = '', excl: str = '', **params):
         """Fetch normalized gene objects.
 
-        :param query_str: query, a string, to search for
-        :param keyed: bool - if true, return response as dict keying source
-            names to source objects; otherwise, return list of source objects
-        :param incl: str containing comma-separated names of sources to use.
-            Will exclude all other sources. Case-insensitive. Raises
-            InvalidParameterException if both incl and excl args are provided,
-            or if invalid source names are given.
-        :param excl: str containing comma-separated names of source to exclude.
-            Will include all other source. Case-insensitive. Raises
-            InvalidParameterException if both incl and excl args are provided,
-            or if invalid source names are given.
+        Args:
+            query_str: query, a string, to search for
+            keyed: bool - if true, return response as dict keying source names
+                to source objects; otherwise, return list of source objects
+            incl: str containing comma-separated names of sources to use. Will
+                exclude all other sources. Case-insensitive. Raises
+                InvalidParameterException if both incl and excl args are
+                provided, or if invalid source names are given.
+            excl: str containing comma-separated names of source to exclude.
+                Will include all other source. Case-insensitive. Raises
+                InvalidParameterException if both incl and excl args are
+                provided, or if invalid source names are given.
 
-        :returns: dict containing all matches found in sources.
+        Returns:
+            dict containing all matches found in sources.
         """
         sources = {name.value.lower(): name.value for name in
                    SourceName.__members__.values()}
