@@ -74,7 +74,7 @@ def read_query(q: str = Query(..., description=q_descr),  # noqa: D103
     :returns: JSON response with matched records and source metadata
     """
     try:
-        resp = Normalizer.normalize(html.unescape(q), keyed=keyed, incl=incl,
+        resp = normalizer.normalize(html.unescape(q), keyed=keyed, incl=incl,
                                     excl=excl)
     except InvalidParameterException as e:
         raise HTTPException(status_code=422, detail=str(e))
