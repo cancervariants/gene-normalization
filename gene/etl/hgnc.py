@@ -2,12 +2,12 @@
 from .base import Base
 from gene import PROJECT_ROOT
 from gene.schemas import SourceName, ApprovalStatus, NamespacePrefix
+from gene.database import Database
 import logging
 import json
 import requests
 from bs4 import BeautifulSoup
 import datetime
-from gene.database import GENES_TABLE, METADATA_TABLE
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -17,11 +17,13 @@ class HGNC(Base):
     """ETL the HGNC source into the normalized database."""
 
     def __init__(self,
+                 database: Database,
                  data_url='http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/',
                  data_file_url='http://ftp.ebi.ac.uk/pub/databases/genenames/'
                                'hgnc/json/non_alt_loci_set.json',
                  ):
         """Initialize HGNC ETL class."""
+        self._database = database
         self._data_url = data_url
         self._data_file_url = data_file_url
         self._version = None
@@ -65,7 +67,7 @@ class HGNC(Base):
 
         records = data['response']['docs']
 
-        with GENES_TABLE.batch_writer() as batch:
+        with self._database.genes.batch_writer() as batch:
             for r in records:
                 record = dict()
                 record['concept_id'] = r['hgnc_id'].lower()
@@ -188,7 +190,7 @@ class HGNC(Base):
 
     def _add_meta(self, *args, **kwargs):
         """Add HGNC metadata."""
-        METADATA_TABLE.put_item(
+        self._database.metadata.put_item(
             Item={
                 'src_name': SourceName.HGNC.value,
                 'data_license': 'temp',  # TODO

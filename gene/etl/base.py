@@ -1,12 +1,14 @@
 """A base class for extraction, transformation, and loading of data."""
 from abc import ABC, abstractmethod
+from therapy.database import Database
 
 
 class Base(ABC):
     """The ETL base class."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, database: Database, *args, **kwargs):
         """Extract from sources."""
+        self.database = database
         self._load_data(*args, **kwargs)
 
     @abstractmethod
