@@ -33,7 +33,7 @@ class Database:
 
         if db_url or 'GENE_NORM_DB_URL' in environ.keys():
             existing_tables = self.ddb_client.list_tables()['TableNames']
-            self.create_therapies_table(existing_tables)
+            self.create_genes_table(existing_tables)
             self.create_meta_data_table(existing_tables)
 
         self.genes = self.ddb.Table('gene_concepts')
