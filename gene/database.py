@@ -10,8 +10,8 @@ class Database:
     def __init__(self, db_url: str = '', region_name: str = 'us-east-2'):
         """Initialize Database class.
 
-        :param db_url: URL endpoint for DynamoDB source
-        :region_name: default AWS region
+        :param str db_url: URL endpoint for DynamoDB source
+        :param str region_name: default AWS region
         """
         if db_url:
             self.ddb = boto3.resource('dynamodb', region_name=region_name,
@@ -43,7 +43,7 @@ class Database:
     def create_genes_table(self, existing_tables: List[str]):
         """Create Genes table if non-existent.
 
-        :param existing_tables: table names already in DB
+        :param List[str] existing_tables: table names already in DB
         """
         table_name = 'gene_concepts'
         if table_name not in existing_tables:
@@ -101,7 +101,7 @@ class Database:
     def create_meta_data_table(self, existing_tables: List[str]):
         """Create MetaData table if non-existent.
 
-        :param existing_tables: table names already in DB
+        :param List[str] existing_tables: table names already in DB
         """
         table_name = 'gene_metadata'
         if table_name not in existing_tables:

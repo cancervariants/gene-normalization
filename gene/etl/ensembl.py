@@ -3,7 +3,7 @@ from .base import Base
 from gene import PROJECT_ROOT
 from gene.schemas import SourceName, ApprovalStatus, NamespacePrefix  # noqa: F401, E501
 import logging
-from gene.database import GENES_TABLE, METADATA_TABLE  # noqa: F401
+from gene.database import Database
 import gffutils
 
 logger = logging.getLogger('gene')
@@ -14,6 +14,7 @@ class Ensembl(Base):
     """ETL the Ensembl source into the normalized database."""
 
     def __init__(self,
+                 database: Database,
                  data_url='http://ftp.ensembl.org/pub/',
                  data_file_url='http://ftp.ensembl.org/pub/release-102/gff3/'
                                'homo_sapiens/Homo_sapiens.GRCh38.102.gff3.gz'
@@ -22,6 +23,7 @@ class Ensembl(Base):
         :param str data_url: URL to Ensembl's FTP site
         :param str data_file_url: URL to Ensembl  data file
         """
+        self.database = database
         self._data_url = data_url
         self._data_file_url = data_file_url
         self._version = '102'
@@ -118,7 +120,7 @@ class Ensembl(Base):
 
     def _add_meta(self, *args, **kwargs):
         """Add Ensembl metadata."""
-        METADATA_TABLE.put_item(
+        self.database.metadata.put_item(
             Item={
                 'src_name': SourceName.ENSEMBL.value,
                 'data_license': 'temp',

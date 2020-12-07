@@ -30,8 +30,8 @@ class CLI:
         is_flag=True,
         help='Update all normalizer sources.'
     )
-    def update_normalizer_db(normalizer, db_url, update_all, dev):
-        """Update select normalizer(s) sources in the gene database."""
+    def update_normalizer_db(normalizer, dev, db_url, update_all):
+        """Update selected normalizer source(s) in the gene database."""
         sources = {
             'hgnc': HGNC,
             'ensembl': Ensembl
