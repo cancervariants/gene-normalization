@@ -1,6 +1,6 @@
 """A base class for extraction, transformation, and loading of data."""
 from abc import ABC, abstractmethod
-from therapy.database import Database
+from gene.database import Database
 
 
 class Base(ABC):
