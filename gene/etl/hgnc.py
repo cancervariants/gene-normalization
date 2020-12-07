@@ -73,7 +73,7 @@ class HGNC(Base):
                 record['concept_id'] = r['hgnc_id'].lower()
                 record['label_and_type'] = \
                     f"{record['concept_id']}##identity"
-                record['approved_symbol'] = r['symbol']
+                record['symbol'] = r['symbol']
                 record['label'] = r['name']
                 if r['status']:
                     if r['status'] == 'Approved':
@@ -94,7 +94,7 @@ class HGNC(Base):
         """Insert approved symbol data into the database."""
         symbol = {
             'label_and_type':
-                f"{record['approved_symbol'].lower()}##symbol",
+                f"{record['symbol'].lower()}##symbol",
             'concept_id': f"{record['concept_id']}",
             'src_name': SourceName.HGNC.value
         }
@@ -195,7 +195,7 @@ class HGNC(Base):
                 'src_name': SourceName.HGNC.value,
                 'data_license': 'temp',  # TODO
                 'data_license_url': 'temp',  # TODO
-                'version': self._version,
+                'version': self._version,  # TODO: Updates often fix?
                 'data_url': self._data_url
             }
         )
