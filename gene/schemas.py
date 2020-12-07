@@ -17,13 +17,16 @@ class ApprovalStatus(str, Enum):
 class Gene(BaseModel):
     """Gene"""
 
-    label: str
+    label: Optional[str]
     concept_id: str
-    approved_symbol: str  # might be optional
+    symbol: Optional[str]  # might be optional
     previous_symbols: Optional[list]
     aliases: List[str]
     other_identifiers: List[str]
     approval_status: Optional[ApprovalStatus]
+    start: Optional[str]
+    stop: Optional[str]
+    strand: Optional[str]
 
     class Config:
         """Configure model"""
@@ -81,7 +84,7 @@ class SourceIDAfterNamespace(Enum):
     """Define string constraints after namespace."""
 
     HGNC = ""
-    ENSEMBL = ""
+    ENSEMBL = "ENSG"
     NCBI = ""
 
 
