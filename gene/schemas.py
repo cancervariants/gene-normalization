@@ -74,7 +74,7 @@ class SourceName(Enum):
 
     HGNC = "HGNC"
     ENSEMBL = "Ensembl"
-    # NCBI = "NCBI"
+    NCBI = "NCBI"
 
 
 class SourceIDAfterNamespace(Enum):
@@ -90,7 +90,8 @@ class NamespacePrefix(Enum):
 
     HGNC = "hgnc"
     ENSEMBL = "ensembl"
-    NCBI = "ncbi"  # TODO: Check
+    # TODO: double-check?
+    NCBI = "ncbigene"  # https://registry.identifiers.org/registry/ncbigene
     VEGA = "vega"  # not on identifiers.org
     UCSC = "ucsc"  # not on identifiers.org
     CCDS = "ccds"
