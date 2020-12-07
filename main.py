@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.openapi.utils import get_openapi
 from typing import Optional
 from gene.query import Normalizer, InvalidParameterException
+from gene.schemas import Service
 import html
 
 
@@ -56,6 +57,7 @@ excl_descr = """Optional. Comma-separated list of source names to exclude in
          summary=read_query_summary,
          operation_id="getQueryResponse",
          response_description=response_description,
+         response_model=Service
          )
 def read_query(q: str = Query(..., description=q_descr),  # noqa: D103
                keyed: Optional[bool] = Query(False, description=keyed_descr),
