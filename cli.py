@@ -26,7 +26,7 @@ class CLI:
         help='Update all normalizer sources.'
     )
     def update_normalizer_db(normalizer, db_url, update_all):
-        """Update select normalizer(s) sources in the gene database."""
+        """Update selected normalizer source(s) in the gene database."""
         sources = {
             'hgnc': HGNC
         }
@@ -38,7 +38,7 @@ class CLI:
 
         if update_all:
             normalizers = [src for src in sources]
-            CLI()._updated
+            CLI()._update_normalizers(normalizers, sources, db)
         else:
             normalizers = list(src for src in sources)
 
