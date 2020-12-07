@@ -65,20 +65,19 @@ def read_query(q: str = Query(..., description=q_descr),  # noqa: D103
                excl: Optional[str] = Query('', description=excl_descr)):
     """Return strongest match concepts to query string provided by user.
 
-    Args:
-        q: gene search term
-        keyed: if true, response is structured as key/value pair of
-            sources to source match lists.
-        incl: comma-separated list of sources to include, with all others
-            excluded. Raises HTTPException if both `incl` and `excl` are given.
-        excl: comma-separated list of sources exclude, with all others
-            included. Raises HTTPException if both `incl` and `excl` are given.
-
-    Returns:
-        JSON response with matched records and source metadata
+    :param str q: gene search term
+    :param Optional[bool] keyed: if true, response is structured as key/value
+        pair of sources to source match lists.
+    :param Optional[str] incl: comma-separated list of sources to include,
+        with all others excluded. Raises HTTPException if both `incl` and
+        `excl` are given.
+    :param Optional[str] excl: comma-separated list of sources exclude, with
+        all others included. Raises HTTPException if both `incl` and `excl`
+        are given.
+    :return: JSON response with matched records and source metadata
     """
     try:
-        resp = Normalizer.normalize(html.unescape(q), keyed=keyed, incl=incl,
+        resp = normalizer.normalize(html.unescape(q), keyed=keyed, incl=incl,
                                     excl=excl)
     except InvalidParameterException as e:
         raise HTTPException(status_code=422, detail=str(e))

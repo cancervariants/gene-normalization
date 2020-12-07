@@ -1,7 +1,7 @@
 """This module provides a CLI util to make updates to normalizer database."""
 import click
 from botocore.exceptions import ClientError
-from gene.etl import HGNC
+from gene.etl import HGNC, Ensembl
 from gene.schemas import SourceName
 from timeit import default_timer as timer
 from gene.database import Database
@@ -17,6 +17,11 @@ class CLI:
         help="The normalizer(s) you wish to update separated by spaces."
     )
     @click.option(
+        '--dev',
+        is_flag=True,
+        help="Working in development environment on localhost port 8001."
+    )
+    @click.option(
         '--db_url',
         help="URL endpoint for the application database."
     )
@@ -25,13 +30,15 @@ class CLI:
         is_flag=True,
         help='Update all normalizer sources.'
     )
-    def update_normalizer_db(normalizer, db_url, update_all):
+    def update_normalizer_db(normalizer, dev, db_url, update_all):
         """Update selected normalizer source(s) in the gene database."""
         sources = {
-            'hgnc': HGNC
+            'hgnc': HGNC,
+            'ensembl': Ensembl
         }
-
-        if db_url:
+        if dev:
+            db: Database = Database(db_url='http://localhost:8001')
+        elif db_url:
             db: Database = Database(db_url=db_url)
         else:
             db: Database = Database()
@@ -40,7 +47,7 @@ class CLI:
             normalizers = [src for src in sources]
             CLI()._update_normalizers(normalizers, sources, db)
         else:
-            normalizers = list(src for src in sources)
+            normalizers = normalizer.lower().split()
 
             if len(normalizers) == 0:
                 raise Exception("Must enter a normalizer")
