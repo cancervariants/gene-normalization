@@ -5,6 +5,10 @@ from gene.schemas import SourceName, ApprovalStatus, NamespacePrefix  # noqa: F4
 import logging
 from gene.database import Database
 import gffutils
+from urllib.request import urlopen
+import gzip
+from bs4 import BeautifulSoup
+import requests
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -16,24 +20,39 @@ class Ensembl(Base):
     def __init__(self,
                  database: Database,
                  data_url='http://ftp.ensembl.org/pub/',
-                 data_file_url='http://ftp.ensembl.org/pub/release-102/gff3/'
-                               'homo_sapiens/Homo_sapiens.GRCh38.102.gff3.gz'
+                 gff3_ext='current_gff3/homo_sapiens'
                  ):
         """Initialize Ensembl ETL class.
-        :param Database database: Database object
+        :param Database database: DynamoDB database
         :param str data_url: URL to Ensembl's FTP site
-        :param str data_file_url: URL to Ensembl  data file
+        :param str gff3_ext: Extension to Ensembl's current
+                             gff3 files for homo sapiens
         """
         self.database = database
         self._data_url = data_url
-        self._data_file_url = data_file_url
-        self._version = '102'
+        self._gff3_url = data_url + gff3_ext
+        self._data_file_url = None
+        self._version = None
         self._load_data()
+
+    def _get_data_file_url_version(self):
+        """Get the most recent version of the gff3 data file."""
+        response = requests.get(self._gff3_url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        links = [self._gff3_url + '/' + node.get('href')
+                 for node in soup.find_all('a')
+                 if node.get('href').endswith('gz')]
+        self._data_file_url = links[-1]
+        self._version = self._data_file_url.split('/')[-1].split('.')[2]
 
     def _download_data(self, *args, **kwargs):
         """Download Ensembl GFF3 data file."""
-        # TODO: Site sometimes works, sometimes doesn't.
-        pass
+        logger.info('Downloading Ensembl...')
+        out_dir = PROJECT_ROOT / 'data' / 'ensembl'
+        file_name = out_dir / f'ensembl_{self._version}.gff3'
+        response = urlopen(self._data_file_url)
+        with open(file_name, 'wb') as f:
+            f.write(gzip.decompress(response.read()))
 
     def _extract_data(self, *args, **kwargs):
         """Extract data from the Ensembl source."""
@@ -78,8 +97,8 @@ class Ensembl(Base):
     def _load_symbol(self, feature, batch):
         """Load symbol records into database.
 
-        :param dict feature: The feature record
-        :param batch_writer batch: Batch writer object
+        :param dict feature: A transformed feature record
+        :param BatchWriter batch: Object to write data to DynamoDB
         """
         symbol = {
             'label_and_type': f"{feature['symbol'].lower()}##symbol",
@@ -91,8 +110,8 @@ class Ensembl(Base):
     def _load_alias(self, feature, batch):
         """Load alias records into database.
 
-        :param dict feature: The feature record
-        :param batch_writer batch: Batch writer object
+        :param dict feature: A transformed feature record
+        :param BatchWriter batch: Object to write data to DynamoDB
         """
         aliases = {a.casefold(): a for a in feature['aliases']}
         if len(aliases) > 20:
@@ -158,6 +177,7 @@ class Ensembl(Base):
 
     def _load_data(self, *args, **kwargs):
         """Load the Ensembl source into normalized database."""
+        self._get_data_file_url_version()
         self._download_data()
         self._extract_data()
         self._transform_data()
