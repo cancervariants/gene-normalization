@@ -1,7 +1,7 @@
-"""Test that the therapy normalizer works as intended for the HGNC source."""
+"""Test that the gene normalizer works as intended for the HGNC source."""
 import pytest
 from gene.schemas import Gene, MatchType
-from gene import query
+from gene.query import Normalizer
 
 
 @pytest.fixture(scope='module')
@@ -9,7 +9,7 @@ def hgnc():
     """Build hgnc test fixture."""
     class QueryGetter:
         def normalize(self, query_str, incl='hgnc'):
-            resp = query.normalize(query_str, keyed=True, incl=incl)
+            resp = Normalizer.normalize(query_str, keyed=True, incl=incl)
             return resp['source_matches']['HGNC']
 
     h = QueryGetter()
