@@ -1,7 +1,7 @@
 """This module defines the Ensembl ETL methods."""
 from .base import Base
 from gene import PROJECT_ROOT
-from gene.schemas import SourceName, ApprovalStatus, NamespacePrefix  # noqa: F401, E501
+from gene.schemas import SourceName, NamespacePrefix
 import logging
 from gene.database import Database
 import gffutils
