@@ -93,8 +93,6 @@ class NamespacePrefix(Enum):
 
     HGNC = "hgnc"
     ENSEMBL = "ensembl"
-    # TODO: double-check?
-    NCBI = "ncbigene"  # https://registry.identifiers.org/registry/ncbigene
     VEGA = "vega"  # not on identifiers.org
     UCSC = "ucsc"  # not on identifiers.org
     CCDS = "ccds"
@@ -115,7 +113,8 @@ class NamespacePrefix(Enum):
     CD = "cd"  # not on identifiers.org
     LNCRNADB = "lncrnadb"  # not on identifiers.org
     HUMAN_INTERMEDIATE_FILAMENT = "hifdb"  # not on identifiers.org
-    ENTREZ = "ncbigene"
+    NCBI = "ncbigene"  # https://registry.identifiers.org/registry/ncbigene
+    ENTREZ = "ncbigene"  # TODO record as ncbi vs entrez?
 
 
 class Meta(BaseModel):

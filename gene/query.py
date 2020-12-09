@@ -377,8 +377,9 @@ class Normalizer:
             provided, or if invalid source names are given.
         :return: dict containing all matches found in sources.
         """
-        sources = {name.value.lower(): name.value for name in
-                   SourceName.__members__.values()}
+        # sources = {name.value.lower(): name.value for name in
+        #            SourceName.__members__.values()}
+        sources = {'ncbi': 'NCBI'}  # TODO dev; remove
 
         if not incl and not excl:
             query_sources = set(sources.values())

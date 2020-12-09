@@ -1,7 +1,7 @@
 """This module defines ETL methods for the NCBI data source."""
 from .base import Base
 from gene.database import Database
-from gene.schemas import Meta, Gene, SourceName
+from gene.schemas import Meta, Gene, SourceName, ApprovalStatus
 from gene import PROJECT_ROOT
 import logging
 from pathlib import Path
@@ -32,6 +32,8 @@ class NCBI(Base):
         self._data_url = data_url
         self._info_file_url = info_file_url
         self._grp_file_url = grp_file_url
+        self._extract_data()
+        self._transform_data()
 
     def _download_data(self, data_dir):
         requests.get()
@@ -63,7 +65,7 @@ class NCBI(Base):
         if not self._files_downloaded(local_data_dir):
             self._download_data(local_data_dir)
         local_files = [f for f in local_data_dir.iterdir()
-                       if f.startswith('ncbi')]
+                       if f.name.startswith('ncbi')]
         local_files.sort(key=lambda f: f.name.split('_')[-1], reverse=True)
         self._info_src = [f for f in local_files
                           if f.name.startswith('ncbi_info')][0]
@@ -71,37 +73,43 @@ class NCBI(Base):
                           if f.name.startswith('ncbi_groups')][0]
         self._version = self._info_src.name.split('_')[-1]
 
-    def _transform_data(self, *args, **kwargs):
+    def _transform_data(self):
         """Modify data and pass to loading functions."""
         self._add_meta()
         # open files, skip headers
-        info_file = open(self._info_src.name)
+        info_file = open(self._info_src, 'r')
         info = csv.reader(info_file, delimiter='\t')
         next(info)
 
-        with self.database.therapies.batch_writer() as batch:
+        with self._database.genes.batch_writer() as batch:
             for row in info:
                 params = {
-                    'label': row[2],
                     'concept_id': f"ncbigene:{row[1]}",
                 }
-                if row[4] != '-':
+                if row[3] != '-':
+                    # TODO what about symbol from nomenclature authority?
+                    params['symbol'] = row[2]
+                if row[5] != '-':
+                    # TODO what about "other designations"?
                     params['aliases'] = row[4].split('|')
                 else:
                     params['aliases'] = []
                 if row[5] != '-':
-                    params['other_identifiers'] = row[5].split('|')
+                    xrefs = row[5].split('|')
+                    xrefs = [r[5:] if r.startswith("hgnc:")
+                             else r
+                             for r in xrefs]
+                    params['other_identifiers'] = xrefs
                 else:
                     params['other_identifiers'] = []
-                if row[10] != '-' and row[12] == 0:
-                    params['approved_symbol'] == row[10]
+                # TODO include? seems not descriptive of ^^ info?
+                if row[12] == '0':
+                    params['approval_status'] = ApprovalStatus.APPROVED
+                    # TODO include full name from nomenclature auth?
+                    # TODO include symbol from nomenclature auth?
+                # TODO how to handle chromosome/start/stop? maybe map_location?
                 self._load_data(Gene(**params), batch)
         info_file.close()
-
-        # grps_file = open(self._grps_src.name)
-        # grps = csv.reader(grps_file, delimiter='\t')
-        # next(grps)
-        # grp_file.close()
 
     def _load_data(self, gene: Gene, batch):
         """Load individual Gene item.
@@ -123,7 +131,7 @@ class NCBI(Base):
                     'src_name': SourceName.NCBI.value
                 })
 
-        if item['label']:
+        if item['label']:  # TODO FIX -- name???
             pk = f"{item['label'].lower()}##label"
             batch.put_item(Item={
                 'label_and_type': pk,
@@ -137,15 +145,13 @@ class NCBI(Base):
         item['src_name'] = SourceName.NCBI.value
         batch.put_item(Item=item)
 
-        pass
-
-    def _add_meta(self, *args, **kwargs):
+    def _add_meta(self):
         """Load metadata"""
         metadata = Meta(data_license="TBD",
-                        data_license_url="",
+                        data_license_url="TBD",
                         version=self._version,
                         data_url=self._data_url)
-        self.database.metadata.put_item(Item={
+        self._database.metadata.put_item(Item={
             'src_name': SourceName.NCBI.value,
             'data_license': metadata.data_license,
             'data_license_url': metadata.data_license_url,
