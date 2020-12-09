@@ -149,11 +149,8 @@ class Normalizer:
     def fill_no_matches(self, resp: Dict) -> Dict:
         """Fill all empty source_matches slots with NO_MATCH results.
 
-        Args:
-            resp: incoming response object
-
-        Returns:
-            response object with empty source slots filled with
+        :param Dict resp: incoming response object
+        :return: response object with empty source slots filled with
                 NO_MATCH results and corresponding source metadata
         """
         for src_name in resp['source_matches'].keys():
@@ -277,12 +274,9 @@ class Normalizer:
         """Return response as list, where the first key-value in each item
         is the source name. Corresponds to `keyed=false` API parameter.
 
-        Args:
-            query: string to match against
-            sources: sources to match from
-
-        Returns:
-            completed response object to return to client
+        :param str query: string to match against
+        :param List[str] sources: sources to match from
+        :return: completed response object to return to client
         """
         response_dict = self.response_keyed(query, sources)
         source_list = []
