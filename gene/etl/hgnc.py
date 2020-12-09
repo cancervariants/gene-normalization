@@ -218,9 +218,13 @@ class HGNC(Base):
         self._database.metadata.put_item(
             Item={
                 'src_name': SourceName.HGNC.value,
-                'data_license': 'temp',  # TODO
-                'data_license_url': 'temp',  # TODO
+                'data_license': 'TODO',  # TODO
+                'data_license_url': 'TODO',  # TODO
                 'version': self._version,
-                'data_url': self._data_url
+                'data_url': self._data_url,
+                'rdp_url': None,
+                'non_commercial': True,
+                'share_alike': False,  # TODO: Is this correct?
+                'attribution': False,  # TODO: Is this correct?
             }
         )

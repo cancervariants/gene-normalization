@@ -128,6 +128,10 @@ class Meta(BaseModel):
     data_license_url: str
     version: str
     data_url: Optional[str]
+    rdp_url: Optional[str]
+    non_commercial: Optional[bool]
+    share_alike: Optional[bool]
+    attribution: Optional[bool]
     assembly: Optional[str]
 
     class Config:

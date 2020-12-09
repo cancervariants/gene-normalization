@@ -594,3 +594,8 @@ def test_meta_info(a1bg_as1, hgnc):
     assert normalizer_response['meta_'].version == '20201208'
     assert normalizer_response['meta_'].data_url == \
            'http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/'
+    assert normalizer_response['meta_'].rdp_url is None
+    assert normalizer_response['meta_'].assembly is None
+    assert normalizer_response['meta_'].non_commercial is True
+    assert normalizer_response['meta_'].share_alike is False
+    assert normalizer_response['meta_'].attribution is False
