@@ -100,7 +100,7 @@ class Normalizer:
                 item[label_type] = []
 
         gene = Gene(**item)
-        src_name = PREFIX_LOOKUP[gene.concept_id.split(':')[0]]
+        src_name = item['src_name']
 
         matches = response['source_matches']
         if src_name not in matches.keys():
@@ -197,6 +197,18 @@ class Normalizer:
                     KeyConditionExpression=filter_exp
                 )
                 if len(result['Items']) > 0:  # TODO remove check?
+                    concept_id_items += result['Items']
+            except ClientError as e:
+                print(e.response['Error']['Message'])
+        # TODO: Remove? Might store chromosome differently
+        if query.startswith('chromosome') and len(concept_id_items) == 0:
+            pk = f'{query}##identity'
+            filter_exp = Key('label_and_type').eq(pk)
+            try:
+                result = self.db.genes.query(
+                    KeyConditionExpression=filter_exp
+                )
+                if len(result['Items']) > 0:
                     concept_id_items += result['Items']
             except ClientError as e:
                 print(e.response['Error']['Message'])
