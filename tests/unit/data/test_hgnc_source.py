@@ -8,8 +8,11 @@ from gene.query import Normalizer
 def hgnc():
     """Build hgnc test fixture."""
     class QueryGetter:
+        def __init__(self):
+            self.normalizer = Normalizer()
+
         def normalize(self, query_str, incl='hgnc'):
-            resp = Normalizer.normalize(query_str, keyed=True, incl=incl)
+            resp = self.normalizer.normalize(query_str, keyed=True, incl=incl)
             return resp['source_matches']['HGNC']
 
     h = QueryGetter()
@@ -22,7 +25,7 @@ def hgnc37133():
     params = {
         'label': 'A1BG antisense RNA 1',
         'concept_id': 'hgnc:37133',
-        'approved_symbol': 'A1BG-AS1',
+        'symbol': 'A1BG-AS1',
         'previous_symbols': [
             'NCRNA00181',
             'A1BGAS',
@@ -46,7 +49,7 @@ def hgnc30005():
     params = {
         'label': 'alpha 1,3-galactosyltransferase 2',
         'concept_id': 'hgnc:30005',
-        'approved_symbol': 'A3GALT2',
+        'symbol': 'A3GALT2',
         'previous_symbols': [
             'A3GALT2P'
         ],
@@ -85,7 +88,7 @@ def test_concept_id_hgnc37133(hgnc37133, hgnc):
     assert normalized_drug.approval_status == hgnc37133.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc37133.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc37133.approved_symbol
+    assert normalized_drug.symbol == hgnc37133.symbol
 
     normalizer_response = hgnc.normalize('HGNC:37133')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
@@ -99,7 +102,7 @@ def test_concept_id_hgnc37133(hgnc37133, hgnc):
     assert normalized_drug.approval_status == hgnc37133.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc37133.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc37133.approved_symbol
+    assert normalized_drug.symbol == hgnc37133.symbol
 
     normalizer_response = hgnc.normalize('Hgnc:37133')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
@@ -113,12 +116,12 @@ def test_concept_id_hgnc37133(hgnc37133, hgnc):
     assert normalized_drug.approval_status == hgnc37133.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc37133.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc37133.approved_symbol
+    assert normalized_drug.symbol == hgnc37133.symbol
 
 
 def test_hgnc37133_symbol(hgnc37133, hgnc):
     """Test that hgnc37133 drug normalizes to correct drug concept
-    as an APPROVED_SYMBOL match.
+    as an symbol match.
     """
     normalizer_response = hgnc.normalize('A1BG-AS1')
     assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
@@ -132,7 +135,7 @@ def test_hgnc37133_symbol(hgnc37133, hgnc):
     assert normalized_drug.approval_status == hgnc37133.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc37133.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc37133.approved_symbol
+    assert normalized_drug.symbol == hgnc37133.symbol
 
     normalizer_response = hgnc.normalize('A1BG-as1')
     assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
@@ -146,7 +149,7 @@ def test_hgnc37133_symbol(hgnc37133, hgnc):
     assert normalized_drug.approval_status == hgnc37133.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc37133.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc37133.approved_symbol
+    assert normalized_drug.symbol == hgnc37133.symbol
 
 
 def test_hgnc37133_prev_symbol(hgnc37133, hgnc):
@@ -165,7 +168,7 @@ def test_hgnc37133_prev_symbol(hgnc37133, hgnc):
     assert normalized_drug.approval_status == hgnc37133.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc37133.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc37133.approved_symbol
+    assert normalized_drug.symbol == hgnc37133.symbol
 
     normalizer_response = hgnc.normalize('A1BGAS')
     assert normalizer_response['match_type'] == MatchType.PREVIOUS_SYMBOL
@@ -179,7 +182,7 @@ def test_hgnc37133_prev_symbol(hgnc37133, hgnc):
     assert normalized_drug.approval_status == hgnc37133.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc37133.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc37133.approved_symbol
+    assert normalized_drug.symbol == hgnc37133.symbol
 
     normalizer_response = hgnc.normalize('A1BG-AS')
     assert normalizer_response['match_type'] == MatchType.PREVIOUS_SYMBOL
@@ -193,7 +196,7 @@ def test_hgnc37133_prev_symbol(hgnc37133, hgnc):
     assert normalized_drug.approval_status == hgnc37133.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc37133.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc37133.approved_symbol
+    assert normalized_drug.symbol == hgnc37133.symbol
 
 
 def test_hgnc37133_alias(hgnc37133, hgnc):
@@ -212,7 +215,7 @@ def test_hgnc37133_alias(hgnc37133, hgnc):
     assert normalized_drug.approval_status == hgnc37133.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc37133.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc37133.approved_symbol
+    assert normalized_drug.symbol == hgnc37133.symbol
 
     normalizer_response = hgnc.normalize('flj23569')
     assert normalizer_response['match_type'] == MatchType.ALIAS
@@ -225,7 +228,7 @@ def test_hgnc37133_alias(hgnc37133, hgnc):
     assert normalized_drug.approval_status == hgnc37133.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc37133.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc37133.approved_symbol
+    assert normalized_drug.symbol == hgnc37133.symbol
 
 
 def test_concept_id_hgnc30005(hgnc30005, hgnc):
@@ -244,7 +247,7 @@ def test_concept_id_hgnc30005(hgnc30005, hgnc):
     assert normalized_drug.approval_status == hgnc30005.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc30005.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc30005.approved_symbol
+    assert normalized_drug.symbol == hgnc30005.symbol
 
     normalizer_response = hgnc.normalize('HGNC:30005')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
@@ -258,7 +261,7 @@ def test_concept_id_hgnc30005(hgnc30005, hgnc):
     assert normalized_drug.approval_status == hgnc30005.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc30005.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc30005.approved_symbol
+    assert normalized_drug.symbol == hgnc30005.symbol
 
     normalizer_response = hgnc.normalize('Hgnc:30005')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
@@ -272,12 +275,12 @@ def test_concept_id_hgnc30005(hgnc30005, hgnc):
     assert normalized_drug.approval_status == hgnc30005.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc30005.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc30005.approved_symbol
+    assert normalized_drug.symbol == hgnc30005.symbol
 
 
 def test_hgnc30005_symbol(hgnc30005, hgnc):
     """Test that hgnc30005 drug normalizes to correct drug concept
-    as an APPROVED_SYMBOL match.
+    as an symbol match.
     """
     normalizer_response = hgnc.normalize('A3GALT2')
     assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
@@ -291,7 +294,7 @@ def test_hgnc30005_symbol(hgnc30005, hgnc):
     assert normalized_drug.approval_status == hgnc30005.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc30005.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc30005.approved_symbol
+    assert normalized_drug.symbol == hgnc30005.symbol
 
     normalizer_response = hgnc.normalize('a3galt2')
     assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
@@ -305,7 +308,7 @@ def test_hgnc30005_symbol(hgnc30005, hgnc):
     assert normalized_drug.approval_status == hgnc30005.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc30005.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc30005.approved_symbol
+    assert normalized_drug.symbol == hgnc30005.symbol
 
 
 def test_hgnc30005_prev_symbol(hgnc30005, hgnc):
@@ -324,7 +327,7 @@ def test_hgnc30005_prev_symbol(hgnc30005, hgnc):
     assert normalized_drug.approval_status == hgnc30005.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc30005.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc30005.approved_symbol
+    assert normalized_drug.symbol == hgnc30005.symbol
 
     normalizer_response = hgnc.normalize('A3GALT2p')
     assert normalizer_response['match_type'] == MatchType.PREVIOUS_SYMBOL
@@ -338,7 +341,7 @@ def test_hgnc30005_prev_symbol(hgnc30005, hgnc):
     assert normalized_drug.approval_status == hgnc30005.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc30005.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc30005.approved_symbol
+    assert normalized_drug.symbol == hgnc30005.symbol
 
 
 def test_hgnc30005_alias(hgnc30005, hgnc):
@@ -357,7 +360,7 @@ def test_hgnc30005_alias(hgnc30005, hgnc):
     assert normalized_drug.approval_status == hgnc30005.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc30005.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc30005.approved_symbol
+    assert normalized_drug.symbol == hgnc30005.symbol
 
     normalizer_response = hgnc.normalize('igB3s')
     assert normalizer_response['match_type'] == MatchType.ALIAS
@@ -370,7 +373,7 @@ def test_hgnc30005_alias(hgnc30005, hgnc):
     assert normalized_drug.approval_status == hgnc30005.approval_status
     assert set(normalized_drug.previous_symbols) == \
            set(hgnc30005.previous_symbols)
-    assert normalized_drug.approved_symbol == hgnc30005.approved_symbol
+    assert normalized_drug.symbol == hgnc30005.symbol
 
 
 def test_no_match(hgnc):
@@ -398,6 +401,6 @@ def test_meta_info(hgnc37133, hgnc):
     normalizer_response = hgnc.normalize('HGNC:37133')
     # assert normalizer_response['meta_'].data_license == ''
     # assert normalizer_response['meta_'].data_license_url == ''
-    assert normalizer_response['meta_'].version == '20201130'
+    assert normalizer_response['meta_'].version == '20201207'
     assert normalizer_response['meta_'].data_url == \
            'http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/'

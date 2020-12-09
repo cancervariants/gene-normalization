@@ -19,13 +19,12 @@ class HGNC(Base):
     def __init__(self,
                  database: Database,
                  data_url='http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/',
-                 data_file_url='http://ftp.ebi.ac.uk/pub/databases/genenames/'
-                               'hgnc/json/non_alt_loci_set.json',
+                 data_file_ext='json/non_alt_loci_set.json',
                  ):
         """Initialize HGNC ETL class."""
         self._database = database
         self._data_url = data_url
-        self._data_file_url = data_file_url
+        self._data_file_url = data_url + data_file_ext
         self._version = None
         self._load_data()
 
@@ -73,7 +72,7 @@ class HGNC(Base):
                 record['concept_id'] = r['hgnc_id'].lower()
                 record['label_and_type'] = \
                     f"{record['concept_id']}##identity"
-                record['approved_symbol'] = r['symbol']
+                record['symbol'] = r['symbol']
                 record['label'] = r['name']
                 if r['status']:
                     if r['status'] == 'Approved':
@@ -83,7 +82,6 @@ class HGNC(Base):
                         record['approval_status'] =\
                             ApprovalStatus.WITHDRAWN.value
                 record['src_name'] = SourceName.HGNC.value
-
                 self._load_other_identifiers(r, record)
                 self._load_approved_symbol(record, batch)
                 self._load_aliases(r, record, batch)
@@ -91,17 +89,26 @@ class HGNC(Base):
                 batch.put_item(Item=record)
 
     def _load_approved_symbol(self, record, batch):
-        """Insert approved symbol data into the database."""
+        """Insert approved symbol data into the database.
+
+        :param dict record: A transformed gene record
+        :param BatchWriter batch: Object to write data to DynamoDB
+        """
         symbol = {
             'label_and_type':
-                f"{record['approved_symbol'].lower()}##symbol",
+                f"{record['symbol'].lower()}##symbol",
             'concept_id': f"{record['concept_id']}",
             'src_name': SourceName.HGNC.value
         }
         batch.put_item(Item=symbol)
 
     def _load_aliases(self, r, record, batch):
-        """Insert alias data into the database."""
+        """Insert alias data into the database.
+
+        :param dict r: A gene record in the HGNC data file
+        :param dict record: A transformed gene record
+        :param BatchWriter batch: Object to write data to DynamoDB
+        """
         alias_symbol = list()
         enzyme_id = list()
         if 'alias_symbol' in r and r['alias_symbol']:
@@ -128,7 +135,12 @@ class HGNC(Base):
             del record['aliases']
 
     def _load_previous_symbols(self, r, record, batch):
-        """Load previous symbols to a record."""
+        """Load previous symbols to a record.
+
+        :param dict r: A gene record in the HGNC data file
+        :param dict record: A transformed gene record
+        :param BatchWriter batch: Object to write data to DynamoDB
+        """
         if 'prev_symbol' in r and r['prev_symbol']:
             prev_symbols = r['prev_symbol']
             record['previous_symbols'] = list(set(prev_symbols))
@@ -148,7 +160,11 @@ class HGNC(Base):
                     batch.put_item(Item=prev_symbol)
 
     def _load_other_identifiers(self, r, record):
-        """Load other identifiers to a record."""
+        """Load other identifiers to a record.
+
+        :param dict r: A gene record in the HGNC data file
+        :param dict record: A transformed gene record
+        """
         other_ids = list()
         sources = [
             'entrez_id', 'ensembl_gene_id', 'vega_id', 'ucsc_id', 'ccds_id',
@@ -189,13 +205,13 @@ class HGNC(Base):
         self._add_meta()
 
     def _add_meta(self, *args, **kwargs):
-        """Add HGNC metadata."""
+        """Add HGNC metadata to the gene_metadata table."""
         self._database.metadata.put_item(
             Item={
                 'src_name': SourceName.HGNC.value,
                 'data_license': 'temp',  # TODO
                 'data_license_url': 'temp',  # TODO
-                'version': self._version,
+                'version': self._version,  # TODO: Updates often fix?
                 'data_url': self._data_url
             }
         )
