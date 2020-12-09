@@ -88,7 +88,7 @@ class Ensembl(Base):
             for f in db.all_features():
                 if f.attributes.get('ID'):
                     f_id = f.attributes.get('ID')[0].split(':')[0]
-                    if f_id == 'chromosome' or f_id == 'gene':
+                    if f_id == 'gene':
                         feature = self._add_feature(f, fields)
                         if feature:
                             if 'aliases' in feature:

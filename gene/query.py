@@ -200,18 +200,6 @@ class Normalizer:
                     concept_id_items += result['Items']
             except ClientError as e:
                 print(e.response['Error']['Message'])
-        # TODO: Remove? Might store chromosome differently
-        if query.startswith('chromosome') and len(concept_id_items) == 0:
-            pk = f'{query}##identity'
-            filter_exp = Key('label_and_type').eq(pk)
-            try:
-                result = self.db.genes.query(
-                    KeyConditionExpression=filter_exp
-                )
-                if len(result['Items']) > 0:
-                    concept_id_items += result['Items']
-            except ClientError as e:
-                print(e.response['Error']['Message'])
 
         for item in concept_id_items:
             (resp, src_name) = self.add_record(resp, item,
