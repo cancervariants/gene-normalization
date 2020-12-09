@@ -207,19 +207,21 @@ class Normalizer:
             sources = sources - {src_name}
         return (resp, sources)
 
-    def check_approved_symbol(self,
-                              query: str,
-                              resp: Dict,
-                              sources: Set[str]) -> (Dict, Set):
-        """Check query for approved symbol match.
+    def check_match_type(self,
+                         query: str,
+                         resp: Dict,
+                         sources: Set[str],
+                         match: str) -> (Dict, Set):
+        """Check query for selected match type.
 
         :param str query: search string
         :param Dict resp: in-progress response object to return to client
         :param Set[str] sources: remaining unmatched sources
+        :param str match: Match type name
         :return: Tuple with updated resp object and updated set of unmatched
-            sources
+                 sources
         """
-        filter_exp = Key('label_and_type').eq(f'{query}##symbol')
+        filter_exp = Key('label_and_type').eq(f'{query}##{match}')
         try:
             db_response = self.db.genes.query(
                 KeyConditionExpression=filter_exp
@@ -227,65 +229,9 @@ class Normalizer:
             if 'Items' in db_response.keys():
                 concept_ids = [i['concept_id'] for i in db_response['Items']]
                 (resp, matched_srcs) = self.fetch_records(
-                    resp, concept_ids, MatchType.APPROVED_SYMBOL
+                    resp, concept_ids, MatchType[match.upper()]
                 )
                 sources = sources - matched_srcs
-        except ClientError as e:
-            print(e.response['Error']['Message'])
-        return (resp, sources)
-
-    def check_prev_symbol(self,
-                          query: str,
-                          resp: Dict,
-                          sources: Set[str]) -> (Dict, Set):
-        """Check query for prev_symbol match.
-
-        :param str query: search string
-        :param Dict resp: in-progress response object to return to client
-        :param Set[str] sources: remaining unmatched sources
-        :return: Tuple with updated resp object and updated set of unmatched
-            sources
-        """
-        filter_exp = Key('label_and_type').eq(f'{query}##prev_symbol')
-        try:
-            db_response = self.db.genes.query(
-                KeyConditionExpression=filter_exp
-            )
-            if 'Items' in db_response.keys():
-                concept_ids = [i['concept_id'] for i in db_response['Items']]
-                (resp, matched_srcs) = self.fetch_records(
-                    resp, concept_ids, MatchType.PREVIOUS_SYMBOL
-                )
-                sources = sources - matched_srcs
-        except ClientError as e:
-            print(e.response['Error']['Message'])
-        return (resp, sources)
-
-    def check_alias(self,
-                    query: str,
-                    resp: Dict,
-                    sources: Set[str]) -> (Dict, Set):
-        """Check query for alias match.
-
-        :param str query: search string
-        :param Dict resp: in-progress response object to return to client
-        :param Set[str] sources: remaining unmatched sources
-
-        Returns:
-            tuple with updated resp object and updated unmatched sources
-                set
-        """
-        filter_exp = Key('label_and_type').eq(f'{query}##alias')
-        try:
-            db_response = self.db.genes.query(
-                KeyConditionExpression=filter_exp
-            )
-            if 'Items' in db_response.keys():
-                concept_ids = [i['concept_id'] for i in db_response['Items']]
-                (resp, matched_sources) = self.fetch_records(
-                    resp, concept_ids, MatchType.ALIAS
-                )
-                sources = sources - matched_sources
         except ClientError as e:
             print(e.response['Error']['Message'])
         return (resp, sources)
@@ -315,20 +261,12 @@ class Normalizer:
         if len(sources) == 0:
             return resp
 
-        # check if approved symbol match
-        (resp, sources) = self.check_approved_symbol(query_l, resp, sources)
-        if len(sources) == 0:
-            return resp
-
-        # check if prev_symbol match
-        (resp, sources) = self.check_prev_symbol(query_l, resp, sources)
-        if len(sources) == 0:
-            return resp
-
-        # check alias match
-        (resp, sources) = self.check_alias(query_l, resp, sources)
-        if len(sources) == 0:
-            return resp
+        match_types = ['symbol', 'prev_symbol', 'alias']
+        for match in match_types:
+            (resp, sources) = self.check_match_type(
+                query_l, resp, sources, match)
+            if len(sources) == 0:
+                return resp
 
         # remaining sources get no match
         resp = self.fill_no_matches(resp)

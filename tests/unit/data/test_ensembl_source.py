@@ -126,7 +126,7 @@ def test_ddx11l1_symbol(ddx11l1, ensembl):
     as an symbol match.
     """
     normalizer_response = ensembl.normalize('ddx11l1')
-    assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
     assert normalized_drug.label == ddx11l1.label
@@ -145,7 +145,7 @@ def test_ddx11l1_symbol(ddx11l1, ensembl):
     assert normalized_drug.location == ddx11l1.location
 
     normalizer_response = ensembl.normalize('DDX11L1')
-    assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
     assert normalized_drug.label == ddx11l1.label
@@ -231,7 +231,7 @@ def test_tp53_symbol(tp53, ensembl):
     as an symbol match.
     """
     normalizer_response = ensembl.normalize('tp53')
-    assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
     assert normalized_drug.label == tp53.label
@@ -250,7 +250,7 @@ def test_tp53_symbol(tp53, ensembl):
     assert normalized_drug.location == tp53.location
 
     normalizer_response = ensembl.normalize('tp53')
-    assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
     assert normalized_drug.label == tp53.label

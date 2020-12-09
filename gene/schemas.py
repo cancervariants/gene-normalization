@@ -66,8 +66,8 @@ class MatchType(IntEnum):
     """Define string constraints for use in Match Type attributes."""
 
     CONCEPT_ID = 100
-    APPROVED_SYMBOL = 100
-    PREVIOUS_SYMBOL = 80
+    SYMBOL = 100
+    PREV_SYMBOL = 80
     ALIAS = 60
     FUZZY_MATCH = 20
     NO_MATCH = 0
