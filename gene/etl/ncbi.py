@@ -1,12 +1,13 @@
 """This module defines ETL methods for the NCBI data source."""
 from .base import Base
 from gene.database import Database
-from gene.schemas import Meta, Gene, SourceName, ApprovalStatus
+from gene.schemas import Meta, Gene, SourceName
 from gene import PROJECT_ROOT
 import logging
 from pathlib import Path
 import csv
 import requests
+from datetime import datetime
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -36,8 +37,12 @@ class NCBI(Base):
         self._transform_data()
 
     def _download_data(self, data_dir):
-        requests.get()
-        raise NotImplementedError
+        logger.info('Downloading NCBI Gene...')
+        response = requests.get(self._info_file_url, stream=True)
+        version = datetime.today().strftime('%Y%m%d')
+        with open(f"{PROJECT_ROOT}/data/ncbi/"
+                  f"ncbi_{version}.json", 'w+') as f:
+            f.write(response.content)
 
     def _files_downloaded(self, data_dir: Path) -> bool:
         """Check whether needed source files exist.
@@ -103,11 +108,12 @@ class NCBI(Base):
                 else:
                     params['other_identifiers'] = []
                 # TODO include? seems not descriptive of ^^ info?
-                if row[12] == '0':
-                    params['approval_status'] = ApprovalStatus.APPROVED
-                    # TODO include full name from nomenclature auth?
-                    # TODO include symbol from nomenclature auth?
+                # if row[12] == '0':
+                #     params['approval_status'] = ApprovalStatus.APPROVED
+                #     # TODO include full name from nomenclature auth?
+                #     # TODO include symbol from nomenclature auth?
                 # TODO how to handle chromosome/start/stop? maybe map_location?
+                # maybe pull from gene2refseq file?
                 self._load_data(Gene(**params), batch)
         info_file.close()
 
@@ -131,7 +137,7 @@ class NCBI(Base):
                     'src_name': SourceName.NCBI.value
                 })
 
-        if item['label']:  # TODO FIX -- name???
+        if item['label']:
             pk = f"{item['label'].lower()}##label"
             batch.put_item(Item={
                 'label_and_type': pk,
