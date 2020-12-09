@@ -23,6 +23,7 @@ class Gene(BaseModel):
     aliases: List[str]
     other_identifiers: List[str]
     symbol_status: Optional[SymbolStatus]
+    seqid: Optional[str]
     start: Optional[str]
     stop: Optional[str]
     strand: Optional[str]
@@ -127,6 +128,7 @@ class Meta(BaseModel):
     data_license_url: str
     version: str
     data_url: Optional[str]
+    assembly: Optional[str]
 
     class Config:
         """Enables orm_mode"""

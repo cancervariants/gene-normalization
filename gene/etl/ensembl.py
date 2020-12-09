@@ -33,6 +33,7 @@ class Ensembl(Base):
         self._gff3_url = data_url + gff3_ext
         self._data_file_url = None
         self._version = None
+        self._assembly = None
         self._load_data()
 
     def _get_data_file_url_version(self):
@@ -43,7 +44,9 @@ class Ensembl(Base):
                  for node in soup.find_all('a')
                  if node.get('href').endswith('gz')]
         self._data_file_url = links[-1]
-        self._version = self._data_file_url.split('/')[-1].split('.')[2]
+        fn = self._data_file_url.split('/')[-1]
+        self._version = fn.split('.')[2]
+        self._assembly = fn.split('.')[1]
 
     def _download_data(self, *args, **kwargs):
         """Download Ensembl GFF3 data file."""
@@ -90,7 +93,7 @@ class Ensembl(Base):
                         if feature:
                             if 'aliases' in feature:
                                 self._load_alias(feature, batch)
-                            if 'symbol' in feature and feature:
+                            if 'symbol' in feature:
                                 self._load_symbol(feature, batch)
                             batch.put_item(Item=feature)
 
@@ -139,6 +142,7 @@ class Ensembl(Base):
         feature['stop'] = f.end
         feature['strand'] = f.strand
         feature['attributes'] = list()
+        feature['src_name'] = SourceName.ENSEMBL.value
 
         attributes = {
             'Alias': 'aliases',
@@ -171,7 +175,7 @@ class Ensembl(Base):
                     del feature[field]
 
         feature['label_and_type'] = \
-            f"{feature['concept_id'].lower().split('##')[0]}##identity"
+            f"{feature['concept_id'].lower()}##identity"
 
         return feature
 
@@ -192,6 +196,7 @@ class Ensembl(Base):
                 'data_license': 'temp',
                 'data_license_url': 'temp',
                 'version': self._version,
-                'data_url': self._data_url
+                'data_url': self._data_url,
+                'assembly': self._assembly
             }
         )

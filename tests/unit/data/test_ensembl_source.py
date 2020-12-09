@@ -29,10 +29,56 @@ def ddx11l1():
         'previous_symbols': [],
         'aliases': [],
         'other_identifiers': [],
-        'approval_status': None,
+        'symbol_status': None,
+        'seqid': '1',
         'start': '11869',
         'stop': '14409',
-        'strand': '+'
+        'strand': '+',
+        'location': None
+    }
+    return Gene(**params)
+
+
+@pytest.fixture(scope='module')
+def tp53():
+    """Create a TP53 fixutre."""
+    params = {
+        'concept_id': 'ensembl:ENSG00000141510',
+        'symbol': 'TP53',
+        'label': None,
+        'previous_symbols': [],
+        'aliases': [],
+        'other_identifiers': [],
+        'symbol_status': None,
+        'seqid': '17',
+        'start': '7661779',
+        'stop': '7687538',
+        'strand': '-',
+        'location': None
+    }
+    return Gene(**params)
+
+
+@pytest.fixture(scope='module')
+def chr1():
+    """Create a chr1 fixutre."""
+    params = {
+        'concept_id': 'chromosome:1',
+        'symbol': None,
+        'label': None,
+        'previous_symbols': [],
+        'aliases': [
+            'CM000663.2',
+            'chr1',
+            'NC_000001.11'
+        ],
+        'seqid': '1',
+        'other_identifiers': [],
+        'symbol_status': None,
+        'start': '1',
+        'stop': '248956422',
+        'strand': None,
+        'location': None
     }
     return Gene(**params)
 
@@ -41,7 +87,7 @@ def test_concept_id_ddx11l1(ddx11l1, ensembl):
     """Test that ddx11l1 drug normalizes to correct drug concept
     as a CONCEPT_ID match.
     """
-    normalizer_response = ensembl.normalize('ENSG00000223972')
+    normalizer_response = ensembl.normalize('ensembl:ENSG00000223972')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
@@ -50,10 +96,15 @@ def test_concept_id_ddx11l1(ddx11l1, ensembl):
     assert set(normalized_drug.aliases) == set(ddx11l1.aliases)
     assert set(normalized_drug.other_identifiers) == \
            set(ddx11l1.other_identifiers)
-    assert normalized_drug.approval_status == ddx11l1.approval_status
+    assert normalized_drug.symbol_status == ddx11l1.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(ddx11l1.previous_symbols)
     assert normalized_drug.symbol == ddx11l1.symbol
+    assert normalized_drug.start == ddx11l1.start
+    assert normalized_drug.stop == ddx11l1.stop
+    assert normalized_drug.strand == ddx11l1.strand
+    assert normalized_drug.seqid == ddx11l1.seqid
+    assert normalized_drug.location == ddx11l1.location
 
     normalizer_response = ensembl.normalize('ENSG00000223972')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
@@ -64,12 +115,17 @@ def test_concept_id_ddx11l1(ddx11l1, ensembl):
     assert set(normalized_drug.aliases) == set(ddx11l1.aliases)
     assert set(normalized_drug.other_identifiers) == \
            set(ddx11l1.other_identifiers)
-    assert normalized_drug.approval_status == ddx11l1.approval_status
+    assert normalized_drug.symbol_status == ddx11l1.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(ddx11l1.previous_symbols)
     assert normalized_drug.symbol == ddx11l1.symbol
+    assert normalized_drug.start == ddx11l1.start
+    assert normalized_drug.stop == ddx11l1.stop
+    assert normalized_drug.strand == ddx11l1.strand
+    assert normalized_drug.seqid == ddx11l1.seqid
+    assert normalized_drug.location == ddx11l1.location
 
-    normalizer_response = ensembl.normalize('ENSG00000223972')
+    normalizer_response = ensembl.normalize('ENSEMBL:ENSG00000223972')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
@@ -78,10 +134,287 @@ def test_concept_id_ddx11l1(ddx11l1, ensembl):
     assert set(normalized_drug.aliases) == set(ddx11l1.aliases)
     assert set(normalized_drug.other_identifiers) == \
            set(ddx11l1.other_identifiers)
-    assert normalized_drug.approval_status == ddx11l1.approval_status
+    assert normalized_drug.symbol_status == ddx11l1.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(ddx11l1.previous_symbols)
     assert normalized_drug.symbol == ddx11l1.symbol
+    assert normalized_drug.start == ddx11l1.start
+    assert normalized_drug.stop == ddx11l1.stop
+    assert normalized_drug.strand == ddx11l1.strand
+    assert normalized_drug.seqid == ddx11l1.seqid
+    assert normalized_drug.location == ddx11l1.location
+
+
+def test_ddx11l1_symbol(ddx11l1, ensembl):
+    """Test that ddx11l1 drug normalizes to correct drug concept
+    as an symbol match.
+    """
+    normalizer_response = ensembl.normalize('ddx11l1')
+    assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
+    assert len(normalizer_response['records']) == 1
+    normalized_drug = normalizer_response['records'][0]
+    assert normalized_drug.label == ddx11l1.label
+    assert normalized_drug.concept_id == ddx11l1.concept_id
+    assert set(normalized_drug.aliases) == set(ddx11l1.aliases)
+    assert set(normalized_drug.other_identifiers) == \
+           set(ddx11l1.other_identifiers)
+    assert normalized_drug.symbol_status == ddx11l1.symbol_status
+    assert set(normalized_drug.previous_symbols) == \
+           set(ddx11l1.previous_symbols)
+    assert normalized_drug.symbol == ddx11l1.symbol
+    assert normalized_drug.start == ddx11l1.start
+    assert normalized_drug.stop == ddx11l1.stop
+    assert normalized_drug.strand == ddx11l1.strand
+    assert normalized_drug.seqid == ddx11l1.seqid
+    assert normalized_drug.location == ddx11l1.location
+
+    normalizer_response = ensembl.normalize('DDX11L1')
+    assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
+    assert len(normalizer_response['records']) == 1
+    normalized_drug = normalizer_response['records'][0]
+    assert normalized_drug.label == ddx11l1.label
+    assert normalized_drug.concept_id == ddx11l1.concept_id
+    assert set(normalized_drug.aliases) == set(ddx11l1.aliases)
+    assert set(normalized_drug.other_identifiers) == \
+           set(ddx11l1.other_identifiers)
+    assert normalized_drug.symbol_status == ddx11l1.symbol_status
+    assert set(normalized_drug.previous_symbols) == \
+           set(ddx11l1.previous_symbols)
+    assert normalized_drug.symbol == ddx11l1.symbol
+    assert normalized_drug.start == ddx11l1.start
+    assert normalized_drug.stop == ddx11l1.stop
+    assert normalized_drug.strand == ddx11l1.strand
+    assert normalized_drug.seqid == ddx11l1.seqid
+    assert normalized_drug.location == ddx11l1.location
+
+
+def test_concept_id_tp53(tp53, ensembl):
+    """Test that tp53 drug normalizes to correct drug concept
+    as a CONCEPT_ID match.
+    """
+    normalizer_response = ensembl.normalize('ENSG00000141510')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_drug = normalizer_response['records'][0]
+    assert normalized_drug.label == tp53.label
+    assert normalized_drug.concept_id == tp53.concept_id
+    assert set(normalized_drug.aliases) == set(tp53.aliases)
+    assert set(normalized_drug.other_identifiers) == \
+           set(tp53.other_identifiers)
+    assert normalized_drug.symbol_status == tp53.symbol_status
+    assert set(normalized_drug.previous_symbols) == \
+           set(tp53.previous_symbols)
+    assert normalized_drug.symbol == tp53.symbol
+    assert normalized_drug.start == tp53.start
+    assert normalized_drug.stop == tp53.stop
+    assert normalized_drug.strand == tp53.strand
+    assert normalized_drug.seqid == tp53.seqid
+    assert normalized_drug.location == tp53.location
+
+    normalizer_response = ensembl.normalize('ensembl:ENSG00000141510')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_drug = normalizer_response['records'][0]
+    assert normalized_drug.label == tp53.label
+    assert normalized_drug.concept_id == tp53.concept_id
+    assert set(normalized_drug.aliases) == set(tp53.aliases)
+    assert set(normalized_drug.other_identifiers) == \
+           set(tp53.other_identifiers)
+    assert normalized_drug.symbol_status == tp53.symbol_status
+    assert set(normalized_drug.previous_symbols) == \
+           set(tp53.previous_symbols)
+    assert normalized_drug.symbol == tp53.symbol
+    assert normalized_drug.start == tp53.start
+    assert normalized_drug.stop == tp53.stop
+    assert normalized_drug.strand == tp53.strand
+    assert normalized_drug.seqid == tp53.seqid
+    assert normalized_drug.location == tp53.location
+
+    normalizer_response = ensembl.normalize('ENSEMBL:ENSG00000141510')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_drug = normalizer_response['records'][0]
+    assert normalized_drug.label == tp53.label
+    assert normalized_drug.concept_id == tp53.concept_id
+    assert set(normalized_drug.aliases) == set(tp53.aliases)
+    assert set(normalized_drug.other_identifiers) == \
+           set(tp53.other_identifiers)
+    assert normalized_drug.symbol_status == tp53.symbol_status
+    assert set(normalized_drug.previous_symbols) == \
+           set(tp53.previous_symbols)
+    assert normalized_drug.symbol == tp53.symbol
+    assert normalized_drug.start == tp53.start
+    assert normalized_drug.stop == tp53.stop
+    assert normalized_drug.strand == tp53.strand
+    assert normalized_drug.seqid == tp53.seqid
+    assert normalized_drug.location == tp53.location
+
+
+def test_tp53_symbol(tp53, ensembl):
+    """Test that tp53 drug normalizes to correct drug concept
+    as an symbol match.
+    """
+    normalizer_response = ensembl.normalize('tp53')
+    assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
+    assert len(normalizer_response['records']) == 1
+    normalized_drug = normalizer_response['records'][0]
+    assert normalized_drug.label == tp53.label
+    assert normalized_drug.concept_id == tp53.concept_id
+    assert set(normalized_drug.aliases) == set(tp53.aliases)
+    assert set(normalized_drug.other_identifiers) == \
+           set(tp53.other_identifiers)
+    assert normalized_drug.symbol_status == tp53.symbol_status
+    assert set(normalized_drug.previous_symbols) == \
+           set(tp53.previous_symbols)
+    assert normalized_drug.symbol == tp53.symbol
+    assert normalized_drug.start == tp53.start
+    assert normalized_drug.stop == tp53.stop
+    assert normalized_drug.strand == tp53.strand
+    assert normalized_drug.seqid == tp53.seqid
+    assert normalized_drug.location == tp53.location
+
+    normalizer_response = ensembl.normalize('tp53')
+    assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
+    assert len(normalizer_response['records']) == 1
+    normalized_drug = normalizer_response['records'][0]
+    assert normalized_drug.label == tp53.label
+    assert normalized_drug.concept_id == tp53.concept_id
+    assert set(normalized_drug.aliases) == set(tp53.aliases)
+    assert set(normalized_drug.other_identifiers) == \
+           set(tp53.other_identifiers)
+    assert normalized_drug.symbol_status == tp53.symbol_status
+    assert set(normalized_drug.previous_symbols) == \
+           set(tp53.previous_symbols)
+    assert normalized_drug.symbol == tp53.symbol
+    assert normalized_drug.start == tp53.start
+    assert normalized_drug.stop == tp53.stop
+    assert normalized_drug.strand == tp53.strand
+    assert normalized_drug.seqid == tp53.seqid
+    assert normalized_drug.location == tp53.location
+
+
+def test_concept_id_chr1(chr1, ensembl):
+    """Test that chr1 drug normalizes to correct drug concept
+    as a CONCEPT_ID match.
+    """
+    normalizer_response = ensembl.normalize('chromosome:1')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_drug = normalizer_response['records'][0]
+    assert normalized_drug.label == chr1.label
+    assert normalized_drug.concept_id == chr1.concept_id
+    assert set(normalized_drug.aliases) == set(chr1.aliases)
+    assert set(normalized_drug.other_identifiers) == \
+           set(chr1.other_identifiers)
+    assert normalized_drug.symbol_status == chr1.symbol_status
+    assert set(normalized_drug.previous_symbols) == \
+           set(chr1.previous_symbols)
+    assert normalized_drug.symbol == chr1.symbol
+    assert normalized_drug.start == chr1.start
+    assert normalized_drug.stop == chr1.stop
+    assert normalized_drug.strand == chr1.strand
+    assert normalized_drug.seqid == chr1.seqid
+    assert normalized_drug.location == chr1.location
+
+    normalizer_response = ensembl.normalize('CHROMOSOME:1')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_drug = normalizer_response['records'][0]
+    assert normalized_drug.label == chr1.label
+    assert normalized_drug.concept_id == chr1.concept_id
+    assert set(normalized_drug.aliases) == set(chr1.aliases)
+    assert set(normalized_drug.other_identifiers) == \
+           set(chr1.other_identifiers)
+    assert normalized_drug.symbol_status == chr1.symbol_status
+    assert set(normalized_drug.previous_symbols) == \
+           set(chr1.previous_symbols)
+    assert normalized_drug.symbol == chr1.symbol
+    assert normalized_drug.start == chr1.start
+    assert normalized_drug.stop == chr1.stop
+    assert normalized_drug.strand == chr1.strand
+    assert normalized_drug.seqid == chr1.seqid
+    assert normalized_drug.location == chr1.location
+
+    normalizer_response = ensembl.normalize('Chromosome:1')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_drug = normalizer_response['records'][0]
+    assert normalized_drug.label == chr1.label
+    assert normalized_drug.concept_id == chr1.concept_id
+    assert set(normalized_drug.aliases) == set(chr1.aliases)
+    assert set(normalized_drug.other_identifiers) == \
+           set(chr1.other_identifiers)
+    assert normalized_drug.symbol_status == chr1.symbol_status
+    assert set(normalized_drug.previous_symbols) == \
+           set(chr1.previous_symbols)
+    assert normalized_drug.symbol == chr1.symbol
+    assert normalized_drug.start == chr1.start
+    assert normalized_drug.stop == chr1.stop
+    assert normalized_drug.strand == chr1.strand
+    assert normalized_drug.seqid == chr1.seqid
+    assert normalized_drug.location == chr1.location
+
+
+def test_chr1_alias(chr1, ensembl):
+    """Test that chr1 drug normalizes to correct drug concept
+    as an alias match.
+    """
+    normalizer_response = ensembl.normalize('chr1')
+    assert normalizer_response['match_type'] == MatchType.ALIAS
+    assert len(normalizer_response['records']) == 1
+    normalized_drug = normalizer_response['records'][0]
+    assert normalized_drug.label == chr1.label
+    assert normalized_drug.concept_id == chr1.concept_id
+    assert set(normalized_drug.aliases) == set(chr1.aliases)
+    assert set(normalized_drug.other_identifiers) == \
+           set(chr1.other_identifiers)
+    assert normalized_drug.symbol_status == chr1.symbol_status
+    assert set(normalized_drug.previous_symbols) == \
+           set(chr1.previous_symbols)
+    assert normalized_drug.symbol == chr1.symbol
+    assert normalized_drug.start == chr1.start
+    assert normalized_drug.stop == chr1.stop
+    assert normalized_drug.strand == chr1.strand
+    assert normalized_drug.seqid == chr1.seqid
+    assert normalized_drug.location == chr1.location
+
+    normalizer_response = ensembl.normalize('CM000663.2')
+    assert normalizer_response['match_type'] == MatchType.ALIAS
+    assert len(normalizer_response['records']) == 1
+    normalized_drug = normalizer_response['records'][0]
+    assert normalized_drug.label == chr1.label
+    assert normalized_drug.concept_id == chr1.concept_id
+    assert set(normalized_drug.aliases) == set(chr1.aliases)
+    assert set(normalized_drug.other_identifiers) == \
+           set(chr1.other_identifiers)
+    assert normalized_drug.symbol_status == chr1.symbol_status
+    assert set(normalized_drug.previous_symbols) == \
+           set(chr1.previous_symbols)
+    assert normalized_drug.symbol == chr1.symbol
+    assert normalized_drug.start == chr1.start
+    assert normalized_drug.stop == chr1.stop
+    assert normalized_drug.strand == chr1.strand
+    assert normalized_drug.seqid == chr1.seqid
+    assert normalized_drug.location == chr1.location
+
+    normalizer_response = ensembl.normalize('NC_000001.11')
+    assert normalizer_response['match_type'] == MatchType.ALIAS
+    assert len(normalizer_response['records']) == 1
+    normalized_drug = normalizer_response['records'][0]
+    assert normalized_drug.label == chr1.label
+    assert normalized_drug.concept_id == chr1.concept_id
+    assert set(normalized_drug.aliases) == set(chr1.aliases)
+    assert set(normalized_drug.other_identifiers) == \
+           set(chr1.other_identifiers)
+    assert normalized_drug.symbol_status == chr1.symbol_status
+    assert set(normalized_drug.previous_symbols) == \
+           set(chr1.previous_symbols)
+    assert normalized_drug.symbol == chr1.symbol
+    assert normalized_drug.start == chr1.start
+    assert normalized_drug.stop == chr1.stop
+    assert normalized_drug.strand == chr1.strand
+    assert normalized_drug.seqid == chr1.seqid
+    assert normalized_drug.location == chr1.location
 
 
 def test_no_match(ensembl):
@@ -112,3 +445,4 @@ def test_meta_info(ddx11l1, ensembl):
     assert normalizer_response['meta_'].version == '102'
     assert normalizer_response['meta_'].data_url == \
            'http://ftp.ensembl.org/pub/'
+    assert normalizer_response['meta_'].assembly == 'GRCh38'
