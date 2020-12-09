@@ -74,6 +74,7 @@ class HGNC(Base):
                     f"{record['concept_id']}##identity"
                 record['symbol'] = r['symbol']
                 record['label'] = r['name']
+                record['src_name'] = SourceName.HGNC.value
                 if r['status']:
                     if r['status'] == 'Approved':
                         record['symbol_status'] = \
