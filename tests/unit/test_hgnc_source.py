@@ -209,7 +209,7 @@ def test_a1bg_as1_symbol(a1bg_as1, hgnc):
     assert normalized_drug.location == a1bg_as1.location
 
 
-def test_hgnc37133_prev_symbol(a1bg_as1, hgnc):
+def test_a1bg_as1_prev_symbol(a1bg_as1, hgnc):
     """Test that a1bg_as1 drug normalizes to correct drug concept
     as an PREVIOUS_SYMBOL match.
     """
