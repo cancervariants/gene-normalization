@@ -114,7 +114,9 @@ class NamespacePrefix(Enum):
     LNCRNADB = "lncrnadb"  # not on identifiers.org
     HUMAN_INTERMEDIATE_FILAMENT = "hifdb"  # not on identifiers.org
     NCBI = "ncbigene"  # https://registry.identifiers.org/registry/ncbigene
-    ENTREZ = "ncbigene"  # TODO record as ncbi vs entrez?
+    ENTREZ = "ncbigene"  # TODO name as ncbi vs entrez?
+    MIM = "omim"  # https://registry.identifiers.org/registry/mim
+    IMGT_GENE_DB = "imgt/gene-db"  # not on identifiers.org
 
 
 class Meta(BaseModel):

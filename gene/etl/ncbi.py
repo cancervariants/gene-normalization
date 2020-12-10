@@ -1,8 +1,8 @@
 """This module defines ETL methods for the NCBI data source."""
 from .base import Base
-from gene.database import Database
-from gene.schemas import Meta, Gene, SourceName
 from gene import PROJECT_ROOT
+from gene.database import Database
+from gene.schemas import Meta, Gene, SourceName, NamespacePrefix
 import logging
 from pathlib import Path
 import csv
@@ -28,13 +28,15 @@ class NCBI(Base):
         :param Database database: gene database for adding new data
         :param str data_url: URL to directory on NCBI website containing gene
             source material
-        :param str info_file_url: URL to gene info file on NCBI website
-        :param str grp_file_url: URL to gene group file on NCBI website
+        :param str info_file_url: default URL to gene info file on NCBI website
+        :param str grp_file_url: default URL to gene group file on NCBI website
         """
         self._database = database
         self._data_url = data_url
         self._info_file_url = info_file_url
         self._grp_file_url = grp_file_url
+        self._valid_prefixes = {v.value for v
+                                in NamespacePrefix.__members__.values()}
         self._extract_data()
         self._transform_data()
 
@@ -47,7 +49,7 @@ class NCBI(Base):
                 f.write(response.content)
             with gzip.open("/tmp/ncbi_gene_info.gz", "rb") as gz:
                 with open(f"{PROJECT_ROOT}/data/ncbi/"
-                          f"ncbi_{version}.tsv", 'wb') as f_out:
+                          f"ncbi_info_{version}.tsv", 'wb') as f_out:
                     shutil.copyfileobj(gz, f_out)
 
     def _files_downloaded(self, data_dir: Path) -> bool:
@@ -97,21 +99,37 @@ class NCBI(Base):
                 params = {
                     'concept_id': f"ncbigene:{row[1]}",
                 }
+                # get symbol
                 if row[2] != '-':
-                    # TODO what about symbol from nomenclature authority?
                     params['symbol'] = row[2]
                 else:
-                    raise Exception(f"couldn't read symbol: {row}")
+                    logger.error(f"Couldn't read symbol from row: {row}")
+                # get aliases
                 if row[4] != '-':
                     params['aliases'] = row[4].split('|')
                 else:
                     params['aliases'] = []
+                # get other identifiers
                 if row[5] != '-':
                     xrefs = row[5].split('|')
-                    xrefs = [r[5:] if r.startswith("hgnc:")
-                             else r
-                             for r in xrefs]
-                    params['other_identifiers'] = xrefs
+                    other_ids = []
+                    for ref in xrefs:
+                        if ref.startswith("HGNC:"):
+                            other_id = NamespacePrefix.HGNC.value + ref[10:]
+                            other_ids.append(other_id)
+                        elif ref.startswith("MIM:"):
+                            other_id = NamespacePrefix.MIM.value + \
+                                ref.split(':')[1]
+                            other_ids.append(other_id)
+                        else:
+                            prefix = ref.split(':')[0].lower()
+                            if prefix not in self._valid_prefixes:
+                                raise Exception(f"invalid ref prefix {prefix}"
+                                                f" in:\n {row}")
+                            else:
+                                other_id = prefix + ref.split(':')[-1]
+                                other_ids.append(other_id)
+                    params['other_identifiers'] = other_ids
                 else:
                     params['other_identifiers'] = []
                 # TODO how to handle chromosome/start/stop? maybe map_location?
