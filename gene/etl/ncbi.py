@@ -122,13 +122,13 @@ class NCBI(Base):
                                 ref.split(':')[1]
                             other_ids.append(other_id)
                         elif ref.startswith("IMGT/GENE-DB:"):
-                            other_id = NamespacePrefix.IMGT_GENE_DB + \
+                            other_id = NamespacePrefix.IMGT_GENE_DB.value + \
                                 ref.split(':')[1]
                         else:
                             prefix = ref.split(':')[0].lower()
                             if prefix not in self._valid_prefixes:
-                                raise Exception(f"invalid ref prefix {prefix}"
-                                                f" in:\n {row}")
+                                logger.error(f"invalid ref prefix {prefix}"
+                                             f" in:\n {row}")
                             else:
                                 other_id = prefix + ref.split(':')[-1]
                                 other_ids.append(other_id)
@@ -176,14 +176,23 @@ class NCBI(Base):
 
     def _add_meta(self):
         """Load metadata"""
-        metadata = Meta(data_license="TBD",
-                        data_license_url="TBD",
+        metadata = Meta(data_license="custom",
+                        data_license_url="https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                         version=self._version,
-                        data_url=self._data_url)
+                        data_url=self._data_url,
+                        rdp_url="https://reusabledata.org/ncbi-gene.html",
+                        non_commercial=True,
+                        share_alike=True,
+                        attribution=True,
+                        )
         self._database.metadata.put_item(Item={
             'src_name': SourceName.NCBI.value,
             'data_license': metadata.data_license,
             'data_license_url': metadata.data_license_url,
             'version': metadata.version,
-            'data_url': metadata.data_url
+            'data_url': metadata.data_url,
+            'rdp_url': metadata.rdp_url,
+            'non_commercial': metadata.non_commercial,
+            'share_alike': metadata.share_alike,
+            'attribution': metadata.attribution
         })
