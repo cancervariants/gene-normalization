@@ -8,6 +8,8 @@ from pathlib import Path
 import csv
 import requests
 from datetime import datetime
+import gzip
+import shutil
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -39,10 +41,14 @@ class NCBI(Base):
     def _download_data(self, data_dir):
         logger.info('Downloading NCBI Gene...')
         response = requests.get(self._info_file_url, stream=True)
-        version = datetime.today().strftime('%Y%m%d')
-        with open(f"{PROJECT_ROOT}/data/ncbi/"
-                  f"ncbi_{version}.json", 'w+') as f:
-            f.write(response.content)
+        if response.status_code == 200:
+            version = datetime.today().strftime('%Y%m%d')
+            with open("/tmp/ncbi_gene_info.gz", 'wb') as f:
+                f.write(response.content)
+            with gzip.open("/tmp/ncbi_gene_info.gz", "rb") as gz:
+                with open(f"{PROJECT_ROOT}/data/ncbi/"
+                          f"ncbi_{version}.tsv", 'wb') as f_out:
+                    shutil.copyfileobj(gz, f_out)
 
     def _files_downloaded(self, data_dir: Path) -> bool:
         """Check whether needed source files exist.
@@ -91,11 +97,12 @@ class NCBI(Base):
                 params = {
                     'concept_id': f"ncbigene:{row[1]}",
                 }
-                if row[3] != '-':
+                if row[2] != '-':
                     # TODO what about symbol from nomenclature authority?
                     params['symbol'] = row[2]
-                if row[5] != '-':
-                    # TODO what about "other designations"?
+                else:
+                    raise Exception(f"couldn't read symbol: {row}")
+                if row[4] != '-':
                     params['aliases'] = row[4].split('|')
                 else:
                     params['aliases'] = []
@@ -107,11 +114,6 @@ class NCBI(Base):
                     params['other_identifiers'] = xrefs
                 else:
                     params['other_identifiers'] = []
-                # TODO include? seems not descriptive of ^^ info?
-                # if row[12] == '0':
-                #     params['approval_status'] = ApprovalStatus.APPROVED
-                #     # TODO include full name from nomenclature auth?
-                #     # TODO include symbol from nomenclature auth?
                 # TODO how to handle chromosome/start/stop? maybe map_location?
                 # maybe pull from gene2refseq file?
                 self._load_data(Gene(**params), batch)
