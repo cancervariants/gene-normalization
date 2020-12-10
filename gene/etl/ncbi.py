@@ -118,9 +118,12 @@ class NCBI(Base):
                             other_id = NamespacePrefix.HGNC.value + ref[10:]
                             other_ids.append(other_id)
                         elif ref.startswith("MIM:"):
-                            other_id = NamespacePrefix.MIM.value + \
+                            other_id = NamespacePrefix.OMIM.value + \
                                 ref.split(':')[1]
                             other_ids.append(other_id)
+                        elif ref.startswith("IMGT/GENE-DB:"):
+                            other_id = NamespacePrefix.IMGT_GENE_DB + \
+                                ref.split(':')[1]
                         else:
                             prefix = ref.split(':')[0].lower()
                             if prefix not in self._valid_prefixes:

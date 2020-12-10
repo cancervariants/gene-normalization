@@ -1,7 +1,7 @@
 """This module defines the Ensembl ETL methods."""
 from .base import Base
 from gene import PROJECT_ROOT
-from gene.schemas import SourceName, ApprovalStatus, NamespacePrefix  # noqa: F401, E501
+from gene.schemas import SourceName, NamespacePrefix
 import logging
 from gene.database import Database
 import gffutils
@@ -33,6 +33,7 @@ class Ensembl(Base):
         self._gff3_url = data_url + gff3_ext
         self._data_file_url = None
         self._version = None
+        self._assembly = None
         self._load_data()
 
     def _get_data_file_url_version(self):
@@ -43,7 +44,9 @@ class Ensembl(Base):
                  for node in soup.find_all('a')
                  if node.get('href').endswith('gz')]
         self._data_file_url = links[-1]
-        self._version = self._data_file_url.split('/')[-1].split('.')[2]
+        fn = self._data_file_url.split('/')[-1]
+        self._version = fn.split('.')[2]
+        self._assembly = fn.split('.')[1]
 
     def _download_data(self, *args, **kwargs):
         """Download Ensembl GFF3 data file."""
@@ -85,12 +88,12 @@ class Ensembl(Base):
             for f in db.all_features():
                 if f.attributes.get('ID'):
                     f_id = f.attributes.get('ID')[0].split(':')[0]
-                    if f_id == 'chromosome' or f_id == 'gene':
+                    if f_id == 'gene':
                         feature = self._add_feature(f, fields)
                         if feature:
                             if 'aliases' in feature:
                                 self._load_alias(feature, batch)
-                            if 'symbol' in feature and feature:
+                            if 'symbol' in feature:
                                 self._load_symbol(feature, batch)
                             batch.put_item(Item=feature)
 
@@ -139,6 +142,7 @@ class Ensembl(Base):
         feature['stop'] = f.end
         feature['strand'] = f.strand
         feature['attributes'] = list()
+        feature['src_name'] = SourceName.ENSEMBL.value
 
         attributes = {
             'Alias': 'aliases',
@@ -171,7 +175,7 @@ class Ensembl(Base):
                     del feature[field]
 
         feature['label_and_type'] = \
-            f"{feature['concept_id'].lower().split('##')[0]}##identity"
+            f"{feature['concept_id'].lower()}##identity"
 
         return feature
 
@@ -189,9 +193,14 @@ class Ensembl(Base):
         self.database.metadata.put_item(
             Item={
                 'src_name': SourceName.ENSEMBL.value,
-                'data_license': 'temp',
-                'data_license_url': 'temp',
+                'data_license': 'TODO',  # TODO
+                'data_license_url': 'TODO',  # TODO
                 'version': self._version,
-                'data_url': self._data_url
+                'data_url': self._data_url,
+                'rdp_url': None,
+                'non_commercial': True,
+                'share_alike': False,  # TODO: Is this correct?
+                'attribution': False,  # TODO: Is this correct?
+                'assembly': self._assembly
             }
         )

@@ -100,7 +100,7 @@ class Normalizer:
                 item[label_type] = []
 
         gene = Gene(**item)
-        src_name = PREFIX_LOOKUP[gene.concept_id.split(':')[0]]
+        src_name = item['src_name']
 
         matches = response['source_matches']
         if src_name not in matches.keys():
@@ -149,11 +149,8 @@ class Normalizer:
     def fill_no_matches(self, resp: Dict) -> Dict:
         """Fill all empty source_matches slots with NO_MATCH results.
 
-        Args:
-            resp: incoming response object
-
-        Returns:
-            response object with empty source slots filled with
+        :param Dict resp: incoming response object
+        :return: response object with empty source slots filled with
                 NO_MATCH results and corresponding source metadata
         """
         for src_name in resp['source_matches'].keys():
@@ -207,19 +204,21 @@ class Normalizer:
             sources = sources - {src_name}
         return (resp, sources)
 
-    def check_approved_symbol(self,
-                              query: str,
-                              resp: Dict,
-                              sources: Set[str]) -> (Dict, Set):
-        """Check query for approved symbol match.
+    def check_match_type(self,
+                         query: str,
+                         resp: Dict,
+                         sources: Set[str],
+                         match: str) -> (Dict, Set):
+        """Check query for selected match type.
 
         :param str query: search string
         :param Dict resp: in-progress response object to return to client
         :param Set[str] sources: remaining unmatched sources
+        :param str match: Match type name
         :return: Tuple with updated resp object and updated set of unmatched
-            sources
+                 sources
         """
-        filter_exp = Key('label_and_type').eq(f'{query}##symbol')
+        filter_exp = Key('label_and_type').eq(f'{query}##{match}')
         try:
             db_response = self.db.genes.query(
                 KeyConditionExpression=filter_exp
@@ -227,65 +226,9 @@ class Normalizer:
             if 'Items' in db_response.keys():
                 concept_ids = [i['concept_id'] for i in db_response['Items']]
                 (resp, matched_srcs) = self.fetch_records(
-                    resp, concept_ids, MatchType.APPROVED_SYMBOL
+                    resp, concept_ids, MatchType[match.upper()]
                 )
                 sources = sources - matched_srcs
-        except ClientError as e:
-            print(e.response['Error']['Message'])
-        return (resp, sources)
-
-    def check_prev_symbol(self,
-                          query: str,
-                          resp: Dict,
-                          sources: Set[str]) -> (Dict, Set):
-        """Check query for prev_symbol match.
-
-        :param str query: search string
-        :param Dict resp: in-progress response object to return to client
-        :param Set[str] sources: remaining unmatched sources
-        :return: Tuple with updated resp object and updated set of unmatched
-            sources
-        """
-        filter_exp = Key('label_and_type').eq(f'{query}##prev_symbol')
-        try:
-            db_response = self.db.genes.query(
-                KeyConditionExpression=filter_exp
-            )
-            if 'Items' in db_response.keys():
-                concept_ids = [i['concept_id'] for i in db_response['Items']]
-                (resp, matched_srcs) = self.fetch_records(
-                    resp, concept_ids, MatchType.PREVIOUS_SYMBOL
-                )
-                sources = sources - matched_srcs
-        except ClientError as e:
-            print(e.response['Error']['Message'])
-        return (resp, sources)
-
-    def check_alias(self,
-                    query: str,
-                    resp: Dict,
-                    sources: Set[str]) -> (Dict, Set):
-        """Check query for alias match.
-
-        :param str query: search string
-        :param Dict resp: in-progress response object to return to client
-        :param Set[str] sources: remaining unmatched sources
-
-        Returns:
-            tuple with updated resp object and updated unmatched sources
-                set
-        """
-        filter_exp = Key('label_and_type').eq(f'{query}##alias')
-        try:
-            db_response = self.db.genes.query(
-                KeyConditionExpression=filter_exp
-            )
-            if 'Items' in db_response.keys():
-                concept_ids = [i['concept_id'] for i in db_response['Items']]
-                (resp, matched_sources) = self.fetch_records(
-                    resp, concept_ids, MatchType.ALIAS
-                )
-                sources = sources - matched_sources
         except ClientError as e:
             print(e.response['Error']['Message'])
         return (resp, sources)
@@ -315,20 +258,12 @@ class Normalizer:
         if len(sources) == 0:
             return resp
 
-        # check if approved symbol match
-        (resp, sources) = self.check_approved_symbol(query_l, resp, sources)
-        if len(sources) == 0:
-            return resp
-
-        # check if prev_symbol match
-        (resp, sources) = self.check_prev_symbol(query_l, resp, sources)
-        if len(sources) == 0:
-            return resp
-
-        # check alias match
-        (resp, sources) = self.check_alias(query_l, resp, sources)
-        if len(sources) == 0:
-            return resp
+        match_types = ['symbol', 'prev_symbol', 'alias']
+        for match in match_types:
+            (resp, sources) = self.check_match_type(
+                query_l, resp, sources, match)
+            if len(sources) == 0:
+                return resp
 
         # remaining sources get no match
         resp = self.fill_no_matches(resp)
@@ -339,12 +274,9 @@ class Normalizer:
         """Return response as list, where the first key-value in each item
         is the source name. Corresponds to `keyed=false` API parameter.
 
-        Args:
-            query: string to match against
-            sources: sources to match from
-
-        Returns:
-            completed response object to return to client
+        :param str query: string to match against
+        :param List[str] sources: sources to match from
+        :return: completed response object to return to client
         """
         response_dict = self.response_keyed(query, sources)
         source_list = []

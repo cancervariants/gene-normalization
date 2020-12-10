@@ -6,12 +6,11 @@ from pydantic import BaseModel
 from enum import Enum, IntEnum
 
 
-class ApprovalStatus(str, Enum):
-    """Define string constraints for approval status attribute."""
+class SymbolStatus(str, Enum):
+    """Define string constraints for symbol status attribute."""
 
     WITHDRAWN = "withdrawn"
     APPROVED = "approved"
-    INVESTIGATIONAL = "investigational"
 
 
 class Gene(BaseModel):
@@ -23,10 +22,12 @@ class Gene(BaseModel):
     previous_symbols: Optional[list]
     aliases: List[str]
     other_identifiers: List[str]
-    approval_status: Optional[ApprovalStatus]
+    symbol_status: Optional[SymbolStatus]
+    seqid: Optional[str]
     start: Optional[str]
     stop: Optional[str]
     strand: Optional[str]
+    location: Optional[str]
 
     class Config:
         """Configure model"""
@@ -65,8 +66,8 @@ class MatchType(IntEnum):
     """Define string constraints for use in Match Type attributes."""
 
     CONCEPT_ID = 100
-    APPROVED_SYMBOL = 100
-    PREVIOUS_SYMBOL = 80
+    SYMBOL = 100
+    PREV_SYMBOL = 80
     ALIAS = 60
     FUZZY_MATCH = 20
     NO_MATCH = 0
@@ -93,30 +94,32 @@ class NamespacePrefix(Enum):
 
     HGNC = "hgnc"
     ENSEMBL = "ensembl"
-    VEGA = "vega"  # not on identifiers.org
-    UCSC = "ucsc"  # not on identifiers.org
+    NCBI = "ncbi"
+    ENTREZ = "ncbigene"
+    VEGA = "vega"
+    UCSC = "ucsc"
+    ENA = "ena.embl"
+    REFSEQ = "refseq"
     CCDS = "ccds"
-    UNIPROT = "uniprot"  # .chain? .isoform? leave as is?
+    UNIPROT = "uniprot"
     PUBMED = "pubmed"
     COSMIC = "cosmic"
-    OMIM = "omim"  # not on identifiers.org
+    OMIM = "omim"
     MIRBASE = "mirbase"
-    HOMEODB = "homeodb"  # not on identifiers.org
-    SNORNABASE = "snornabase"  # not on identifiers.org
+    HOMEODB = "homeo"
+    SNORNABASE = "snornabase"
     ORPHANET = "orphanet"
-    HORDE = "horde"  # not on identifiers.org
+    PSEUDOGENE = "pseudogene.org"
+    HORDE = "horde"
     MEROPS = "merops"
+    IUPHAR = "iuphar"
+    KZNF_GENE_CATALOG = "knzfgc"
+    MAMIT_TRNADB = "mamittrnadb"
+    CD = "cd"
+    LNCRNADB = "lncrnadb"
+    INTERMEDIATE_FILAMENT = "hifdb"
     IMGT = "imgt"  # .hla? .ligm? leave as is?
-    IUPHAR = "iuphar"  # .family? .ligand? .receptor?
-    KZNF_GENE_CATALOG = "knzfgc"  # not on identifiers.org
-    MAMIT_TRNADB = "mamittrnadb"  # not on identifiers.org
-    CD = "cd"  # not on identifiers.org
-    LNCRNADB = "lncrnadb"  # not on identifiers.org
-    HUMAN_INTERMEDIATE_FILAMENT = "hifdb"  # not on identifiers.org
-    NCBI = "ncbigene"  # https://registry.identifiers.org/registry/ncbigene
-    ENTREZ = "ncbigene"  # TODO name as ncbi vs entrez?
-    MIM = "omim"  # https://registry.identifiers.org/registry/mim
-    IMGT_GENE_DB = "imgt/gene-db"  # not on identifiers.org
+    IMGT_GENE_DB = "imgt/gene-db"  # redundant w/ above?
 
 
 class Meta(BaseModel):
@@ -126,6 +129,11 @@ class Meta(BaseModel):
     data_license_url: str
     version: str
     data_url: Optional[str]
+    rdp_url: Optional[str]
+    non_commercial: Optional[bool]
+    share_alike: Optional[bool]
+    attribution: Optional[bool]
+    assembly: Optional[str]
 
     class Config:
         """Enables orm_mode"""
