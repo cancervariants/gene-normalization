@@ -6,7 +6,9 @@
     "non_commercial": true,
     "share_alike": false,
     "attribution": false,
-    "assembly": "GRCh38"
+    "assembly": "GRCh38",
+    "data_license": "TODO",
+    "data_license_url": "TODO"
   },
   {
   "src_name": "HGNC",
@@ -14,6 +16,8 @@
   "data_url": "http://ftp.ensembl.org/pub/",
   "non_commercial": true,
   "share_alike": false,
-  "attribution": false
+  "attribution": false,
+  "data_license": "TODO",
+  "data_license_url": "TODO"
   }
 ]
