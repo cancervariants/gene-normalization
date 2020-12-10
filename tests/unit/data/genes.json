@@ -6,7 +6,8 @@
     "seqid": "1",
     "start": "11869",
     "stop": "14409",
-    "strand": "+"
+    "strand": "+",
+    "src_name": "Ensembl"
   },
   {
     "label_and_type": "ddx11l1##symbol",
@@ -20,7 +21,8 @@
     "seqid": "17",
     "start": "7661779",
     "stop": "7687538",
-    "strand": "-"
+    "strand": "-",
+    "src_name": "Ensembl"
   },
   {
     "label_and_type": "tp53##symbol",
@@ -49,7 +51,8 @@
         "ena:BC040926",
         "refseq:NR_015380",
         "ena:BC040926"
-    ]
+    ],
+    "src_name": "HGNC"
   },
   {
     "label_and_type": "a1bg-as1##symbol",
@@ -113,7 +116,8 @@
         "pubmed:6396087",
         "pubmed:3456488",
         "pubmed:2047879"
-    ]
+    ],
+    "src_name": "HGNC"
   },
   {
     "label_and_type": "tp53##symbol",
@@ -154,7 +158,8 @@
         "pubmed:10854427",
         "pubmed:18630988",
         "refseq:NM_001080438"
-    ]
+    ],
+    "src_name": "HGNC"
   },
   {
     "label_and_type": "A3GALT2##symbol",
