@@ -13,7 +13,7 @@
   {
   "src_name": "HGNC",
   "version": "20201208",
-  "data_url": "http://ftp.ensembl.org/pub/",
+  "data_url": "http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/",
   "non_commercial": true,
   "share_alike": false,
   "attribution": false,
