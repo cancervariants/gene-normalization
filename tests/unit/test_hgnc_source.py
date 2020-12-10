@@ -179,7 +179,7 @@ def test_a1bg_as1_symbol(a1bg_as1, hgnc):
     as an symbol match.
     """
     normalizer_response = hgnc.normalize('A1BG-AS1')
-    assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
     assert normalized_drug.label == a1bg_as1.label
@@ -194,7 +194,7 @@ def test_a1bg_as1_symbol(a1bg_as1, hgnc):
     assert normalized_drug.location == a1bg_as1.location
 
     normalizer_response = hgnc.normalize('A1BG-as1')
-    assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
     assert normalized_drug.label == a1bg_as1.label
@@ -211,10 +211,10 @@ def test_a1bg_as1_symbol(a1bg_as1, hgnc):
 
 def test_a1bg_as1_prev_symbol(a1bg_as1, hgnc):
     """Test that a1bg_as1 drug normalizes to correct drug concept
-    as an PREVIOUS_SYMBOL match.
+    as an PREV_SYMBOL match.
     """
     normalizer_response = hgnc.normalize('NCRNA00181')
-    assert normalizer_response['match_type'] == MatchType.PREVIOUS_SYMBOL
+    assert normalizer_response['match_type'] == MatchType.PREV_SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
     assert normalized_drug.label == a1bg_as1.label
@@ -229,7 +229,7 @@ def test_a1bg_as1_prev_symbol(a1bg_as1, hgnc):
     assert normalized_drug.location == a1bg_as1.location
 
     normalizer_response = hgnc.normalize('A1BGAS')
-    assert normalizer_response['match_type'] == MatchType.PREVIOUS_SYMBOL
+    assert normalizer_response['match_type'] == MatchType.PREV_SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
     assert normalized_drug.label == a1bg_as1.label
@@ -244,7 +244,7 @@ def test_a1bg_as1_prev_symbol(a1bg_as1, hgnc):
     assert normalized_drug.location == a1bg_as1.location
 
     normalizer_response = hgnc.normalize('A1BG-AS')
-    assert normalizer_response['match_type'] == MatchType.PREVIOUS_SYMBOL
+    assert normalizer_response['match_type'] == MatchType.PREV_SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
     assert normalized_drug.label == a1bg_as1.label
@@ -348,7 +348,7 @@ def test_a3galt2_symbol(a3galt2, hgnc):
     as an symbol match.
     """
     normalizer_response = hgnc.normalize('A3GALT2')
-    assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
     assert normalized_drug.label == a3galt2.label
@@ -363,7 +363,7 @@ def test_a3galt2_symbol(a3galt2, hgnc):
     assert normalized_drug.location == a3galt2.location
 
     normalizer_response = hgnc.normalize('a3galt2')
-    assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
     assert normalized_drug.label == a3galt2.label
@@ -380,10 +380,10 @@ def test_a3galt2_symbol(a3galt2, hgnc):
 
 def test_a3galt2_prev_symbol(a3galt2, hgnc):
     """Test that a3galt2 drug normalizes to correct drug concept
-    as an PREVIOUS_SYMBOL match.
+    as an PREV_SYMBOL match.
     """
     normalizer_response = hgnc.normalize('A3GALT2P')
-    assert normalizer_response['match_type'] == MatchType.PREVIOUS_SYMBOL
+    assert normalizer_response['match_type'] == MatchType.PREV_SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
     assert normalized_drug.label == a3galt2.label
@@ -398,7 +398,7 @@ def test_a3galt2_prev_symbol(a3galt2, hgnc):
     assert normalized_drug.location == a3galt2.location
 
     normalizer_response = hgnc.normalize('A3GALT2p')
-    assert normalizer_response['match_type'] == MatchType.PREVIOUS_SYMBOL
+    assert normalizer_response['match_type'] == MatchType.PREV_SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
     assert normalized_drug.label == a3galt2.label
@@ -502,7 +502,7 @@ def test_tp53_symbol(tp53, hgnc):
     as an symbol match.
     """
     normalizer_response = hgnc.normalize('tp53')
-    assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
     assert normalized_drug.label == tp53.label
@@ -517,7 +517,7 @@ def test_tp53_symbol(tp53, hgnc):
     assert normalized_drug.location == tp53.location
 
     normalizer_response = hgnc.normalize('TP53')
-    assert normalizer_response['match_type'] == MatchType.APPROVED_SYMBOL
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_drug = normalizer_response['records'][0]
     assert normalized_drug.label == tp53.label
