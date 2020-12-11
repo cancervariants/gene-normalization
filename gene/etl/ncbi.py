@@ -14,6 +14,9 @@ import shutil
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
 
+# set of valid concept ID prefixes for parsing cross-refs to other sources
+VALID_CID_PREFIXES = {v.value for v in NamespacePrefix.__members__.values()}
+
 
 class NCBI(Base):
     """ETL class for NCBI source"""
@@ -35,8 +38,6 @@ class NCBI(Base):
         self._data_url = data_url
         self._info_file_url = info_file_url
         self._grp_file_url = grp_file_url
-        self._valid_prefixes = {v.value for v
-                                in NamespacePrefix.__members__.values()}
         self._extract_data()
         self._transform_data()
 
@@ -96,6 +97,7 @@ class NCBI(Base):
 
         with self._database.genes.batch_writer() as batch:
             for row in info:
+                is_valid_row = True
                 params = {
                     'concept_id': f"ncbigene:{row[1]}",
                 }
@@ -115,29 +117,29 @@ class NCBI(Base):
                     other_ids = []
                     for ref in xrefs:
                         if ref.startswith("HGNC:"):
-                            other_id = NamespacePrefix.HGNC.value + ref[10:]
-                            other_ids.append(other_id)
+                            prefix = NamespacePrefix.HGNC.value
                         elif ref.startswith("MIM:"):
-                            other_id = NamespacePrefix.OMIM.value + \
-                                ref.split(':')[1]
-                            other_ids.append(other_id)
+                            prefix = NamespacePrefix.OMIM.value
                         elif ref.startswith("IMGT/GENE-DB:"):
-                            other_id = NamespacePrefix.IMGT_GENE_DB.value + \
-                                ref.split(':')[1]
+                            prefix = NamespacePrefix.IMGT_GENE_DB.value
                         else:
                             prefix = ref.split(':')[0].lower()
-                            if prefix not in self._valid_prefixes:
+                            if prefix not in VALID_CID_PREFIXES:
                                 logger.error(f"invalid ref prefix {prefix}"
                                              f" in:\n {row}")
-                            else:
-                                other_id = prefix + ref.split(':')[-1]
-                                other_ids.append(other_id)
+                                is_valid_row = False
+                                break
+                        other_id = f"{prefix}:{ref.split(':')[-1]}"
+                        other_ids.append(other_id)
                     params['other_identifiers'] = other_ids
                 else:
                     params['other_identifiers'] = []
+                if row[8] != '-':
+                    params['label'] = row[8]
                 # TODO how to handle chromosome/start/stop? maybe map_location?
                 # maybe pull from gene2refseq file?
-                self._load_data(Gene(**params), batch)
+                if is_valid_row:
+                    self._load_data(Gene(**params), batch)
         info_file.close()
 
     def _load_data(self, gene: Gene, batch):
@@ -160,8 +162,8 @@ class NCBI(Base):
                     'src_name': SourceName.NCBI.value
                 })
 
-        if item['label']:
-            pk = f"{item['label'].lower()}##label"
+        if item['symbol']:
+            pk = f"{item['symbol'].lower()}##symbol"
             batch.put_item(Item={
                 'label_and_type': pk,
                 'concept_id': concept_id_lower,
@@ -184,6 +186,7 @@ class NCBI(Base):
                         non_commercial=True,
                         share_alike=True,
                         attribution=True,
+                        assembly=True
                         )
         self._database.metadata.put_item(Item={
             'src_name': SourceName.NCBI.value,
@@ -194,5 +197,6 @@ class NCBI(Base):
             'rdp_url': metadata.rdp_url,
             'non_commercial': metadata.non_commercial,
             'share_alike': metadata.share_alike,
-            'attribution': metadata.attribution
+            'attribution': metadata.attribution,
+            'assembly': metadata.assembly
         })
