@@ -1,0 +1,23 @@
+[
+  {
+    "src_name": "Ensembl",
+    "version": "102",
+    "data_url": "http://ftp.ensembl.org/pub/",
+    "non_commercial": true,
+    "share_alike": false,
+    "attribution": false,
+    "assembly": "GRCh38",
+    "data_license": "TODO",
+    "data_license_url": "TODO"
+  },
+  {
+  "src_name": "HGNC",
+  "version": "20201208",
+  "data_url": "http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/",
+  "non_commercial": true,
+  "share_alike": false,
+  "attribution": false,
+  "data_license": "TODO",
+  "data_license_url": "TODO"
+  }
+]
