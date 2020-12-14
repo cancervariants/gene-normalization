@@ -188,7 +188,8 @@ class HGNC(Base):
                     key = src
                 if type(r[src]) == list:
                     for other_id in r[src]:
-                        other_ids.append(f"{key}:{other_id}")
+                        other_ids.append(
+                            f"{NamespacePrefix[key.upper()].value}:{other_id}")
                 else:
                     if src == 'kznf_gene_catalog':
                         other_ids.append(f"{NamespacePrefix.KZNF_GENE_CATALOG.value}"  # noqa: E501

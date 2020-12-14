@@ -40,9 +40,9 @@ def a1bg_as1():
             'ucsc:uc002qse.3',
             'ncbigene:503538',
             'refseq:NR_015380',
-            'ena:BC040926',
+            'ena.embl:BC040926',
             'refseq:NR_015380',
-            'ena:BC040926'
+            'ena.embl:BC040926'
         ]
     }
     return Gene(**params)
@@ -84,7 +84,7 @@ def tp53():
             'ccds:CCDS11118',
             'ccds:CCDS45605',
             'ccds:CCDS45606',
-            'ena:AF307851',
+            'ena.embl:AF307851',
             'pubmed:6396087',
             'pubmed:3456488',
             'pubmed:2047879'
