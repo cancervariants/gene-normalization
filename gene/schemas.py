@@ -78,7 +78,7 @@ class SourceName(Enum):
 
     HGNC = "HGNC"
     ENSEMBL = "Ensembl"
-    # NCBI = "NCBI"
+    NCBI = "NCBI"
 
 
 class SourceIDAfterNamespace(Enum):
@@ -112,13 +112,14 @@ class NamespacePrefix(Enum):
     PSEUDOGENE = "pseudogene.org"
     HORDE = "horde"
     MEROPS = "merops"
-    IMGT = "imgt"
     IUPHAR = "iuphar"
     KZNF_GENE_CATALOG = "knzfgc"
     MAMIT_TRNADB = "mamittrnadb"
     CD = "cd"
     LNCRNADB = "lncrnadb"
     INTERMEDIATE_FILAMENT = "hifdb"
+    IMGT = "imgt"  # .hla? .ligm? leave as is?
+    IMGT_GENE_DB = "imgt/gene-db"  # redundant w/ above?
 
 
 class Meta(BaseModel):

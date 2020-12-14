@@ -1,7 +1,7 @@
 """This module provides a CLI util to make updates to normalizer database."""
 import click
 from botocore.exceptions import ClientError
-from gene.etl import HGNC, Ensembl
+from gene.etl import HGNC, Ensembl, NCBI
 from gene.schemas import SourceName
 from timeit import default_timer as timer
 from gene.database import Database
@@ -34,7 +34,8 @@ class CLI:
         """Update selected normalizer source(s) in the gene database."""
         sources = {
             'hgnc': HGNC,
-            'ensembl': Ensembl
+            'ensembl': Ensembl,
+            'ncbi': NCBI
         }
         if dev:
             db: Database = Database(db_url='http://localhost:8001')

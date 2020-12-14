@@ -21,6 +21,7 @@ civicpy = "*"
 boto3 = "*"
 beautifulsoup4 = "*"
 gffutils = "*"
+requests = "*"
 
 [dev-packages]
 gene = {editable = true, path = "."}
