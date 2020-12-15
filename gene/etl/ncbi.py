@@ -10,6 +10,7 @@ import requests
 from datetime import datetime
 import gzip
 import shutil
+from os import remove
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -43,36 +44,30 @@ class NCBI(Base):
         self._transform_data()
 
     def _download_data(self, data_dir):
-        logger.info('Downloading Entrez gene info...')
+        ncbi_dir = PROJECT_ROOT / 'data' / 'ncbi'
+
+        logger.info('Downloaded Entrez gene info.')
         response = requests.get(self._info_file_url, stream=True)
         if response.status_code == 200:
             version = datetime.today().strftime('%Y%m%d')
-            with open("/tmp/ncbi_gene_info.gz", 'wb') as f:
+            with open(ncbi_dir / 'ncbi_gene_info.gz', 'wb') as f:
                 f.write(response.content)
-            with gzip.open("/tmp/ncbi_gene_info.gz", "rb") as gz:
-                with open(f"{PROJECT_ROOT}/data/ncbi/"
-                          f"ncbi_info_{version}.tsv", 'wb') as f_out:
+            with gzip.open(ncbi_dir / 'ncbi_gene_info.gz', "rb") as gz:
+                with open(ncbi_dir / f"ncbi_info_{version}.tsv",
+                          'wb') as f_out:
                     shutil.copyfileobj(gz, f_out)
-        logger.info('Downloading Entrez gene history...')
-        response = requests.get(self._history_file_url, stream=True)
+            remove(ncbi_dir / 'ncbi_gene_info.gz')
+            response = requests.get(self._history_file_url, stream=True)
         if response.status_code == 200:
             version = datetime.today().strftime('%Y%m%d')
-            with open("/tmp/ncbi_gene_history.gz", 'wb') as f:
+            with open(ncbi_dir / 'ncbi_gene_history.gz', 'wb') as f:
                 f.write(response.content)
-            with gzip.open("/tmp/ncbi_gene_history.gz", "rb") as gz:
-                with open(f"{PROJECT_ROOT}/data/ncbi/"
-                          f"ncbi_history_{version}.tsv", 'wb') as f_out:
+            with gzip.open(ncbi_dir / 'ncbi_gene_history.gz', "rb") as gz:
+                with open(ncbi_dir / f"ncbi_history_{version}.tsv",
+                          'wb') as f_out:
                     shutil.copyfileobj(gz, f_out)
-        logger.info('Downloading Entrez refseq information...')
-        response = requests.get(self._history_file_url, stream=True)
-        if response.status_code == 200:
-            version = datetime.today().strftime('%Y%m%d')
-            with open("/tmp/ncbi_gene_history.gz", 'wb') as f:
-                f.write(response.content)
-            with gzip.open("/tmp/ncbi_gene_history.gz", "rb") as gz:
-                with open(f"{PROJECT_ROOT}/data/ncbi/"
-                          f"ncbi_history_{version}.tsv", 'wb') as f_out:
-                    shutil.copyfileobj(gz, f_out)
+            remove(ncbi_dir / 'ncbi_gene_history.gz')
+            logger.info('Downloaded Entrez gene history.')
 
     def _files_downloaded(self, data_dir: Path) -> bool:
         """Check whether needed source files exist.
@@ -107,7 +102,7 @@ class NCBI(Base):
                           if f.name.startswith('ncbi_info')][0]
         self._history_src = [f for f in local_files
                              if f.name.startswith('ncbi_history')][0]
-        self._version = self._info_src.name.split('_')[-1]
+        self._version = self._info_src.stem.split('_')[-1]
 
     def _transform_data(self):
         """Modify data and pass to loading functions."""
@@ -119,13 +114,11 @@ class NCBI(Base):
         prev_symbols = {}
         for row in history:
             if row[0] == '9606' and row[1] != '-':
-                # 1: geneID, 2: oldID, 3: oldSymbol
                 gene_id = row[1]
                 if gene_id in prev_symbols.keys():
                     prev_symbols[gene_id].append(row[3])
                 else:
                     prev_symbols[gene_id] = [row[3]]
-
         history_file.close()
 
         # open info file, skip headers
