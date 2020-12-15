@@ -124,6 +124,7 @@ class Ensembl(Base):
         attributes = {
             'ID': 'concept_id',
             'Name': 'symbol',
+            'description': 'other_identifiers'
         }
 
         for attribute in f.attributes.items():
@@ -138,6 +139,12 @@ class Ensembl(Base):
                         if val.startswith('gene'):
                             val = f"{NamespacePrefix.ENSEMBL.value}:" \
                                   f"{val.split(':')[1]}"
+                if key == 'description':
+                    gene['label'] = val.split('[')[0].strip()
+                    hgnc_id = val.split('[')[-1].split(']')[0].split(':')[-1]
+                    gene[attributes[key]] = \
+                        [f"{NamespacePrefix.HGNC.value}:{hgnc_id}"]
+                    continue
 
                 gene[attributes[key]] = val
 

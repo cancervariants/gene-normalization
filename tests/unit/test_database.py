@@ -3,6 +3,7 @@ import pytest
 from gene.database import Database
 from gene import PROJECT_ROOT
 import json
+import os
 
 
 @pytest.fixture(scope='module')
@@ -10,7 +11,7 @@ def db():
     """Create a DynamoDB test fixture."""
     class DB:
         def __init__(self):
-            self.db = Database(db_url='http://localhost:8000')
+            self.db = Database(db_url=os.environ['GENE_NORM_DB_URL'])
             self.load_test_data()
 
         def load_test_data(self):

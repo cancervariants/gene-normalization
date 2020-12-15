@@ -7,8 +7,8 @@
     "share_alike": false,
     "attribution": false,
     "assembly": "GRCh38",
-    "data_license": "TODO",
-    "data_license_url": "TODO"
+    "data_license": "custom",
+    "data_license_url": "https://uswest.ensembl.org/info/about/legal/index.html"
   },
   {
   "src_name": "HGNC",
@@ -17,7 +17,7 @@
   "non_commercial": true,
   "share_alike": false,
   "attribution": false,
-  "data_license": "TODO",
-  "data_license_url": "TODO"
+  "data_license": "custom",
+  "data_license_url": "https://www.genenames.org/about/"
   }
 ]
