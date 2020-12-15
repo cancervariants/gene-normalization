@@ -44,11 +44,11 @@ class Gene(BaseModel):
                 p.pop('title', None)
             # TODO complete example
             # schema['example'] = {
-            #     'label': '',
-            #     'concept_id': '',
-            #     'approved_symbol': '',
+            #     'label': 'B-Raf proto-oncogene, serine/threonine kinase',
+            #     'concept_id': 'hgnc:1097',
+            #     'symbol': 'BRAF',
             #     'previous_symbols': [],
-            #     'aliases': [],
+            #     'aliases': ['BRAF1'],
             #     'other_identifiers': [],
             #     'approval_status': Optional[ApprovalStatus]
             # }
@@ -146,15 +146,17 @@ class Meta(BaseModel):
                 schema.pop('title', None)
             for prop in schema.get('properties', {}).values():
                 prop.pop('title', None)
-            # TODO fill in example meta
-            # schema['example'] = {
-            #     'data_license': '',
-            #     'data_license_url':
-            #         '',
-            #     'version': '',
-            #     'data_url':
-            #         'http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/'
-            # }
+            schema['example'] = {
+                "data_license": "custom",
+                "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
+                "version": "20201215",
+                "data_url": "https://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+                "rdp_url": "https://reusabledata.org/ncbi-gene.html",
+                "non_commercial": False,
+                "share_alike": False,
+                "attribution": False,
+                "assembly": None
+            }
 
 
 class MatchesKeyed(BaseModel):
@@ -177,19 +179,23 @@ class MatchesKeyed(BaseModel):
                 schema.pop('title', None)
             for prop in schema.get('properties', {}).values():
                 prop.pop('title', None)
-            # schema['example'] = {
-            #     # TODO fill with example
-            #     'normalizer': 'HGNC',
-            #     'match_type': 0,
-            #     'meta_': {
-            #         'data_license': '',
-            #         'data_license_url':
-            #             '',
-            #         'version': '',
-            #         'data_url':
-            #             'http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/',
-            #     },
-            # }
+            schema['example'] = {
+                "NCBI": {
+                    "match_type": 0,
+                    "records": [],
+                    "meta_": {
+                        "data_license": "custom",
+                        "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
+                        "version": "20201215",
+                        "data_url": "https://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+                        "rdp_url": "https://reusabledata.org/ncbi-gene.html",
+                        "non_commercial": False,
+                        "share_alike": False,
+                        "attribution": False,
+                        "assembly": None
+                    }
+                }
+            }
 
 
 class MatchesListed(BaseModel):
@@ -213,20 +219,22 @@ class MatchesListed(BaseModel):
                 schema.pop('title', None)
             for prop in schema.get('properties', {}).values():
                 prop.pop('title', None)
-            # schema['example'] = {
-            #     # TODO fill with example
-            #     'normalizer': 'HGNC',
-            #     'match_type': 0,
-            #     'records': [],
-            #     'meta_': {
-            #         'data_license': '',
-            #         'data_license_url':
-            #             '',
-            #         'version': '',
-            #         'data_url':
-            #             'http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/',
-            #     },
-            # }
+            schema['example'] = {
+                "source": "NCBI",
+                "match_type": 0,
+                "records": [],
+                "meta_": {
+                    "data_license": "custom",
+                    "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
+                    "version": "20201215",
+                    "data_url": "https://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+                    "rdp_url": "https://reusabledata.org/ncbi-gene.html",
+                    "non_commercial": False,
+                    "share_alike": False,
+                    "attribution": False,
+                    "assembly": None
+                }
+            }
 
 
 class Service(BaseModel):
