@@ -79,7 +79,7 @@ class Ensembl(Base):
                                 merge_strategy="create_unique",
                                 keep_order=True)
 
-        fields = ['seqid', 'start', 'end', 'strand', 'aliases', 'symbol']
+        fields = ['seqid', 'start', 'end', 'strand', 'symbol']
 
         with self.database.genes.batch_writer() as batch:
             for f in db.all_features():
@@ -88,8 +88,6 @@ class Ensembl(Base):
                     if f_id == 'gene':
                         gene = self._add_feature(f, fields)
                         if gene:
-                            if 'aliases' in gene:
-                                self._load_alias(gene, batch)
                             if 'symbol' in gene:
                                 self._load_symbol(gene, batch)
                             batch.put_item(Item=gene)
@@ -106,21 +104,6 @@ class Ensembl(Base):
             'src_name': SourceName.ENSEMBL.value
         }
         batch.put_item(Item=symbol)
-
-    def _load_alias(self, gene, batch):
-        """Load alias records into database.
-
-        :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
-        """
-        aliases = {a.casefold(): a for a in gene['aliases']}
-        for alias in aliases:
-            alias = {
-                'label_and_type': f"{alias}##alias",
-                'concept_id': f"{gene['concept_id'].lower()}",
-                'src_name': SourceName.ENSEMBL.value
-            }
-            batch.put_item(Item=alias)
 
     def _add_feature(self, f, fields):
         """Create a gene dictionary.
@@ -139,7 +122,6 @@ class Ensembl(Base):
         gene['src_name'] = SourceName.ENSEMBL.value
 
         attributes = {
-            'Alias': 'aliases',
             'ID': 'concept_id',
             'Name': 'symbol',
         }
