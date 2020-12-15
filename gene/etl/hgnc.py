@@ -21,7 +21,13 @@ class HGNC(Base):
                  data_url='http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/',
                  data_file_ext='json/non_alt_loci_set.json',
                  ):
-        """Initialize HGNC ETL class."""
+        """Initialize HGNC ETL class.
+
+        :param Database database: DynamoDB database
+        :param str data_url: URL to HGNC's FTP site
+        :param str data_file_ext: Extension to HGNC's current JSON data file
+                                  for the Non Alt Loci set
+        """
         self._database = database
         self._data_url = data_url
         self._data_file_url = data_url + data_file_ext
@@ -68,48 +74,48 @@ class HGNC(Base):
 
         with self._database.genes.batch_writer() as batch:
             for r in records:
-                record = dict()
-                record['concept_id'] = r['hgnc_id'].lower()
-                record['label_and_type'] = \
-                    f"{record['concept_id']}##identity"
-                record['symbol'] = r['symbol']
-                record['label'] = r['name']
-                record['src_name'] = SourceName.HGNC.value
+                gene = dict()
+                gene['concept_id'] = r['hgnc_id'].lower()
+                gene['label_and_type'] = \
+                    f"{gene['concept_id']}##identity"
+                gene['symbol'] = r['symbol']
+                gene['label'] = r['name']
+                gene['src_name'] = SourceName.HGNC.value
                 if r['status']:
                     if r['status'] == 'Approved':
-                        record['symbol_status'] = \
+                        gene['symbol_status'] = \
                             SymbolStatus.APPROVED.value
                     elif r['status'] == 'Entry Withdrawn':
-                        record['symbol_status'] =\
+                        gene['symbol_status'] =\
                             SymbolStatus.WITHDRAWN.value
                 if 'location' in r:
-                    record['location'] = r['location']
-                record['src_name'] = SourceName.HGNC.value
-                self._load_other_identifiers(r, record)
-                self._load_approved_symbol(record, batch)
-                self._load_aliases(r, record, batch)
-                self._load_previous_symbols(r, record, batch)
-                batch.put_item(Item=record)
+                    gene['location'] = r['location']
+                gene['src_name'] = SourceName.HGNC.value
+                self._load_other_identifiers(r, gene)
+                self._load_approved_symbol(gene, batch)
+                self._load_aliases(r, gene, batch)
+                self._load_previous_symbols(r, gene, batch)
+                batch.put_item(Item=gene)
 
-    def _load_approved_symbol(self, record, batch):
+    def _load_approved_symbol(self, gene, batch):
         """Insert approved symbol data into the database.
 
-        :param dict record: A transformed gene record
+        :param dict gene: A transformed gene record
         :param BatchWriter batch: Object to write data to DynamoDB
         """
         symbol = {
             'label_and_type':
-                f"{record['symbol'].lower()}##symbol",
-            'concept_id': f"{record['concept_id']}",
+                f"{gene['symbol'].lower()}##symbol",
+            'concept_id': f"{gene['concept_id']}",
             'src_name': SourceName.HGNC.value
         }
         batch.put_item(Item=symbol)
 
-    def _load_aliases(self, r, record, batch):
+    def _load_aliases(self, r, gene, batch):
         """Insert alias data into the database.
 
         :param dict r: A gene record in the HGNC data file
-        :param dict record: A transformed gene record
+        :param dict gene: A transformed gene record
         :param BatchWriter batch: Object to write data to DynamoDB
         """
         alias_symbol = list()
@@ -120,53 +126,46 @@ class HGNC(Base):
         if 'enzyme_id' in r:
             enzyme_id = r['enzyme_id']
 
-        record['aliases'] = list(set(alias_symbol + enzyme_id))
-        if record['aliases']:
-            aliases = set({t.casefold(): t for t in record['aliases']})
+        gene['aliases'] = list(set(alias_symbol + enzyme_id))
+        if gene['aliases']:
+            aliases = {t.casefold(): t for t in gene['aliases']}
 
-            if len(aliases) > 20:
-                del record['aliases']
-            else:
-                for alias in aliases:
-                    alias = {
-                        'label_and_type': f"{alias}##alias",
-                        'concept_id': f"{record['concept_id']}",
-                        'src_name': SourceName.HGNC.value
-                    }
-                    batch.put_item(Item=alias)
+            for alias in aliases:
+                alias = {
+                    'label_and_type': f"{alias}##alias",
+                    'concept_id': f"{gene['concept_id']}",
+                    'src_name': SourceName.HGNC.value
+                }
+                batch.put_item(Item=alias)
         else:
-            del record['aliases']
+            del gene['aliases']
 
-    def _load_previous_symbols(self, r, record, batch):
-        """Load previous symbols to a record.
+    def _load_previous_symbols(self, r, gene, batch):
+        """Load previous symbols to a gene record.
 
         :param dict r: A gene record in the HGNC data file
-        :param dict record: A transformed gene record
+        :param dict gene: A transformed gene record
         :param BatchWriter batch: Object to write data to DynamoDB
         """
         if 'prev_symbol' in r:
             prev_symbols = r['prev_symbol']
-            record['previous_symbols'] = list(set(prev_symbols))
+            gene['previous_symbols'] = list(set(prev_symbols))
 
-            prev_symbols = set(
-                {t.casefold(): t for t in record['previous_symbols']})
+            prev_symbols = {t.casefold(): t for t in gene['previous_symbols']}
 
-            if len(prev_symbols) > 20:
-                del record['previous_symbols']
-            else:
-                for prev_symbol in prev_symbols:
-                    prev_symbol = {
-                        'label_and_type': f"{prev_symbol}##prev_symbol",
-                        'concept_id': f"{record['concept_id']}",
-                        'src_name': SourceName.HGNC.value
-                    }
-                    batch.put_item(Item=prev_symbol)
+            for prev_symbol in prev_symbols:
+                prev_symbol = {
+                    'label_and_type': f"{prev_symbol}##prev_symbol",
+                    'concept_id': f"{gene['concept_id']}",
+                    'src_name': SourceName.HGNC.value
+                }
+                batch.put_item(Item=prev_symbol)
 
-    def _load_other_identifiers(self, r, record):
-        """Load other identifiers to a record.
+    def _load_other_identifiers(self, r, gene):
+        """Load other identifiers to a gene record.
 
         :param dict r: A gene record in the HGNC data file
-        :param dict record: A transformed gene record
+        :param dict gene: A transformed gene record
         """
         other_ids = list()
         sources = [
@@ -205,7 +204,7 @@ class HGNC(Base):
                                          f":{r[src]}")
 
         if other_ids:
-            record['other_identifiers'] = other_ids
+            gene['other_identifiers'] = other_ids
 
     def _load_data(self, *args, **kwargs):
         """Load the HGNC source into normalized database."""
@@ -219,13 +218,13 @@ class HGNC(Base):
         self._database.metadata.put_item(
             Item={
                 'src_name': SourceName.HGNC.value,
-                'data_license': 'TODO',  # TODO
-                'data_license_url': 'TODO',  # TODO
+                'data_license': 'custom',
+                'data_license_url': 'https://www.genenames.org/about/',
                 'version': self._version,
                 'data_url': self._data_url,
                 'rdp_url': None,
                 'non_commercial': True,
-                'share_alike': False,  # TODO: Is this correct?
-                'attribution': False,  # TODO: Is this correct?
+                'share_alike': False,
+                'attribution': False,
             }
         )

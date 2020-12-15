@@ -8,7 +8,7 @@ import html
 
 
 normalizer = Normalizer()
-app = FastAPI(docs_url='/')
+app = FastAPI(docs_url='/dev/gene', openapi_url='/dev/gene/openapi.json')
 
 
 def custom_openapi():
@@ -53,7 +53,7 @@ excl_descr = """Optional. Comma-separated list of source names to exclude in
              parameters are given."""
 
 
-@app.get("/search",
+@app.get("/dev/gene/search",
          summary=read_query_summary,
          operation_id="getQueryResponse",
          response_description=response_description,

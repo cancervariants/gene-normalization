@@ -2,6 +2,7 @@
 import pytest
 from gene.schemas import Gene, MatchType
 from gene.query import Normalizer
+from datetime import datetime
 
 
 @pytest.fixture(scope='module')
@@ -589,9 +590,10 @@ def test_no_match(hgnc):
 def test_meta_info(a1bg_as1, hgnc):
     """Test that the meta field is correct."""
     normalizer_response = hgnc.normalize('HGNC:37133')
-    # assert normalizer_response['meta_'].data_license == ''
-    # assert normalizer_response['meta_'].data_license_url == ''
-    assert normalizer_response['meta_'].version == '20201208'
+    assert normalizer_response['meta_'].data_license == 'custom'
+    assert normalizer_response['meta_'].data_license_url == \
+           'https://www.genenames.org/about/'
+    assert datetime.strptime(normalizer_response['meta_'].version, "%Y%m%d")
     assert normalizer_response['meta_'].data_url == \
            'http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/'
     assert normalizer_response['meta_'].rdp_url is None
