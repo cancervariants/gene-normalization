@@ -28,6 +28,7 @@
     "share_alike": false,
     "attribution": false,
     "data_license": "custom",
-    "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/"
+    "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",
+    "rdp_url": "https://reusabledata.org/ncbi-gene.html",
   }
 ]
