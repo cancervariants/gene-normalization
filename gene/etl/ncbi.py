@@ -224,16 +224,16 @@ class NCBI(Base):
 
     def _add_meta(self):
         """Load metadata"""
-        metadata = Meta(data_license="custom",
-                        data_license_url="https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
-                        version=self._version,
-                        data_url=self._data_url,
-                        rdp_url="https://reusabledata.org/ncbi-gene.html",
-                        non_commercial=False,
-                        share_alike=False,
-                        attribution=False,
-                        assembly=None
-                        )
+        metadata = Meta(
+            data_license="custom",
+            data_license_url="https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
+            version=self._version,
+            data_url=self._data_url,
+            rdp_url="https://reusabledata.org/ncbi-gene.html",
+            non_commercial=False,
+            share_alike=False,
+            attribution=False,
+        )
         self._database.metadata.put_item(Item={
             'src_name': SourceName.NCBI.value,
             'data_license': metadata.data_license,
@@ -244,5 +244,4 @@ class NCBI(Base):
             'non_commercial': metadata.non_commercial,
             'share_alike': metadata.share_alike,
             'attribution': metadata.attribution,
-            'assembly': metadata.assembly
         })
