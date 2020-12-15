@@ -42,16 +42,20 @@ class Gene(BaseModel):
                 schema.pop('title', None)
             for p in schema.get('properties', {}).values():
                 p.pop('title', None)
-            # TODO complete example
-            # schema['example'] = {
-            #     'label': 'B-Raf proto-oncogene, serine/threonine kinase',
-            #     'concept_id': 'hgnc:1097',
-            #     'symbol': 'BRAF',
-            #     'previous_symbols': [],
-            #     'aliases': ['BRAF1'],
-            #     'other_identifiers': [],
-            #     'approval_status': Optional[ApprovalStatus]
-            # }
+            schema['example'] = {
+                "label": None,
+                "concept_id": "ensembl:ENSG00000157764",
+                "symbol": "BRAF",
+                "previous_symbols": [],
+                "aliases": [],
+                "other_identifiers": [],
+                "symbol_status": None,
+                "seqid": "7",
+                "start": "140719327",
+                "stop": "140924929",
+                "strand": "-",
+                "location": None
+            }
 
 
 class GeneGroup(Gene):
@@ -255,16 +259,40 @@ class Service(BaseModel):
                 schema.pop('title', None)
             for prop in schema.get('properties', {}).values():
                 prop.pop('title', None)
-            # schema['example'] = {
-            #     # TODO add example service
-            #     'query': 'BRAF',
-            #     'warnings': None,
-            #     'meta_': {
-            #         'data_license': '',
-            #         'data_license_url':
-            #             '',
-            #         'version': '',
-            #         'data_url':
-            #             'http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/',
-            #     }
-            # }
+            schema['example'] = {
+                "query": "BRAF",
+                "warnings": None,
+                "source_matches": [
+                    {
+                        "source": "Ensembl",
+                        "match_type": 100,
+                        "records": [
+                            {
+                                "label": None,
+                                "concept_id": "ensembl:ENSG00000157764",
+                                "symbol": "BRAF",
+                                "previous_symbols": [],
+                                "aliases": [],
+                                "other_identifiers": [],
+                                "symbol_status": None,
+                                "seqid": "7",
+                                "start": "140719327",
+                                "stop": "140924929",
+                                "strand": "-",
+                                "location": None
+                            }
+                        ],
+                        "meta_": {
+                            "data_license": "custom",
+                            "data_license_url": "https://uswest.ensembl.org/info/about/legal/index.html",  # noqa: E501
+                            "version": "102",
+                            "data_url": "http://ftp.ensembl.org/pub/",
+                            "rdp_url": None,
+                            "non_commercial": True,
+                            "share_alike": False,
+                            "attribution": False,
+                            "assembly": "GRCh38"
+                        }
+                    }
+                ]
+            }
