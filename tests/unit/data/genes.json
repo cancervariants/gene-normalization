@@ -184,5 +184,93 @@
     "label_and_type": "igb3s##alias",
     "concept_id": "hgnc:30005",
     "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ncbigene:8193##identity",
+    "label": "double PHD fingers 1",
+    "concept_id": "ncbigene:8193",
+    "symbol": "DPF1",
+    "aliases": ["BAF45b", "NEUD4", "neuro-d4"],
+    "other_identifiers": [
+      "omim:601670", "hgnc:20225", "ensembl:ENSG00000011332"
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "dpf1##symbol",
+    "concept_id": "ncbigene:8193",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "baf45b##alias",
+    "concept_id": "ncbigene:8193",
+    "src_name": "NCBI"
+
+  },
+  {
+    "label_and_type": "neud4##alias",
+    "concept_id": "ncbigene:8193",
+    "src_name": "NCBI"
+
+  },
+  {
+    "label_and_type": "neuro-d4##alias",
+    "concept_id": "ncbigene:8193",
+    "src_name": "NCBI"
+
+  },
+  {
+    "label_and_type": "ncbigene:54704##identity",
+    "label": "pyruvate dehyrogenase phosphatase catalytic subunit 1",
+    "concept_id": "ncbigene:54704",
+    "symbol": "PDP1",
+    "aliases": ["PDH", "PDP", "PDPC", "PPM2A", "PPM2C"],
+    "other_identifiers": [
+        "omim:605993", "hgnc:9279", "ensembl:ENSG00000164951"
+    ],
+    "previous_symbols": [
+        "LOC157663", "PPM2C"
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "pdp1##symbol",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "loc157663##prev_symbol",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ppm2c##prev_symbol",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "pdh##alias",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "pdp##alias",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "pdpc##alias",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ppm2a##alias",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ppm2c##alias",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI"
   }
 ]

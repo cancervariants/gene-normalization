@@ -30,7 +30,7 @@ def dpf1():
         'aliases': ['BAF45b', 'NEUD4', 'neuro-d4'],
         'other_identifiers': [
             'omim:601670', 'hgnc:20225', 'ensembl:ENSG00000011332'
-        ]
+        ],
     }
     return Gene(**params)
 
@@ -45,6 +45,9 @@ def pdp1():
         'aliases': ['PDH', 'PDP', 'PDPC', 'PPM2A', 'PPM2C'],
         'other_identifiers': [
             'omim:605993', 'hgnc:9279', 'ensembl:ENSG00000164951'
+        ],
+        'previous_symbols': [
+            'LOC157663', 'PPM2C'
         ]
     }
     return Gene(**params)
@@ -212,6 +215,30 @@ def test_symbol(ncbi, dpf1, pdp1):
     assert response['match_type'] != 100
 
 
+def test_prev_symbol(ncbi, pdp1):
+    """Test that query term normalizes for gene aliases."""
+    response = ncbi.normalize('LOC157663')
+    assert response['match_type'] == 80
+    assert len(response['records']) == 1
+    record = response['records'][0]
+    assert record.label == pdp1.label
+    assert record.concept_id == pdp1.concept_id
+    assert record.symbol == pdp1.symbol
+    assert set(record.aliases) == set(pdp1.aliases)
+    assert set(record.other_identifiers) == set(pdp1.other_identifiers)
+    assert record.symbol_status == pdp1.symbol_status
+    assert record.seqid == pdp1.seqid
+    assert record.start == pdp1.start
+    assert record.stop == pdp1.stop
+    assert record.strand == pdp1.strand
+    assert record.location == pdp1.location
+
+    response2 = ncbi.normalize('PPM2C')
+    assert response == response2
+    response3 = ncbi.normalize('loc157663')
+    assert response == response3
+
+
 def test_alias(ncbi, dpf1, pdp1):
     """Test that query term normalizes for gene aliases."""
     response = ncbi.normalize('BAF45b')
@@ -260,7 +287,7 @@ def test_alias(ncbi, dpf1, pdp1):
     response2 = ncbi.normalize('PPM2A')
     assert response == response2
     response2 = ncbi.normalize('PPM2C')
-    assert response == response2
+    assert response2['match_type'] == 80  # should match as prev_symbol
 
     # check correct case handling
     response = ncbi.normalize('pdh')
@@ -310,10 +337,9 @@ def test_no_match(ncbi):
         'https://ftp.ncbi.nlm.nih.gov/gene/DATA/'
     assert response['meta_'].rdp_url == \
         'https://reusabledata.org/ncbi-gene.html'
-    assert response['meta_'].non_commercial
-    assert response['meta_'].share_alike
-    assert response['meta_'].attribution
-    assert response['meta_'].assembly
+    assert not response['meta_'].non_commercial
+    assert not response['meta_'].share_alike
+    assert not response['meta_'].attribution
 
     # check blank
     response = ncbi.normalize('')
@@ -344,7 +370,7 @@ def test_meta(ncbi, pdp1):
         'https://ftp.ncbi.nlm.nih.gov/gene/DATA/'
     assert response['meta_'].rdp_url == \
         'https://reusabledata.org/ncbi-gene.html'
-    assert response['meta_'].non_commercial
-    assert response['meta_'].share_alike
-    assert response['meta_'].attribution
-    assert response['meta_'].assembly
+    assert not response['meta_'].non_commercial
+    assert not response['meta_'].share_alike
+    assert not response['meta_'].attribution
+    assert not response['meta_'].assembly
