@@ -23,6 +23,7 @@ class Ensembl(Base):
                  gff3_ext='current_gff3/homo_sapiens'
                  ):
         """Initialize Ensembl ETL class.
+
         :param Database database: DynamoDB database
         :param str data_url: URL to Ensembl's FTP site
         :param str gff3_ext: Extension to Ensembl's current
@@ -72,15 +73,11 @@ class Ensembl(Base):
 
     def _transform_data(self, *args, **kwargs):
         """Transform the Ensembl source."""
-        # db = gffutils.create_db(str(self._data_src),
-        #                         dbfn=":memory:",
-        #                         force=True,
-        #                         merge_strategy="create_unique",
-        #                         keep_order=True)
-
-        # TODO: Remove after done testing
-        db = gffutils.FeatureDB(f"{PROJECT_ROOT}/data/ensembl/"
-                                f"test_ensembl.db", keep_order=True)
+        db = gffutils.create_db(str(self._data_src),
+                                dbfn=":memory:",
+                                force=True,
+                                merge_strategy="create_unique",
+                                keep_order=True)
 
         fields = ['seqid', 'start', 'end', 'strand', 'aliases', 'symbol']
 
@@ -89,60 +86,57 @@ class Ensembl(Base):
                 if f.attributes.get('ID'):
                     f_id = f.attributes.get('ID')[0].split(':')[0]
                     if f_id == 'gene':
-                        feature = self._add_feature(f, fields)
-                        if feature:
-                            if 'aliases' in feature:
-                                self._load_alias(feature, batch)
-                            if 'symbol' in feature:
-                                self._load_symbol(feature, batch)
-                            batch.put_item(Item=feature)
+                        gene = self._add_feature(f, fields)
+                        if gene:
+                            if 'aliases' in gene:
+                                self._load_alias(gene, batch)
+                            if 'symbol' in gene:
+                                self._load_symbol(gene, batch)
+                            batch.put_item(Item=gene)
 
-    def _load_symbol(self, feature, batch):
+    def _load_symbol(self, gene, batch):
         """Load symbol records into database.
 
-        :param dict feature: A transformed feature record
+        :param dict gene: A transformed gene record
         :param BatchWriter batch: Object to write data to DynamoDB
         """
         symbol = {
-            'label_and_type': f"{feature['symbol'].lower()}##symbol",
-            'concept_id': f"{feature['concept_id'].lower()}",
+            'label_and_type': f"{gene['symbol'].lower()}##symbol",
+            'concept_id': f"{gene['concept_id'].lower()}",
             'src_name': SourceName.ENSEMBL.value
         }
         batch.put_item(Item=symbol)
 
-    def _load_alias(self, feature, batch):
+    def _load_alias(self, gene, batch):
         """Load alias records into database.
 
-        :param dict feature: A transformed feature record
+        :param dict gene: A transformed gene record
         :param BatchWriter batch: Object to write data to DynamoDB
         """
-        aliases = {a.casefold(): a for a in feature['aliases']}
-        if len(aliases) > 20:
-            del feature['aliases']
-        else:
-            for alias in aliases:
-                alias = {
-                    'label_and_type': f"{alias}##alias",
-                    'concept_id': f"{feature['concept_id'].lower()}",
-                    'src_name': SourceName.ENSEMBL.value
-                }
-                batch.put_item(Item=alias)
+        aliases = {a.casefold(): a for a in gene['aliases']}
+        for alias in aliases:
+            alias = {
+                'label_and_type': f"{alias}##alias",
+                'concept_id': f"{gene['concept_id'].lower()}",
+                'src_name': SourceName.ENSEMBL.value
+            }
+            batch.put_item(Item=alias)
 
     def _add_feature(self, f, fields):
-        """Create a feature dictionary.
+        """Create a gene dictionary.
 
-        :param gffutils.feature.Feature f: A feature from the data
+        :param gffutils.feature.Feature f: A gene from the data
         :param list fields: A list of possible attribute names
-        :return: A feature dictionary if the ID attribute exists.
+        :return: A gene dictionary if the ID attribute exists.
                  Else return None.
         """
-        feature = dict()
-        feature['seqid'] = f.seqid
-        feature['start'] = f.start
-        feature['stop'] = f.end
-        feature['strand'] = f.strand
-        feature['attributes'] = list()
-        feature['src_name'] = SourceName.ENSEMBL.value
+        gene = dict()
+        gene['seqid'] = f.seqid
+        gene['start'] = f.start
+        gene['stop'] = f.end
+        gene['strand'] = f.strand
+        gene['attributes'] = list()
+        gene['src_name'] = SourceName.ENSEMBL.value
 
         attributes = {
             'Alias': 'aliases',
@@ -163,21 +157,21 @@ class Ensembl(Base):
                             val = f"{NamespacePrefix.ENSEMBL.value}:" \
                                   f"{val.split(':')[1]}"
 
-                feature[attributes[key]] = val
+                gene[attributes[key]] = val
 
-        if 'concept_id' not in feature:
+        if 'concept_id' not in gene:
             return None
 
         # Delete empty fields
         for field in fields:
-            if field in feature:
-                if feature[field] == '.' or not feature[field]:
-                    del feature[field]
+            if field in gene:
+                if gene[field] == '.' or not gene[field]:
+                    del gene[field]
 
-        feature['label_and_type'] = \
-            f"{feature['concept_id'].lower()}##identity"
+        gene['label_and_type'] = \
+            f"{gene['concept_id'].lower()}##identity"
 
-        return feature
+        return gene
 
     def _load_data(self, *args, **kwargs):
         """Load the Ensembl source into normalized database."""
@@ -189,18 +183,18 @@ class Ensembl(Base):
 
     def _add_meta(self, *args, **kwargs):
         """Add Ensembl metadata."""
-        # TODO: Add license info
         self.database.metadata.put_item(
             Item={
                 'src_name': SourceName.ENSEMBL.value,
-                'data_license': 'TODO',  # TODO
-                'data_license_url': 'TODO',  # TODO
+                'data_license': 'custom',
+                'data_license_url': 'https://uswest.ensembl.org/'
+                                    'info/about/legal/index.html',
                 'version': self._version,
                 'data_url': self._data_url,
                 'rdp_url': None,
                 'non_commercial': True,
-                'share_alike': False,  # TODO: Is this correct?
-                'attribution': False,  # TODO: Is this correct?
+                'share_alike': False,
+                'attribution': False,
                 'assembly': self._assembly
             }
         )

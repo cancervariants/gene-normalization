@@ -106,19 +106,20 @@ class NamespacePrefix(Enum):
     COSMIC = "cosmic"
     OMIM = "omim"
     MIRBASE = "mirbase"
-    HOMEODB = "homeo"
+    HOMEODB = "homeodb"
     SNORNABASE = "snornabase"
     ORPHANET = "orphanet"
     PSEUDOGENE = "pseudogene.org"
-    HORDE = "horde"
+    HORDE = "hordedb"
     MEROPS = "merops"
-    IMGT = "imgt"
     IUPHAR = "iuphar"
     KZNF_GENE_CATALOG = "knzfgc"
     MAMIT_TRNADB = "mamittrnadb"
-    CD = "cd"
+    CD = "hcdmdb"
     LNCRNADB = "lncrnadb"
     INTERMEDIATE_FILAMENT = "hifdb"
+    IMGT = "imgt"  # .hla? .ligm? leave as is?
+    IMGT_GENE_DB = "imgt/gene-db"  # redundant w/ above?
 
 
 class Meta(BaseModel):

@@ -1,8 +1,8 @@
 """This module defines ETL methods for the NCBI data source."""
 from .base import Base
-from gene.database import Database
-from gene.schemas import Meta, Gene, SourceName
 from gene import PROJECT_ROOT
+from gene.database import Database
+from gene.schemas import Meta, Gene, SourceName, NamespacePrefix
 import logging
 from pathlib import Path
 import csv
@@ -13,6 +13,9 @@ import shutil
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
+
+# set of valid concept ID prefixes for parsing cross-refs to other sources
+VALID_CID_PREFIXES = {v.value for v in NamespacePrefix.__members__.values()}
 
 
 class NCBI(Base):
@@ -28,8 +31,8 @@ class NCBI(Base):
         :param Database database: gene database for adding new data
         :param str data_url: URL to directory on NCBI website containing gene
             source material
-        :param str info_file_url: URL to gene info file on NCBI website
-        :param str grp_file_url: URL to gene group file on NCBI website
+        :param str info_file_url: default URL to gene info file on NCBI website
+        :param str grp_file_url: default URL to gene group file on NCBI website
         """
         self._database = database
         self._data_url = data_url
@@ -47,7 +50,7 @@ class NCBI(Base):
                 f.write(response.content)
             with gzip.open("/tmp/ncbi_gene_info.gz", "rb") as gz:
                 with open(f"{PROJECT_ROOT}/data/ncbi/"
-                          f"ncbi_{version}.tsv", 'wb') as f_out:
+                          f"ncbi_info_{version}.tsv", 'wb') as f_out:
                     shutil.copyfileobj(gz, f_out)
 
     def _files_downloaded(self, data_dir: Path) -> bool:
@@ -94,29 +97,49 @@ class NCBI(Base):
 
         with self._database.genes.batch_writer() as batch:
             for row in info:
+                is_valid_row = True
                 params = {
                     'concept_id': f"ncbigene:{row[1]}",
                 }
+                # get symbol
                 if row[2] != '-':
-                    # TODO what about symbol from nomenclature authority?
                     params['symbol'] = row[2]
                 else:
-                    raise Exception(f"couldn't read symbol: {row}")
+                    logger.error(f"Couldn't read symbol from row: {row}")
+                # get aliases
                 if row[4] != '-':
                     params['aliases'] = row[4].split('|')
                 else:
                     params['aliases'] = []
+                # get other identifiers
                 if row[5] != '-':
                     xrefs = row[5].split('|')
-                    xrefs = [r[5:] if r.startswith("hgnc:")
-                             else r
-                             for r in xrefs]
-                    params['other_identifiers'] = xrefs
+                    other_ids = []
+                    for ref in xrefs:
+                        if ref.startswith("HGNC:"):
+                            prefix = NamespacePrefix.HGNC.value
+                        elif ref.startswith("MIM:"):
+                            prefix = NamespacePrefix.OMIM.value
+                        elif ref.startswith("IMGT/GENE-DB:"):
+                            prefix = NamespacePrefix.IMGT_GENE_DB.value
+                        else:
+                            prefix = ref.split(':')[0].lower()
+                            if prefix not in VALID_CID_PREFIXES:
+                                logger.error(f"invalid ref prefix {prefix}"
+                                             f" in:\n {row}")
+                                is_valid_row = False
+                                break
+                        other_id = f"{prefix}:{ref.split(':')[-1]}"
+                        other_ids.append(other_id)
+                    params['other_identifiers'] = other_ids
                 else:
                     params['other_identifiers'] = []
+                if row[8] != '-':
+                    params['label'] = row[8]
                 # TODO how to handle chromosome/start/stop? maybe map_location?
                 # maybe pull from gene2refseq file?
-                self._load_data(Gene(**params), batch)
+                if is_valid_row:
+                    self._load_data(Gene(**params), batch)
         info_file.close()
 
     def _load_data(self, gene: Gene, batch):
@@ -139,8 +162,8 @@ class NCBI(Base):
                     'src_name': SourceName.NCBI.value
                 })
 
-        if item['label']:
-            pk = f"{item['label'].lower()}##label"
+        if item['symbol']:
+            pk = f"{item['symbol'].lower()}##symbol"
             batch.put_item(Item={
                 'label_and_type': pk,
                 'concept_id': concept_id_lower,
@@ -155,14 +178,25 @@ class NCBI(Base):
 
     def _add_meta(self):
         """Load metadata"""
-        metadata = Meta(data_license="TBD",
-                        data_license_url="TBD",
+        metadata = Meta(data_license="custom",
+                        data_license_url="https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                         version=self._version,
-                        data_url=self._data_url)
+                        data_url=self._data_url,
+                        rdp_url="https://reusabledata.org/ncbi-gene.html",
+                        non_commercial=True,
+                        share_alike=True,
+                        attribution=True,
+                        assembly=True
+                        )
         self._database.metadata.put_item(Item={
             'src_name': SourceName.NCBI.value,
             'data_license': metadata.data_license,
             'data_license_url': metadata.data_license_url,
             'version': metadata.version,
-            'data_url': metadata.data_url
+            'data_url': metadata.data_url,
+            'rdp_url': metadata.rdp_url,
+            'non_commercial': metadata.non_commercial,
+            'share_alike': metadata.share_alike,
+            'attribution': metadata.attribution,
+            'assembly': metadata.assembly
         })

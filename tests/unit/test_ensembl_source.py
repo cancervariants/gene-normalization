@@ -292,8 +292,9 @@ def test_no_match(ensembl):
 def test_meta_info(ddx11l1, ensembl):
     """Test that the meta field is correct."""
     normalizer_response = ensembl.normalize('chromosome:1')
-    # assert normalizer_response['meta_'].data_license == ''
-    # assert normalizer_response['meta_'].data_license_url == ''
+    assert normalizer_response['meta_'].data_license == 'custom'
+    assert normalizer_response['meta_'].data_license_url ==\
+           'https://uswest.ensembl.org/info/about/legal/index.html'
     assert normalizer_response['meta_'].version == '102'
     assert normalizer_response['meta_'].data_url == \
            'http://ftp.ensembl.org/pub/'
