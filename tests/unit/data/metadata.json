@@ -11,13 +11,23 @@
     "data_license_url": "TODO"
   },
   {
-  "src_name": "HGNC",
-  "version": "20201208",
-  "data_url": "http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/",
-  "non_commercial": true,
-  "share_alike": false,
-  "attribution": false,
-  "data_license": "TODO",
-  "data_license_url": "TODO"
+    "src_name": "HGNC",
+    "version": "20201208",
+    "data_url": "http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/",
+    "non_commercial": true,
+    "share_alike": false,
+    "attribution": false,
+    "data_license": "TODO",
+    "data_license_url": "TODO"
+  },
+  {
+    "src_name": "NCBI",
+    "version": "20201215",
+    "data_url": "https://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+    "non_commercial": false,
+    "share_alike": false,
+    "attribution": false,
+    "data_license": "custom",
+    "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/"
   }
 ]
