@@ -311,7 +311,6 @@ class Normalizer:
         """
         sources = {name.value.lower(): name.value for name in
                    SourceName.__members__.values()}
-        # sources = {'ncbi': 'NCBI', 'hgnc': 'HGNC'}
 
         if not incl and not excl:
             query_sources = set(sources.values())
