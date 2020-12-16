@@ -42,7 +42,7 @@ class HGNC(Base):
         if response.status_code == 200:
             r = requests.get(f"{self._data_url}/json/")
         else:
-            logger.error('Failed to download HGNC data file.')
+            logger.error(f"HGNC data file download failed with status code: {r.status_code}")
             raise DownloadException("HGNC data file download failed.")
         if r.status_code == 200:
             soup = BeautifulSoup(r.text, 'html.parser')
