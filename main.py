@@ -19,7 +19,7 @@ def custom_openapi():
         title="The VICC Gene Normalizer",
         version="0.1.0",
         openapi_version="3.0.3",
-        description="Normalize gene terms.",  # TODO
+        description="Normalize gene terms.",
         routes=app.routes
     )
     # openapi_schema['info']['license'] = {  # TODO
