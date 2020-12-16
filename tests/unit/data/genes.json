@@ -3,10 +3,12 @@
     "label_and_type": "ensembl:ensg00000223972##identity",
     "concept_id": "ensembl:ENSG00000223972",
     "symbol": "DDX11L1",
+    "label": "DEAD/H-box helicase 11 like 1 (pseudogene)",
     "seqid": "1",
     "start": "11869",
     "stop": "14409",
     "strand": "+",
+    "other_identifiers": ["hgnc:37102"],
     "src_name": "Ensembl"
   },
   {
@@ -18,10 +20,12 @@
     "label_and_type": "ensembl:ensg00000141510##identity",
     "concept_id": "ensembl:ENSG00000141510",
     "symbol": "TP53",
+    "label": "tumor protein p53",
     "seqid": "17",
     "start": "7661779",
     "stop": "7687538",
     "strand": "-",
+    "other_identifiers": ["hgnc:11998"],
     "src_name": "Ensembl"
   },
   {

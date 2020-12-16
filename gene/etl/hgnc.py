@@ -38,19 +38,22 @@ class HGNC(Base):
         """Download HGNC JSON data file."""
         logger.info('Downloading HGNC...')
         response = requests.get(self._data_file_url, stream=True)
-        r = requests.get(f"{self._data_url}/json/")
-        soup = BeautifulSoup(r.text, 'html.parser')
-        v_date = soup.find(
-            'a', text='non_alt_loci_set.json').next_sibling.split()[0]
-        self._version = \
-            datetime.datetime.strptime(v_date, '%d-%b-%Y').strftime('%Y%m%d')
+        if response.status_code == 200:
+            r = requests.get(f"{self._data_url}/json/")
+        if r.status_code == 200:
+            soup = BeautifulSoup(r.text, 'html.parser')
+            v_date = soup.find(
+                'a', text='non_alt_loci_set.json').next_sibling.split()[0]
+            self._version =\
+                datetime.datetime.strptime(v_date,
+                                           '%d-%b-%Y').strftime('%Y%m%d')
 
-        with open(f"{PROJECT_ROOT}/data/hgnc/"
-                  f"hgnc_{self._version}.json", 'w+') as f:
-            f.write(json.dumps(response.json()))
-            f.close()
+            with open(f"{PROJECT_ROOT}/data/hgnc/"
+                      f"hgnc_{self._version}.json", 'w+') as f:
+                f.write(json.dumps(response.json()))
+                f.close()
 
-        logger.info('Finished downloading HGNC.')
+            logger.info('Finished downloading HGNC.')
 
     def _extract_data(self, *args, **kwargs):
         """Extract data from the HGNC source."""
