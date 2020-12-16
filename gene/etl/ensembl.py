@@ -51,7 +51,7 @@ class Ensembl(Base):
             self._version = fn.split('.')[2]
             self._assembly = fn.split('.')[1]
         else:
-            logger.error('Failed to download Ensembl.')
+            logger.error(f"Ensembl download failed with status code: {response.status_code}")
             raise DownloadException("Ensembl download failed.")
 
     def _download_data(self, *args, **kwargs):
