@@ -67,8 +67,8 @@ class HGNC(Base):
         if 'data_path' in kwargs:
             self._data_src = kwargs['data_path']
         else:
-            wd_dir = PROJECT_ROOT / 'data' / 'hgnc'
-            wd_dir.mkdir(exist_ok=True, parents=True)  # TODO needed?
+            hgnc_dir = PROJECT_ROOT / 'data' / 'hgnc'
+            hgnc_dir.mkdir(exist_ok=True, parents=True)  # TODO needed?
             try:
                 self._data_src = sorted(list(wd_dir.iterdir()))[-1]
             except IndexError:
