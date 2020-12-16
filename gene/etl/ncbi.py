@@ -73,7 +73,7 @@ class NCBI(Base):
             remove(ncbi_dir / 'ncbi_gene_history.gz')
             logger.info('Downloaded Entrez gene history.')
         else:
-            logger.error('Failed to download Entrez gene history.')
+            logger.error(f"Entrez gene history download failed with status code: {response.status_code}")
             raise DownloadException("Entrez gene history download failed")
 
     def _files_downloaded(self, data_dir: Path) -> bool:
