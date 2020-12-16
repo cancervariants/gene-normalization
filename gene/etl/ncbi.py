@@ -178,8 +178,6 @@ class NCBI(Base):
                 # add prev symbols
                 if row[1] in prev_symbols.keys():
                     params['previous_symbols'] = prev_symbols[row[1]]
-                # TODO how to handle chromosome/start/stop? maybe map_location?
-                # maybe pull from gene2refseq file?
                 if is_valid_row:
                     self._load_data(Gene(**params), batch)
         info_file.close()
