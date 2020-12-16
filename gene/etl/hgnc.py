@@ -59,7 +59,7 @@ class HGNC(Base):
 
             logger.info('Finished downloading HGNC.')
         else:
-            logger.error('Failed to download HGNC.')
+            logger.error("HGNC download failed with status code: {r.status_code}")
             raise DownloadException("HGNC download failed.")
 
     def _extract_data(self, *args, **kwargs):
