@@ -15,7 +15,7 @@ PREFIX_LOOKUP = {v.value: SourceName[k].value
                  if k in SourceName.__members__.keys()}
 
 # use to generate namespace prefix from source ID value
-# e.g. {'q': 'wikidata'}
+# e.g. {'ENSG': 'ensembl'}
 NAMESPACE_LOOKUP = {v.value.lower(): NamespacePrefix[k].value
                     for k, v in SourceIDAfterNamespace.__members__.items()
                     if v.value != ''}
