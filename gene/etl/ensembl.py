@@ -1,4 +1,5 @@
 """This module defines the Ensembl ETL methods."""
+from . import DownloadException
 from .base import Base
 from gene import PROJECT_ROOT
 from gene.schemas import SourceName, NamespacePrefix
@@ -49,6 +50,9 @@ class Ensembl(Base):
             fn = self._data_file_url.split('/')[-1]
             self._version = fn.split('.')[2]
             self._assembly = fn.split('.')[1]
+        else:
+            logger.error('Failed to download Ensembl.')
+            raise DownloadException("Ensembl download failed.")
 
     def _download_data(self, *args, **kwargs):
         """Download Ensembl GFF3 data file."""

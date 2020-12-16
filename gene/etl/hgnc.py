@@ -1,4 +1,5 @@
 """This module defines the HGNC ETL methods."""
+from . import DownloadException
 from .base import Base
 from gene import PROJECT_ROOT
 from gene.schemas import SourceName, SymbolStatus, NamespacePrefix
@@ -40,6 +41,9 @@ class HGNC(Base):
         response = requests.get(self._data_file_url, stream=True)
         if response.status_code == 200:
             r = requests.get(f"{self._data_url}/json/")
+        else:
+            logger.error('Failed to download HGNC data file.')
+            raise DownloadException("HGNC data file download failed.")
         if r.status_code == 200:
             soup = BeautifulSoup(r.text, 'html.parser')
             v_date = soup.find(
@@ -54,6 +58,9 @@ class HGNC(Base):
                 f.close()
 
             logger.info('Finished downloading HGNC.')
+        else:
+            logger.error('Failed to download HGNC.')
+            raise DownloadException("HGNC download failed.")
 
     def _extract_data(self, *args, **kwargs):
         """Extract data from the HGNC source."""
