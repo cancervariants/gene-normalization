@@ -100,6 +100,7 @@ class NCBI(Base):
         - For now, data files should all be from the same source data version.
         """
         local_data_dir = PROJECT_ROOT / 'data' / 'ncbi'
+        local_data_dir.mkdir(exist_ok=True, parents=True)
         if not self._files_downloaded(local_data_dir):
             self._download_data(local_data_dir)
         local_files = [f for f in local_data_dir.iterdir()
