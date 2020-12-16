@@ -40,14 +40,15 @@ class Ensembl(Base):
     def _get_data_file_url_version(self):
         """Get the most recent version of the gff3 data file."""
         response = requests.get(self._gff3_url)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        links = [self._gff3_url + '/' + node.get('href')
-                 for node in soup.find_all('a')
-                 if node.get('href').endswith('gz')]
-        self._data_file_url = links[-1]
-        fn = self._data_file_url.split('/')[-1]
-        self._version = fn.split('.')[2]
-        self._assembly = fn.split('.')[1]
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            links = [self._gff3_url + '/' + node.get('href')
+                     for node in soup.find_all('a')
+                     if node.get('href').endswith('gz')]
+            self._data_file_url = links[-1]
+            fn = self._data_file_url.split('/')[-1]
+            self._version = fn.split('.')[2]
+            self._assembly = fn.split('.')[1]
 
     def _download_data(self, *args, **kwargs):
         """Download Ensembl GFF3 data file."""
