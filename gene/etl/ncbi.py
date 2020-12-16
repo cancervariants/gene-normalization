@@ -1,4 +1,5 @@
 """This module defines ETL methods for the NCBI data source."""
+from . import DownloadException
 from .base import Base
 from gene import PROJECT_ROOT
 from gene.database import Database
@@ -57,7 +58,10 @@ class NCBI(Base):
                           'wb') as f_out:
                     shutil.copyfileobj(gz, f_out)
             remove(ncbi_dir / 'ncbi_gene_info.gz')
-            response = requests.get(self._history_file_url, stream=True)
+        else:
+            logger.error('Failed to download Entrez gene info.')
+            raise DownloadException("Entrez gene info download failed")
+        response = requests.get(self._history_file_url, stream=True)
         if response.status_code == 200:
             version = datetime.today().strftime('%Y%m%d')
             with open(ncbi_dir / 'ncbi_gene_history.gz', 'wb') as f:
@@ -68,6 +72,9 @@ class NCBI(Base):
                     shutil.copyfileobj(gz, f_out)
             remove(ncbi_dir / 'ncbi_gene_history.gz')
             logger.info('Downloaded Entrez gene history.')
+        else:
+            logger.error('Failed to download Entrez gene history.')
+            raise DownloadException("Entrez gene history download failed")
 
     def _files_downloaded(self, data_dir: Path) -> bool:
         """Check whether needed source files exist.
