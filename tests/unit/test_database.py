@@ -12,7 +12,8 @@ def db():
     class DB:
         def __init__(self):
             self.db = Database(db_url=os.environ['GENE_NORM_DB_URL'])
-            self.load_test_data()
+            if os.environ.get('TEST') is not None:
+                self.load_test_data()
 
         def load_test_data(self):
             with open(f'{PROJECT_ROOT}/tests/unit/'
