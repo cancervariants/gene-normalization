@@ -89,8 +89,7 @@ class Ensembl(Base):
                     if f_id == 'gene':
                         gene = self._add_feature(f, fields)
                         if gene:
-                            if 'symbol' in gene:
-                                self._load_symbol(gene, batch)
+                            self._load_symbol(gene, batch)
                             batch.put_item(Item=gene)
 
     def _load_symbol(self, gene, batch):
