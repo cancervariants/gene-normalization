@@ -148,8 +148,6 @@ class Ensembl(Base):
 
                 gene[attributes[key]] = val
 
-        if 'concept_id' not in gene:
-            return None
 
         # Delete empty fields
         for field in fields:

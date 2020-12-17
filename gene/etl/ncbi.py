@@ -122,6 +122,7 @@ class NCBI(Base):
         next(history)
         prev_symbols = {}
         for row in history:
+            # Only interested in rows that have homo sapiens tax id 
             if row[0] == '9606' and row[1] != '-':
                 gene_id = row[1]
                 if gene_id in prev_symbols.keys():
@@ -139,11 +140,10 @@ class NCBI(Base):
             for row in info:
                 is_valid_row = True
                 params = {
-                    'concept_id': f"ncbigene:{row[1]}",
+                    'concept_id': f"{NamespacePrefix.NCBI.value}:{row[1]}",
                 }
                 # get symbol
-                if row[2] != '-':
-                    params['symbol'] = row[2]
+                params['symbol'] = row[2]
                 else:
                     logger.error(f"Couldn't read symbol from row: {row}")
                 # get aliases
@@ -193,15 +193,12 @@ class NCBI(Base):
         item = gene.dict()
         concept_id_lower = item['concept_id'].lower()
 
-        if item['symbol']:
-            pk = f"{item['symbol'].lower()}##symbol"
-            batch.put_item(Item={
-                'label_and_type': pk,
-                'concept_id': concept_id_lower,
-                'src_name': SourceName.NCBI.value
-            })
-        else:
-            del item['symbol']
+        pk = f"{item['symbol'].lower()}##symbol"
+        batch.put_item(Item={
+            'label_and_type': pk,
+            'concept_id': concept_id_lower,
+            'src_name': SourceName.NCBI.value
+        })
 
         if 'aliases' in item:
             item['aliases'] = list(set(item['aliases']))
@@ -214,7 +211,7 @@ class NCBI(Base):
                     'src_name': SourceName.NCBI.value
                 })
 
-        if item['previous_symbols']:
+        if 'previous_symbols' in item and item['previous_symbols']:
             item['previous_symbols'] = list(set(item['previous_symbols']))
             item_prev_symbols = {s.lower() for s in item['previous_symbols']}
             for symbol in item_prev_symbols:

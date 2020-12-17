@@ -19,7 +19,7 @@ class Gene(BaseModel):
     label: Optional[str]
     concept_id: str
     symbol: str
-    previous_symbols: Optional[list]
+    previous_symbols: List[str]
     aliases: List[str]
     other_identifiers: List[str]
     symbol_status: Optional[SymbolStatus]
