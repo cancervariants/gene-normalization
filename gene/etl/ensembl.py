@@ -1,7 +1,6 @@
 """This module defines the Ensembl ETL methods."""
-from . import DownloadException
 from .base import Base
-from gene import PROJECT_ROOT
+from gene import PROJECT_ROOT, DownloadException
 from gene.schemas import SourceName, NamespacePrefix
 import logging
 from gene.database import Database
@@ -58,8 +57,9 @@ class Ensembl(Base):
     def _download_data(self, *args, **kwargs):
         """Download Ensembl GFF3 data file."""
         logger.info('Downloading Ensembl...')
-        out_dir = PROJECT_ROOT / 'data' / 'ensembl'
-        file_name = out_dir / f'ensembl_{self._version}.gff3'
+        ens_dir = PROJECT_ROOT / 'data' / 'ensembl'
+        ens_dir.mkdir(exist_ok=True, parents=True)
+        file_name = ens_dir / f'ensembl_{self._version}.gff3'
         response = urlopen(self._data_file_url)
         with open(file_name, 'wb') as f:
             f.write(gzip.decompress(response.read()))
@@ -70,7 +70,6 @@ class Ensembl(Base):
             self._data_src = kwargs['data_path']
         else:
             ensembl_dir = PROJECT_ROOT / 'data' / 'ensembl'
-            ensembl_dir.mkdir(exist_ok=True, parents=True)
             self._data_src = sorted(list(ensembl_dir.iterdir()))[-1]
 
     def _transform_data(self, *args, **kwargs):

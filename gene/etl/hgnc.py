@@ -1,7 +1,6 @@
 """This module defines the HGNC ETL methods."""
-from . import DownloadException
 from .base import Base
-from gene import PROJECT_ROOT
+from gene import PROJECT_ROOT, DownloadException
 from gene.schemas import SourceName, SymbolStatus, NamespacePrefix
 from gene.database import Database
 import logging
@@ -53,6 +52,9 @@ class HGNC(Base):
                 datetime.datetime.strptime(v_date,
                                            '%d-%b-%Y').strftime('%Y%m%d')
 
+            data_dir = PROJECT_ROOT / 'data' / 'hgnc'
+            data_dir.mkdir(exist_ok=True, parents=True)
+
             with open(f"{PROJECT_ROOT}/data/hgnc/"
                       f"hgnc_{self._version}.json", 'w+') as f:
                 f.write(json.dumps(response.json()))
@@ -70,7 +72,6 @@ class HGNC(Base):
             self._data_src = kwargs['data_path']
         else:
             hgnc_dir = PROJECT_ROOT / 'data' / 'hgnc'
-            hgnc_dir.mkdir(exist_ok=True, parents=True)
             self._data_src = sorted(list(hgnc_dir.iterdir()))[-1]
 
     def _transform_data(self, *args, **kwargs):
