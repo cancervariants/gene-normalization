@@ -1,7 +1,6 @@
 """This module defines ETL methods for the NCBI data source."""
-from gene import DownloadException
 from .base import Base
-from gene import PROJECT_ROOT
+from gene import PROJECT_ROOT, DownloadException
 from gene.database import Database
 from gene.schemas import Meta, Gene, SourceName, NamespacePrefix
 import logging
