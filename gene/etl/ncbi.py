@@ -46,7 +46,7 @@ class NCBI(Base):
     def _download_data(self, data_dir):
         ncbi_dir = PROJECT_ROOT / 'data' / 'ncbi'
 
-        logger.info('Downloaded Entrez gene info.')
+        logger.info('Downloading Entrez gene info.')
         response = requests.get(self._info_file_url, stream=True)
         if response.status_code == 200:
             version = datetime.today().strftime('%Y%m%d')
