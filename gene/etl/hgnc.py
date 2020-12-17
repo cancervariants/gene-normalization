@@ -75,7 +75,6 @@ class HGNC(Base):
                 self._data_src = sorted(list(hgnc_dir.iterdir()))[-1]
             except IndexError:
                 raise FileNotFoundError  # TODO HGNC update function here
-        pass
 
     def _transform_data(self, *args, **kwargs):
         """Transform the HGNC source."""
