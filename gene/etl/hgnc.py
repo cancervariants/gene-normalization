@@ -70,11 +70,8 @@ class HGNC(Base):
             self._data_src = kwargs['data_path']
         else:
             hgnc_dir = PROJECT_ROOT / 'data' / 'hgnc'
-            hgnc_dir.mkdir(exist_ok=True, parents=True)  # TODO needed?
-            try:
-                self._data_src = sorted(list(hgnc_dir.iterdir()))[-1]
-            except IndexError:
-                raise FileNotFoundError  # TODO HGNC update function here
+            hgnc_dir.mkdir(exist_ok=True, parents=True)
+            self._data_src = sorted(list(hgnc_dir.iterdir()))[-1]
 
     def _transform_data(self, *args, **kwargs):
         """Transform the HGNC source."""

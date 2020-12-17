@@ -71,11 +71,7 @@ class Ensembl(Base):
         else:
             ensembl_dir = PROJECT_ROOT / 'data' / 'ensembl'
             ensembl_dir.mkdir(exist_ok=True, parents=True)
-            try:
-                self._data_src = sorted(list(ensembl_dir.iterdir()))[-1]
-            except IndexError:
-                raise FileNotFoundError  # TODO Ensembl update function here
-        pass
+            self._data_src = sorted(list(ensembl_dir.iterdir()))[-1]
 
     def _transform_data(self, *args, **kwargs):
         """Transform the Ensembl source."""
