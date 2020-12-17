@@ -22,6 +22,7 @@ class Gene(BaseModel):
     previous_symbols: Optional[list]
     aliases: List[str]
     other_identifiers: List[str]
+    xrefs: List[str]
     symbol_status: Optional[SymbolStatus]
     seqid: Optional[str]
     start: Optional[str]
@@ -98,7 +99,7 @@ class NamespacePrefix(Enum):
 
     HGNC = "hgnc"
     ENSEMBL = "ensembl"
-    NCBI = "ncbi"
+    NCBI = "ncbigene"
     ENTREZ = "ncbigene"
     VEGA = "vega"
     UCSC = "ucsc"
@@ -117,11 +118,11 @@ class NamespacePrefix(Enum):
     HORDE = "hordedb"
     MEROPS = "merops"
     IUPHAR = "iuphar"
-    KZNF_GENE_CATALOG = "knzfgc"
-    MAMIT_TRNADB = "mamittrnadb"
+    KZNF = "knzfgc"
+    MAMIT = "mamittrnadb"
     CD = "hcdmdb"
     LNCRNADB = "lncrnadb"
-    INTERMEDIATE_FILAMENT = "hifdb"
+    INTERMEDIATE = "hifdb"
     IMGT = "imgt"  # .hla? .ligm? leave as is?
     IMGT_GENE_DB = "imgt/gene-db"  # redundant w/ above?
 

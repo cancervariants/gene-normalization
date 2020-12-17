@@ -35,15 +35,17 @@ def a1bg_as1():
         ],
         'aliases': ['FLJ23569'],
         'symbol_status': 'approved',
-        'other_identifiers': [
+        'xrefs': [
             'vega:OTTHUMG00000183508',
-            'ensembl:ENSG00000268895',
             'ucsc:uc002qse.3',
-            'ncbigene:503538',
             'refseq:NR_015380',
             'ena.embl:BC040926',
             'refseq:NR_015380',
             'ena.embl:BC040926'
+        ],
+        'other_identifiers': [
+            'ensembl:ENSG00000268895',
+            'ncbigene:503538'
         ]
     }
     return Gene(**params)
@@ -63,12 +65,10 @@ def tp53():
             'LFS1'
         ],
         'symbol_status': 'approved',
-        'other_identifiers': [
+        'xrefs': [
             'vega:OTTHUMG00000162125',
             'refseq:NM_000546',
             'cosmic:TP53',
-            'ensembl:ENSG00000141510',
-            'ncbigene:7157',
             'omim:191170',
             'ucsc:uc060aur.1',
             'uniprot:P04637',
@@ -89,6 +89,10 @@ def tp53():
             'pubmed:6396087',
             'pubmed:3456488',
             'pubmed:2047879'
+        ],
+        'other_identifiers': [
+            'ensembl:ENSG00000141510',
+            'ncbigene:7157'
         ]
     }
     return Gene(**params)
@@ -111,9 +115,12 @@ def a3galt2():
         ],
         'symbol_status': 'approved',
         'other_identifiers': [
-            'vega:OTTHUMG00000004125',
             'ensembl:ENSG00000184389',
-            'ncbigene:127550',
+            'ncbigene:127550'
+        ],
+        'xrefs': [
+            'vega:OTTHUMG00000004125',
+            'vega:OTTHUMG00000004125',
             'ucsc:uc031plq.1',
             'uniprot:U3KPV4',
             'ccds:CCDS60080',
@@ -141,6 +148,7 @@ def test_concept_id_a1bg_as1(a1bg_as1, hgnc):
     assert normalized_drug.symbol_status == a1bg_as1.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a1bg_as1.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a1bg_as1.xrefs)
     assert normalized_drug.symbol == a1bg_as1.symbol
     assert normalized_drug.location == a1bg_as1.location
 
@@ -156,6 +164,7 @@ def test_concept_id_a1bg_as1(a1bg_as1, hgnc):
     assert normalized_drug.symbol_status == a1bg_as1.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a1bg_as1.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a1bg_as1.xrefs)
     assert normalized_drug.symbol == a1bg_as1.symbol
     assert normalized_drug.location == a1bg_as1.location
 
@@ -171,6 +180,7 @@ def test_concept_id_a1bg_as1(a1bg_as1, hgnc):
     assert normalized_drug.symbol_status == a1bg_as1.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a1bg_as1.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a1bg_as1.xrefs)
     assert normalized_drug.symbol == a1bg_as1.symbol
     assert normalized_drug.location == a1bg_as1.location
 
@@ -191,6 +201,7 @@ def test_a1bg_as1_symbol(a1bg_as1, hgnc):
     assert normalized_drug.symbol_status == a1bg_as1.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a1bg_as1.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a1bg_as1.xrefs)
     assert normalized_drug.symbol == a1bg_as1.symbol
     assert normalized_drug.location == a1bg_as1.location
 
@@ -206,6 +217,7 @@ def test_a1bg_as1_symbol(a1bg_as1, hgnc):
     assert normalized_drug.symbol_status == a1bg_as1.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a1bg_as1.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a1bg_as1.xrefs)
     assert normalized_drug.symbol == a1bg_as1.symbol
     assert normalized_drug.location == a1bg_as1.location
 
@@ -226,6 +238,7 @@ def test_a1bg_as1_prev_symbol(a1bg_as1, hgnc):
     assert normalized_drug.symbol_status == a1bg_as1.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a1bg_as1.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a1bg_as1.xrefs)
     assert normalized_drug.symbol == a1bg_as1.symbol
     assert normalized_drug.location == a1bg_as1.location
 
@@ -241,6 +254,7 @@ def test_a1bg_as1_prev_symbol(a1bg_as1, hgnc):
     assert normalized_drug.symbol_status == a1bg_as1.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a1bg_as1.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a1bg_as1.xrefs)
     assert normalized_drug.symbol == a1bg_as1.symbol
     assert normalized_drug.location == a1bg_as1.location
 
@@ -256,6 +270,7 @@ def test_a1bg_as1_prev_symbol(a1bg_as1, hgnc):
     assert normalized_drug.symbol_status == a1bg_as1.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a1bg_as1.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a1bg_as1.xrefs)
     assert normalized_drug.symbol == a1bg_as1.symbol
     assert normalized_drug.location == a1bg_as1.location
 
@@ -276,6 +291,7 @@ def test_a1bg_as1_alias(a1bg_as1, hgnc):
     assert normalized_drug.symbol_status == a1bg_as1.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a1bg_as1.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a1bg_as1.xrefs)
     assert normalized_drug.symbol == a1bg_as1.symbol
     assert normalized_drug.location == a1bg_as1.location
 
@@ -290,6 +306,7 @@ def test_a1bg_as1_alias(a1bg_as1, hgnc):
     assert normalized_drug.symbol_status == a1bg_as1.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a1bg_as1.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a1bg_as1.xrefs)
     assert normalized_drug.symbol == a1bg_as1.symbol
     assert normalized_drug.location == a1bg_as1.location
 
@@ -310,6 +327,7 @@ def test_concept_id_a3galt2(a3galt2, hgnc):
     assert normalized_drug.symbol_status == a3galt2.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a3galt2.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a3galt2.xrefs)
     assert normalized_drug.symbol == a3galt2.symbol
     assert normalized_drug.location == a3galt2.location
 
@@ -325,6 +343,7 @@ def test_concept_id_a3galt2(a3galt2, hgnc):
     assert normalized_drug.symbol_status == a3galt2.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a3galt2.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a3galt2.xrefs)
     assert normalized_drug.symbol == a3galt2.symbol
     assert normalized_drug.location == a3galt2.location
 
@@ -340,6 +359,7 @@ def test_concept_id_a3galt2(a3galt2, hgnc):
     assert normalized_drug.symbol_status == a3galt2.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a3galt2.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a3galt2.xrefs)
     assert normalized_drug.symbol == a3galt2.symbol
     assert normalized_drug.location == a3galt2.location
 
@@ -360,6 +380,7 @@ def test_a3galt2_symbol(a3galt2, hgnc):
     assert normalized_drug.symbol_status == a3galt2.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a3galt2.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a3galt2.xrefs)
     assert normalized_drug.symbol == a3galt2.symbol
     assert normalized_drug.location == a3galt2.location
 
@@ -375,6 +396,7 @@ def test_a3galt2_symbol(a3galt2, hgnc):
     assert normalized_drug.symbol_status == a3galt2.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a3galt2.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a3galt2.xrefs)
     assert normalized_drug.symbol == a3galt2.symbol
     assert normalized_drug.location == a3galt2.location
 
@@ -395,6 +417,7 @@ def test_a3galt2_prev_symbol(a3galt2, hgnc):
     assert normalized_drug.symbol_status == a3galt2.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a3galt2.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a3galt2.xrefs)
     assert normalized_drug.symbol == a3galt2.symbol
     assert normalized_drug.location == a3galt2.location
 
@@ -410,6 +433,7 @@ def test_a3galt2_prev_symbol(a3galt2, hgnc):
     assert normalized_drug.symbol_status == a3galt2.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a3galt2.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a3galt2.xrefs)
     assert normalized_drug.symbol == a3galt2.symbol
     assert normalized_drug.location == a3galt2.location
 
@@ -430,6 +454,7 @@ def test_a3galt2_alias(a3galt2, hgnc):
     assert normalized_drug.symbol_status == a3galt2.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a3galt2.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a3galt2.xrefs)
     assert normalized_drug.symbol == a3galt2.symbol
     assert normalized_drug.location == a3galt2.location
 
@@ -444,6 +469,7 @@ def test_a3galt2_alias(a3galt2, hgnc):
     assert normalized_drug.symbol_status == a3galt2.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(a3galt2.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(a3galt2.xrefs)
     assert normalized_drug.symbol == a3galt2.symbol
     assert normalized_drug.location == a3galt2.location
 
@@ -464,6 +490,7 @@ def test_concept_id_tp53(tp53, hgnc):
     assert normalized_drug.symbol_status == tp53.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(tp53.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(tp53.xrefs)
     assert normalized_drug.symbol == tp53.symbol
     assert normalized_drug.location == tp53.location
 
@@ -479,6 +506,7 @@ def test_concept_id_tp53(tp53, hgnc):
     assert normalized_drug.symbol_status == tp53.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(tp53.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(tp53.xrefs)
     assert normalized_drug.symbol == tp53.symbol
     assert normalized_drug.location == tp53.location
 
@@ -494,6 +522,7 @@ def test_concept_id_tp53(tp53, hgnc):
     assert normalized_drug.symbol_status == tp53.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(tp53.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(tp53.xrefs)
     assert normalized_drug.symbol == tp53.symbol
     assert normalized_drug.location == tp53.location
 
@@ -514,6 +543,7 @@ def test_tp53_symbol(tp53, hgnc):
     assert normalized_drug.symbol_status == tp53.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(tp53.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(tp53.xrefs)
     assert normalized_drug.symbol == tp53.symbol
     assert normalized_drug.location == tp53.location
 
@@ -529,6 +559,7 @@ def test_tp53_symbol(tp53, hgnc):
     assert normalized_drug.symbol_status == tp53.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(tp53.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(tp53.xrefs)
     assert normalized_drug.symbol == tp53.symbol
     assert normalized_drug.location == tp53.location
 
@@ -549,6 +580,7 @@ def test_tp53_alias(tp53, hgnc):
     assert normalized_drug.symbol_status == tp53.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(tp53.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(tp53.xrefs)
     assert normalized_drug.symbol == tp53.symbol
     assert normalized_drug.location == tp53.location
 
@@ -563,6 +595,7 @@ def test_tp53_alias(tp53, hgnc):
     assert normalized_drug.symbol_status == tp53.symbol_status
     assert set(normalized_drug.previous_symbols) == \
            set(tp53.previous_symbols)
+    assert set(normalized_drug.xrefs) == set(tp53.xrefs)
     assert normalized_drug.symbol == tp53.symbol
     assert normalized_drug.location == tp53.location
 

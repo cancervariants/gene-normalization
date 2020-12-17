@@ -32,6 +32,7 @@ class HGNC(Base):
         self._data_url = data_url
         self._data_file_url = data_url + data_file_ext
         self._version = None
+        self._normalizer_prefixes = self._get_normalizer_prefixes()
         self._load_data()
 
     def _download_data(self, *args, **kwargs):
@@ -177,6 +178,7 @@ class HGNC(Base):
         :param dict gene: A transformed gene record
         """
         other_ids = list()
+        xrefs = list()
         sources = [
             'entrez_id', 'ensembl_gene_id', 'vega_id', 'ucsc_id', 'ccds_id',
             'uniprot_ids', 'pubmed_id', 'cosmic', 'omim_id', 'mirbase',
@@ -188,32 +190,34 @@ class HGNC(Base):
 
         for src in sources:
             if src in r:
-                if '.' in src:
+                if '-' in src:
+                    key = src.split('-')[0]
+                elif '.' in src:
                     key = src.split('.')[0]
                 elif '_' in src:
                     key = src.split("_")[0]
                 else:
                     key = src
-                if type(r[src]) == list:
-                    for other_id in r[src]:
-                        other_ids.append(
-                            f"{NamespacePrefix[key.upper()].value}:{other_id}")
+                if NamespacePrefix[key.upper()]\
+                        .value in self._normalizer_prefixes:
+                    self._load_other_id_xref(key, src, r, other_ids)
                 else:
-                    if src == 'kznf_gene_catalog':
-                        other_ids.append(f"{NamespacePrefix.KZNF_GENE_CATALOG.value}"  # noqa: E501
-                                         f":{r[src]}")
-                    elif src == 'intermediate_filament_db':
-                        other_ids.append(f"{NamespacePrefix.INTERMEDIATE_FILAMENT.value}"  # noqa: E501
-                                         f":{r[src]}")
-                    elif src == 'mamit-trnadb':
-                        other_ids.append(f"{NamespacePrefix.MAMIT_TRNADB.value}"  # noqa: E501
-                                         f":{r[src]}")
-                    else:
-                        other_ids.append(f"{NamespacePrefix[key.upper()].value}"  # noqa: E501
-                                         f":{r[src]}")
+                    self._load_other_id_xref(key, src, r, xrefs)
 
         if other_ids:
             gene['other_identifiers'] = other_ids
+        if xrefs:
+            gene['xrefs'] = xrefs
+
+    def _load_other_id_xref(self, key, src, r, src_type):
+        if type(r[src]) == list:
+            for other_id in r[src]:
+                src_type.append(
+                    f"{NamespacePrefix[key.upper()].value}:{other_id}")
+        else:
+            src_type.append(
+                f"{NamespacePrefix[key.upper()].value}"  # noqa: E501
+                f":{r[src]}")
 
     def _load_data(self, *args, **kwargs):
         """Load the HGNC source into normalized database."""
