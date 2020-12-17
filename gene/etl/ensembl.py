@@ -179,7 +179,7 @@ class Ensembl(Base):
                 'version': self._version,
                 'data_url': self._data_url,
                 'rdp_url': None,
-                'non_commercial': True,
+                'non_commercial': False,
                 'share_alike': False,
                 'attribution': False,
                 'assembly': self._assembly
