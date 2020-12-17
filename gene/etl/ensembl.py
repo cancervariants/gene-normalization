@@ -51,7 +51,8 @@ class Ensembl(Base):
             self._version = fn.split('.')[2]
             self._assembly = fn.split('.')[1]
         else:
-            logger.error(f"Ensembl download failed with status code: {response.status_code}")
+            logger.error(f"Ensembl download failed with status code: "
+                         f"{response.status_code}")
             raise DownloadException("Ensembl download failed.")
 
     def _download_data(self, *args, **kwargs):
@@ -71,7 +72,7 @@ class Ensembl(Base):
             ensembl_dir = PROJECT_ROOT / 'data' / 'ensembl'
             ensembl_dir.mkdir(exist_ok=True, parents=True)
             try:
-                self._data_src = sorted(list(wd_dir.iterdir()))[-1]
+                self._data_src = sorted(list(ensembl_dir.iterdir()))[-1]
             except IndexError:
                 raise FileNotFoundError  # TODO Ensembl update function here
         pass

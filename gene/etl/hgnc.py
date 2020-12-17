@@ -42,7 +42,8 @@ class HGNC(Base):
         if response.status_code == 200:
             r = requests.get(f"{self._data_url}/json/")
         else:
-            logger.error(f"HGNC data file download failed with status code: {r.status_code}")
+            logger.error(f"HGNC data file download failed with status code: "
+                         f"{response.status_code}")
             raise DownloadException("HGNC data file download failed.")
         if r.status_code == 200:
             soup = BeautifulSoup(r.text, 'html.parser')
@@ -59,7 +60,8 @@ class HGNC(Base):
 
             logger.info('Finished downloading HGNC.')
         else:
-            logger.error("HGNC download failed with status code: {r.status_code}")
+            logger.error(f"HGNC download failed with status code: "
+                         f"{r.status_code}")
             raise DownloadException("HGNC download failed.")
 
     def _extract_data(self, *args, **kwargs):
@@ -70,7 +72,7 @@ class HGNC(Base):
             hgnc_dir = PROJECT_ROOT / 'data' / 'hgnc'
             hgnc_dir.mkdir(exist_ok=True, parents=True)  # TODO needed?
             try:
-                self._data_src = sorted(list(wd_dir.iterdir()))[-1]
+                self._data_src = sorted(list(hgnc_dir.iterdir()))[-1]
             except IndexError:
                 raise FileNotFoundError  # TODO HGNC update function here
         pass

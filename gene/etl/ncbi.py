@@ -59,7 +59,8 @@ class NCBI(Base):
                     shutil.copyfileobj(gz, f_out)
             remove(ncbi_dir / 'ncbi_gene_info.gz')
         else:
-            logger.error(f"Entrez gene info download failed with status code: {response.status_code}")
+            logger.error(f"Entrez gene info download failed with status code: "
+                         f"{response.status_code}")
             raise DownloadException("Entrez gene info download failed")
         response = requests.get(self._history_file_url, stream=True)
         if response.status_code == 200:
@@ -73,7 +74,8 @@ class NCBI(Base):
             remove(ncbi_dir / 'ncbi_gene_history.gz')
             logger.info('Downloaded Entrez gene history.')
         else:
-            logger.error(f"Entrez gene history download failed with status code: {response.status_code}")
+            logger.error(f"Entrez gene history download failed with status "
+                         f"code: {response.status_code}")
             raise DownloadException("Entrez gene history download failed")
 
     def _files_downloaded(self, data_dir: Path) -> bool:
