@@ -1,7 +1,6 @@
 """This module defines the Ensembl ETL methods."""
-from gene import DownloadException
 from .base import Base
-from gene import PROJECT_ROOT
+from gene import PROJECT_ROOT, DownloadException
 from gene.schemas import SourceName, NamespacePrefix
 import logging
 from gene.database import Database
