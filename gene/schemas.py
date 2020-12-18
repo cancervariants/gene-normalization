@@ -31,11 +31,8 @@ class Gene(BaseModel):
     other_identifiers: Optional[List[str]]
     xrefs: Optional[List[str]]
     symbol_status: Optional[SymbolStatus]
-    seqid: Optional[str]
-    start: Optional[str]
-    stop: Optional[str]
     strand: Optional[Strand]
-    location: Optional[str]
+    location: dict
 
     class Config:
         """Configure model"""
