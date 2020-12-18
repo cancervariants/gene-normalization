@@ -548,7 +548,7 @@ def test_meta_info(ddx11l1, ensembl):
            'https://useast.ensembl.org/info/about/legal/disclaimer.html'
     assert normalizer_response['meta_'].version == '102'
     assert normalizer_response['meta_'].data_url == \
-           'http://ftp.ensembl.org/pub/'
+           'ftp://ftp.ensembl.org/pub/'
     assert normalizer_response['meta_'].rdp_url is None
     assert normalizer_response['meta_'].assembly == 'GRCh38'
     assert normalizer_response['meta_'].non_commercial is False

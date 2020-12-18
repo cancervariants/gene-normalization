@@ -240,6 +240,9 @@ class NCBI(Base):
 
     def _add_meta(self):
         """Load metadata"""
+        if self._data_url.startswith("http"):
+            self._data_url = f"ftp://{self._data_url.split('://')[-1]}"
+
         metadata = Meta(
             data_license="custom",
             data_license_url="https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501

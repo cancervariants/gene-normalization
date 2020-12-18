@@ -628,7 +628,7 @@ def test_meta_info(a1bg_as1, hgnc):
            'https://www.genenames.org/about/'
     assert datetime.strptime(normalizer_response['meta_'].version, "%Y%m%d")
     assert normalizer_response['meta_'].data_url == \
-           'http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/'
+           'ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/'
     assert normalizer_response['meta_'].rdp_url is None
     assert normalizer_response['meta_'].assembly is None
     assert normalizer_response['meta_'].non_commercial is False

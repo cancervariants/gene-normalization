@@ -1,7 +1,7 @@
 """This module defines the Ensembl ETL methods."""
 from .base import Base
 from gene import PROJECT_ROOT, DownloadException
-from gene.schemas import SourceName, NamespacePrefix, Strand, Gene
+from gene.schemas import SourceName, NamespacePrefix, Strand, Gene, Meta
 import logging
 from gene.database import Database
 import gffutils
@@ -19,7 +19,6 @@ class Ensembl(Base):
 
     def __init__(self,
                  database: Database,
-                 # TODO: Change to ftp
                  data_url='http://ftp.ensembl.org/pub/',
                  gff3_ext='current_gff3/homo_sapiens'
                  ):
@@ -30,7 +29,7 @@ class Ensembl(Base):
         :param str gff3_ext: Extension to Ensembl's current
                              gff3 files for homo sapiens
         """
-        self.database = database
+        self._database = database
         self._data_url = data_url
         self._gff3_url = data_url + gff3_ext
         self._data_file_url = None
@@ -81,7 +80,7 @@ class Ensembl(Base):
                                 merge_strategy="create_unique",
                                 keep_order=True)
 
-        with self.database.genes.batch_writer() as batch:
+        with self._database.genes.batch_writer() as batch:
             for f in db.all_features():
                 if f.attributes.get('ID'):
                     f_id = f.attributes.get('ID')[0].split(':')[0]
@@ -198,18 +197,33 @@ class Ensembl(Base):
 
     def _add_meta(self, *args, **kwargs):
         """Add Ensembl metadata."""
-        self.database.metadata.put_item(
+        if self._data_url.startswith("http"):
+            self._data_url = f"ftp://{self._data_url.split('://')[-1]}"
+
+        metadata = Meta(
+            data_license='custom',
+            data_license_url='https://useast.ensembl.org/info/about'
+                             '/legal/disclaimer.html',
+            version=self._version,
+            data_url=self._data_url,
+            rdp_url=None,
+            non_commercial=False,
+            share_alike=False,
+            attribution=False,
+            assembly=self._assembly
+        )
+
+        self._database.metadata.put_item(
             Item={
                 'src_name': SourceName.ENSEMBL.value,
-                'data_license': 'custom',
-                'data_license_url': 'https://useast.ensembl.org/info/about'
-                                    '/legal/disclaimer.html',
-                'version': self._version,
-                'data_url': self._data_url,
-                'rdp_url': None,
-                'non_commercial': False,
-                'share_alike': False,
-                'attribution': False,
-                'assembly': self._assembly
+                'data_license': metadata.data_license,
+                'data_license_url': metadata.data_license_url,
+                'version': metadata.version,
+                'data_url': metadata.data_url,
+                'rdp_url': metadata.rdp_url,
+                'non_commercial': metadata.non_commercial,
+                'share_alike': metadata.share_alike,
+                'attribution': metadata.attribution,
+                'assembly': metadata.assembly
             }
         )

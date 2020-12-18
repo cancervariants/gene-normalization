@@ -1,7 +1,7 @@
 """This module defines the HGNC ETL methods."""
 from .base import Base
 from gene import PROJECT_ROOT, DownloadException
-from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene
+from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene, Meta
 from gene.database import Database
 import logging
 import json
@@ -18,7 +18,6 @@ class HGNC(Base):
 
     def __init__(self,
                  database: Database,
-                 # TODO: Change to ftp
                  data_url='http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/',
                  data_file_ext='json/non_alt_loci_set.json',
                  ):
@@ -266,16 +265,30 @@ class HGNC(Base):
 
     def _add_meta(self, *args, **kwargs):
         """Add HGNC metadata to the gene_metadata table."""
+        if self._data_url.startswith("http"):
+            self._data_url = f"ftp://{self._data_url.split('://')[-1]}"
+
+        metadata = Meta(
+            data_license='custom',
+            data_license_url='https://www.genenames.org/about/',
+            version=self._version,
+            data_url=self._data_url,
+            rdp_url=None,
+            non_commercial=False,
+            share_alike=False,
+            attribution=False
+        )
+
         self._database.metadata.put_item(
             Item={
                 'src_name': SourceName.HGNC.value,
-                'data_license': 'custom',
-                'data_license_url': 'https://www.genenames.org/about/',
-                'version': self._version,
-                'data_url': self._data_url,
-                'rdp_url': None,
-                'non_commercial': False,
-                'share_alike': False,
-                'attribution': False,
+                'data_license': metadata.data_license,
+                'data_license_url': metadata.data_license_url,
+                'version': metadata.version,
+                'data_url': metadata.data_url,
+                'rdp_url': metadata.rdp_url,
+                'non_commercial': metadata.non_commercial,
+                'share_alike': metadata.share_alike,
+                'attribution': metadata.attribution,
             }
         )

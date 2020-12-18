@@ -370,7 +370,7 @@ def test_meta(ncbi, pdp1):
         'https://www.ncbi.nlm.nih.gov/home/about/policies/'
     assert datetime.strptime(response['meta_'].version, "%Y%m%d")
     assert response['meta_'].data_url == \
-        'https://ftp.ncbi.nlm.nih.gov/gene/DATA/'
+        'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/'
     assert response['meta_'].rdp_url == \
         'https://reusabledata.org/ncbi-gene.html'
     assert not response['meta_'].non_commercial
