@@ -13,6 +13,13 @@ class SymbolStatus(str, Enum):
     APPROVED = "approved"
 
 
+class Strand(str, Enum):
+    """Define string constraints for strand attribute."""
+
+    FORWARD = '+'
+    REVERSE = '-'
+
+
 class Gene(BaseModel):
     """Gene"""
 
@@ -27,7 +34,7 @@ class Gene(BaseModel):
     seqid: Optional[str]
     start: Optional[str]
     stop: Optional[str]
-    strand: Optional[str]
+    strand: Optional[Strand]
     location: Optional[str]
 
     class Config:
@@ -100,7 +107,7 @@ class NamespacePrefix(Enum):
     HGNC = "hgnc"
     ENSEMBL = "ensembl"
     NCBI = "ncbigene"
-    ENTREZ = "ncbigene"
+    ENTREZ = NCBI
     VEGA = "vega"
     UCSC = "ucsc"
     ENA = "ena.embl"
@@ -125,6 +132,7 @@ class NamespacePrefix(Enum):
     INTERMEDIATE = "hifdb"
     IMGT = "imgt"  # .hla? .ligm? leave as is?
     IMGT_GENE_DB = "imgt/gene-db"  # redundant w/ above?
+    RFAM = "rfam"
 
 
 class Meta(BaseModel):
