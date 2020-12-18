@@ -228,6 +228,7 @@ class NCBI(Base):
             non_commercial=False,
             share_alike=False,
             attribution=False,
+            assembly='GRCh38.p13'
         )
         self._database.metadata.put_item(Item={
             'src_name': SourceName.NCBI.value,
