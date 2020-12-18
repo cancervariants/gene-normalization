@@ -28,9 +28,12 @@ def dpf1():
         'concept_id': 'ncbigene:8193',
         'symbol': 'DPF1',
         'aliases': ['BAF45b', 'NEUD4', 'neuro-d4'],
-        'other_identifiers': [
-            'omim:601670', 'hgnc:20225', 'ensembl:ENSG00000011332'
-        ],
+        'other_identifiers': ['hgnc:20225', 'ensembl:ENSG00000011332'],
+        'previous_symbols': [],
+        'xrefs': ['omim:601670'],
+        'symbol_status': None,
+        'seqid': '19',
+        'location': '19q13.2'
     }
     return Gene(**params)
 
@@ -43,12 +46,12 @@ def pdp1():
         'concept_id': 'ncbigene:54704',
         'symbol': 'PDP1',
         'aliases': ['PDH', 'PDP', 'PDPC', 'PPM2A', 'PPM2C'],
-        'other_identifiers': [
-            'omim:605993', 'hgnc:9279', 'ensembl:ENSG00000164951'
-        ],
-        'previous_symbols': [
-            'LOC157663', 'PPM2C'
-        ]
+        'other_identifiers': ['hgnc:9279', 'ensembl:ENSG00000164951'],
+        'previous_symbols': ['LOC157663', 'PPM2C'],
+        'xrefs': ['omim:605993'],
+        'symbol_status': None,
+        'seqid': '8',
+        'location': '8q22.1'
     }
     return Gene(**params)
 

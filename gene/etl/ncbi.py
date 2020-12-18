@@ -40,6 +40,7 @@ class NCBI(Base):
         self._data_url = data_url
         self._info_file_url = info_file_url
         self._history_file_url = history_file_url
+        self._normalizer_prefixes = self._get_normalizer_prefixes()
         self._extract_data()
         self._transform_data()
 
@@ -143,23 +144,28 @@ class NCBI(Base):
                     params['aliases'] = []
                 # get other identifiers
                 if row[5] != '-':
+                    params['xrefs'] = []
+                    params['other_identifiers'] = []
                     xrefs = row[5].split('|')
-                    other_ids = []
                     for ref in xrefs:
-                        if ref.startswith("HGNC:"):
-                            prefix = NamespacePrefix.HGNC.value
-                        elif ref.startswith("MIM:"):
-                            prefix = NamespacePrefix.OMIM.value
-                        elif ref.startswith("IMGT/GENE-DB:"):
-                            prefix = NamespacePrefix.IMGT_GENE_DB.value
-                        elif ref.startswith("miRBase:"):
-                            prefix = NamespacePrefix.MIRBASE.value
-                        elif ref.startswith("Ensembl:"):
-                            prefix = NamespacePrefix.ENSEMBL.value
-                        other_id = f"{prefix}:{ref.split(':')[-1]}"
-                        other_ids.append(other_id)
-                    params['other_identifiers'] = other_ids
+                        src = ref.split(':')[0].upper()
+                        src_id = ref.split(':')[-1]
+                        if src in NamespacePrefix.__members__ and \
+                                NamespacePrefix[src].value in \
+                                self._normalizer_prefixes:
+                            params['other_identifiers'].append(
+                                f"{NamespacePrefix[src].value}"
+                                f":{src_id}")
+                        else:
+                            if ref.startswith("MIM:"):
+                                prefix = NamespacePrefix.OMIM.value
+                            elif ref.startswith("IMGT/GENE-DB:"):
+                                prefix = NamespacePrefix.IMGT_GENE_DB.value
+                            elif ref.startswith("miRBase:"):
+                                prefix = NamespacePrefix.MIRBASE.value
+                            params['xrefs'].append(f"{prefix}:{src_id}")
                 else:
+                    params['xrefs'] = []
                     params['other_identifiers'] = []
                 # Get seqid
                 if row[6] != '-':
@@ -176,6 +182,8 @@ class NCBI(Base):
                 # add prev symbols
                 if row[1] in prev_symbols.keys():
                     params['previous_symbols'] = prev_symbols[row[1]]
+                else:
+                    params['previous_symbols'] = []
                 self._load_data(Gene(**params), batch)
 
     def _load_data(self, gene: Gene, batch):
@@ -207,7 +215,7 @@ class NCBI(Base):
         else:
             del item['aliases']
 
-        if 'previous_symbols' in item and item['previous_symbols']:
+        if item['previous_symbols']:
             item['previous_symbols'] = list(set(item['previous_symbols']))
             item_prev_symbols = {s.lower() for s in item['previous_symbols']}
             for symbol in item_prev_symbols:
@@ -217,6 +225,14 @@ class NCBI(Base):
                     'concept_id': concept_id_lower,
                     'src_name': SourceName.NCBI.value
                 })
+        else:
+            del item['previous_symbols']
+
+        if not item['other_identifiers']:
+            del item['other_identifiers']
+
+        if not item['xrefs']:
+            del item['xrefs']
 
         item['label_and_type'] = f"{concept_id_lower}##identity"
         item['src_name'] = SourceName.NCBI.value

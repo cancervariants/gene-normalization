@@ -198,11 +198,14 @@ class HGNC(Base):
                     key = src.split("_")[0]
                 else:
                     key = src
-                if NamespacePrefix[key.upper()]\
-                        .value in self._normalizer_prefixes:
-                    self._load_other_id_xref(key, src, r, other_ids)
+                if key.upper() in NamespacePrefix.__members__:
+                    if NamespacePrefix[key.upper()]\
+                            .value in self._normalizer_prefixes:
+                        self._load_other_id_xref(key, src, r, other_ids)
+                    else:
+                        self._load_other_id_xref(key, src, r, xrefs)
                 else:
-                    self._load_other_id_xref(key, src, r, xrefs)
+                    logger.warning(f"{key} not in schemas.py")
 
         if other_ids:
             gene['other_identifiers'] = other_ids
