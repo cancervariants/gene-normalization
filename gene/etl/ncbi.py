@@ -264,4 +264,5 @@ class NCBI(Base):
             'non_commercial': metadata.non_commercial,
             'share_alike': metadata.share_alike,
             'attribution': metadata.attribution,
+            'assembly': metadata.assembly
         })

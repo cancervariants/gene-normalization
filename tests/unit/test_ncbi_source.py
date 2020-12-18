@@ -337,7 +337,7 @@ def test_no_match(ncbi):
            'https://www.ncbi.nlm.nih.gov/home/about/policies/'
     assert datetime.strptime(response['meta_'].version, "%Y%m%d")
     assert response['meta_'].data_url == \
-        'https://ftp.ncbi.nlm.nih.gov/gene/DATA/'
+        'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/'
     assert response['meta_'].rdp_url == \
         'https://reusabledata.org/ncbi-gene.html'
     assert not response['meta_'].non_commercial
@@ -376,4 +376,4 @@ def test_meta(ncbi, pdp1):
     assert not response['meta_'].non_commercial
     assert not response['meta_'].share_alike
     assert not response['meta_'].attribution
-    assert not response['meta_'].assembly
+    assert response['meta_'].assembly == 'GRCh38.p13'

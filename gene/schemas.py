@@ -163,7 +163,7 @@ class Meta(BaseModel):
                 "data_license": "custom",
                 "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                 "version": "20201215",
-                "data_url": "https://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+                "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
                 "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                 "non_commercial": False,
                 "share_alike": False,
@@ -200,7 +200,7 @@ class MatchesKeyed(BaseModel):
                         "data_license": "custom",
                         "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                         "version": "20201215",
-                        "data_url": "https://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+                        "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
                         "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                         "non_commercial": False,
                         "share_alike": False,
@@ -240,7 +240,7 @@ class MatchesListed(BaseModel):
                     "data_license": "custom",
                     "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                     "version": "20201215",
-                    "data_url": "https://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+                    "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
                     "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                     "non_commercial": False,
                     "share_alike": False,

@@ -220,7 +220,7 @@ class Ensembl(Base):
                 'data_license_url': metadata.data_license_url,
                 'version': metadata.version,
                 'data_url': metadata.data_url,
-                'rdp_url': metadata.rdp_url,
+                # 'rdp_url': metadata.rdp_url,  # TODO: Add
                 'non_commercial': metadata.non_commercial,
                 'share_alike': metadata.share_alike,
                 'attribution': metadata.attribution,
