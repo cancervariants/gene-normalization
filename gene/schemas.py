@@ -26,10 +26,10 @@ class Gene(BaseModel):
     label: Optional[str]
     concept_id: str
     symbol: str
-    previous_symbols: List[str]
-    aliases: List[str]
-    other_identifiers: List[str]
-    xrefs: List[str]
+    previous_symbols: Optional[List[str]]
+    aliases: Optional[List[str]]
+    other_identifiers: Optional[List[str]]
+    xrefs: Optional[List[str]]
     symbol_status: Optional[SymbolStatus]
     seqid: Optional[str]
     start: Optional[str]
