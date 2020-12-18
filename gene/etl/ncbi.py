@@ -164,9 +164,10 @@ class NCBI(Base):
                             elif ref.startswith("miRBase:"):
                                 prefix = NamespacePrefix.MIRBASE.value
                             params['xrefs'].append(f"{prefix}:{src_id}")
-                else:
-                    params['xrefs'] = []
-                    params['other_identifiers'] = []
+                    if not params['xrefs']:
+                        del params['xrefs']
+                    if not params['other_identifiers']:
+                        del params['other_identifiers']
                 # Get seqid
                 if row[6] != '-':
                     if row[6] == 'Un':
@@ -228,11 +229,9 @@ class NCBI(Base):
         else:
             del item['previous_symbols']
 
-        if not item['other_identifiers']:
-            del item['other_identifiers']
-
-        if not item['xrefs']:
-            del item['xrefs']
+        filtered_item = {k: v for k, v in item.items() if v is not None}
+        item.clear()
+        item.update(filtered_item)
 
         item['label_and_type'] = f"{concept_id_lower}##identity"
         item['src_name'] = SourceName.NCBI.value
