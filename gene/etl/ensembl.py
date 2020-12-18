@@ -1,7 +1,7 @@
 """This module defines the Ensembl ETL methods."""
 from .base import Base
 from gene import PROJECT_ROOT, DownloadException
-from gene.schemas import SourceName, NamespacePrefix, Strand
+from gene.schemas import SourceName, NamespacePrefix, Strand, Gene
 import logging
 from gene.database import Database
 import gffutils
@@ -88,6 +88,7 @@ class Ensembl(Base):
                     if f_id == 'gene':
                         gene = self._add_feature(f)
                         if gene:
+                            assert Gene(**gene)
                             self._load_symbol(gene, batch)
                             batch.put_item(Item=gene)
 
