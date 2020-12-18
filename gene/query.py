@@ -94,11 +94,11 @@ class Normalizer:
             containing name of the source of the match
         """
         del item['label_and_type']
-        label_types = ['aliases', 'other_identifiers', 'previous_symbols',
+        attr_types = ['aliases', 'other_identifiers', 'previous_symbols',
                        'xrefs']
-        for label_type in label_types:
-            if label_type not in item.keys():
-                item[label_type] = []
+        for attr_type in attr_types:
+            if attr_type not in item.keys():
+                item[attr_type] = []
 
         gene = Gene(**item)
         src_name = item['src_name']
