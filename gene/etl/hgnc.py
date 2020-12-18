@@ -213,6 +213,13 @@ class HGNC(Base):
             gene['xrefs'] = xrefs
 
     def _load_other_id_xref(self, key, src, r, src_type):
+        """Load other identifier or xref
+
+        :param str key: The source's name
+        :param str src: HGNC's source field
+        :param dict r: A gene record in the HGNC data file
+        :param list src_type: Either other identifiers list or xrefs list
+        """
         if type(r[src]) == list:
             for other_id in r[src]:
                 src_type.append(
