@@ -99,7 +99,7 @@ class NamespacePrefix(Enum):
     HGNC = "hgnc"
     ENSEMBL = "ensembl"
     NCBI = "ncbigene"
-    ENTREZ = "ncbigene"
+    ENTREZ = NCBI
     VEGA = "vega"
     UCSC = "ucsc"
     ENA = "ena.embl"
