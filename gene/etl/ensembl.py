@@ -1,7 +1,7 @@
 """This module defines the Ensembl ETL methods."""
 from .base import Base
 from gene import PROJECT_ROOT, DownloadException
-from gene.schemas import SourceName, NamespacePrefix
+from gene.schemas import SourceName, NamespacePrefix, Strand
 import logging
 from gene.database import Database
 import gffutils
@@ -19,6 +19,7 @@ class Ensembl(Base):
 
     def __init__(self,
                  database: Database,
+                 # TODO: Change to ftp
                  data_url='http://ftp.ensembl.org/pub/',
                  gff3_ext='current_gff3/homo_sapiens'
                  ):
@@ -80,14 +81,12 @@ class Ensembl(Base):
                                 merge_strategy="create_unique",
                                 keep_order=True)
 
-        fields = ['seqid', 'start', 'end', 'strand', 'symbol']
-
         with self.database.genes.batch_writer() as batch:
             for f in db.all_features():
                 if f.attributes.get('ID'):
                     f_id = f.attributes.get('ID')[0].split(':')[0]
                     if f_id == 'gene':
-                        gene = self._add_feature(f, fields)
+                        gene = self._add_feature(f)
                         if gene:
                             if 'symbol' in gene:
                                 self._load_symbol(gene, batch)
@@ -106,11 +105,10 @@ class Ensembl(Base):
         }
         batch.put_item(Item=symbol)
 
-    def _add_feature(self, f, fields):
+    def _add_feature(self, f):
         """Create a gene dictionary.
 
         :param gffutils.feature.Feature f: A gene from the data
-        :param list fields: A list of possible attribute names
         :return: A gene dictionary if the ID attribute exists.
                  Else return None.
         """
@@ -118,8 +116,11 @@ class Ensembl(Base):
         gene['seqid'] = f.seqid
         gene['start'] = f.start
         gene['stop'] = f.end
+        if f.strand == '-':
+            gene['strand'] = Strand.REVERSE
+        elif f.strand == '+':
+            gene['strand'] = Strand.FORWARD
         gene['strand'] = f.strand
-        gene['attributes'] = list()
         gene['src_name'] = SourceName.ENSEMBL.value
 
         attributes = {
@@ -140,11 +141,21 @@ class Ensembl(Base):
                         if val.startswith('gene'):
                             val = f"{NamespacePrefix.ENSEMBL.value}:" \
                                   f"{val.split(':')[1]}"
+
                 if key == 'description':
                     gene['label'] = val.split('[')[0].strip()
-                    hgnc_id = val.split('[')[-1].split(']')[0].split(':')[-1]
-                    gene[attributes[key]] = \
-                        [f"{NamespacePrefix.HGNC.value}:{hgnc_id}"]
+                    if 'Source:' in val:
+                        src_name = val.split('[')[-1].split(
+                            'Source:')[-1].split('Acc')[0].split(';')[0]
+                        src_id = val.split('Acc:')[-1].split(']')[0]
+                        if ':' in src_id:
+                            src_id = src_id.split(':')[-1]
+                        source = self._get_other_id_xref(src_name, src_id)
+                        if 'other_identifiers' in source:
+                            gene['other_identifiers'] = \
+                                source['other_identifiers']
+                        elif 'xrefs' in source:
+                            gene['xrefs'] = source['xrefs']
                     continue
 
                 gene[attributes[key]] = val
@@ -152,16 +163,33 @@ class Ensembl(Base):
         if 'concept_id' not in gene:
             return None
 
-        # Delete empty fields
-        for field in fields:
-            if field in gene:
-                if gene[field] == '.' or not gene[field]:
-                    del gene[field]
-
         gene['label_and_type'] = \
             f"{gene['concept_id'].lower()}##identity"
 
         return gene
+
+    def _get_other_id_xref(self, src_name, src_id):
+        """
+        Get other identifier or xref
+
+        :param str src_name: Source name
+        :param src_id: The source's accession number
+        :return: A dict containing an other identifier or xref
+        """
+        source = dict()
+        if src_name.startswith('HGNC'):
+            source['other_identifiers'] = \
+                [f"{NamespacePrefix.HGNC.value}:{src_id}"]
+        elif src_name.startswith('NCBI'):
+            source['other_identifiers'] = \
+                [f"{NamespacePrefix.NCBI.value}:{src_id}"]
+        elif src_name.startswith('UniProt'):
+            source['xrefs'] = [f"{NamespacePrefix.UNIPROT.value}:{src_id}"]
+        elif src_name.startswith('miRBase'):
+            source['xrefs'] = [f"{NamespacePrefix.MIRBASE.value}:{src_id}"]
+        elif src_name.startswith('RFAM'):
+            source['xrefs'] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]
+        return source
 
     def _load_data(self, *args, **kwargs):
         """Load the Ensembl source into normalized database."""
@@ -177,12 +205,12 @@ class Ensembl(Base):
             Item={
                 'src_name': SourceName.ENSEMBL.value,
                 'data_license': 'custom',
-                'data_license_url': 'https://uswest.ensembl.org/'
-                                    'info/about/legal/index.html',
+                'data_license_url': 'https://useast.ensembl.org/info/about'
+                                    '/legal/disclaimer.html',
                 'version': self._version,
                 'data_url': self._data_url,
                 'rdp_url': None,
-                'non_commercial': True,
+                'non_commercial': False,
                 'share_alike': False,
                 'attribution': False,
                 'assembly': self._assembly

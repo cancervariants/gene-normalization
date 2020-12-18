@@ -34,6 +34,74 @@
     "src_name": "Ensembl"
   },
   {
+    "label_and_type": "ensembl:ensg00000278757##identity",
+    "concept_id": "ensembl:ENSG00000278757",
+    "symbol": "U6",
+    "label": "U6 spliceosomal RNA",
+    "seqid": "1",
+    "start": "516376",
+    "stop": "516479",
+    "strand": "-",
+    "xrefs": ["rfam:RF00026"],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "U6##symbol",
+    "concept_id": "ensembl:ensg00000278757",
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000197180##identity",
+    "concept_id": "ensembl:ENSG00000197180",
+    "symbol": "CH17-340M24.3",
+    "label": "uncharacterized protein BC009467",
+    "seqid": "X",
+    "start": "154424380",
+    "stop": "154428479",
+    "strand": "-",
+    "other_identifiers": ["ncbigene:158960"],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "CH17-340M24.3##symbol",
+    "concept_id": "ensembl:ensg00000197180",
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000284906##identity",
+    "concept_id": "ensembl:ENSG00000284906",
+    "symbol": "AC091057.5",
+    "label": "Rho GTPase-activating protein 11B",
+    "seqid": "15",
+    "start": "30624548",
+    "stop": "30685606",
+    "strand": "+",
+    "xrefs": ["uniprot:Q3KRB8"],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "AC091057.5##symbol",
+    "concept_id": "ensembl:ensg00000284906",
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000272920##identity",
+    "concept_id": "ensembl:ENSG00000272920",
+    "symbol": "hsa-mir-1253",
+    "label": "hsa-mir-1253",
+    "seqid": "17",
+    "start": "2748078",
+    "stop": "2748182",
+    "strand": "+",
+    "xrefs": ["mirbase:MI0006387"],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "hsa-mir-1253##symbol",
+    "concept_id": "ensembl:ENSG00000272920",
+    "src_name": "Ensembl"
+  },
+  {
     "label_and_type": "hgnc:37133##identity",
     "label": "A1BG antisense RNA 1",
     "concept_id": "hgnc:37133",
