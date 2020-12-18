@@ -254,7 +254,7 @@ class HGNC(Base):
                     f"{NamespacePrefix[key.upper()].value}:{other_id}")
         else:
             src_type.append(
-                f"{NamespacePrefix[key.upper()].value}"  # noqa: E501
+                f"{NamespacePrefix[key.upper()].value}"
                 f":{r[src]}")
 
     def _load_data(self, *args, **kwargs):
