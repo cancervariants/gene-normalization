@@ -24,7 +24,7 @@ class Base(ABC):
     def _add_meta(self, *args, **kwargs):
         raise NotImplementedError
 
-    def _get_normalizer_prefixes(self, *args, **kwargs):
+    def _get_normalizer_prefixes(self):
         """Retrieve normalizer sources' prefixes.
 
         :return: A list containing normalizer sources' prefixes
