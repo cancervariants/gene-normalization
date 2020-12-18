@@ -159,7 +159,6 @@ class Ensembl(Base):
 
                 gene[attributes[key]] = val
 
-
         gene['label_and_type'] = \
             f"{gene['concept_id'].lower()}##identity"
 

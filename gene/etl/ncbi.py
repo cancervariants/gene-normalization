@@ -57,8 +57,8 @@ class NCBI(Base):
                 with open(ncbi_dir / f'ncbi_gene_{ncbi_type}.gz', 'wb') as f:
                     f.write(response.content)
                     f.close()
-                with gzip.open(ncbi_dir /
-                               f'ncbi_gene_{ncbi_type}.gz', "rb") as gz:
+                with gzip.open(
+                        ncbi_dir / f'ncbi_gene_{ncbi_type}.gz', "rb") as gz:
                     with open(ncbi_dir / f"ncbi_{ncbi_type}_{version}.tsv",
                               'wb') as f_out:
                         shutil.copyfileobj(gz, f_out)
@@ -116,7 +116,7 @@ class NCBI(Base):
         next(history)
         prev_symbols = {}
         for row in history:
-            # Only interested in rows that have homo sapiens tax id 
+            # Only interested in rows that have homo sapiens tax id
             if row[0] == '9606' and row[1] != '-':
                 gene_id = row[1]
                 if gene_id in prev_symbols.keys():
@@ -132,13 +132,10 @@ class NCBI(Base):
 
         with self._database.genes.batch_writer() as batch:
             for row in info:
-                params = {
-                    'concept_id': f"{NamespacePrefix.NCBI.value}:{row[1]}",
-                }
+                params = dict()
+                params['concept_id'] = f"{NamespacePrefix.NCBI.value}:{row[1]}"
                 # get symbol
                 params['symbol'] = row[2]
-                else:
-                    logger.error(f"Couldn't read symbol from row: {row}")
                 # get aliases
                 if row[4] != '-':
                     params['aliases'] = row[4].split('|')
@@ -164,6 +161,15 @@ class NCBI(Base):
                     params['other_identifiers'] = other_ids
                 else:
                     params['other_identifiers'] = []
+                # Get seqid
+                if row[6] != '-':
+                    if row[6] == 'Un':
+                        params['seqid'] = 'unplaced'
+                    else:
+                        params['seqid'] = row[6]
+                # get location
+                if row[7] != '-':
+                    params['location'] = row[7]
                 # get label
                 if row[8] != '-':
                     params['label'] = row[8]
@@ -171,7 +177,6 @@ class NCBI(Base):
                 if row[1] in prev_symbols.keys():
                     params['previous_symbols'] = prev_symbols[row[1]]
                 self._load_data(Gene(**params), batch)
-        info_file.close()
 
     def _load_data(self, gene: Gene, batch):
         """Load individual Gene item.
