@@ -46,36 +46,30 @@ class NCBI(Base):
     def _download_data(self, data_dir):
         ncbi_dir = PROJECT_ROOT / 'data' / 'ncbi'
 
-        logger.info('Downloaded Entrez gene info.')
-        response = requests.get(self._info_file_url, stream=True)
-        if response.status_code == 200:
-            version = datetime.today().strftime('%Y%m%d')
-            with open(ncbi_dir / 'ncbi_gene_info.gz', 'wb') as f:
-                f.write(response.content)
-            with gzip.open(ncbi_dir / 'ncbi_gene_info.gz', "rb") as gz:
-                with open(ncbi_dir / f"ncbi_info_{version}.tsv",
-                          'wb') as f_out:
-                    shutil.copyfileobj(gz, f_out)
-            remove(ncbi_dir / 'ncbi_gene_info.gz')
-        else:
-            logger.error(f"Entrez gene info download failed with status code: "
-                         f"{response.status_code}")
-            raise DownloadException("Entrez gene info download failed")
-        response = requests.get(self._history_file_url, stream=True)
-        if response.status_code == 200:
-            version = datetime.today().strftime('%Y%m%d')
-            with open(ncbi_dir / 'ncbi_gene_history.gz', 'wb') as f:
-                f.write(response.content)
-            with gzip.open(ncbi_dir / 'ncbi_gene_history.gz', "rb") as gz:
-                with open(ncbi_dir / f"ncbi_history_{version}.tsv",
-                          'wb') as f_out:
-                    shutil.copyfileobj(gz, f_out)
-            remove(ncbi_dir / 'ncbi_gene_history.gz')
-            logger.info('Downloaded Entrez gene history.')
-        else:
-            logger.error(f"Entrez gene history download failed with status "
-                         f"code: {response.status_code}")
-            raise DownloadException("Entrez gene history download failed")
+        logger.info('Downloading Entrez gene info.')
+        for ncbi_type in ['info', 'history']:
+            if ncbi_type == 'info':
+                response = requests.get(self._info_file_url, stream=True)
+            else:
+                response = requests.get(self._history_file_url, stream=True)
+            if response.status_code == 200:
+                version = datetime.today().strftime('%Y%m%d')
+                with open(ncbi_dir / f'ncbi_gene_{ncbi_type}.gz', 'wb') as f:
+                    f.write(response.content)
+                    f.close()
+                with gzip.open(ncbi_dir /
+                               f'ncbi_gene_{ncbi_type}.gz', "rb") as gz:
+                    with open(ncbi_dir / f"ncbi_{ncbi_type}_{version}.tsv",
+                              'wb') as f_out:
+                        shutil.copyfileobj(gz, f_out)
+                        f_out.close()
+                remove(ncbi_dir / f'ncbi_gene_{ncbi_type}.gz')
+            else:
+                logger.error(
+                    f"Entrez gene {ncbi_type} download failed with status "
+                    f"code: {response.status_code}")
+                raise DownloadException(f"Entrez gene {ncbi_type} "
+                                        f"download failed")
 
     def _files_downloaded(self, data_dir: Path) -> bool:
         """Check whether needed source files exist.
@@ -122,6 +116,7 @@ class NCBI(Base):
         next(history)
         prev_symbols = {}
         for row in history:
+            # Only interested in rows that have homo sapiens tax id 
             if row[0] == '9606' and row[1] != '-':
                 gene_id = row[1]
                 if gene_id in prev_symbols.keys():
@@ -137,13 +132,11 @@ class NCBI(Base):
 
         with self._database.genes.batch_writer() as batch:
             for row in info:
-                is_valid_row = True
                 params = {
-                    'concept_id': f"ncbigene:{row[1]}",
+                    'concept_id': f"{NamespacePrefix.NCBI.value}:{row[1]}",
                 }
                 # get symbol
-                if row[2] != '-':
-                    params['symbol'] = row[2]
+                params['symbol'] = row[2]
                 else:
                     logger.error(f"Couldn't read symbol from row: {row}")
                 # get aliases
@@ -162,13 +155,10 @@ class NCBI(Base):
                             prefix = NamespacePrefix.OMIM.value
                         elif ref.startswith("IMGT/GENE-DB:"):
                             prefix = NamespacePrefix.IMGT_GENE_DB.value
-                        else:
-                            prefix = ref.split(':')[0].lower()
-                            if prefix not in VALID_CID_PREFIXES:
-                                logger.error(f"invalid ref prefix {prefix}"
-                                             f" in:\n {row}")
-                                is_valid_row = False
-                                break
+                        elif ref.startswith("miRBase:"):
+                            prefix = NamespacePrefix.MIRBASE.value
+                        elif ref.startswith("Ensembl:"):
+                            prefix = NamespacePrefix.ENSEMBL.value
                         other_id = f"{prefix}:{ref.split(':')[-1]}"
                         other_ids.append(other_id)
                     params['other_identifiers'] = other_ids
@@ -180,8 +170,7 @@ class NCBI(Base):
                 # add prev symbols
                 if row[1] in prev_symbols.keys():
                     params['previous_symbols'] = prev_symbols[row[1]]
-                if is_valid_row:
-                    self._load_data(Gene(**params), batch)
+                self._load_data(Gene(**params), batch)
         info_file.close()
 
     def _load_data(self, gene: Gene, batch):
@@ -193,17 +182,14 @@ class NCBI(Base):
         item = gene.dict()
         concept_id_lower = item['concept_id'].lower()
 
-        if item['symbol']:
-            pk = f"{item['symbol'].lower()}##symbol"
-            batch.put_item(Item={
-                'label_and_type': pk,
-                'concept_id': concept_id_lower,
-                'src_name': SourceName.NCBI.value
-            })
-        else:
-            del item['symbol']
+        pk = f"{item['symbol'].lower()}##symbol"
+        batch.put_item(Item={
+            'label_and_type': pk,
+            'concept_id': concept_id_lower,
+            'src_name': SourceName.NCBI.value
+        })
 
-        if 'aliases' in item:
+        if item['aliases']:
             item['aliases'] = list(set(item['aliases']))
             aliases = {alias.lower() for alias in item['aliases']}
             for alias in aliases:
@@ -213,8 +199,10 @@ class NCBI(Base):
                     'concept_id': concept_id_lower,
                     'src_name': SourceName.NCBI.value
                 })
+        else:
+            del item['aliases']
 
-        if item['previous_symbols']:
+        if 'previous_symbols' in item and item['previous_symbols']:
             item['previous_symbols'] = list(set(item['previous_symbols']))
             item_prev_symbols = {s.lower() for s in item['previous_symbols']}
             for symbol in item_prev_symbols:
@@ -240,6 +228,7 @@ class NCBI(Base):
             non_commercial=False,
             share_alike=False,
             attribution=False,
+            assembly='GRCh38.p13'
         )
         self._database.metadata.put_item(Item={
             'src_name': SourceName.NCBI.value,
