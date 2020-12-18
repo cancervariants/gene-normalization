@@ -18,6 +18,7 @@ class HGNC(Base):
 
     def __init__(self,
                  database: Database,
+                 # TODO: Change to ftp
                  data_url='http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/',
                  data_file_ext='json/non_alt_loci_set.json',
                  ):
@@ -59,7 +60,6 @@ class HGNC(Base):
             with open(f"{PROJECT_ROOT}/data/hgnc/"
                       f"hgnc_{self._version}.json", 'w+') as f:
                 f.write(json.dumps(response.json()))
-                f.close()
 
             logger.info('Finished downloading HGNC.')
         else:
@@ -236,7 +236,7 @@ class HGNC(Base):
                 'version': self._version,
                 'data_url': self._data_url,
                 'rdp_url': None,
-                'non_commercial': True,
+                'non_commercial': False,
                 'share_alike': False,
                 'attribution': False,
             }
