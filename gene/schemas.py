@@ -80,7 +80,8 @@ class Gene(BaseModel):
 
     concept_id: str
     symbol: str
-    location: Optional[Location]  # TODO: Check if this is required
+    # TODO: Check if this is required
+    location: Optional[Union[ChromosomeLocation, SequenceLocation]]
     label: Optional[str]
     previous_symbols: Optional[List[str]]
     aliases: Optional[List[str]]

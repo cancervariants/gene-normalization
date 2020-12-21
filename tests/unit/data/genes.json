@@ -4,9 +4,15 @@
     "concept_id": "ensembl:ENSG00000223972",
     "symbol": "DDX11L1",
     "label": "DEAD/H-box helicase 11 like 1 (pseudogene)",
-    "seqid": "1",
-    "start": "11869",
-    "stop": "14409",
+    "location": {
+      "interval": {
+        "end": "14409",
+        "start": "11869",
+        "type": "SimpleInterval"
+      },
+      "sequence_id": "ga4gh.VSL.tUaFuu4gZM0KH5h3EXTvhYi4ihJzPQF7",
+      "type": "SequenceLocation"
+    },
     "strand": "+",
     "other_identifiers": ["hgnc:37102"],
     "src_name": "Ensembl"
@@ -21,9 +27,15 @@
     "concept_id": "ensembl:ENSG00000141510",
     "symbol": "TP53",
     "label": "tumor protein p53",
-    "seqid": "17",
-    "start": "7661779",
-    "stop": "7687538",
+    "location": {
+      "interval": {
+        "end": "7687538",
+        "start": "7661779",
+        "type": "SimpleInterval"
+      },
+      "sequence_id": "ga4gh.VSL.z7qUxIqvCPT73USOo1SVTRbrrqejT6JP",
+      "type": "SequenceLocation"
+    },
     "strand": "-",
     "other_identifiers": ["hgnc:11998"],
     "src_name": "Ensembl"
@@ -38,9 +50,15 @@
     "concept_id": "ensembl:ENSG00000278757",
     "symbol": "U6",
     "label": "U6 spliceosomal RNA",
-    "seqid": "1",
-    "start": "516376",
-    "stop": "516479",
+    "location": {
+      "interval": {
+        "end": "516479",
+        "start": "516376",
+        "type": "SimpleInterval"
+      },
+      "sequence_id": "ga4gh.VSL.O2QimEWWS6bLrTqe6KAP--a5-muvksxz",
+      "type": "SequenceLocation"
+    },
     "strand": "-",
     "xrefs": ["rfam:RF00026"],
     "src_name": "Ensembl"
@@ -55,9 +73,15 @@
     "concept_id": "ensembl:ENSG00000197180",
     "symbol": "CH17-340M24.3",
     "label": "uncharacterized protein BC009467",
-    "seqid": "X",
-    "start": "154424380",
-    "stop": "154428479",
+    "location": {
+      "interval": {
+        "end": "154428479",
+        "start": "154424380",
+        "type": "SimpleInterval"
+      },
+      "sequence_id": "ga4gh.VSL.U0lJ88JkUFNGdJ5BV8oCHy3DS453GtUO",
+      "type": "SequenceLocation"
+    },
     "strand": "-",
     "other_identifiers": ["ncbigene:158960"],
     "src_name": "Ensembl"
@@ -72,9 +96,15 @@
     "concept_id": "ensembl:ENSG00000284906",
     "symbol": "AC091057.5",
     "label": "Rho GTPase-activating protein 11B",
-    "seqid": "15",
-    "start": "30624548",
-    "stop": "30685606",
+    "location": {
+      "interval": {
+        "end": "30685606",
+        "start": "30624548",
+        "type": "SimpleInterval"
+      },
+      "sequence_id": "ga4gh.VSL.An1MlwkqjP7Jjo8k4kgefV_Ecdm8aFFP",
+      "type": "SequenceLocation"
+    },
     "strand": "+",
     "xrefs": ["uniprot:Q3KRB8"],
     "src_name": "Ensembl"
@@ -89,9 +119,15 @@
     "concept_id": "ensembl:ENSG00000272920",
     "symbol": "hsa-mir-1253",
     "label": "hsa-mir-1253",
-    "seqid": "17",
-    "start": "2748078",
-    "stop": "2748182",
+    "location": {
+      "interval": {
+        "end": "2748182",
+        "start": "2748078",
+        "type": "SimpleInterval"
+      },
+      "sequence_id": "ga4gh.VSL.Or8qcAjmhzDybjczDhK1eB5c0LOwi4Jt",
+      "type": "SequenceLocation"
+    },
     "strand": "+",
     "xrefs": ["mirbase:MI0006387"],
     "src_name": "Ensembl"

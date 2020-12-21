@@ -1,7 +1,8 @@
 """This module defines the Ensembl ETL methods."""
 from .base import Base
 from gene import PROJECT_ROOT, DownloadException
-from gene.schemas import SourceName, NamespacePrefix, Strand, Gene, Meta
+from gene.schemas import SourceName, NamespacePrefix, Strand, Gene, Meta, \
+    SequenceLocation, LocationType, IntervalType
 import logging
 from gene.database import Database
 import gffutils
@@ -9,6 +10,8 @@ from urllib.request import urlopen
 import gzip
 from bs4 import BeautifulSoup
 import requests
+import hashlib
+import base64
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -104,6 +107,17 @@ class Ensembl(Base):
         }
         batch.put_item(Item=symbol)
 
+    def _sha512t24u(self, blob):
+        """Compute an ASCII digest from binary data.
+
+        :param str blob: binary data
+        :return: Binary digest
+        """
+        digest = hashlib.sha512(blob).digest()
+        tdigest = digest[:24]
+        tdigest_b64u = base64.urlsafe_b64encode(tdigest).decode("ASCII")
+        return tdigest_b64u
+
     def _add_feature(self, f):
         """Create a gene dictionary.
 
@@ -112,9 +126,6 @@ class Ensembl(Base):
                  Else return None.
         """
         gene = dict()
-        gene['seqid'] = f.seqid
-        gene['start'] = f.start
-        gene['stop'] = f.end
         if f.strand == '-':
             gene['strand'] = Strand.REVERSE
         elif f.strand == '+':
@@ -159,6 +170,19 @@ class Ensembl(Base):
 
                 gene[attributes[key]] = val
 
+        blob = gene['symbol'].encode('utf-8')
+
+        gene['location'] = {
+            "interval": {
+                "end": f.end,
+                "start": f.start,
+                "type": IntervalType.SIMPLE.value
+            },
+            "sequence_id": f"ga4gh.VSL.{self._sha512t24u(blob)}",
+            "type": LocationType.SEQUENCE.value
+        }
+        assert SequenceLocation(**gene['location'])
+
         gene['label_and_type'] = \
             f"{gene['concept_id'].lower()}##identity"
 
@@ -192,8 +216,8 @@ class Ensembl(Base):
         self._get_data_file_url_version()
         self._download_data()
         self._extract_data()
-        self._transform_data()
         self._add_meta()
+        self._transform_data()
 
     def _add_meta(self, *args, **kwargs):
         """Add Ensembl metadata."""
