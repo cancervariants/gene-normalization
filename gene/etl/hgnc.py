@@ -1,7 +1,7 @@
 """This module defines the HGNC ETL methods."""
 from .base import Base
 from gene import PROJECT_ROOT, DownloadException
-from gene.schemas import SourceName, SymbolStatus, NamespacePrefix
+from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene, Meta
 from gene.database import Database
 import logging
 import json
@@ -32,6 +32,7 @@ class HGNC(Base):
         self._data_url = data_url
         self._data_file_url = data_url + data_file_ext
         self._version = None
+        self._normalizer_prefixes = self._get_normalizer_prefixes()
         self._load_data()
 
     def _download_data(self, *args, **kwargs):
@@ -58,7 +59,6 @@ class HGNC(Base):
             with open(f"{PROJECT_ROOT}/data/hgnc/"
                       f"hgnc_{self._version}.json", 'w+') as f:
                 f.write(json.dumps(response.json()))
-                f.close()
 
             logger.info('Finished downloading HGNC.')
         else:
@@ -100,11 +100,26 @@ class HGNC(Base):
                 if 'location' in r:
                     gene['location'] = r['location']
                 gene['src_name'] = SourceName.HGNC.value
-                self._load_other_identifiers(r, gene)
-                self._load_approved_symbol(gene, batch)
-                self._load_aliases(r, gene, batch)
-                self._load_previous_symbols(r, gene, batch)
-                batch.put_item(Item=gene)
+
+                # Store alias, other_identifier, and
+                # prev_symbols in gene record
+                self._get_aliases(r, gene)
+                self._get_other_ids_xrefs(r, gene)
+                self._get_previous_symbols(r, gene)
+
+                assert Gene(**gene)
+                self._load_dynamodb(gene, batch)
+
+    def _load_dynamodb(self, gene, batch):
+        """Insert gene records into DynamoDB gene_concepts table
+
+        :param dict gene: A transformed gene record
+        :param BatchWriter batch: Object to write data to DynamoDB
+        """
+        self._load_approved_symbol(gene, batch)
+        self._load_aliases(gene, batch)
+        self._load_previous_symbols(gene, batch)
+        batch.put_item(Item=gene)
 
     def _load_approved_symbol(self, gene, batch):
         """Insert approved symbol data into the database.
@@ -120,12 +135,11 @@ class HGNC(Base):
         }
         batch.put_item(Item=symbol)
 
-    def _load_aliases(self, r, gene, batch):
-        """Insert alias data into the database.
+    def _get_aliases(self, r, gene):
+        """Store aliases in a gene record.
 
         :param dict r: A gene record in the HGNC data file
         :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
         """
         alias_symbol = list()
         enzyme_id = list()
@@ -135,8 +149,16 @@ class HGNC(Base):
         if 'enzyme_id' in r:
             enzyme_id = r['enzyme_id']
 
-        gene['aliases'] = list(set(alias_symbol + enzyme_id))
-        if gene['aliases']:
+        if alias_symbol or enzyme_id:
+            gene['aliases'] = list(set(alias_symbol + enzyme_id))
+
+    def _load_aliases(self, gene, batch):
+        """Insert alias data into the database.
+
+        :param dict gene: A transformed gene record
+        :param BatchWriter batch: Object to write data to DynamoDB
+        """
+        if 'aliases' in gene:
             aliases = {t.casefold(): t for t in gene['aliases']}
 
             for alias in aliases:
@@ -146,20 +168,26 @@ class HGNC(Base):
                     'src_name': SourceName.HGNC.value
                 }
                 batch.put_item(Item=alias)
-        else:
-            del gene['aliases']
 
-    def _load_previous_symbols(self, r, gene, batch):
+    def _get_previous_symbols(self, r, gene):
+        """Store previous symbols in a gene record.
+
+        :param dict r: A gene record in the HGNC data file
+        :param dict gene: A transformed gene record
+        """
+        if 'prev_symbol' in r:
+            prev_symbols = r['prev_symbol']
+            if prev_symbols:
+                gene['previous_symbols'] = list(set(prev_symbols))
+
+    def _load_previous_symbols(self, gene, batch):
         """Load previous symbols to a gene record.
 
         :param dict r: A gene record in the HGNC data file
         :param dict gene: A transformed gene record
         :param BatchWriter batch: Object to write data to DynamoDB
         """
-        if 'prev_symbol' in r:
-            prev_symbols = r['prev_symbol']
-            gene['previous_symbols'] = list(set(prev_symbols))
-
+        if 'previous_symbols' in gene:
             prev_symbols = {t.casefold(): t for t in gene['previous_symbols']}
 
             for prev_symbol in prev_symbols:
@@ -170,13 +198,14 @@ class HGNC(Base):
                 }
                 batch.put_item(Item=prev_symbol)
 
-    def _load_other_identifiers(self, r, gene):
-        """Load other identifiers to a gene record.
+    def _get_other_ids_xrefs(self, r, gene):
+        """Store other identifiers and/or xrefs in a gene record.
 
         :param dict r: A gene record in the HGNC data file
         :param dict gene: A transformed gene record
         """
         other_ids = list()
+        xrefs = list()
         sources = [
             'entrez_id', 'ensembl_gene_id', 'vega_id', 'ucsc_id', 'ccds_id',
             'uniprot_ids', 'pubmed_id', 'cosmic', 'omim_id', 'mirbase',
@@ -188,32 +217,44 @@ class HGNC(Base):
 
         for src in sources:
             if src in r:
-                if '.' in src:
+                if '-' in src:
+                    key = src.split('-')[0]
+                elif '.' in src:
                     key = src.split('.')[0]
                 elif '_' in src:
                     key = src.split("_")[0]
                 else:
                     key = src
-                if type(r[src]) == list:
-                    for other_id in r[src]:
-                        other_ids.append(
-                            f"{NamespacePrefix[key.upper()].value}:{other_id}")
-                else:
-                    if src == 'kznf_gene_catalog':
-                        other_ids.append(f"{NamespacePrefix.KZNF_GENE_CATALOG.value}"  # noqa: E501
-                                         f":{r[src]}")
-                    elif src == 'intermediate_filament_db':
-                        other_ids.append(f"{NamespacePrefix.INTERMEDIATE_FILAMENT.value}"  # noqa: E501
-                                         f":{r[src]}")
-                    elif src == 'mamit-trnadb':
-                        other_ids.append(f"{NamespacePrefix.MAMIT_TRNADB.value}"  # noqa: E501
-                                         f":{r[src]}")
+                if key.upper() in NamespacePrefix.__members__:
+                    if NamespacePrefix[key.upper()]\
+                            .value in self._normalizer_prefixes:
+                        self._get_other_id_xref(key, src, r, other_ids)
                     else:
-                        other_ids.append(f"{NamespacePrefix[key.upper()].value}"  # noqa: E501
-                                         f":{r[src]}")
+                        self._get_other_id_xref(key, src, r, xrefs)
+                else:
+                    logger.warning(f"{key} not in schemas.py")
 
         if other_ids:
             gene['other_identifiers'] = other_ids
+        if xrefs:
+            gene['xrefs'] = xrefs
+
+    def _get_other_id_xref(self, key, src, r, src_type):
+        """Add an other identifier or xref to a gene record.
+
+        :param str key: The source's name
+        :param str src: HGNC's source field
+        :param dict r: A gene record in the HGNC data file
+        :param list src_type: Either other identifiers list or xrefs list
+        """
+        if type(r[src]) == list:
+            for other_id in r[src]:
+                src_type.append(
+                    f"{NamespacePrefix[key.upper()].value}:{other_id}")
+        else:
+            src_type.append(
+                f"{NamespacePrefix[key.upper()].value}"
+                f":{r[src]}")
 
     def _load_data(self, *args, **kwargs):
         """Load the HGNC source into normalized database."""
@@ -224,16 +265,30 @@ class HGNC(Base):
 
     def _add_meta(self, *args, **kwargs):
         """Add HGNC metadata to the gene_metadata table."""
+        if self._data_url.startswith("http"):
+            self._data_url = f"ftp://{self._data_url.split('://')[-1]}"
+
+        metadata = Meta(
+            data_license='custom',
+            data_license_url='https://www.genenames.org/about/',
+            version=self._version,
+            data_url=self._data_url,
+            rdp_url=None,
+            non_commercial=False,
+            share_alike=False,
+            attribution=False
+        )
+
         self._database.metadata.put_item(
             Item={
                 'src_name': SourceName.HGNC.value,
-                'data_license': 'custom',
-                'data_license_url': 'https://www.genenames.org/about/',
-                'version': self._version,
-                'data_url': self._data_url,
-                'rdp_url': None,
-                'non_commercial': False,
-                'share_alike': False,
-                'attribution': False,
+                'data_license': metadata.data_license,
+                'data_license_url': metadata.data_license_url,
+                'version': metadata.version,
+                'data_url': metadata.data_url,
+                # 'rdp_url': metadata.rdp_url,  # TODO: ADD
+                'non_commercial': metadata.non_commercial,
+                'share_alike': metadata.share_alike,
+                'attribution': metadata.attribution,
             }
         )

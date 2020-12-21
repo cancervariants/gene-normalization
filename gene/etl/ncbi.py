@@ -40,6 +40,7 @@ class NCBI(Base):
         self._data_url = data_url
         self._info_file_url = info_file_url
         self._history_file_url = history_file_url
+        self._normalizer_prefixes = self._get_normalizer_prefixes()
         self._extract_data()
         self._transform_data()
 
@@ -57,8 +58,8 @@ class NCBI(Base):
                 with open(ncbi_dir / f'ncbi_gene_{ncbi_type}.gz', 'wb') as f:
                     f.write(response.content)
                     f.close()
-                with gzip.open(ncbi_dir /
-                               f'ncbi_gene_{ncbi_type}.gz', "rb") as gz:
+                with gzip.open(
+                        ncbi_dir / f'ncbi_gene_{ncbi_type}.gz', "rb") as gz:
                     with open(ncbi_dir / f"ncbi_{ncbi_type}_{version}.tsv",
                               'wb') as f_out:
                         shutil.copyfileobj(gz, f_out)
@@ -116,7 +117,7 @@ class NCBI(Base):
         next(history)
         prev_symbols = {}
         for row in history:
-            # Only interested in rows that have homo sapiens tax id 
+            # Only interested in rows that have homo sapiens tax id
             if row[0] == '9606' and row[1] != '-':
                 gene_id = row[1]
                 if gene_id in prev_symbols.keys():
@@ -132,13 +133,10 @@ class NCBI(Base):
 
         with self._database.genes.batch_writer() as batch:
             for row in info:
-                params = {
-                    'concept_id': f"{NamespacePrefix.NCBI.value}:{row[1]}",
-                }
+                params = dict()
+                params['concept_id'] = f"{NamespacePrefix.NCBI.value}:{row[1]}"
                 # get symbol
                 params['symbol'] = row[2]
-                else:
-                    logger.error(f"Couldn't read symbol from row: {row}")
                 # get aliases
                 if row[4] != '-':
                     params['aliases'] = row[4].split('|')
@@ -146,32 +144,48 @@ class NCBI(Base):
                     params['aliases'] = []
                 # get other identifiers
                 if row[5] != '-':
-                    xrefs = row[5].split('|')
-                    other_ids = []
-                    for ref in xrefs:
-                        if ref.startswith("HGNC:"):
-                            prefix = NamespacePrefix.HGNC.value
-                        elif ref.startswith("MIM:"):
-                            prefix = NamespacePrefix.OMIM.value
-                        elif ref.startswith("IMGT/GENE-DB:"):
-                            prefix = NamespacePrefix.IMGT_GENE_DB.value
-                        elif ref.startswith("miRBase:"):
-                            prefix = NamespacePrefix.MIRBASE.value
-                        elif ref.startswith("Ensembl:"):
-                            prefix = NamespacePrefix.ENSEMBL.value
-                        other_id = f"{prefix}:{ref.split(':')[-1]}"
-                        other_ids.append(other_id)
-                    params['other_identifiers'] = other_ids
-                else:
+                    params['xrefs'] = []
                     params['other_identifiers'] = []
+                    xrefs = row[5].split('|')
+                    for ref in xrefs:
+                        src = ref.split(':')[0].upper()
+                        src_id = ref.split(':')[-1]
+                        if src in NamespacePrefix.__members__ and \
+                                NamespacePrefix[src].value in \
+                                self._normalizer_prefixes:
+                            params['other_identifiers'].append(
+                                f"{NamespacePrefix[src].value}"
+                                f":{src_id}")
+                        else:
+                            if ref.startswith("MIM:"):
+                                prefix = NamespacePrefix.OMIM.value
+                            elif ref.startswith("IMGT/GENE-DB:"):
+                                prefix = NamespacePrefix.IMGT_GENE_DB.value
+                            elif ref.startswith("miRBase:"):
+                                prefix = NamespacePrefix.MIRBASE.value
+                            params['xrefs'].append(f"{prefix}:{src_id}")
+                    if not params['xrefs']:
+                        del params['xrefs']
+                    if not params['other_identifiers']:
+                        del params['other_identifiers']
+                # Get seqid
+                if row[6] != '-':
+                    if row[6] == 'Un':
+                        params['seqid'] = 'unplaced'
+                    else:
+                        params['seqid'] = row[6]
+                # get location
+                if row[7] != '-':
+                    params['location'] = row[7]
                 # get label
                 if row[8] != '-':
                     params['label'] = row[8]
                 # add prev symbols
                 if row[1] in prev_symbols.keys():
                     params['previous_symbols'] = prev_symbols[row[1]]
+                else:
+                    params['previous_symbols'] = []
                 self._load_data(Gene(**params), batch)
-        info_file.close()
 
     def _load_data(self, gene: Gene, batch):
         """Load individual Gene item.
@@ -202,7 +216,7 @@ class NCBI(Base):
         else:
             del item['aliases']
 
-        if 'previous_symbols' in item and item['previous_symbols']:
+        if item['previous_symbols']:
             item['previous_symbols'] = list(set(item['previous_symbols']))
             item_prev_symbols = {s.lower() for s in item['previous_symbols']}
             for symbol in item_prev_symbols:
@@ -212,6 +226,12 @@ class NCBI(Base):
                     'concept_id': concept_id_lower,
                     'src_name': SourceName.NCBI.value
                 })
+        else:
+            del item['previous_symbols']
+
+        filtered_item = {k: v for k, v in item.items() if v is not None}
+        item.clear()
+        item.update(filtered_item)
 
         item['label_and_type'] = f"{concept_id_lower}##identity"
         item['src_name'] = SourceName.NCBI.value
@@ -219,6 +239,9 @@ class NCBI(Base):
 
     def _add_meta(self):
         """Load metadata"""
+        if self._data_url.startswith("http"):
+            self._data_url = f"ftp://{self._data_url.split('://')[-1]}"
+
         metadata = Meta(
             data_license="custom",
             data_license_url="https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
@@ -240,4 +263,5 @@ class NCBI(Base):
             'non_commercial': metadata.non_commercial,
             'share_alike': metadata.share_alike,
             'attribution': metadata.attribution,
+            'assembly': metadata.assembly
         })

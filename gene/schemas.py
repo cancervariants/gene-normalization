@@ -13,20 +13,28 @@ class SymbolStatus(str, Enum):
     APPROVED = "approved"
 
 
+class Strand(str, Enum):
+    """Define string constraints for strand attribute."""
+
+    FORWARD = '+'
+    REVERSE = '-'
+
+
 class Gene(BaseModel):
     """Gene"""
 
     label: Optional[str]
     concept_id: str
     symbol: str
-    previous_symbols: List[str]
-    aliases: List[str]
-    other_identifiers: List[str]
+    previous_symbols: Optional[List[str]]
+    aliases: Optional[List[str]]
+    other_identifiers: Optional[List[str]]
+    xrefs: Optional[List[str]]
     symbol_status: Optional[SymbolStatus]
     seqid: Optional[str]
     start: Optional[str]
     stop: Optional[str]
-    strand: Optional[str]
+    strand: Optional[Strand]
     location: Optional[str]
 
     class Config:
@@ -117,13 +125,14 @@ class NamespacePrefix(Enum):
     HORDE = "hordedb"
     MEROPS = "merops"
     IUPHAR = "iuphar"
-    KZNF_GENE_CATALOG = "knzfgc"
-    MAMIT_TRNADB = "mamittrnadb"
+    KZNF = "knzfgc"
+    MAMIT = "mamittrnadb"
     CD = "hcdmdb"
     LNCRNADB = "lncrnadb"
-    INTERMEDIATE_FILAMENT = "hifdb"
+    INTERMEDIATE = "hifdb"
     IMGT = "imgt"  # .hla? .ligm? leave as is?
     IMGT_GENE_DB = "imgt/gene-db"  # redundant w/ above?
+    RFAM = "rfam"
 
 
 class Meta(BaseModel):
@@ -154,7 +163,7 @@ class Meta(BaseModel):
                 "data_license": "custom",
                 "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                 "version": "20201215",
-                "data_url": "https://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+                "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
                 "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                 "non_commercial": False,
                 "share_alike": False,
@@ -191,7 +200,7 @@ class MatchesKeyed(BaseModel):
                         "data_license": "custom",
                         "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                         "version": "20201215",
-                        "data_url": "https://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+                        "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
                         "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                         "non_commercial": False,
                         "share_alike": False,
@@ -231,7 +240,7 @@ class MatchesListed(BaseModel):
                     "data_license": "custom",
                     "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                     "version": "20201215",
-                    "data_url": "https://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+                    "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
                     "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                     "non_commercial": False,
                     "share_alike": False,

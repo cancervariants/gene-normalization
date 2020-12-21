@@ -34,6 +34,74 @@
     "src_name": "Ensembl"
   },
   {
+    "label_and_type": "ensembl:ensg00000278757##identity",
+    "concept_id": "ensembl:ENSG00000278757",
+    "symbol": "U6",
+    "label": "U6 spliceosomal RNA",
+    "seqid": "1",
+    "start": "516376",
+    "stop": "516479",
+    "strand": "-",
+    "xrefs": ["rfam:RF00026"],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "u6##symbol",
+    "concept_id": "ensembl:ensg00000278757",
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000197180##identity",
+    "concept_id": "ensembl:ENSG00000197180",
+    "symbol": "CH17-340M24.3",
+    "label": "uncharacterized protein BC009467",
+    "seqid": "X",
+    "start": "154424380",
+    "stop": "154428479",
+    "strand": "-",
+    "other_identifiers": ["ncbigene:158960"],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "ch17-340m24.3##symbol",
+    "concept_id": "ensembl:ensg00000197180",
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000284906##identity",
+    "concept_id": "ensembl:ENSG00000284906",
+    "symbol": "AC091057.5",
+    "label": "Rho GTPase-activating protein 11B",
+    "seqid": "15",
+    "start": "30624548",
+    "stop": "30685606",
+    "strand": "+",
+    "xrefs": ["uniprot:Q3KRB8"],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "ac091057.5##symbol",
+    "concept_id": "ensembl:ensg00000284906",
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000272920##identity",
+    "concept_id": "ensembl:ENSG00000272920",
+    "symbol": "hsa-mir-1253",
+    "label": "hsa-mir-1253",
+    "seqid": "17",
+    "start": "2748078",
+    "stop": "2748182",
+    "strand": "+",
+    "xrefs": ["mirbase:MI0006387"],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "hsa-mir-1253##symbol",
+    "concept_id": "ensembl:ENSG00000272920",
+    "src_name": "Ensembl"
+  },
+  {
     "label_and_type": "hgnc:37133##identity",
     "label": "A1BG antisense RNA 1",
     "concept_id": "hgnc:37133",
@@ -47,14 +115,16 @@
     "aliases": ["FLJ23569"],
     "symbol_status": "approved",
     "other_identifiers": [
-        "vega:OTTHUMG00000183508",
         "ensembl:ENSG00000268895",
-        "ucsc:uc002qse.3",
-        "ncbigene:503538",
-        "refseq:NR_015380",
-        "ena.embl:BC040926",
-        "refseq:NR_015380",
-        "ena.embl:BC040926"
+        "ncbigene:503538"
+    ],
+    "xrefs": [
+      "vega:OTTHUMG00000183508",
+      "ucsc:uc002qse.3",
+      "refseq:NR_015380",
+      "ena.embl:BC040926",
+      "refseq:NR_015380",
+      "ena.embl:BC040926"
     ],
     "src_name": "HGNC"
   },
@@ -95,31 +165,33 @@
     ],
     "symbol_status": "approved",
     "other_identifiers": [
-        "vega:OTTHUMG00000162125",
-        "refseq:NM_000546",
-        "cosmic:TP53",
         "ensembl:ENSG00000141510",
-        "ncbigene:7157",
-        "omim:191170",
-        "ucsc:uc060aur.1",
-        "uniprot:P04637",
-        "orphanet:120204",
-        "ccds:CCDS73968",
-        "ccds:CCDS73971",
-        "ccds:CCDS73970",
-        "ccds:CCDS73969",
-        "ccds:CCDS73967",
-        "ccds:CCDS73966",
-        "ccds:CCDS73965",
-        "ccds:CCDS73964",
-        "ccds:CCDS73963",
-        "ccds:CCDS11118",
-        "ccds:CCDS45605",
-        "ccds:CCDS45606",
-        "ena.embl:AF307851",
-        "pubmed:6396087",
-        "pubmed:3456488",
-        "pubmed:2047879"
+        "ncbigene:7157"
+    ],
+    "xrefs": [
+      "vega:OTTHUMG00000162125",
+      "refseq:NM_000546",
+      "cosmic:TP53",
+      "omim:191170",
+      "ucsc:uc060aur.1",
+      "uniprot:P04637",
+      "orphanet:120204",
+      "ccds:CCDS73968",
+      "ccds:CCDS73971",
+      "ccds:CCDS73970",
+      "ccds:CCDS73969",
+      "ccds:CCDS73967",
+      "ccds:CCDS73966",
+      "ccds:CCDS73965",
+      "ccds:CCDS73964",
+      "ccds:CCDS73963",
+      "ccds:CCDS11118",
+      "ccds:CCDS45605",
+      "ccds:CCDS45606",
+      "ena.embl:AF307851",
+      "pubmed:6396087",
+      "pubmed:3456488",
+      "pubmed:2047879"
     ],
     "src_name": "HGNC"
   },
@@ -153,15 +225,17 @@
     ],
     "symbol_status": "approved",
     "other_identifiers": [
-        "vega:OTTHUMG00000004125",
-        "ensembl:ENSG00000184389",
-        "ncbigene:127550",
-        "ucsc:uc031plq.1",
-        "uniprot:U3KPV4",
-        "ccds:CCDS60080",
-        "pubmed:10854427",
-        "pubmed:18630988",
-        "refseq:NM_001080438"
+      "ensembl:ENSG00000184389",
+      "ncbigene:127550"
+    ],
+    "xrefs": [
+      "vega:OTTHUMG00000004125",
+      "ucsc:uc031plq.1",
+      "uniprot:U3KPV4",
+      "ccds:CCDS60080",
+      "pubmed:10854427",
+      "pubmed:18630988",
+      "refseq:NM_001080438"
     ],
     "src_name": "HGNC"
   },
@@ -192,8 +266,11 @@
     "symbol": "DPF1",
     "aliases": ["BAF45b", "NEUD4", "neuro-d4"],
     "other_identifiers": [
-      "omim:601670", "hgnc:20225", "ensembl:ENSG00000011332"
+      "hgnc:20225", "ensembl:ENSG00000011332"
     ],
+    "xrefs": ["omim:601670"],
+    "seqid": "19",
+    "location": "19q13.2",
     "src_name": "NCBI"
   },
   {
@@ -226,11 +303,14 @@
     "symbol": "PDP1",
     "aliases": ["PDH", "PDP", "PDPC", "PPM2A", "PPM2C"],
     "other_identifiers": [
-        "omim:605993", "hgnc:9279", "ensembl:ENSG00000164951"
+        "hgnc:9279", "ensembl:ENSG00000164951"
     ],
     "previous_symbols": [
         "LOC157663", "PPM2C"
     ],
+    "xrefs": ["omim:605993"],
+    "seqid": "8",
+    "location": "8q22.1",
     "src_name": "NCBI"
   },
   {
