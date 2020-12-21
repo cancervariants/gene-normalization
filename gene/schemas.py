@@ -16,23 +16,78 @@ class SymbolStatus(str, Enum):
 class Strand(str, Enum):
     """Define string constraints for strand attribute."""
 
-    FORWARD = '+'
-    REVERSE = '-'
+    FORWARD = "+"
+    REVERSE = "-"
+
+
+class IntervalType(str, Enum):
+    """Define string constraints for GA4GH Interval type."""
+
+    CYTOBAND = "CytobandInterval"
+    SIMPLE = "SimpleInterval"
+
+
+class Interval(BaseModel):
+    """GA4GH interval definition."""
+
+    end: Optional[str]  # TODO: Check if this is required
+    start: Optional[str]  # TODO: Check if this is required
+    type: IntervalType
+
+
+class LocationType(str, Enum):
+    """Define string constraints for location type attribute."""
+
+    CHROMOSOME = "ChromosomeLocation"
+    SEQUENCE = "SequenceLocation"
+
+
+class Annotation(str, Enum):
+    """Define string constraints for annotations when gene location
+    is absent.
+    """
+
+    NOT_FOUND_ON_REFERENCE = "not on reference assembly"
+    UNPLACED = "unplaced"
+    RESERVED = "reserved"
+
+
+class Location(BaseModel):
+    """Define string constraints for the location attribute."""
+
+    type: LocationType
+    # TODO: Check if we can exclude this is start and end is null
+    interval: Optional[Interval]
+    # TODO: Check if including, if so use better name
+    annotation: Optional[Annotation]
+
+
+class ChromosomeLocation(Location):
+    """GA4GH Chromosome Location definition."""
+
+    species_id: str
+    chr: Optional[str]
+
+
+class SequenceLocation(Location):
+    """GA4GH Sequence Location definition."""
+
+    sequence_id: str
 
 
 class Gene(BaseModel):
     """Gene"""
 
-    label: Optional[str]
     concept_id: str
     symbol: str
+    location: Optional[Location]  # TODO: Check if this is required
+    label: Optional[str]
     previous_symbols: Optional[List[str]]
     aliases: Optional[List[str]]
     other_identifiers: Optional[List[str]]
     xrefs: Optional[List[str]]
     symbol_status: Optional[SymbolStatus]
     strand: Optional[Strand]
-    location: dict
 
     class Config:
         """Configure model"""

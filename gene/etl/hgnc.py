@@ -1,13 +1,15 @@
 """This module defines the HGNC ETL methods."""
 from .base import Base
 from gene import PROJECT_ROOT, DownloadException
-from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene, Meta
+from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene, \
+    Meta, ChromosomeLocation, IntervalType, LocationType, Annotation
 from gene.database import Database
 import logging
 import json
 import requests
 from bs4 import BeautifulSoup
 import datetime
+import re
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -97,18 +99,73 @@ class HGNC(Base):
                     elif r['status'] == 'Entry Withdrawn':
                         gene['symbol_status'] =\
                             SymbolStatus.WITHDRAWN.value
-                if 'location' in r:
-                    gene['location'] = r['location']
                 gene['src_name'] = SourceName.HGNC.value
 
-                # Store alias, other_identifier, and
-                # prev_symbols in gene record
+                # Store alias, other_identifier,
+                # prev_symbols, and location in gene record
                 self._get_aliases(r, gene)
                 self._get_other_ids_xrefs(r, gene)
                 self._get_previous_symbols(r, gene)
+                self._get_location(r, gene)
 
                 assert Gene(**gene)
                 self._load_dynamodb(gene, batch)
+
+    def _get_location(self, r, gene):
+        """Store location in a gene record.
+
+        :param dict r: A gene record in the HGNC data file
+        :param dict gene: A transformed gene record
+        """
+        if 'location' in r:
+            contains_loc = True
+            location = {
+                'interval': {
+                    'type': IntervalType.CYTOBAND.value
+                },
+                'species_id': 'taxonomy:9606',
+                'type': LocationType.CHROMOSOME.value
+            }
+
+            # TODO: Check if this should be included
+            #       What to do if includes both location and annotation
+            annotations = {v.value for v in Annotation.__members__.values()}
+            for annotation in annotations:
+                if annotation in r['location']:
+                    location['annotation'] = annotation
+
+                    # Check if location is also included
+                    r['location'] = r['location'].split(annotation)[0].strip()
+                    if not r['location']:
+                        contains_loc = False
+
+            if contains_loc:
+                arm_match = re.search('[pq]', r['location'])
+
+                if arm_match:
+                    # Location gives arm and sub band
+                    arm_ix = arm_match.start()
+                    location['chr'] = r['location'][:arm_ix]
+
+                    if '-' in r['location']:
+                        # Location gives both start and end
+                        range_ix = re.search('-', r['location']).start()
+                        location['interval']['start'] = \
+                            r['location'][arm_ix:range_ix]
+                        location['interval']['end'] = \
+                            r['location'][range_ix + 1:]
+                    else:
+                        # Location only gives start
+                        start = r['location'][arm_ix:]
+                        location['interval']['start'] = start
+                else:
+                    # Location given is a single chromosome, i.e. 6
+                    location['chr'] = r['location']
+                    del location['interval']
+            else:
+                del location['interval']
+            gene['location'] = location
+            assert ChromosomeLocation(**gene['location'])
 
     def _load_dynamodb(self, gene, batch):
         """Insert gene records into DynamoDB gene_concepts table

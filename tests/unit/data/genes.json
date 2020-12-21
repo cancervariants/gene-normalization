@@ -106,17 +106,26 @@
     "label": "A1BG antisense RNA 1",
     "concept_id": "hgnc:37133",
     "symbol": "A1BG-AS1",
-    "location": "19q13.43",
+    "location": {
+      "chr": "19",
+      "interval": {
+        "end": null,
+        "start": "q13.43",
+        "type": "CytobandInterval"
+      },
+      "species_id": "taxonomy:9606",
+      "type": "ChromosomeLocation"
+    },
     "previous_symbols": [
-        "NCRNA00181",
-        "A1BGAS",
-        "A1BG-AS"
+      "NCRNA00181",
+      "A1BGAS",
+      "A1BG-AS"
     ],
     "aliases": ["FLJ23569"],
     "symbol_status": "approved",
     "other_identifiers": [
-        "ensembl:ENSG00000268895",
-        "ncbigene:503538"
+      "ensembl:ENSG00000268895",
+      "ncbigene:503538"
     ],
     "xrefs": [
       "vega:OTTHUMG00000183508",
@@ -158,7 +167,16 @@
     "label": "tumor protein p53",
     "concept_id": "hgnc:11998",
     "symbol": "TP53",
-    "location": "17p13.1",
+    "location": {
+      "chr": "17",
+      "interval": {
+        "end": null,
+        "start": "p13.1",
+        "type": "CytobandInterval"
+      },
+      "species_id": "taxonomy:9606",
+      "type": "ChromosomeLocation"
+    },
     "aliases": [
         "p53",
         "LFS1"
@@ -215,7 +233,16 @@
     "label": "alpha 1,3-galactosyltransferase 2",
     "concept_id": "hgnc:30005",
     "symbol": "A3GALT2",
-    "location": "1p35.1",
+    "location": {
+      "chr": "1",
+      "interval": {
+        "end": null,
+        "start": "p35.1",
+        "type": "CytobandInterval"
+      },
+      "species_id": "taxonomy:9606",
+      "type": "ChromosomeLocation"
+    },
     "previous_symbols": [
         "A3GALT2P"
     ],
@@ -257,6 +284,184 @@
   {
     "label_and_type": "igb3s##alias",
     "concept_id": "hgnc:30005",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:23170##identity",
+    "label": "WD repeat and HMG-box DNA binding protein 1",
+    "concept_id": "hgnc:23170",
+    "symbol": "WDHD1",
+    "location": {
+      "chr": "14",
+      "interval": {
+        "end": "q22.3",
+        "start": "q22.2",
+        "type": "CytobandInterval"
+      },
+      "species_id": "taxonomy:9606",
+      "type": "ChromosomeLocation"
+    },
+    "aliases": [
+        "AND-1",
+        "CTF4",
+        "CHTF4"
+    ],
+    "symbol_status": "approved",
+    "other_identifiers": [
+      "ensembl:ENSG00000198554",
+      "ncbigene:11169"
+    ],
+    "xrefs": [
+      "vega:OTTHUMG00000140304",
+      "refseq:NM_007086",
+      "omim:608126",
+      "ucsc:uc001xbm.3",
+      "uniprot:O75717",
+      "ccds:CCDS41955",
+      "ccds:CCDS9721",
+      "ena.embl:AJ006266",
+      "pubmed:9175701",
+      "pubmed:20028748"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "wdhd1##symbol",
+    "concept_id": "ncbigene:23170",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:4059##identity",
+    "label": "glucose-6-phosphatase regulator",
+    "concept_id": "hgnc:4059",
+    "symbol": "G6PR",
+    "location": {
+      "chr": null,
+      "interval": null,
+      "annotation": "reserved",
+      "species_id": "taxonomy:9606",
+      "type": "ChromosomeLocation"
+    },
+    "aliases": [
+        "GSD1aSP"
+    ],
+    "symbol_status": "approved",
+    "other_identifiers": [
+      "ncbigene:2541"
+    ],
+    "xrefs": [
+      "pubmed:2172641",
+      "pubmed:7814621",
+      "pubmed:2996501"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "g6pr##symbol",
+    "concept_id": "ncbigene:4059",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:37528##identity",
+    "label": "piwi-interacting RNA cluster 24",
+    "concept_id": "hgnc:37528",
+    "symbol": "PIRC24",
+    "location": {
+      "chr": "6",
+      "interval": null,
+      "species_id": "taxonomy:9606",
+      "type": "ChromosomeLocation"
+    },
+    "symbol_status": "approved",
+    "other_identifiers": [
+      "ncbigene:100313810"
+    ],
+    "xrefs": [
+      "pubmed:17881367"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "pirc24##symbol",
+    "concept_id": "ncbigene:37528",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:4101##identity",
+    "label": "G antigen 4",
+    "concept_id": "hgnc:4101",
+    "symbol": "GAGE4",
+    "location": {
+      "chr": "X",
+      "interval": {
+        "end": "p11.2",
+        "start": "p11.4",
+        "type": "CytobandInterval"
+      },
+      "annotation": "not on reference assembly",
+      "species_id": "taxonomy:9606",
+      "type": "ChromosomeLocation"
+    },
+    "symbol_status": "approved",
+    "aliases": [
+      "CT4.4"
+    ],
+    "other_identifiers": [
+      "ncbigene:2576"
+    ],
+    "xrefs": [
+      "refseq:NM_001474",
+      "omim:300597",
+      "uniprot:P0DSO3",
+      "ena.embl:U19145",
+      "pubmed:7544395"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "gage4##symbol",
+    "concept_id": "ncbigene:4101",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:31102##identity",
+    "label": "MAFF interacting protein (pseudogene)",
+    "concept_id": "hgnc:31102",
+    "symbol": "MAFIP",
+    "location": {
+      "chr": "14",
+      "interval": null,
+      "annotation": "unplaced",
+      "species_id": "taxonomy:9606",
+      "type": "ChromosomeLocation"
+    },
+    "symbol_status": "approved",
+    "aliases": [
+      "FLJ35473",
+      "FLJ00219",
+      "FLJ39633",
+      "MIP",
+      "pp5644",
+      "TEKT4P4"
+    ],
+    "other_identifiers": [
+      "ensembl:ENSG00000274847",
+      "ncbigene:727764"
+    ],
+    "xrefs": [
+      "vega:OTTHUMG00000188065",
+      "refseq:NR_046439",
+      "uniprot:Q8WZ33",
+      "ena.embl:AK074146",
+      "ena.embl:AF289559",
+      "pubmed:16549056",
+      "pubmed:15881666"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "mafip##symbol",
+    "concept_id": "ncbigene:31102",
     "src_name": "HGNC"
   },
   {

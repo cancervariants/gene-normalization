@@ -27,7 +27,16 @@ def a1bg_as1():
         'label': 'A1BG antisense RNA 1',
         'concept_id': 'hgnc:37133',
         'symbol': 'A1BG-AS1',
-        'location': '19q13.43',
+        'location': {
+            'chr': '19',
+            'interval': {
+                'end': None,
+                'start': 'q13.43',
+                'type': 'CytobandInterval'
+            },
+            'species_id': 'taxonomy:9606',
+            'type': 'ChromosomeLocation'
+        },
         'previous_symbols': [
             'NCRNA00181',
             'A1BGAS',
@@ -53,12 +62,21 @@ def a1bg_as1():
 
 @pytest.fixture(scope='module')
 def tp53():
-    """Create an TP53 gene fixture."""
+    """Create a TP53 gene fixture."""
     params = {
         'label': 'tumor protein p53',
         'concept_id': 'hgnc:11998',
         'symbol': 'TP53',
-        'location': '17p13.1',
+        'location': {
+            'chr': '17',
+            'interval': {
+                'end': None,
+                'start': 'p13.1',
+                'type': 'CytobandInterval'
+            },
+            'species_id': 'taxonomy:9606',
+            'type': 'ChromosomeLocation'
+        },
         'previous_symbols': [],
         'aliases': [
             'p53',
@@ -105,7 +123,16 @@ def a3galt2():
         'label': 'alpha 1,3-galactosyltransferase 2',
         'concept_id': 'hgnc:30005',
         'symbol': 'A3GALT2',
-        'location': '1p35.1',
+        'location': {
+            'chr': '1',
+            'interval': {
+                'end': None,
+                'start': 'p35.1',
+                'type': 'CytobandInterval'
+            },
+            'species_id': 'taxonomy:9606',
+            'type': 'ChromosomeLocation'
+        },
         'previous_symbols': [
             'A3GALT2P'
         ],
@@ -127,6 +154,186 @@ def a3galt2():
             'pubmed:10854427',
             'pubmed:18630988',
             'refseq:NM_001080438'
+        ]
+    }
+    return Gene(**params)
+
+
+@pytest.fixture(scope='module')
+def wdhd1():
+    """Create a WDHD1 gene fixture."""
+    params = {
+        'label': 'WD repeat and HMG-box DNA binding protein 1',
+        'concept_id': 'hgnc:23170',
+        'symbol': 'WDHD1',
+        'location': {
+            'chr': '14',
+            'interval': {
+                'end': 'q22.3',
+                'start': 'q22.2',
+                'type': 'CytobandInterval'
+            },
+            'species_id': 'taxonomy:9606',
+            'type': 'ChromosomeLocation'
+        },
+        'previous_symbols': [],
+        'aliases': [
+            'AND-1',
+            'CTF4',
+            'CHTF4'
+        ],
+        'symbol_status': 'approved',
+        'other_identifiers': [
+            'ensembl:ENSG00000198554',
+            'ncbigene:11169'
+        ],
+        'xrefs': [
+            'vega:OTTHUMG00000140304',
+            'refseq:NM_007086',
+            'omim:608126',
+            'ucsc:uc001xbm.3',
+            'uniprot:O75717',
+            'ccds:CCDS41955',
+            'ccds:CCDS9721',
+            'ena.embl:AJ006266',
+            'pubmed:9175701',
+            'pubmed:20028748'
+        ]
+    }
+    return Gene(**params)
+
+
+@pytest.fixture(scope='module')
+def g6pr():
+    """Create a G6PR gene fixture."""
+    params = {
+        'label': 'glucose-6-phosphatase regulator',
+        'concept_id': 'hgnc:4059',
+        'symbol': 'G6PR',
+        'location': {
+            'chr': None,
+            'interval': None,
+            'annotation': 'reserved',
+            'species_id': 'taxonomy:9606',
+            'type': 'ChromosomeLocation'
+        },
+        'previous_symbols': [],
+        'aliases': [
+            'GSD1aSP'
+        ],
+        'symbol_status': 'approved',
+        'other_identifiers': [
+            'ncbigene:2541'
+        ],
+        'xrefs': [
+            'pubmed:2172641',
+            'pubmed:7814621',
+            'pubmed:2996501'
+        ]
+    }
+    return Gene(**params)
+
+
+@pytest.fixture(scope='module')
+def pirc24():
+    """Create a PIRC24 gene fixture."""
+    params = {
+        'label': 'piwi-interacting RNA cluster 24',
+        'concept_id': 'hgnc:37528',
+        'symbol': 'PIRC24',
+        'location': {
+            'chr': '6',
+            'interval': None,
+            'species_id': 'taxonomy:9606',
+            'type': 'ChromosomeLocation'
+        },
+        'previous_symbols': [],
+        'aliases': [
+        ],
+        'symbol_status': 'approved',
+        'other_identifiers': [
+            'ncbigene:100313810'
+        ],
+        'xrefs': [
+            'pubmed:17881367'
+        ]
+    }
+    return Gene(**params)
+
+
+@pytest.fixture(scope='module')
+def gage4():
+    """Create a GAGE4 gene fixture."""
+    params = {
+        'label': 'G antigen 4',
+        'concept_id': 'hgnc:4101',
+        'symbol': 'GAGE4',
+        'location': {
+            'chr': 'X',
+            'interval': {
+                'end': 'p11.2',
+                'start': 'p11.4',
+                'type': 'CytobandInterval'
+            },
+            'annotation': 'not on reference assembly',
+            'species_id': 'taxonomy:9606',
+            'type': 'ChromosomeLocation'
+        },
+        'previous_symbols': [],
+        'aliases': [
+            'CT4.4'
+        ],
+        'symbol_status': 'approved',
+        'other_identifiers': [
+            'ncbigene:2576'
+        ],
+        'xrefs': [
+            'refseq:NM_001474',
+            'omim:300597',
+            'uniprot:P0DSO3',
+            'ena.embl:U19145',
+            'pubmed:7544395'
+        ]
+    }
+    return Gene(**params)
+
+
+@pytest.fixture(scope='module')
+def mafip():
+    """Create a MAFIP gene fixture."""
+    params = {
+        'label': 'MAFF interacting protein (pseudogene)',
+        'concept_id': 'hgnc:31102',
+        'symbol': 'MAFIP',
+        'location': {
+            'chr': '14',
+            'interval': None,
+            'annotation': 'unplaced',
+            'species_id': 'taxonomy:9606',
+            'type': 'ChromosomeLocation'
+        },
+        'previous_symbols': [],
+        'aliases': [
+            'FLJ35473',
+            'FLJ00219',
+            'FLJ39633',
+            'MIP',
+            'pp5644',
+            'TEKT4P4'
+        ],
+        'symbol_status': 'approved',
+        'other_identifiers': [
+            'ensembl:ENSG00000274847',
+            'ncbigene:727764'
+        ],
+        'xrefs': [
+            'vega:OTTHUMG00000188065',
+            'refseq:NR_046439',
+            'uniprot:Q8WZ33',
+            'ena.embl:AK074146',
+            'ena.embl:AF289559',
+            'pubmed:16549056',
+            'pubmed:15881666'
         ]
     }
     return Gene(**params)
@@ -598,6 +805,181 @@ def test_tp53_alias(tp53, hgnc):
     assert set(normalized_gene.xrefs) == set(tp53.xrefs)
     assert normalized_gene.symbol == tp53.symbol
     assert normalized_gene.location == tp53.location
+
+
+def test_wdhd1(wdhd1, hgnc):
+    """Test that wdhd1 gene normalizes to correct gene concept."""
+    normalizer_response = hgnc.normalize('hgnc:23170')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == wdhd1.label
+    assert normalized_gene.concept_id == wdhd1.concept_id
+    assert set(normalized_gene.aliases) == set(wdhd1.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(wdhd1.other_identifiers)
+    assert normalized_gene.symbol_status == wdhd1.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(wdhd1.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(wdhd1.xrefs)
+    assert normalized_gene.symbol == wdhd1.symbol
+    assert normalized_gene.location == wdhd1.location
+
+    normalizer_response = hgnc.normalize('WDHD1')
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == wdhd1.label
+    assert normalized_gene.concept_id == wdhd1.concept_id
+    assert set(normalized_gene.aliases) == set(wdhd1.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(wdhd1.other_identifiers)
+    assert normalized_gene.symbol_status == wdhd1.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(wdhd1.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(wdhd1.xrefs)
+    assert normalized_gene.symbol == wdhd1.symbol
+    assert normalized_gene.location == wdhd1.location
+
+
+def test_g6pr(g6pr, hgnc):
+    """Test that g6pr gene normalizes to correct gene concept."""
+    normalizer_response = hgnc.normalize('hgnc:4059')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == g6pr.label
+    assert normalized_gene.concept_id == g6pr.concept_id
+    assert set(normalized_gene.aliases) == set(g6pr.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(g6pr.other_identifiers)
+    assert normalized_gene.symbol_status == g6pr.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(g6pr.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(g6pr.xrefs)
+    assert normalized_gene.symbol == g6pr.symbol
+    assert normalized_gene.location == g6pr.location
+
+    normalizer_response = hgnc.normalize('G6PR')
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == g6pr.label
+    assert normalized_gene.concept_id == g6pr.concept_id
+    assert set(normalized_gene.aliases) == set(g6pr.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(g6pr.other_identifiers)
+    assert normalized_gene.symbol_status == g6pr.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(g6pr.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(g6pr.xrefs)
+    assert normalized_gene.symbol == g6pr.symbol
+    assert normalized_gene.location == g6pr.location
+
+
+def test_pirc24(pirc24, hgnc):
+    """Test that pirc24 gene normalizes to correct gene concept."""
+    normalizer_response = hgnc.normalize('hgnc:37528')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == pirc24.label
+    assert normalized_gene.concept_id == pirc24.concept_id
+    assert set(normalized_gene.aliases) == set(pirc24.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(pirc24.other_identifiers)
+    assert normalized_gene.symbol_status == pirc24.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(pirc24.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(pirc24.xrefs)
+    assert normalized_gene.symbol == pirc24.symbol
+    assert normalized_gene.location == pirc24.location
+
+    normalizer_response = hgnc.normalize('PIRC24')
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == pirc24.label
+    assert normalized_gene.concept_id == pirc24.concept_id
+    assert set(normalized_gene.aliases) == set(pirc24.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(pirc24.other_identifiers)
+    assert normalized_gene.symbol_status == pirc24.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(pirc24.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(pirc24.xrefs)
+    assert normalized_gene.symbol == pirc24.symbol
+    assert normalized_gene.location == pirc24.location
+
+
+def test_gage4(gage4, hgnc):
+    """Test that gage4 gene normalizes to correct gene concept."""
+    normalizer_response = hgnc.normalize('hgnc:4101')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == gage4.label
+    assert normalized_gene.concept_id == gage4.concept_id
+    assert set(normalized_gene.aliases) == set(gage4.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(gage4.other_identifiers)
+    assert normalized_gene.symbol_status == gage4.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(gage4.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(gage4.xrefs)
+    assert normalized_gene.symbol == gage4.symbol
+    assert normalized_gene.location == gage4.location
+
+    normalizer_response = hgnc.normalize('GAGE4')
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == gage4.label
+    assert normalized_gene.concept_id == gage4.concept_id
+    assert set(normalized_gene.aliases) == set(gage4.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(gage4.other_identifiers)
+    assert normalized_gene.symbol_status == gage4.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(gage4.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(gage4.xrefs)
+    assert normalized_gene.symbol == gage4.symbol
+    assert normalized_gene.location == gage4.location
+
+
+def test_mafip(mafip, hgnc):
+    """Test that mafip gene normalizes to correct gene concept."""
+    normalizer_response = hgnc.normalize('hgnc:31102')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == mafip.label
+    assert normalized_gene.concept_id == mafip.concept_id
+    assert set(normalized_gene.aliases) == set(mafip.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(mafip.other_identifiers)
+    assert normalized_gene.symbol_status == mafip.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(mafip.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(mafip.xrefs)
+    assert normalized_gene.symbol == mafip.symbol
+    assert normalized_gene.location == mafip.location
+
+    normalizer_response = hgnc.normalize('MAFIP')
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == mafip.label
+    assert normalized_gene.concept_id == mafip.concept_id
+    assert set(normalized_gene.aliases) == set(mafip.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(mafip.other_identifiers)
+    assert normalized_gene.symbol_status == mafip.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(mafip.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(mafip.xrefs)
+    assert normalized_gene.symbol == mafip.symbol
+    assert normalized_gene.location == mafip.location
 
 
 def test_no_match(hgnc):
