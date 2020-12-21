@@ -327,7 +327,7 @@
   },
   {
     "label_and_type": "wdhd1##symbol",
-    "concept_id": "ncbigene:23170",
+    "concept_id": "hgnc:23170",
     "src_name": "HGNC"
   },
   {
@@ -358,7 +358,7 @@
   },
   {
     "label_and_type": "g6pr##symbol",
-    "concept_id": "ncbigene:4059",
+    "concept_id": "hgnc:4059",
     "src_name": "HGNC"
   },
   {
@@ -383,7 +383,7 @@
   },
   {
     "label_and_type": "pirc24##symbol",
-    "concept_id": "ncbigene:37528",
+    "concept_id": "hgnc:37528",
     "src_name": "HGNC"
   },
   {
@@ -420,7 +420,7 @@
   },
   {
     "label_and_type": "gage4##symbol",
-    "concept_id": "ncbigene:4101",
+    "concept_id": "hgnc:4101",
     "src_name": "HGNC"
   },
   {
@@ -461,7 +461,7 @@
   },
   {
     "label_and_type": "mafip##symbol",
-    "concept_id": "ncbigene:31102",
+    "concept_id": "hgnc:31102",
     "src_name": "HGNC"
   },
   {
