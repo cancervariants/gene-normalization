@@ -695,7 +695,7 @@
     "src_name": "NCBI"
   },
   {
-    "label_and_type": "AFA##symbol",
+    "label_and_type": "afa##symbol",
     "concept_id": "ncbigene:170",
     "src_name": "NCBI"
   },
@@ -740,7 +740,7 @@
         "hgnc:10992", "ensembl:ENSG00000169100"
     ],
     "previous_symbols": ["ANT3Y"],
-    "xrefs": ["omim:403000"],
+    "xrefs": ["omim:403000", "omim:300151"],
     "location": [
       {
         "chr": "X",
