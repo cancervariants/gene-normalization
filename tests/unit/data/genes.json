@@ -510,8 +510,19 @@
       "hgnc:20225", "ensembl:ENSG00000011332"
     ],
     "xrefs": ["omim:601670"],
-    "seqid": "19",
-    "location": "19q13.2",
+    "location": [
+      {
+        "chr": "19",
+        "interval": {
+          "end": null,
+          "start": "q13.2",
+          "type": "CytobandInterval"
+        },
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
     "src_name": "NCBI"
   },
   {
@@ -550,8 +561,19 @@
         "LOC157663", "PPM2C"
     ],
     "xrefs": ["omim:605993"],
-    "seqid": "8",
-    "location": "8q22.1",
+    "location": [
+      {
+        "chr": "8",
+        "interval": {
+          "end": null,
+          "start": "q22.1",
+          "type": "CytobandInterval"
+        },
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
     "src_name": "NCBI"
   },
   {
@@ -592,6 +614,307 @@
   {
     "label_and_type": "ppm2c##alias",
     "concept_id": "ncbigene:54704",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:10251##identity",
+    "label": "sprouty RTK signaling antagonist 3",
+    "concept_id": "ncbigene:10251",
+    "symbol": "SPRY3",
+    "aliases": ["spry-3"],
+    "other_identifiers": [
+        "hgnc:11271", "ensembl:ENSG00000168939"
+    ],
+    "previous_symbols": ["LOC170187", "LOC253479"],
+    "xrefs": ["omim:300531"],
+    "location": [
+      {
+        "chr": "Y",
+        "interval": {
+          "end": null,
+          "start": "q12",
+          "type": "CytobandInterval"
+        },
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      },
+      {
+        "chr": "X",
+        "interval": {
+          "end": null,
+          "start": "q28",
+          "type": "CytobandInterval"
+        },
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "spry3##symbol",
+    "concept_id": "ncbigene:10251",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "spry-3##alias",
+    "concept_id": "ncbigene:10251",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:106##identity",
+    "label": "adenosine deaminase complexing protein 1",
+    "concept_id": "ncbigene:106",
+    "symbol": "ADCP1",
+    "other_identifiers": [
+        "hgnc:229"
+    ],
+    "location": [
+      {
+        "chr": "6",
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "adcp1##symbol",
+    "concept_id": "ncbigene:106",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:170##identity",
+    "label": "ankyloblepharon filiforme adnatum",
+    "concept_id": "ncbigene:170",
+    "symbol": "AFA",
+    "xrefs": ["omim:106250"],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "AFA##symbol",
+    "concept_id": "ncbigene:170",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:7637##identity",
+    "label": "zinc finger protein 84",
+    "concept_id": "ncbigene:7637",
+    "symbol": "ZNF84",
+    "aliases": ["HPF2"],
+    "other_identifiers": [
+        "hgnc:13159", "ensembl:ENSG00000198040"
+    ],
+    "previous_symbols": ["LOC100287429"],
+    "xrefs": ["omim:618554"],
+    "location": [
+      {
+        "chr": "12",
+        "interval": {
+          "end": null,
+          "start": "q24.33",
+          "type": "CytobandInterval"
+        },
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "znf84##symbol",
+    "concept_id": "ncbigene:7637",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:293##identity",
+    "label": "solute carrier family 25 member 6",
+    "concept_id": "ncbigene:293",
+    "symbol": "SLC25A6",
+    "aliases": ["AAC3", "ANT", "ANT 2", "ANT 3", "ANT3", "ANT3Y"],
+    "other_identifiers": [
+        "hgnc:10992", "ensembl:ENSG00000169100"
+    ],
+    "previous_symbols": ["ANT3Y"],
+    "xrefs": ["omim:403000"],
+    "location": [
+      {
+        "chr": "X",
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      },
+      {
+        "chr": "Y",
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "slc25A6##symbol",
+    "concept_id": "ncbigene:293",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:106783576##identity",
+    "label": "nonconserved acetylation island sequence 68 enhancer",
+    "concept_id": "ncbigene:106783576",
+    "symbol": "LOC106783576",
+    "location": [
+      {
+        "chr": "10",
+        "interval": {
+          "end": null,
+          "start": "p",
+          "type": "CytobandInterval"
+        },
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "loc106783576##symbol",
+    "concept_id": "ncbigene:106783576",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:619538##identity",
+    "label": "otitis media, susceptibility to",
+    "concept_id": "ncbigene:619538",
+    "symbol": "OMS",
+    "aliases": ["COME/ROM"],
+    "xrefs": ["omim:166760"],
+    "location": [
+      {
+        "chr": "10",
+        "interval": {
+          "end": null,
+          "start": "q26.3",
+          "type": "CytobandInterval"
+        },
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      },
+      {
+        "chr": "19",
+        "interval": {
+          "end": "q13.43",
+          "start": "q13.42",
+          "type": "CytobandInterval"
+        },
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      },
+      {
+        "chr": "3",
+        "interval": {
+          "end": null,
+          "start": "p25.3",
+          "type": "CytobandInterval"
+        },
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "oms##symbol",
+    "concept_id": "ncbigene:619538",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:2722##identity",
+    "label": "glaucoma 1, open angle, B (adult-onset)",
+    "concept_id": "ncbigene:2722",
+    "symbol": "GLC1B",
+    "xrefs": ["omim:606689"],
+    "location": [
+      {
+        "chr": "2",
+        "interval": {
+          "end": "q13",
+          "start": "cen",
+          "type": "CytobandInterval"
+        },
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "glc1b##symbol",
+    "concept_id": "ncbigene:2722",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:50829##identity",
+    "label": "Hodgkin disease, susceptibility, pseudoautosomal",
+    "concept_id": "ncbigene:50829",
+    "symbol": "HDPA",
+    "xrefs": ["omim:300221"],
+    "location": [
+      {
+        "chr": "X",
+        "interval": {
+          "end": "p22.32",
+          "start": "pter",
+          "type": "CytobandInterval"
+        },
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "hdpa##symbol",
+    "concept_id": "ncbigene:50829",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:731716##identity",
+    "label": "protein activator of interferon induced protein kinase EIF2AK2 pseudogene 1",
+    "concept_id": "ncbigene:731716",
+    "symbol": "PRKRAP1",
+    "other_identifiers": [
+        "hgnc:33447"
+    ],
+    "previous_symbols": ["LOC100289695"],
+    "location": [
+      {
+        "chr": "6",
+        "interval": {
+          "end": null,
+          "start": "p21.3",
+          "type": "CytobandInterval"
+        },
+        "annotation": "alternate reference locus",
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "prkrap1##symbol",
+    "concept_id": "ncbigene:731716",
     "src_name": "NCBI"
   }
 ]

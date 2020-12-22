@@ -2,7 +2,8 @@
 from .base import Base
 from gene import PROJECT_ROOT, DownloadException
 from gene.database import Database
-from gene.schemas import Meta, Gene, SourceName, NamespacePrefix
+from gene.schemas import Meta, Gene, SourceName, NamespacePrefix, \
+    ChromosomeLocation, IntervalType, LocationType, Annotation
 import logging
 from pathlib import Path
 import csv
@@ -11,6 +12,7 @@ from datetime import datetime
 import gzip
 import shutil
 from os import remove
+import re
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -168,23 +170,14 @@ class NCBI(Base):
                         del params['xrefs']
                     if not params['other_identifiers']:
                         del params['other_identifiers']
-                # Get seqid
-                if row[6] != '-':
-                    if row[6] == 'Un':
-                        params['seqid'] = 'unplaced'
-                    else:
-                        params['seqid'] = row[6]
                 # get location
-                if row[7] != '-':
-                    params['location'] = row[7]
+                self._get_location(row, params)
                 # get label
                 if row[8] != '-':
                     params['label'] = row[8]
                 # add prev symbols
                 if row[1] in prev_symbols.keys():
                     params['previous_symbols'] = prev_symbols[row[1]]
-                else:
-                    params['previous_symbols'] = []
                 self._load_data(Gene(**params), batch)
 
     def _load_data(self, gene: Gene, batch):
@@ -236,6 +229,112 @@ class NCBI(Base):
         item['label_and_type'] = f"{concept_id_lower}##identity"
         item['src_name'] = SourceName.NCBI.value
         batch.put_item(Item=item)
+
+    def _get_location(self, row, params):
+        """Store location attribute in a gene record.
+
+        :param list row: A row in NCBI data file
+        :param dict params: A transformed gene record
+        """
+        # get list of chromosomes
+        chromosomes = None
+        if row[6] != '-':
+            if '|' in row[6]:
+                chromosomes = row[6].split('|')
+            else:
+                chromosomes = [row[6]]
+
+        # get list of map locations
+        locations = None
+        if row[7] != '-':
+            if '|' in row[7]:
+                locations = row[7].split('|')
+            elif ';' in row[7]:
+                locations = row[7].split(';')
+            elif 'and' in row[7]:
+                locations = row[7].split('and')
+            else:
+                locations = [row[7]]
+
+        location_list = list()
+        if chromosomes and not locations:
+            for chromosome in chromosomes:
+                location = {
+                    'chr': chromosome.strip(),
+                    'species_id': 'taxonomy:9606',
+                    'type': LocationType.CHROMOSOME.value
+                }
+                assert ChromosomeLocation(**location)
+                location_list.append(location)
+        elif locations:
+            self._add_chromosome_location(locations, location_list, row)
+        if location_list:
+            params['location'] = location_list
+
+    def _add_chromosome_location(self, locations, location_list, row):
+        """Add a chromosome location to the location list.
+
+        :param list locations: NCBI map locations for a gene record.
+        :param list location_list: A list to store chromosome locations.
+        """
+        for i in range(len(locations)):
+            loc = locations[i].strip()
+            location = {
+                'species_id': 'taxonomy:9606',
+                'type': LocationType.CHROMOSOME.value
+            }
+
+            if Annotation.ALT_LOC.value in loc:
+                loc = loc.split(f"{Annotation.ALT_LOC.value}")[0].strip()
+                location['annotation'] = Annotation.ALT_LOC.value
+
+            interval = dict()
+            interval['type'] = IntervalType.CYTOBAND
+            contains_centromere = False
+            if 'cen' in loc:
+                contains_centromere = True
+
+            arm_match = re.search("[pq]", loc)
+            if arm_match and not contains_centromere:
+                arm_ix = arm_match.start()
+                chromosome = loc[:arm_ix].strip()
+                if not re.match("^([0-9]{1,2}|X|Y|MT)$", chromosome):
+                    continue
+                location['chr'] = chromosome
+
+                # Check to see if there is a sub band included
+                if arm_ix != len(loc) - 1:
+                    if '-' in loc:
+                        # Location gives both start and end
+                        range_ix = re.search('-', loc).start()
+                        start = loc[arm_ix:range_ix]
+                        end = loc[range_ix + 1:]
+
+                        interval['start'] = start
+                        interval['end'] = end
+                    else:
+                        # Location only gives start
+                        start = loc[arm_ix:]
+                        interval['start'] = start
+                else:
+                    interval['start'] = loc[arm_ix]
+                location['interval'] = interval
+
+            elif contains_centromere:
+                centromere_ix = re.search("cen", loc).start()
+                location['chr'] = loc[:centromere_ix].strip()
+                interval['start'] = "cen"
+
+                if '-' in loc:
+                    range_ix = re.search('-', loc).start()
+                    interval['end'] = loc[range_ix + 1:]
+
+                location['interval'] = interval
+            else:
+                location['chr'] = loc
+
+            assert ChromosomeLocation(**location)
+            location_list.append(location)
 
     def _add_meta(self):
         """Load metadata"""
