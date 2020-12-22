@@ -50,6 +50,7 @@ class Annotation(str, Enum):
     NOT_FOUND_ON_REFERENCE = "not on reference assembly"
     UNPLACED = "unplaced"
     RESERVED = "reserved"
+    ALT_LOC = "alternate reference locus"
 
 
 class Location(BaseModel):
@@ -81,7 +82,7 @@ class Gene(BaseModel):
     concept_id: str
     symbol: str
     # TODO: Check if this is required
-    location: Optional[Union[ChromosomeLocation, SequenceLocation]]
+    location: Optional[List[Union[ChromosomeLocation, SequenceLocation]]]
     label: Optional[str]
     previous_symbols: Optional[List[str]]
     aliases: Optional[List[str]]
