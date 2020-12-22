@@ -557,7 +557,7 @@
     "label_and_type": "hgnc:7409##identity",
     "label": "mitochondrially encoded 7S DNA",
     "concept_id": "hgnc:7409",
-    "symbol": "MT-7SDNA'",
+    "symbol": "MT-7SDNA",
     "location": [
       {
         "chr": "MT",
