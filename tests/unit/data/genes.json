@@ -151,7 +151,7 @@
   },
   {
     "label_and_type": "ensembl:ensg00000168939##identity",
-    "concept_id": "ensembl:EnSG00000168939",
+    "concept_id": "ensembl:ENSG00000168939",
     "symbol": "SPRY3",
     "label": "sprouty RTK signaling antagonist 3",
     "location": [
