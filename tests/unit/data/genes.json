@@ -4,15 +4,17 @@
     "concept_id": "ensembl:ENSG00000223972",
     "symbol": "DDX11L1",
     "label": "DEAD/H-box helicase 11 like 1 (pseudogene)",
-    "location": {
-      "interval": {
-        "end": "14409",
-        "start": "11869",
-        "type": "SimpleInterval"
-      },
-      "sequence_id": "ga4gh.VSL.tUaFuu4gZM0KH5h3EXTvhYi4ihJzPQF7",
-      "type": "SequenceLocation"
-    },
+    "location": [
+      {
+        "interval": {
+          "end": "14409",
+          "start": "11869",
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh.VSL.tUaFuu4gZM0KH5h3EXTvhYi4ihJzPQF7",
+        "type": "SequenceLocation"
+      }
+    ],
     "strand": "+",
     "other_identifiers": ["hgnc:37102"],
     "src_name": "Ensembl"
@@ -27,15 +29,17 @@
     "concept_id": "ensembl:ENSG00000141510",
     "symbol": "TP53",
     "label": "tumor protein p53",
-    "location": {
-      "interval": {
-        "end": "7687538",
-        "start": "7661779",
-        "type": "SimpleInterval"
-      },
-      "sequence_id": "ga4gh.VSL.z7qUxIqvCPT73USOo1SVTRbrrqejT6JP",
-      "type": "SequenceLocation"
-    },
+    "location": [
+      {
+        "interval": {
+          "end": "7687538",
+          "start": "7661779",
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh.VSL.z7qUxIqvCPT73USOo1SVTRbrrqejT6JP",
+        "type": "SequenceLocation"
+      }
+    ],
     "strand": "-",
     "other_identifiers": ["hgnc:11998"],
     "src_name": "Ensembl"
@@ -50,15 +54,17 @@
     "concept_id": "ensembl:ENSG00000278757",
     "symbol": "U6",
     "label": "U6 spliceosomal RNA",
-    "location": {
-      "interval": {
-        "end": "516479",
-        "start": "516376",
-        "type": "SimpleInterval"
-      },
-      "sequence_id": "ga4gh.VSL.O2QimEWWS6bLrTqe6KAP--a5-muvksxz",
-      "type": "SequenceLocation"
-    },
+    "location": [
+      {
+        "interval": {
+          "end": "516479",
+          "start": "516376",
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh.VSL.O2QimEWWS6bLrTqe6KAP--a5-muvksxz",
+        "type": "SequenceLocation"
+      }
+    ],
     "strand": "-",
     "xrefs": ["rfam:RF00026"],
     "src_name": "Ensembl"
@@ -73,15 +79,17 @@
     "concept_id": "ensembl:ENSG00000197180",
     "symbol": "CH17-340M24.3",
     "label": "uncharacterized protein BC009467",
-    "location": {
-      "interval": {
-        "end": "154428479",
-        "start": "154424380",
-        "type": "SimpleInterval"
-      },
-      "sequence_id": "ga4gh.VSL.U0lJ88JkUFNGdJ5BV8oCHy3DS453GtUO",
-      "type": "SequenceLocation"
-    },
+    "location": [
+      {
+        "interval": {
+          "end": "154428479",
+          "start": "154424380",
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh.VSL.U0lJ88JkUFNGdJ5BV8oCHy3DS453GtUO",
+        "type": "SequenceLocation"
+      }
+    ],
     "strand": "-",
     "other_identifiers": ["ncbigene:158960"],
     "src_name": "Ensembl"
@@ -96,15 +104,17 @@
     "concept_id": "ensembl:ENSG00000284906",
     "symbol": "AC091057.5",
     "label": "Rho GTPase-activating protein 11B",
-    "location": {
-      "interval": {
-        "end": "30685606",
-        "start": "30624548",
-        "type": "SimpleInterval"
-      },
-      "sequence_id": "ga4gh.VSL.An1MlwkqjP7Jjo8k4kgefV_Ecdm8aFFP",
-      "type": "SequenceLocation"
-    },
+    "location": [
+      {
+        "interval": {
+          "end": "30685606",
+          "start": "30624548",
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh.VSL.An1MlwkqjP7Jjo8k4kgefV_Ecdm8aFFP",
+        "type": "SequenceLocation"
+      }
+    ],
     "strand": "+",
     "xrefs": ["uniprot:Q3KRB8"],
     "src_name": "Ensembl"
@@ -119,15 +129,17 @@
     "concept_id": "ensembl:ENSG00000272920",
     "symbol": "hsa-mir-1253",
     "label": "hsa-mir-1253",
-    "location": {
-      "interval": {
-        "end": "2748182",
-        "start": "2748078",
-        "type": "SimpleInterval"
-      },
-      "sequence_id": "ga4gh.VSL.Or8qcAjmhzDybjczDhK1eB5c0LOwi4Jt",
-      "type": "SequenceLocation"
-    },
+    "location": [
+      {
+        "interval": {
+          "end": "2748182",
+          "start": "2748078",
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh.VSL.Or8qcAjmhzDybjczDhK1eB5c0LOwi4Jt",
+        "type": "SequenceLocation"
+      }
+    ],
     "strand": "+",
     "xrefs": ["mirbase:MI0006387"],
     "src_name": "Ensembl"
@@ -142,16 +154,18 @@
     "label": "A1BG antisense RNA 1",
     "concept_id": "hgnc:37133",
     "symbol": "A1BG-AS1",
-    "location": {
-      "chr": "19",
-      "interval": {
-        "end": null,
-        "start": "q13.43",
-        "type": "CytobandInterval"
-      },
-      "species_id": "taxonomy:9606",
-      "type": "ChromosomeLocation"
-    },
+    "location": [
+      {
+        "chr": "19",
+        "interval": {
+          "end": null,
+          "start": "q13.43",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
     "previous_symbols": [
       "NCRNA00181",
       "A1BGAS",
@@ -203,16 +217,18 @@
     "label": "tumor protein p53",
     "concept_id": "hgnc:11998",
     "symbol": "TP53",
-    "location": {
-      "chr": "17",
-      "interval": {
-        "end": null,
-        "start": "p13.1",
-        "type": "CytobandInterval"
-      },
-      "species_id": "taxonomy:9606",
-      "type": "ChromosomeLocation"
-    },
+    "location": [
+      {
+        "chr": "17",
+        "interval": {
+          "end": null,
+          "start": "p13.1",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
     "aliases": [
         "p53",
         "LFS1"
@@ -269,16 +285,18 @@
     "label": "alpha 1,3-galactosyltransferase 2",
     "concept_id": "hgnc:30005",
     "symbol": "A3GALT2",
-    "location": {
-      "chr": "1",
-      "interval": {
-        "end": null,
-        "start": "p35.1",
-        "type": "CytobandInterval"
-      },
-      "species_id": "taxonomy:9606",
-      "type": "ChromosomeLocation"
-    },
+    "location": [
+      {
+        "chr": "1",
+        "interval": {
+          "end": null,
+          "start": "p35.1",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
     "previous_symbols": [
         "A3GALT2P"
     ],
@@ -327,16 +345,18 @@
     "label": "WD repeat and HMG-box DNA binding protein 1",
     "concept_id": "hgnc:23170",
     "symbol": "WDHD1",
-    "location": {
-      "chr": "14",
-      "interval": {
-        "end": "q22.3",
-        "start": "q22.2",
-        "type": "CytobandInterval"
-      },
-      "species_id": "taxonomy:9606",
-      "type": "ChromosomeLocation"
-    },
+    "location": [
+      {
+        "chr": "14",
+        "interval": {
+          "end": "q22.3",
+          "start": "q22.2",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
     "aliases": [
         "AND-1",
         "CTF4",
@@ -371,13 +391,15 @@
     "label": "glucose-6-phosphatase regulator",
     "concept_id": "hgnc:4059",
     "symbol": "G6PR",
-    "location": {
-      "chr": null,
-      "interval": null,
-      "annotation": "reserved",
-      "species_id": "taxonomy:9606",
-      "type": "ChromosomeLocation"
-    },
+    "location": [
+      {
+        "chr": null,
+        "interval": null,
+        "annotation": "reserved",
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
     "aliases": [
         "GSD1aSP"
     ],
@@ -402,12 +424,14 @@
     "label": "piwi-interacting RNA cluster 24",
     "concept_id": "hgnc:37528",
     "symbol": "PIRC24",
-    "location": {
-      "chr": "6",
-      "interval": null,
-      "species_id": "taxonomy:9606",
-      "type": "ChromosomeLocation"
-    },
+    "location": [
+      {
+        "chr": "6",
+        "interval": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
     "symbol_status": "approved",
     "other_identifiers": [
       "ncbigene:100313810"
@@ -427,17 +451,19 @@
     "label": "G antigen 4",
     "concept_id": "hgnc:4101",
     "symbol": "GAGE4",
-    "location": {
-      "chr": "X",
-      "interval": {
-        "end": "p11.2",
-        "start": "p11.4",
-        "type": "CytobandInterval"
-      },
-      "annotation": "not on reference assembly",
-      "species_id": "taxonomy:9606",
-      "type": "ChromosomeLocation"
-    },
+    "location": [
+      {
+        "chr": "X",
+        "interval": {
+          "end": "p11.2",
+          "start": "p11.4",
+          "type": "CytobandInterval"
+        },
+        "annotation": "not on reference assembly",
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ] ,
     "symbol_status": "approved",
     "aliases": [
       "CT4.4"
@@ -464,13 +490,15 @@
     "label": "MAFF interacting protein (pseudogene)",
     "concept_id": "hgnc:31102",
     "symbol": "MAFIP",
-    "location": {
-      "chr": "14",
-      "interval": null,
-      "annotation": "unplaced",
-      "species_id": "taxonomy:9606",
-      "type": "ChromosomeLocation"
-    },
+    "location": [
+      {
+        "chr": "14",
+        "interval": null,
+        "annotation": "unplaced",
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ] ,
     "symbol_status": "approved",
     "aliases": [
       "FLJ35473",
