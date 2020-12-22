@@ -27,16 +27,18 @@ def a1bg_as1():
         'label': 'A1BG antisense RNA 1',
         'concept_id': 'hgnc:37133',
         'symbol': 'A1BG-AS1',
-        'location': {
-            'chr': '19',
-            'interval': {
-                'end': None,
-                'start': 'q13.43',
-                'type': 'CytobandInterval'
-            },
-            'species_id': 'taxonomy:9606',
-            'type': 'ChromosomeLocation'
-        },
+        'location': [
+            {
+                'chr': '19',
+                'interval': {
+                    'end': None,
+                    'start': 'q13.43',
+                    'type': 'CytobandInterval'
+                },
+                'species_id': 'taxonomy:9606',
+                'type': 'ChromosomeLocation'
+            }
+        ],
         'previous_symbols': [
             'NCRNA00181',
             'A1BGAS',
@@ -67,16 +69,18 @@ def tp53():
         'label': 'tumor protein p53',
         'concept_id': 'hgnc:11998',
         'symbol': 'TP53',
-        'location': {
-            'chr': '17',
-            'interval': {
-                'end': None,
-                'start': 'p13.1',
-                'type': 'CytobandInterval'
-            },
-            'species_id': 'taxonomy:9606',
-            'type': 'ChromosomeLocation'
-        },
+        'location': [
+            {
+                'chr': '17',
+                'interval': {
+                    'end': None,
+                    'start': 'p13.1',
+                    'type': 'CytobandInterval'
+                },
+                'species_id': 'taxonomy:9606',
+                'type': 'ChromosomeLocation'
+            }
+        ],
         'previous_symbols': [],
         'aliases': [
             'p53',
@@ -123,16 +127,18 @@ def a3galt2():
         'label': 'alpha 1,3-galactosyltransferase 2',
         'concept_id': 'hgnc:30005',
         'symbol': 'A3GALT2',
-        'location': {
-            'chr': '1',
-            'interval': {
-                'end': None,
-                'start': 'p35.1',
-                'type': 'CytobandInterval'
-            },
-            'species_id': 'taxonomy:9606',
-            'type': 'ChromosomeLocation'
-        },
+        'location': [
+            {
+                'chr': '1',
+                'interval': {
+                    'end': None,
+                    'start': 'p35.1',
+                    'type': 'CytobandInterval'
+                },
+                'species_id': 'taxonomy:9606',
+                'type': 'ChromosomeLocation'
+            }
+        ],
         'previous_symbols': [
             'A3GALT2P'
         ],
@@ -166,16 +172,18 @@ def wdhd1():
         'label': 'WD repeat and HMG-box DNA binding protein 1',
         'concept_id': 'hgnc:23170',
         'symbol': 'WDHD1',
-        'location': {
-            'chr': '14',
-            'interval': {
-                'end': 'q22.3',
-                'start': 'q22.2',
-                'type': 'CytobandInterval'
-            },
-            'species_id': 'taxonomy:9606',
-            'type': 'ChromosomeLocation'
-        },
+        'location': [
+            {
+                'chr': '14',
+                'interval': {
+                    'end': 'q22.3',
+                    'start': 'q22.2',
+                    'type': 'CytobandInterval'
+                },
+                'species_id': 'taxonomy:9606',
+                'type': 'ChromosomeLocation'
+            }
+        ],
         'previous_symbols': [],
         'aliases': [
             'AND-1',
@@ -210,13 +218,15 @@ def g6pr():
         'label': 'glucose-6-phosphatase regulator',
         'concept_id': 'hgnc:4059',
         'symbol': 'G6PR',
-        'location': {
-            'chr': None,
-            'interval': None,
-            'annotation': 'reserved',
-            'species_id': 'taxonomy:9606',
-            'type': 'ChromosomeLocation'
-        },
+        'location': [
+            {
+                'chr': None,
+                'interval': None,
+                'annotation': 'reserved',
+                'species_id': 'taxonomy:9606',
+                'type': 'ChromosomeLocation'
+            }
+        ],
         'previous_symbols': [],
         'aliases': [
             'GSD1aSP'
@@ -241,12 +251,14 @@ def pirc24():
         'label': 'piwi-interacting RNA cluster 24',
         'concept_id': 'hgnc:37528',
         'symbol': 'PIRC24',
-        'location': {
-            'chr': '6',
-            'interval': None,
-            'species_id': 'taxonomy:9606',
-            'type': 'ChromosomeLocation'
-        },
+        'location': [
+            {
+                'chr': '6',
+                'interval': None,
+                'species_id': 'taxonomy:9606',
+                'type': 'ChromosomeLocation'
+            }
+        ],
         'previous_symbols': [],
         'aliases': [
         ],
@@ -268,17 +280,19 @@ def gage4():
         'label': 'G antigen 4',
         'concept_id': 'hgnc:4101',
         'symbol': 'GAGE4',
-        'location': {
-            'chr': 'X',
-            'interval': {
-                'end': 'p11.2',
-                'start': 'p11.4',
-                'type': 'CytobandInterval'
-            },
-            'annotation': 'not on reference assembly',
-            'species_id': 'taxonomy:9606',
-            'type': 'ChromosomeLocation'
-        },
+        'location': [
+            {
+                'chr': 'X',
+                'interval': {
+                    'end': 'p11.2',
+                    'start': 'p11.4',
+                    'type': 'CytobandInterval'
+                },
+                'annotation': 'not on reference assembly',
+                'species_id': 'taxonomy:9606',
+                'type': 'ChromosomeLocation'
+            }
+        ],
         'previous_symbols': [],
         'aliases': [
             'CT4.4'
@@ -305,13 +319,15 @@ def mafip():
         'label': 'MAFF interacting protein (pseudogene)',
         'concept_id': 'hgnc:31102',
         'symbol': 'MAFIP',
-        'location': {
-            'chr': '14',
-            'interval': None,
-            'annotation': 'unplaced',
-            'species_id': 'taxonomy:9606',
-            'type': 'ChromosomeLocation'
-        },
+        'location': [
+            {
+                'chr': '14',
+                'interval': None,
+                'annotation': 'unplaced',
+                'species_id': 'taxonomy:9606',
+                'type': 'ChromosomeLocation'
+            }
+        ],
         'previous_symbols': [],
         'aliases': [
             'FLJ35473',

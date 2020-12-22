@@ -310,8 +310,8 @@ class HGNC(Base):
                     del location['interval']
             else:
                 del location['interval']
-            gene['location'] = location
-            assert ChromosomeLocation(**gene['location'])
+            assert ChromosomeLocation(**location)
+            gene['location'] = [location]
 
     def _load_data(self, *args, **kwargs):
         """Load the HGNC source into normalized database."""
