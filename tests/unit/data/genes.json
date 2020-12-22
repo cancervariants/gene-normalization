@@ -150,6 +150,31 @@
     "src_name": "Ensembl"
   },
   {
+    "label_and_type": "ensembl:ensg00000168939##identity",
+    "concept_id": "ensembl:EnSG00000168939",
+    "symbol": "SPRY3",
+    "label": "sprouty RTK signaling antagonist 3",
+    "location": [
+      {
+        "interval": {
+          "end": "155612572",
+          "start": "155782459",
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh.VSL.hT8OEIdtXBZqH6kjGzol_MeDsISQ9Zyp",
+        "type": "SequenceLocation"
+      }
+    ],
+    "strand": "+",
+    "other_identifiers": ["hgnc:11271"],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "spry3##symbol",
+    "concept_id": "ensembl:ensg00000168939",
+    "src_name": "Ensembl"
+  },
+  {
     "label_and_type": "hgnc:37133##identity",
     "label": "A1BG antisense RNA 1",
     "concept_id": "hgnc:37133",

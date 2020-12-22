@@ -30,15 +30,17 @@ def ddx11l1():
         'aliases': [],
         'other_identifiers': ['hgnc:37102'],
         'symbol_status': None,
-        'location': {
-            'interval': {
-                'end': '14409',
-                'start': '11869',
-                'type': 'SimpleInterval'
-            },
-            'sequence_id': 'ga4gh.VSL.tUaFuu4gZM0KH5h3EXTvhYi4ihJzPQF7',
-            'type': 'SequenceLocation'
-        },
+        'location': [
+            {
+                'interval': {
+                    'end': '14409',
+                    'start': '11869',
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh.VSL.tUaFuu4gZM0KH5h3EXTvhYi4ihJzPQF7',
+                'type': 'SequenceLocation'
+            }
+        ],
         'strand': '+',
         'xrefs': []
     }
@@ -56,15 +58,17 @@ def tp53():
         'aliases': [],
         'other_identifiers': ['hgnc:11998'],
         'symbol_status': None,
-        'location': {
-            'interval': {
-                'end': '7687538',
-                'start': '7661779',
-                'type': 'SimpleInterval'
-            },
-            'sequence_id': 'ga4gh.VSL.z7qUxIqvCPT73USOo1SVTRbrrqejT6JP',
-            'type': 'SequenceLocation'
-        },
+        'location': [
+            {
+                'interval': {
+                    'end': '7687538',
+                    'start': '7661779',
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh.VSL.z7qUxIqvCPT73USOo1SVTRbrrqejT6JP',
+                'type': 'SequenceLocation'
+            }
+        ],
         'strand': '-',
         'xrefs': []
     }
@@ -82,15 +86,17 @@ def u6():
         'aliases': [],
         'other_identifiers': [],
         'symbol_status': None,
-        'location': {
-            'interval': {
-                'end': '516479',
-                'start': '516376',
-                'type': 'SimpleInterval'
-            },
-            'sequence_id': 'ga4gh.VSL.O2QimEWWS6bLrTqe6KAP--a5-muvksxz',
-            'type': 'SequenceLocation'
-        },
+        'location': [
+            {
+                'interval': {
+                    'end': '516479',
+                    'start': '516376',
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh.VSL.O2QimEWWS6bLrTqe6KAP--a5-muvksxz',
+                'type': 'SequenceLocation'
+            }
+        ],
         'strand': '-',
         'xrefs': ['rfam:RF00026']
     }
@@ -108,15 +114,17 @@ def CH17_340M24_3():
         'aliases': [],
         'other_identifiers': ['ncbigene:158960'],
         'symbol_status': None,
-        'location': {
-            'interval': {
-                'end': '154428479',
-                'start': '154424380',
-                'type': 'SimpleInterval'
-            },
-            'sequence_id': 'ga4gh.VSL.U0lJ88JkUFNGdJ5BV8oCHy3DS453GtUO',
-            'type': 'SequenceLocation'
-        },
+        'location': [
+            {
+                'interval': {
+                    'end': '154428479',
+                    'start': '154424380',
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh.VSL.U0lJ88JkUFNGdJ5BV8oCHy3DS453GtUO',
+                'type': 'SequenceLocation'
+            }
+        ],
         'strand': '-',
         'xrefs': []
     }
@@ -134,15 +142,17 @@ def AC091057_5():
         'aliases': [],
         'other_identifiers': [],
         'symbol_status': None,
-        'location': {
-            'interval': {
-                'end': '30685606',
-                'start': '30624548',
-                'type': 'SimpleInterval'
-            },
-            'sequence_id': 'ga4gh.VSL.An1MlwkqjP7Jjo8k4kgefV_Ecdm8aFFP',
-            'type': 'SequenceLocation'
-        },
+        'location': [
+            {
+                'interval': {
+                    'end': '30685606',
+                    'start': '30624548',
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh.VSL.An1MlwkqjP7Jjo8k4kgefV_Ecdm8aFFP',
+                'type': 'SequenceLocation'
+            }
+        ],
         'strand': '+',
         'xrefs': ['uniprot:Q3KRB8']
     }
@@ -160,17 +170,47 @@ def hsa_mir_1253():
         'aliases': [],
         'other_identifiers': [],
         'symbol_status': None,
-        'location': {
-            'interval': {
-                'end': '2748182',
-                'start': '2748078',
-                'type': 'SimpleInterval'
-            },
-            'sequence_id': 'ga4gh.VSL.Or8qcAjmhzDybjczDhK1eB5c0LOwi4Jt',
-            'type': 'SequenceLocation'
-        },
+        'location': [
+            {
+                'interval': {
+                    'end': '2748182',
+                    'start': '2748078',
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh.VSL.Or8qcAjmhzDybjczDhK1eB5c0LOwi4Jt',
+                'type': 'SequenceLocation'
+            }
+        ],
         'strand': '+',
         'xrefs': ['mirbase:MI0006387']
+    }
+    return Gene(**params)
+
+
+@pytest.fixture(scope='module')
+def spry3():
+    """Create a SPRY3 test fixture."""
+    params = {
+        'concept_id': 'ensembl:ENSG00000168939',
+        'symbol': 'SPRY3',
+        'label': 'sprouty RTK signaling antagonist 3',
+        'previous_symbols': [],
+        'aliases': [],
+        'other_identifiers': ['hgnc:11271'],
+        'symbol_status': None,
+        'location': [
+            {
+                'interval': {
+                    'end': '155782459',
+                    'start': '155612572',
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh.VSL.hT8OEIdtXBZqH6kjGzol_MeDsISQ9Zyp',
+                'type': 'SequenceLocation'
+            }
+        ],
+        'strand': '+',
+        'xrefs': []
     }
     return Gene(**params)
 
@@ -497,6 +537,43 @@ def test_hsa_mir_1253(hsa_mir_1253, ensembl):
     assert normalized_gene.symbol == hsa_mir_1253.symbol
     assert normalized_gene.strand == hsa_mir_1253.strand
     assert normalized_gene.location == hsa_mir_1253.location
+
+
+def test_spry3(spry3, ensembl):
+    """Test that spry3 gene normalizes to correct gene concept."""
+    normalizer_response = ensembl.normalize('EnSG00000168939')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == spry3.label
+    assert normalized_gene.concept_id == spry3.concept_id
+    assert set(normalized_gene.aliases) == set(spry3.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(spry3.other_identifiers)
+    assert normalized_gene.symbol_status == spry3.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(spry3.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(spry3.xrefs)
+    assert normalized_gene.symbol == spry3.symbol
+    assert normalized_gene.strand == spry3.strand
+    assert normalized_gene.location == spry3.location
+
+    normalizer_response = ensembl.normalize('spry3')
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == spry3.label
+    assert normalized_gene.concept_id == spry3.concept_id
+    assert set(normalized_gene.aliases) == set(spry3.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(spry3.other_identifiers)
+    assert normalized_gene.symbol_status == spry3.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(spry3.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(spry3.xrefs)
+    assert normalized_gene.symbol == spry3.symbol
+    assert normalized_gene.strand == spry3.strand
+    assert normalized_gene.location == spry3.location
 
 
 def test_no_match(ensembl):

@@ -172,7 +172,7 @@ class Ensembl(Base):
 
         blob = gene['symbol'].encode('utf-8')
 
-        gene['location'] = {
+        location = {
             "interval": {
                 "end": f.end,
                 "start": f.start,
@@ -181,7 +181,8 @@ class Ensembl(Base):
             "sequence_id": f"ga4gh.VSL.{self._sha512t24u(blob)}",
             "type": LocationType.SEQUENCE.value
         }
-        assert SequenceLocation(**gene['location'])
+        assert SequenceLocation(**location)
+        gene['location'] = [location]
 
         gene['label_and_type'] = \
             f"{gene['concept_id'].lower()}##identity"
