@@ -355,6 +355,133 @@ def mafip():
     return Gene(**params)
 
 
+@pytest.fixture(scope='module')
+def mt_7sdna():
+    """Create a MT-7SDNA gene fixture."""
+    params = {
+        'label': 'mitochondrially encoded 7S DNA',
+        'concept_id': 'hgnc:7409',
+        'symbol': 'MT-7SDNA',
+        'location': [
+            {
+                'chr': 'MT',
+                'interval': None,
+                'annotation': None,
+                'species_id': 'taxonomy:9606',
+                'type': 'ChromosomeLocation'
+            }
+        ],
+        'previous_symbols': [
+            'MT7SDNA'
+        ],
+        'aliases': [],
+        'symbol_status': 'approved',
+        'other_identifiers': [],
+        'xrefs': [
+            'pubmed:24709344',
+            'pubmed:273237'
+        ]
+    }
+    return Gene(**params)
+
+
+@pytest.fixture(scope='module')
+def cecr():
+    """Create a CECR gene fixture."""
+    params = {
+        'label': 'cat eye syndrome chromosome region',
+        'concept_id': 'hgnc:1838',
+        'symbol': 'CECR',
+        'location': [
+            {
+                'chr': '22',
+                'interval': {
+                    'end': 'q11',
+                    'start': 'pter',
+                    'type': 'CytobandInterval'
+                },
+                'species_id': 'taxonomy:9606',
+                'type': 'ChromosomeLocation'
+            }
+        ],
+        'previous_symbols': [],
+        'aliases': [
+        ],
+        'symbol_status': 'approved',
+        'other_identifiers': [
+            'ncbigene:1055'
+        ],
+        'xrefs': []
+    }
+    return Gene(**params)
+
+
+@pytest.fixture(scope='module')
+def csf2ra():
+    """Create a CSF2RA gene fixture."""
+    params = {
+        'label': 'colony stimulating factor 2 receptor subunit alpha',
+        'concept_id': 'hgnc:2435',
+        'symbol': 'CSF2RA',
+        'location': [
+            {
+                'chr': 'X',
+                'interval': {
+                    'end': None,
+                    'start': 'p22.32',
+                    'type': 'CytobandInterval'
+                },
+                'species_id': 'taxonomy:9606',
+                'type': 'ChromosomeLocation'
+            },
+            {
+                'chr': 'Y',
+                'interval': {
+                    'end': None,
+                    'start': 'p11.3',
+                    'type': 'CytobandInterval'
+                },
+                'annotation': None,
+                'species_id': 'taxonomy:9606',
+                'type': 'ChromosomeLocation'
+            }
+        ],
+        'previous_symbols': [
+            'CSF2R'
+        ],
+        'aliases': [
+            'CD116',
+            'alphaGMR'
+        ],
+        'symbol_status': 'approved',
+        'other_identifiers': [
+            'ensembl:ENSG00000198223',
+            'ncbigene:1438'
+        ],
+        'xrefs': [
+            'vega:OTTHUMG00000012533',
+            'refseq:NM_001161529',
+            'orphanet:209477',
+            'iuphar:1707',
+            'hcdmdb:CD116',
+            'omim:306250',
+            'omim:425000',
+            'ucsc:uc010nvv.3',
+            'uniprot:P15509',
+            'ena.embl:M64445',
+            'ccds:CCDS35190',
+            'ccds:CCDS55360',
+            'ccds:CCDS35191',
+            'ccds:CCDS55361',
+            'ccds:CCDS55359',
+            'ccds:CCDS35192',
+            'ccds:CCDS35193',
+            'pubmed:1702217'
+        ]
+    }
+    return Gene(**params)
+
+
 def test_concept_id_a1bg_as1(a1bg_as1, hgnc):
     """Test that a1bg_as1 gene normalizes to correct gene concept
     as a CONCEPT_ID match.
@@ -996,6 +1123,115 @@ def test_mafip(mafip, hgnc):
     assert set(normalized_gene.xrefs) == set(mafip.xrefs)
     assert normalized_gene.symbol == mafip.symbol
     assert normalized_gene.location == mafip.location
+
+
+def test_mt_7sdna(mt_7sdna, hgnc):
+    """Test that mt_7sdna gene normalizes to correct gene concept."""
+    normalizer_response = hgnc.normalize('hgnc:7409')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == mt_7sdna.label
+    assert normalized_gene.concept_id == mt_7sdna.concept_id
+    assert set(normalized_gene.aliases) == set(mt_7sdna.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(mt_7sdna.other_identifiers)
+    assert normalized_gene.symbol_status == mt_7sdna.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(mt_7sdna.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(mt_7sdna.xrefs)
+    assert normalized_gene.symbol == mt_7sdna.symbol
+    assert normalized_gene.location == mt_7sdna.location
+
+    normalizer_response = hgnc.normalize('MT-7SDNA')
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == mt_7sdna.label
+    assert normalized_gene.concept_id == mt_7sdna.concept_id
+    assert set(normalized_gene.aliases) == set(mt_7sdna.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(mt_7sdna.other_identifiers)
+    assert normalized_gene.symbol_status == mt_7sdna.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(mt_7sdna.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(mt_7sdna.xrefs)
+    assert normalized_gene.symbol == mt_7sdna.symbol
+    assert normalized_gene.location == mt_7sdna.location
+
+
+def test_cecr(cecr, hgnc):
+    """Test that cecr gene normalizes to correct gene concept."""
+    normalizer_response = hgnc.normalize('hgnc:1838')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == cecr.label
+    assert normalized_gene.concept_id == cecr.concept_id
+    assert set(normalized_gene.aliases) == set(cecr.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(cecr.other_identifiers)
+    assert normalized_gene.symbol_status == cecr.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(cecr.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(cecr.xrefs)
+    assert normalized_gene.symbol == cecr.symbol
+    assert normalized_gene.location == cecr.location
+
+    normalizer_response = hgnc.normalize('CECR')
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == cecr.label
+    assert normalized_gene.concept_id == cecr.concept_id
+    assert set(normalized_gene.aliases) == set(cecr.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(cecr.other_identifiers)
+    assert normalized_gene.symbol_status == cecr.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(cecr.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(cecr.xrefs)
+    assert normalized_gene.symbol == cecr.symbol
+    assert normalized_gene.location == cecr.location
+
+
+def test_csf2ra(csf2ra, hgnc):
+    """Test that csf2ra gene normalizes to correct gene concept."""
+    normalizer_response = hgnc.normalize('hgnc:2435')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == csf2ra.label
+    assert normalized_gene.concept_id == csf2ra.concept_id
+    assert set(normalized_gene.aliases) == set(csf2ra.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(csf2ra.other_identifiers)
+    assert normalized_gene.symbol_status == csf2ra.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(csf2ra.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(csf2ra.xrefs)
+    assert normalized_gene.symbol == csf2ra.symbol
+    assert len(normalized_gene.location) == len(csf2ra.location)
+    for loc in csf2ra.location:
+        assert loc in normalized_gene.location
+
+    normalizer_response = hgnc.normalize('CSF2RA')
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == csf2ra.label
+    assert normalized_gene.concept_id == csf2ra.concept_id
+    assert set(normalized_gene.aliases) == set(csf2ra.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(csf2ra.other_identifiers)
+    assert normalized_gene.symbol_status == csf2ra.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(csf2ra.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(csf2ra.xrefs)
+    assert normalized_gene.symbol == csf2ra.symbol
+    assert len(normalized_gene.location) == len(csf2ra.location)
+    for loc in csf2ra.location:
+        assert loc in normalized_gene.location
 
 
 def test_no_match(hgnc):

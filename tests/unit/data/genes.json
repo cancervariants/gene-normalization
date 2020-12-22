@@ -529,6 +529,132 @@
     "src_name": "HGNC"
   },
   {
+    "label_and_type": "hgnc:##identity",
+    "label": "mitochondrially encoded 7S DNA",
+    "concept_id": "hgnc:7409",
+    "symbol": "MT-7SDNA'",
+    "location": [
+      {
+        "chr": "MT",
+        "interval": null,
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ] ,
+    "previous_symbols": [
+      "MT7SDNA"
+    ],
+    "symbol_status": "approved",
+    "xrefs": [
+      "pubmed:24709344",
+      "pubmed:273237"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "mt-7sdna##symbol",
+    "concept_id": "hgnc:7409",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:1838##identity",
+    "label": "cat eye syndrome chromosome region",
+    "concept_id": "hgnc:1838",
+    "symbol": "CECR",
+    "location": [
+      {
+        "chr": "22",
+        "interval": {
+          "end": "q11",
+          "start": "pter",
+          "type": "CytobandInterval"
+        },
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ] ,
+    "symbol_status": "approved",
+    "other_identifiers": [
+      "ncbigene:1055"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "cecr##symbol",
+    "concept_id": "hgnc:1838",
+    "src_name": "HGNC"
+  },
+    {
+    "label_and_type": "hgnc:2435##identity",
+    "label": "colony stimulating factor 2 receptor subunit alpha",
+    "concept_id": "hgnc:2435",
+    "symbol": "CSF2RA",
+    "location": [
+      {
+        "chr": "X",
+        "interval": {
+          "end": null,
+          "start": "p22.32",
+          "type": "CytobandInterval"
+        },
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      },
+      {
+        "chr": "Y",
+        "interval": {
+          "end": null,
+          "start": "p11.3",
+          "type": "CytobandInterval"
+        },
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ] ,
+    "symbol_status": "approved",
+    "aliases": [
+      "CD116",
+      "alphaGMR"
+    ],
+    "previous_symbols": [
+      "CSF2R"
+    ],
+    "other_identifiers": [
+      "ensembl:ENSG00000198223",
+      "ncbigene:1438"
+    ],
+    "xrefs": [
+      "vega:OTTHUMG00000012533",
+      "refseq:NM_001161529",
+      "orphanet:209477",
+      "iuphar:1707",
+      "hcdmdb:CD116",
+      "omim:306250",
+      "omim:425000",
+      "ucsc:uc010nvv.3",
+      "uniprot:P15509",
+      "ena.embl:M64445",
+      "ccds:CCDS35190",
+      "ccds:CCDS55360",
+      "ccds:CCDS35191",
+      "ccds:CCDS55361",
+      "ccds:CCDS55359",
+      "ccds:CCDS35192",
+      "ccds:CCDS35193",
+      "pubmed:1702217"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "csf2ra##symbol",
+    "concept_id": "hgnc:2435",
+    "src_name": "HGNC"
+  },
+  {
     "label_and_type": "ncbigene:8193##identity",
     "label": "double PHD fingers 1",
     "concept_id": "ncbigene:8193",

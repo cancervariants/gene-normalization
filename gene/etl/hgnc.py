@@ -212,8 +212,7 @@ class HGNC(Base):
             'uniprot_ids', 'pubmed_id', 'cosmic', 'omim_id', 'mirbase',
             'homeodb', 'snornabase', 'orphanet', 'horde_id', 'merops', 'imgt',
             'iuphar', 'kznf_gene_catalog', 'mamit-trnadb', 'cd', 'lncrnadb',
-            'intermediate_filament_db', 'ena', 'pseudogene.org',
-            'refseq_accession'
+            'ena', 'pseudogene.org', 'refseq_accession'
         ]
 
         for src in sources:
@@ -253,6 +252,8 @@ class HGNC(Base):
                 src_type.append(
                     f"{NamespacePrefix[key.upper()].value}:{other_id}")
         else:
+            if type(r[src]) == str and ':' in r[src]:
+                r[src] = r[src].split(':')[-1].strip()
             src_type.append(
                 f"{NamespacePrefix[key.upper()].value}"
                 f":{r[src]}")
@@ -264,54 +265,66 @@ class HGNC(Base):
         :param dict gene: A transformed gene record
         """
         if 'location' in r:
-            contains_loc = True
-            location = {
-                'interval': {
-                    'type': IntervalType.CYTOBAND.value
-                },
-                'species_id': 'taxonomy:9606',
-                'type': LocationType.CHROMOSOME.value
-            }
-
-            # TODO: Check if this should be included
-            #       What to do if includes both location and annotation
-            annotations = {v.value for v in Annotation.__members__.values()}
-            for annotation in annotations:
-                if annotation in r['location']:
-                    location['annotation'] = annotation
-
-                    # Check if location is also included
-                    r['location'] = r['location'].split(annotation)[0].strip()
-                    if not r['location']:
-                        contains_loc = False
-
-            if contains_loc:
-                arm_match = re.search('[pq]', r['location'])
-
-                if arm_match:
-                    # Location gives arm and sub band
-                    arm_ix = arm_match.start()
-                    location['chr'] = r['location'][:arm_ix]
-
-                    if '-' in r['location']:
-                        # Location gives both start and end
-                        range_ix = re.search('-', r['location']).start()
-                        location['interval']['start'] = \
-                            r['location'][arm_ix:range_ix]
-                        location['interval']['end'] = \
-                            r['location'][range_ix + 1:]
-                    else:
-                        # Location only gives start
-                        start = r['location'][arm_ix:]
-                        location['interval']['start'] = start
-                else:
-                    # Location given is a single chromosome, i.e. 6
-                    location['chr'] = r['location']
-                    del location['interval']
+            if 'and' in r['location']:
+                locations = r['location'].split('and')
             else:
-                del location['interval']
-            assert ChromosomeLocation(**location)
-            gene['location'] = [location]
+                locations = [r['location']]
+
+            location_list = list()
+            for loc in locations:
+                loc = loc.strip()
+                contains_loc = True
+                location = {
+                    'interval': {
+                        'type': IntervalType.CYTOBAND.value
+                    },
+                    'species_id': 'taxonomy:9606',
+                    'type': LocationType.CHROMOSOME.value
+                }
+
+                # TODO: Check if this should be included
+                #       What to do if includes both location and annotation
+                annotations = {v.value for v in
+                               Annotation.__members__.values()}
+                for annotation in annotations:
+                    if annotation in loc:
+                        location['annotation'] = annotation
+
+                        # Check if location is also included
+                        loc = loc.split(annotation)[0].strip()
+                        if not loc:
+                            contains_loc = False
+
+                if contains_loc:
+                    arm_match = re.search('[pq]', loc)
+
+                    if arm_match:
+                        # Location gives arm and sub band
+                        arm_ix = arm_match.start()
+                        location['chr'] = loc[:arm_ix]
+
+                        if '-' in loc:
+                            # Location gives both start and end
+                            range_ix = re.search('-', loc).start()
+                            location['interval']['start'] = \
+                                loc[arm_ix:range_ix]
+                            location['interval']['end'] = \
+                                loc[range_ix + 1:]
+                        else:
+                            # Location only gives start
+                            start = loc[arm_ix:]
+                            location['interval']['start'] = start
+                    else:
+                        # Location given is a single chromosome
+                        if loc == 'mitochondria':
+                            loc = 'MT'  # Be consistent with NCBI
+                        location['chr'] = loc
+                        del location['interval']
+                else:
+                    del location['interval']
+                assert ChromosomeLocation(**location)
+                location_list.append(location)
+            gene['location'] = location_list
 
     def _load_data(self, *args, **kwargs):
         """Load the HGNC source into normalized database."""
