@@ -183,7 +183,6 @@ class NamespacePrefix(Enum):
     MAMIT = "mamittrnadb"
     CD = "hcdmdb"
     LNCRNADB = "lncrnadb"
-    INTERMEDIATE = "hifdb"
     IMGT = "imgt"  # .hla? .ligm? leave as is?
     IMGT_GENE_DB = "imgt/gene-db"  # redundant w/ above?
     RFAM = "rfam"
