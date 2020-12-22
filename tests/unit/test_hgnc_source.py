@@ -283,6 +283,7 @@ def gage4():
         'location': [
             {
                 'chr': 'X',
+                # TODO: Check if end and start should be swapped
                 'interval': {
                     'end': 'p11.2',
                     'start': 'p11.4',

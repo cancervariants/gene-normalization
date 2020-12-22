@@ -157,8 +157,8 @@
     "location": [
       {
         "interval": {
-          "end": "155612572",
-          "start": "155782459",
+          "end": "155782459",
+          "start": "155612572",
           "type": "SimpleInterval"
         },
         "sequence_id": "ga4gh.VSL.hT8OEIdtXBZqH6kjGzol_MeDsISQ9Zyp",
@@ -554,7 +554,7 @@
     "src_name": "HGNC"
   },
   {
-    "label_and_type": "hgnc:##identity",
+    "label_and_type": "hgnc:7409##identity",
     "label": "mitochondrially encoded 7S DNA",
     "concept_id": "hgnc:7409",
     "symbol": "MT-7SDNA'",
