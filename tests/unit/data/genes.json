@@ -1051,8 +1051,8 @@
       {
         "chr": "X",
         "interval": {
-          "end": "p22.32",
-          "start": "pter",
+          "end": "pter",
+          "start": "p22.32",
           "type": "CytobandInterval"
         },
         "annotation": null,
@@ -1094,6 +1094,32 @@
   {
     "label_and_type": "prkrap1##symbol",
     "concept_id": "ncbigene:731716",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:619511##identity",
+    "label": "myopathy, hyaline body, autosomal recessive",
+    "concept_id": "ncbigene:619511",
+    "symbol": "MHB",
+    "xrefs": ["omim:255160"],
+    "location": [
+      {
+        "chr": "3",
+        "interval": {
+          "end": "p22.2",
+          "start": "p21.32",
+          "type": "CytobandInterval"
+        },
+        "annotation": null,
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "mhb##symbol",
+    "concept_id": "ncbigene:619511",
     "src_name": "NCBI"
   }
 ]

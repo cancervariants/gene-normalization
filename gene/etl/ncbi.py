@@ -289,7 +289,7 @@ class NCBI(Base):
                 location['annotation'] = Annotation.ALT_LOC.value
 
             interval = dict()
-            interval['type'] = IntervalType.CYTOBAND
+            interval['type'] = IntervalType.CYTOBAND.value
             contains_centromere = False
             if 'cen' in loc:
                 contains_centromere = True
@@ -298,6 +298,9 @@ class NCBI(Base):
             if arm_match and not contains_centromere:
                 arm_ix = arm_match.start()
                 chromosome = loc[:arm_ix].strip()
+
+                # NCBI sometimes stores invalid map locations
+                # i.e. 7637 stores 'map from Rosati ref via FISH [AFS]'
                 if not re.match("^([0-9]{1,2}|X|Y|MT)$", chromosome):
                     continue
                 location['chr'] = chromosome
@@ -310,27 +313,37 @@ class NCBI(Base):
                         start = loc[arm_ix:range_ix]
                         end = loc[range_ix + 1:]
 
-                        interval['start'] = start
-                        interval['end'] = end
+                        # GA4GH: If start and end are on the same arm,
+                        # start MUST be the more centromeric position
+                        if ('ter' in end and 'ter' not in start) \
+                                or (start < end):
+                            interval['start'] = start
+                            interval['end'] = end
+                        elif ('ter' in start and 'ter' not in end) \
+                                or (end < start):
+                            interval['start'] = end
+                            interval['end'] = start
                     else:
                         # Location only gives start
                         start = loc[arm_ix:]
                         interval['start'] = start
                 else:
+                    # Only arm is included
                     interval['start'] = loc[arm_ix]
                 location['interval'] = interval
-
             elif contains_centromere:
                 centromere_ix = re.search("cen", loc).start()
                 location['chr'] = loc[:centromere_ix].strip()
                 interval['start'] = "cen"
 
                 if '-' in loc:
+                    # Location gives both start and end
                     range_ix = re.search('-', loc).start()
                     interval['end'] = loc[range_ix + 1:]
 
                 location['interval'] = interval
             else:
+                # Location only gives chr
                 location['chr'] = loc
 
             assert ChromosomeLocation(**location)

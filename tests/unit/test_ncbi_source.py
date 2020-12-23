@@ -352,8 +352,8 @@ def hdpa():
             {
                 'chr': 'X',
                 'interval': {
-                    'end': 'p22.32',
-                    'start': 'pter',
+                    'end': 'pter',
+                    'start': 'p22.32',
                     'type': 'CytobandInterval'
                 },
                 'annotation': None,
@@ -388,6 +388,36 @@ def prkrap1():
                     'type': 'CytobandInterval'
                 },
                 'annotation': 'alternate reference locus',
+                'species_id': 'taxonomy:9606',
+                'type': 'ChromosomeLocation'
+            }
+        ]
+    }
+    return Gene(**params)
+
+
+# start > end
+@pytest.fixture(scope='module')
+def mhb():
+    """Create gene fixture for MHB."""
+    params = {
+        'label': 'myopathy, hyaline body, autosomal recessive',
+        'concept_id': 'ncbigene:619511',
+        'symbol': 'MHB',
+        'aliases': [],
+        'other_identifiers': [],
+        'previous_symbols': [],
+        'xrefs': ['omim:255160'],
+        'symbol_status': None,
+        'location': [
+            {
+                'chr': '3',
+                'interval': {
+                    'end': 'p22.2',
+                    'start': 'p21.32',
+                    'type': 'CytobandInterval'
+                },
+                'annotation': None,
                 'species_id': 'taxonomy:9606',
                 'type': 'ChromosomeLocation'
             }
@@ -1024,6 +1054,41 @@ def test_prkrap1(ncbi, prkrap1):
     assert len(record.location) == len(prkrap1.location)
     for loc in prkrap1.location:
         assert loc in record.location
+
+
+def test_mhb(ncbi, mhb):
+    """Test that MHB matches to correct gene concept."""
+    response = ncbi.normalize('NCBIgene:619511')
+    assert response['match_type'] == 100
+    assert len(response['records']) == 1
+    record = response['records'][0]
+    assert record.label == mhb.label
+    assert record.concept_id == mhb.concept_id
+    assert record.symbol == mhb.symbol
+    assert set(record.aliases) == set(mhb.aliases)
+    assert set(record.previous_symbols) == set(mhb.previous_symbols)
+    assert set(record.xrefs) == set(mhb.xrefs)
+    assert set(record.other_identifiers) == set(mhb.other_identifiers)
+    assert record.symbol_status == mhb.symbol_status
+    assert record.strand == mhb.strand
+    assert len(record.location) == len(mhb.location)
+    assert record.location == mhb.location
+
+    response = ncbi.normalize('MHB')
+    assert response['match_type'] == 100
+    assert len(response['records']) == 1
+    record = response['records'][0]
+    assert record.label == mhb.label
+    assert record.concept_id == mhb.concept_id
+    assert record.symbol == mhb.symbol
+    assert set(record.aliases) == set(mhb.aliases)
+    assert set(record.previous_symbols) == set(mhb.previous_symbols)
+    assert set(record.xrefs) == set(mhb.xrefs)
+    assert set(record.other_identifiers) == set(mhb.other_identifiers)
+    assert record.symbol_status == mhb.symbol_status
+    assert record.strand == mhb.strand
+    assert len(record.location) == len(mhb.location)
+    assert record.location == mhb.location
 
 
 def test_no_match(ncbi):
