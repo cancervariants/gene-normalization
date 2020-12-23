@@ -306,10 +306,18 @@ class HGNC(Base):
                         if '-' in loc:
                             # Location gives both start and end
                             range_ix = re.search('-', loc).start()
-                            location['interval']['start'] = \
-                                loc[arm_ix:range_ix]
-                            location['interval']['end'] = \
-                                loc[range_ix + 1:]
+                            start = loc[arm_ix:range_ix]
+                            end = loc[range_ix + 1:]
+
+                            # GA4GH: If start and end are on the same arm,
+                            # start MUST be the more centromeric position
+                            if end < start:
+                                location['interval']['start'] = end
+                                location['interval']['end'] = start
+                            else:
+                                location['interval']['start'] = start
+                                location['interval']['end'] = end
+
                         else:
                             # Location only gives start
                             start = loc[arm_ix:]
@@ -330,8 +338,8 @@ class HGNC(Base):
         """Load the HGNC source into normalized database."""
         self._download_data()
         self._extract_data()
-        self._transform_data()
         self._add_meta()
+        self._transform_data()
 
     def _add_meta(self, *args, **kwargs):
         """Add HGNC metadata to the gene_metadata table."""

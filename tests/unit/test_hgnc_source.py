@@ -285,8 +285,10 @@ def gage4():
                 'chr': 'X',
                 # TODO: Check if end and start should be swapped
                 'interval': {
-                    'end': 'p11.2',
-                    'start': 'p11.4',
+                    'end': 'p11.4',
+                    'start': 'p11.2',
+                    # 'end': 'p11.2',
+                    # 'start': 'p11.4',
                     'type': 'CytobandInterval'
                 },
                 'annotation': 'not on reference assembly',

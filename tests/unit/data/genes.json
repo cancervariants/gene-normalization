@@ -480,8 +480,8 @@
       {
         "chr": "X",
         "interval": {
-          "end": "p11.2",
-          "start": "p11.4",
+          "end": "p11.4",
+          "start": "p11.2",
           "type": "CytobandInterval"
         },
         "annotation": "not on reference assembly",
