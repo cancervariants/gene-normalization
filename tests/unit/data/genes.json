@@ -183,7 +183,7 @@
       {
         "chr": "19",
         "interval": {
-          "end": null,
+          "end": "q13.43",
           "start": "q13.43",
           "type": "CytobandInterval"
         },
@@ -246,7 +246,7 @@
       {
         "chr": "17",
         "interval": {
-          "end": null,
+          "end": "p13.1",
           "start": "p13.1",
           "type": "CytobandInterval"
         },
@@ -314,7 +314,7 @@
       {
         "chr": "1",
         "interval": {
-          "end": null,
+          "end": "p35.1",
           "start": "p35.1",
           "type": "CytobandInterval"
         },
@@ -416,7 +416,9 @@
     "label": "glucose-6-phosphatase regulator",
     "concept_id": "hgnc:4059",
     "symbol": "G6PR",
-    "location_annotations": "reserved",
+    "location_annotations": {
+      "annotation": "reserved"
+    },
     "aliases": [
         "GSD1aSP"
     ],
@@ -441,14 +443,9 @@
     "label": "piwi-interacting RNA cluster 24",
     "concept_id": "hgnc:37528",
     "symbol": "PIRC24",
-    "locations": [
-      {
-        "chr": "6",
-        "interval": null,
-        "species_id": "taxonomy:9606",
-        "type": "ChromosomeLocation"
-      }
-    ],
+    "location_annotations": {
+      "chr": ["6"]
+    },
     "symbol_status": "approved",
     "other_identifiers": [
       "ncbigene:100313810"
@@ -468,7 +465,9 @@
     "label": "G antigen 4",
     "concept_id": "hgnc:4101",
     "symbol": "GAGE4",
-    "location_annotations": "not on reference assembly",
+    "location_annotations": {
+      "annotation": "not on reference assembly"
+    },
     "locations": [
       {
         "chr": "X",
@@ -507,15 +506,10 @@
     "label": "MAFF interacting protein (pseudogene)",
     "concept_id": "hgnc:31102",
     "symbol": "MAFIP",
-    "location_annotations": "unplaced",
-    "locations": [
-      {
-        "chr": "14",
-        "interval": null,
-        "species_id": "taxonomy:9606",
-        "type": "ChromosomeLocation"
-      }
-    ] ,
+    "location_annotations": {
+      "chr": ["14"],
+      "annotation": "unplaced"
+    },
     "symbol_status": "approved",
     "aliases": [
       "FLJ35473",
@@ -550,7 +544,9 @@
     "label": "mitochondrially encoded 7S DNA",
     "concept_id": "hgnc:7409",
     "symbol": "MT-7SDNA",
-    "location_annotations": "MT",
+    "location_annotations": {
+      "chr": "MT"
+    },
     "previous_symbols": [
       "MT7SDNA"
     ],
@@ -603,7 +599,7 @@
       {
         "chr": "X",
         "interval": {
-          "end": null,
+          "end": "p22.32",
           "start": "p22.32",
           "type": "CytobandInterval"
         },
@@ -613,7 +609,7 @@
       {
         "chr": "Y",
         "interval": {
-          "end": null,
+          "end": "p11.3",
           "start": "p11.3",
           "type": "CytobandInterval"
         },

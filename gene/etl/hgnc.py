@@ -2,7 +2,8 @@
 from .base import Base
 from gene import PROJECT_ROOT, DownloadException
 from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene, \
-    Meta, ChromosomeLocation, IntervalType, LocationType, Annotation
+    Meta, ChromosomeLocation, IntervalType, LocationType, Annotation,\
+    Chromosome
 from gene.database import Database
 import logging
 import json
@@ -272,35 +273,37 @@ class HGNC(Base):
             locations = [r['location']]
 
         location_list = list()
+        gene['location_annotations'] = dict()
         for loc in locations:
             loc = loc.strip()
             loc = self._set_annotation(loc, gene)
 
             if loc:
                 if loc == 'mitochondria':
-                    gene['location_annotation'] = Annotation.MITOCHONDRIA.value
+                    gene['location_annotations']['chr'] =\
+                        [Chromosome.MITOCHONDRIA.value]
                 else:
-                    location = {
-                        'interval': {
-                            'type': IntervalType.CYTOBAND.value
-                        },
-                        'species_id': 'taxonomy:9606',
-                        'type': LocationType.CHROMOSOME.value
-                    }
-                    self._set_location_interval(loc, location,
-                                                location_list, r)
-                    assert ChromosomeLocation(**location)
-                    location_list.append(location)
+                    location = dict()
+                    interval = dict()
+                    self._set_location(loc, location, interval, gene)
+                    if location and interval:
+                        interval['type'] = IntervalType.CYTOBAND.value
+                        location['interval'] = interval
+                        location['species_id'] = 'taxonomy:9606'
+                        location['type'] = LocationType.CHROMOSOME.value
+                        assert ChromosomeLocation(**location)
+                        location_list.append(location)
 
         if location_list:
             gene['locations'] = location_list
+        if not gene['location_annotations']:
+            del gene['location_annotations']
 
     def _set_annotation(self, loc, gene):
         """Set the annotations attribute if one is provided.
            Return `True` if a location is provided, `False` otherwise.
 
         :param str loc: A gene location
-        :param dict location: GA4GH location
         :return: A bool whether or not a gene map location is provided
         """
         # TODO: Check if this should be included
@@ -310,20 +313,20 @@ class HGNC(Base):
 
         for annotation in annotations:
             if annotation in loc:
-                gene['location_annotation'] = annotation
+                gene['location_annotations']['annotation'] = annotation
                 # Check if location is also included
                 loc = loc.split(annotation)[0].strip()
                 if not loc:
                     return None
         return loc
 
-    def _set_location_interval(self, loc, location, location_list, r):
-        """
+    def _set_location(self, loc, location, interval, gene):
+        """Set a gene's location.
 
         :param str loc: A gene location
         :param dict location: GA4GH location
-        :param list location_list: A list of GA4GH locations
-        :param dict r: A gene record in the HGNC data file
+        :param dict interval: GA4GH interval
+        :param dict gene: A transformed gene record
         """
         arm_match = re.search('[pq]', loc)
 
@@ -334,22 +337,25 @@ class HGNC(Base):
 
             if '-' in loc:
                 # Location gives both start and end
-                self._set_interval_range(loc, location, arm_ix, r)
+                self._set_interval_range(loc, arm_ix, interval)
             else:
                 # Location only gives start
                 start = loc[arm_ix:]
-                location['interval']['start'] = start
+                interval['start'] = start
+                interval['end'] = start
         else:
-            location['chr'] = loc
-            del location['interval']
+            # Only gives chromosome
+            if 'chr' in gene['location_annotations']:
+                gene['location_annotations']['chr'].append(loc)
+            else:
+                gene['location_annotations']['chr'] = [loc]
 
-    def _set_interval_range(self, loc, location, arm_ix, r):
+    def _set_interval_range(self, loc, arm_ix, interval):
         """Set the location interval range.
 
         :param str loc: A gene location
-        :param dict location: GA4GH location
         :param arm_ix: The index of the q or p arm for a given location
-        :return:
+        :param dict interval: GA4GH interval
         """
         range_ix = re.search('-', loc).start()
 
@@ -362,8 +368,8 @@ class HGNC(Base):
 
         if not end_arm_match:
             # Does not specify the arm, so use the same as start's
-            location['interval']['start'] = start
-            location['interval']['end'] = f"{start[0]}{end}"
+            interval['start'] = start
+            interval['end'] = f"{start[0]}{end}"
         else:
             end_arm_ix = end_arm_match.start()
             end_arm = end[end_arm_ix]
@@ -371,11 +377,11 @@ class HGNC(Base):
             # GA4GH: If start and end are on the same arm,
             # start MUST be the more centromeric position
             if (start_arm == end_arm and end < start) or end_arm == 'p':
-                location['interval']['start'] = end
-                location['interval']['end'] = start
+                interval['start'] = end
+                interval['end'] = start
             elif (start_arm != end_arm and end > start) or end_arm == 'q':
-                location['interval']['start'] = start
-                location['interval']['end'] = end
+                interval['start'] = start
+                interval['end'] = end
 
     def _load_data(self, *args, **kwargs):
         """Load the HGNC source into normalized database."""

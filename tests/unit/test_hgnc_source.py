@@ -427,11 +427,10 @@ def csf2ra():
             {
                 'chr': 'Y',
                 'interval': {
-                    'end': None,
+                    'end': 'p11.3',
                     'start': 'p11.3',
                     'type': 'CytobandInterval'
                 },
-                'annotation': None,
                 'species_id': 'taxonomy:9606',
                 'type': 'ChromosomeLocation'
             }
