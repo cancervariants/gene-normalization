@@ -590,7 +590,7 @@
     "concept_id": "hgnc:1838",
     "src_name": "HGNC"
   },
-    {
+  {
     "label_and_type": "hgnc:2435##identity",
     "label": "colony stimulating factor 2 receptor subunit alpha",
     "concept_id": "hgnc:2435",
@@ -654,6 +654,75 @@
   {
     "label_and_type": "csf2ra##symbol",
     "concept_id": "hgnc:2435",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:36026##identity",
+    "label": "ribosomal protein S24 pseudogene 5",
+    "concept_id": "hgnc:36026",
+    "symbol": "RPS24P5",
+    "locations": [
+      {
+        "chr": "1",
+        "interval": {
+          "end": "q41",
+          "start": "p36.13",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "symbol_status": "approved",
+    "other_identifiers": [
+      "ncbigene:100271094"
+    ],
+    "xrefs": [
+      "refseq:NG_011274",
+      "pubmed:19123937"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "rps24p5##symbol",
+    "concept_id": "hgnc:36026",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:34692##identity",
+    "label": "tRNA-Leu (anticodon CAG) 2-1",
+    "concept_id": "hgnc:34692",
+    "symbol": "TRL-CAG2-1",
+    "locations": [
+      {
+        "chr": "16",
+        "interval": {
+          "end": "q21",
+          "start": "q13",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "symbol_status": "approved",
+    "aliases": [
+      "tRNA-Leu-CAG-2-1"
+    ],
+    "previous_symbols": [
+      "TRNAL13"
+    ],
+    "other_identifiers": [
+      "ncbigene:100189130"
+    ],
+    "xrefs": [
+      "ena.embl:HG983896"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "trl-cag2-1##symbol",
+    "concept_id": "hgnc:34692",
     "src_name": "HGNC"
   },
   {
