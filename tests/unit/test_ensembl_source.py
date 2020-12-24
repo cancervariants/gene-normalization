@@ -30,7 +30,8 @@ def ddx11l1():
         'aliases': [],
         'other_identifiers': ['hgnc:37102'],
         'symbol_status': None,
-        'location': [
+        'location_annotations': None,
+        'locations': [
             {
                 'interval': {
                     'end': '14409',
@@ -58,7 +59,8 @@ def tp53():
         'aliases': [],
         'other_identifiers': ['hgnc:11998'],
         'symbol_status': None,
-        'location': [
+        'location_annotations': None,
+        'locations': [
             {
                 'interval': {
                     'end': '7687538',
@@ -86,7 +88,8 @@ def u6():
         'aliases': [],
         'other_identifiers': [],
         'symbol_status': None,
-        'location': [
+        'location_annotations': None,
+        'locations': [
             {
                 'interval': {
                     'end': '516479',
@@ -114,7 +117,8 @@ def CH17_340M24_3():
         'aliases': [],
         'other_identifiers': ['ncbigene:158960'],
         'symbol_status': None,
-        'location': [
+        'location_annotations': None,
+        'locations': [
             {
                 'interval': {
                     'end': '154428479',
@@ -142,7 +146,8 @@ def AC091057_5():
         'aliases': [],
         'other_identifiers': [],
         'symbol_status': None,
-        'location': [
+        'location_annotations': None,
+        'locations': [
             {
                 'interval': {
                     'end': '30685606',
@@ -170,7 +175,8 @@ def hsa_mir_1253():
         'aliases': [],
         'other_identifiers': [],
         'symbol_status': None,
-        'location': [
+        'location_annotations': None,
+        'locations': [
             {
                 'interval': {
                     'end': '2748182',
@@ -198,7 +204,8 @@ def spry3():
         'aliases': [],
         'other_identifiers': ['hgnc:11271'],
         'symbol_status': None,
-        'location': [
+        'location_annotations': None,
+        'locations': [
             {
                 'interval': {
                     'end': '155782459',
@@ -234,7 +241,8 @@ def test_concept_id_ddx11l1(ddx11l1, ensembl):
     assert set(normalized_gene.xrefs) == set(ddx11l1.xrefs)
     assert normalized_gene.symbol == ddx11l1.symbol
     assert normalized_gene.strand == ddx11l1.strand
-    assert normalized_gene.location == ddx11l1.location
+    assert normalized_gene.locations == ddx11l1.locations
+    assert normalized_gene.location_annotations == ddx11l1.location_annotations
 
     normalizer_response = ensembl.normalize('ENSG00000223972')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
@@ -251,7 +259,8 @@ def test_concept_id_ddx11l1(ddx11l1, ensembl):
     assert set(normalized_gene.xrefs) == set(ddx11l1.xrefs)
     assert normalized_gene.symbol == ddx11l1.symbol
     assert normalized_gene.strand == ddx11l1.strand
-    assert normalized_gene.location == ddx11l1.location
+    assert normalized_gene.locations == ddx11l1.locations
+    assert normalized_gene.location_annotations == ddx11l1.location_annotations
 
     normalizer_response = ensembl.normalize('ENSEMBL:ENSG00000223972')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
@@ -268,7 +277,8 @@ def test_concept_id_ddx11l1(ddx11l1, ensembl):
     assert set(normalized_gene.xrefs) == set(ddx11l1.xrefs)
     assert normalized_gene.symbol == ddx11l1.symbol
     assert normalized_gene.strand == ddx11l1.strand
-    assert normalized_gene.location == ddx11l1.location
+    assert normalized_gene.locations == ddx11l1.locations
+    assert normalized_gene.location_annotations == ddx11l1.location_annotations
 
 
 def test_ddx11l1_symbol(ddx11l1, ensembl):
@@ -290,7 +300,8 @@ def test_ddx11l1_symbol(ddx11l1, ensembl):
     assert set(normalized_gene.xrefs) == set(ddx11l1.xrefs)
     assert normalized_gene.symbol == ddx11l1.symbol
     assert normalized_gene.strand == ddx11l1.strand
-    assert normalized_gene.location == ddx11l1.location
+    assert normalized_gene.locations == ddx11l1.locations
+    assert normalized_gene.location_annotations == ddx11l1.location_annotations
 
     normalizer_response = ensembl.normalize('DDX11L1')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -307,7 +318,8 @@ def test_ddx11l1_symbol(ddx11l1, ensembl):
     assert set(normalized_gene.xrefs) == set(ddx11l1.xrefs)
     assert normalized_gene.symbol == ddx11l1.symbol
     assert normalized_gene.strand == ddx11l1.strand
-    assert normalized_gene.location == ddx11l1.location
+    assert normalized_gene.locations == ddx11l1.locations
+    assert normalized_gene.location_annotations == ddx11l1.location_annotations
 
 
 def test_concept_id_tp53(tp53, ensembl):
@@ -329,7 +341,8 @@ def test_concept_id_tp53(tp53, ensembl):
     assert set(normalized_gene.xrefs) == set(tp53.xrefs)
     assert normalized_gene.symbol == tp53.symbol
     assert normalized_gene.strand == tp53.strand
-    assert normalized_gene.location == tp53.location
+    assert normalized_gene.locations == tp53.locations
+    assert normalized_gene.location_annotations == tp53.location_annotations
 
     normalizer_response = ensembl.normalize('ensembl:ENSG00000141510')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
@@ -346,7 +359,8 @@ def test_concept_id_tp53(tp53, ensembl):
     assert set(normalized_gene.xrefs) == set(tp53.xrefs)
     assert normalized_gene.symbol == tp53.symbol
     assert normalized_gene.strand == tp53.strand
-    assert normalized_gene.location == tp53.location
+    assert normalized_gene.locations == tp53.locations
+    assert normalized_gene.location_annotations == tp53.location_annotations
 
     normalizer_response = ensembl.normalize('ENSEMBL:ENSG00000141510')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
@@ -363,7 +377,8 @@ def test_concept_id_tp53(tp53, ensembl):
     assert set(normalized_gene.xrefs) == set(tp53.xrefs)
     assert normalized_gene.symbol == tp53.symbol
     assert normalized_gene.strand == tp53.strand
-    assert normalized_gene.location == tp53.location
+    assert normalized_gene.locations == tp53.locations
+    assert normalized_gene.location_annotations == tp53.location_annotations
 
 
 def test_tp53_symbol(tp53, ensembl):
@@ -385,7 +400,8 @@ def test_tp53_symbol(tp53, ensembl):
     assert set(normalized_gene.xrefs) == set(tp53.xrefs)
     assert normalized_gene.symbol == tp53.symbol
     assert normalized_gene.strand == tp53.strand
-    assert normalized_gene.location == tp53.location
+    assert normalized_gene.locations == tp53.locations
+    assert normalized_gene.location_annotations == tp53.location_annotations
 
     normalizer_response = ensembl.normalize('tp53')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -402,7 +418,8 @@ def test_tp53_symbol(tp53, ensembl):
     assert set(normalized_gene.xrefs) == set(tp53.xrefs)
     assert normalized_gene.symbol == tp53.symbol
     assert normalized_gene.strand == tp53.strand
-    assert normalized_gene.location == tp53.location
+    assert normalized_gene.locations == tp53.locations
+    assert normalized_gene.location_annotations == tp53.location_annotations
 
 
 def test_u6(u6, ensembl):
@@ -422,7 +439,8 @@ def test_u6(u6, ensembl):
     assert set(normalized_gene.xrefs) == set(u6.xrefs)
     assert normalized_gene.symbol == u6.symbol
     assert normalized_gene.strand == u6.strand
-    assert normalized_gene.location == u6.location
+    assert normalized_gene.locations == u6.locations
+    assert normalized_gene.location_annotations == u6.location_annotations
 
     normalizer_response = ensembl.normalize('U6')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -445,7 +463,9 @@ def test_CH17_340M24_3(CH17_340M24_3, ensembl):
     assert set(normalized_gene.xrefs) == set(CH17_340M24_3.xrefs)
     assert normalized_gene.symbol == CH17_340M24_3.symbol
     assert normalized_gene.strand == CH17_340M24_3.strand
-    assert normalized_gene.location == CH17_340M24_3.location
+    assert normalized_gene.locations == CH17_340M24_3.locations
+    assert normalized_gene.location_annotations == \
+           CH17_340M24_3.location_annotations
 
     normalizer_response = ensembl.normalize('CH17-340M24.3')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -462,7 +482,9 @@ def test_CH17_340M24_3(CH17_340M24_3, ensembl):
     assert set(normalized_gene.xrefs) == set(CH17_340M24_3.xrefs)
     assert normalized_gene.symbol == CH17_340M24_3.symbol
     assert normalized_gene.strand == CH17_340M24_3.strand
-    assert normalized_gene.location == CH17_340M24_3.location
+    assert normalized_gene.locations == CH17_340M24_3.locations
+    assert normalized_gene.location_annotations ==\
+           CH17_340M24_3.location_annotations
 
 
 def test_AC091057_5(AC091057_5, ensembl):
@@ -482,7 +504,9 @@ def test_AC091057_5(AC091057_5, ensembl):
     assert set(normalized_gene.xrefs) == set(AC091057_5.xrefs)
     assert normalized_gene.symbol == AC091057_5.symbol
     assert normalized_gene.strand == AC091057_5.strand
-    assert normalized_gene.location == AC091057_5.location
+    assert normalized_gene.locations == AC091057_5.locations
+    assert normalized_gene.location_annotations == \
+           AC091057_5.location_annotations
 
     normalizer_response = ensembl.normalize('AC091057.5')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -499,7 +523,9 @@ def test_AC091057_5(AC091057_5, ensembl):
     assert set(normalized_gene.xrefs) == set(AC091057_5.xrefs)
     assert normalized_gene.symbol == AC091057_5.symbol
     assert normalized_gene.strand == AC091057_5.strand
-    assert normalized_gene.location == AC091057_5.location
+    assert normalized_gene.locations == AC091057_5.locations
+    assert normalized_gene.location_annotations ==\
+           AC091057_5.location_annotations
 
 
 def test_hsa_mir_1253(hsa_mir_1253, ensembl):
@@ -519,7 +545,9 @@ def test_hsa_mir_1253(hsa_mir_1253, ensembl):
     assert set(normalized_gene.xrefs) == set(hsa_mir_1253.xrefs)
     assert normalized_gene.symbol == hsa_mir_1253.symbol
     assert normalized_gene.strand == hsa_mir_1253.strand
-    assert normalized_gene.location == hsa_mir_1253.location
+    assert normalized_gene.locations == hsa_mir_1253.locations
+    assert normalized_gene.location_annotations == \
+           hsa_mir_1253.location_annotations
 
     normalizer_response = ensembl.normalize('hsa-mir-1253')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -536,7 +564,9 @@ def test_hsa_mir_1253(hsa_mir_1253, ensembl):
     assert set(normalized_gene.xrefs) == set(hsa_mir_1253.xrefs)
     assert normalized_gene.symbol == hsa_mir_1253.symbol
     assert normalized_gene.strand == hsa_mir_1253.strand
-    assert normalized_gene.location == hsa_mir_1253.location
+    assert normalized_gene.locations == hsa_mir_1253.locations
+    assert normalized_gene.location_annotations == \
+           hsa_mir_1253.location_annotations
 
 
 def test_spry3(spry3, ensembl):
@@ -556,7 +586,8 @@ def test_spry3(spry3, ensembl):
     assert set(normalized_gene.xrefs) == set(spry3.xrefs)
     assert normalized_gene.symbol == spry3.symbol
     assert normalized_gene.strand == spry3.strand
-    assert normalized_gene.location == spry3.location
+    assert normalized_gene.locations == spry3.locations
+    assert normalized_gene.location_annotations == spry3.location_annotations
 
     normalizer_response = ensembl.normalize('spry3')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -573,7 +604,8 @@ def test_spry3(spry3, ensembl):
     assert set(normalized_gene.xrefs) == set(spry3.xrefs)
     assert normalized_gene.symbol == spry3.symbol
     assert normalized_gene.strand == spry3.strand
-    assert normalized_gene.location == spry3.location
+    assert normalized_gene.locations == spry3.locations
+    assert normalized_gene.location_annotations == spry3.location_annotations
 
 
 def test_no_match(ensembl):
