@@ -416,7 +416,7 @@
     "label": "glucose-6-phosphatase regulator",
     "concept_id": "hgnc:4059",
     "symbol": "G6PR",
-    "location_annotation": "reserved",
+    "location_annotations": "reserved",
     "aliases": [
         "GSD1aSP"
     ],
@@ -468,7 +468,7 @@
     "label": "G antigen 4",
     "concept_id": "hgnc:4101",
     "symbol": "GAGE4",
-    "location_annotation": "not on reference assembly",
+    "location_annotations": "not on reference assembly",
     "locations": [
       {
         "chr": "X",
@@ -507,7 +507,7 @@
     "label": "MAFF interacting protein (pseudogene)",
     "concept_id": "hgnc:31102",
     "symbol": "MAFIP",
-    "location_annotation": "unplaced",
+    "location_annotations": "unplaced",
     "locations": [
       {
         "chr": "14",
@@ -550,7 +550,7 @@
     "label": "mitochondrially encoded 7S DNA",
     "concept_id": "hgnc:7409",
     "symbol": "MT-7SDNA",
-    "location_annotation": "MT",
+    "location_annotations": "MT",
     "previous_symbols": [
       "MT7SDNA"
     ],
@@ -674,7 +674,7 @@
       {
         "chr": "19",
         "interval": {
-          "end": null,
+          "end": "q13.2",
           "start": "q13.2",
           "type": "CytobandInterval"
         },
@@ -724,7 +724,7 @@
       {
         "chr": "8",
         "interval": {
-          "end": null,
+          "end": "q22.1",
           "start": "q22.1",
           "type": "CytobandInterval"
         },
@@ -789,7 +789,7 @@
       {
         "chr": "Y",
         "interval": {
-          "end": null,
+          "end": "q12",
           "start": "q12",
           "type": "CytobandInterval"
         },
@@ -799,7 +799,7 @@
       {
         "chr": "X",
         "interval": {
-          "end": null,
+          "end": "q28",
           "start": "q28",
           "type": "CytobandInterval"
         },
@@ -827,13 +827,9 @@
     "other_identifiers": [
         "hgnc:229"
     ],
-    "locations": [
-      {
-        "chr": "6",
-        "species_id": "taxonomy:9606",
-        "type": "ChromosomeLocation"
-      }
-    ],
+    "location_annotations": {
+      "chr": ["6"]
+    },
     "src_name": "NCBI"
   },
   {
@@ -869,7 +865,7 @@
       {
         "chr": "12",
         "interval": {
-          "end": null,
+          "end": "q24.33",
           "start": "q24.33",
           "type": "CytobandInterval"
         },
@@ -895,18 +891,9 @@
     ],
     "previous_symbols": ["ANT3Y"],
     "xrefs": ["omim:403000", "omim:300151"],
-    "locations": [
-      {
-        "chr": "X",
-        "species_id": "taxonomy:9606",
-        "type": "ChromosomeLocation"
-      },
-      {
-        "chr": "Y",
-        "species_id": "taxonomy:9606",
-        "type": "ChromosomeLocation"
-      }
-    ],
+    "location_annotations": {
+      "chr": ["X", "Y"]
+    },
     "src_name": "NCBI"
   },
   {
@@ -945,38 +932,6 @@
     "symbol": "OMS",
     "aliases": ["COME/ROM"],
     "xrefs": ["omim:166760"],
-    "locations": [
-      {
-        "chr": "10",
-        "interval": {
-          "end": null,
-          "start": "q26.3",
-          "type": "CytobandInterval"
-        },
-        "species_id": "taxonomy:9606",
-        "type": "ChromosomeLocation"
-      },
-      {
-        "chr": "19",
-        "interval": {
-          "end": "q13.43",
-          "start": "q13.42",
-          "type": "CytobandInterval"
-        },
-        "species_id": "taxonomy:9606",
-        "type": "ChromosomeLocation"
-      },
-      {
-        "chr": "3",
-        "interval": {
-          "end": null,
-          "start": "p25.3",
-          "type": "CytobandInterval"
-        },
-        "species_id": "taxonomy:9606",
-        "type": "ChromosomeLocation"
-      }
-    ],
     "src_name": "NCBI"
   },
   {
@@ -1043,12 +998,14 @@
         "hgnc:33447"
     ],
     "previous_symbols": ["LOC100289695"],
-    "location_annotation": "alternate reference locus",
+    "location_annotations": {
+      "annotation": "alternate reference locus"
+    },
     "locations": [
       {
         "chr": "6",
         "interval": {
-          "end": null,
+          "end": "p21.3",
           "start": "p21.3",
           "type": "CytobandInterval"
         },
