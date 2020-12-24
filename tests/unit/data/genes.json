@@ -861,6 +861,9 @@
     ],
     "previous_symbols": ["LOC100287429"],
     "xrefs": ["omim:618554"],
+    "location_annotations": {
+      "invalid_locations": ["map from Rosati ref via FISH [AFS]"]
+    },
     "locations": [
       {
         "chr": "12",
@@ -910,7 +913,7 @@
       {
         "chr": "10",
         "interval": {
-          "end": null,
+          "end": "p",
           "start": "p",
           "type": "CytobandInterval"
         },
