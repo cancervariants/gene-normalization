@@ -545,7 +545,7 @@
     "concept_id": "hgnc:7409",
     "symbol": "MT-7SDNA",
     "location_annotations": {
-      "chr": "MT"
+      "chr": ["MT"]
     },
     "previous_symbols": [
       "MT7SDNA"
