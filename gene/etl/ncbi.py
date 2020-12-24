@@ -231,7 +231,7 @@ class NCBI(Base):
         batch.put_item(Item=item)
 
     def _get_vrs_location(self, row, params):
-        """Store location attribute in a gene record.
+        """Store GA4GH VRS ChromosomeLocation in a gene record.
 
         :param list row: A row in NCBI data file
         :param dict params: A transformed gene record
@@ -264,6 +264,7 @@ class NCBI(Base):
         """Set chromosomes and locations for a given gene record.
 
         :param list row: A gene row in the NCBI data file
+        :param dict params: A transformed gene record
         :return: A dictionary containing a gene's chromosomes and locations
         """
         chromosomes = None
@@ -327,6 +328,7 @@ class NCBI(Base):
 
         :param list locations: NCBI map locations for a gene record.
         :param list location_list: A list to store chromosome locations.
+        :param dict params: A transformed gene record
         """
         for i in range(len(locations)):
             loc = locations[i].strip()
@@ -366,7 +368,6 @@ class NCBI(Base):
                     # Only arm is included
                     interval['start'] = loc[arm_ix]
                     interval['end'] = loc[arm_ix]
-                # location['interval'] = interval
             elif contains_centromere:
                 self._set_centromere_location(loc, location, interval)
             else:
@@ -380,7 +381,6 @@ class NCBI(Base):
 
             if location and interval:
                 interval['type'] = IntervalType.CYTOBAND.value
-
                 location['interval'] = interval
                 location['species_id'] = 'taxonomy:9606'
                 location['type'] = LocationType.CHROMOSOME.value
@@ -405,8 +405,7 @@ class NCBI(Base):
         end_arm_match = re.search("[pq]", end)
 
         if not end_arm_match:
-            # Does not specify the arm, so use the
-            # same as start's
+            # Does not specify the arm, so use the same as start's
             interval['start'] = start
             interval['end'] = f"{start[0]}{end}"
         else:
@@ -427,8 +426,7 @@ class NCBI(Base):
 
         :param str loc: A gene location
         :param dict location: GA4GH location
-        :param interval:
-        :return:
+        :param interval: GA4GH interval for a VRS object
         """
         centromere_ix = re.search("cen", loc).start()
         location['chr'] = loc[:centromere_ix].strip()
@@ -440,8 +438,6 @@ class NCBI(Base):
             interval['end'] = loc[range_ix + 1:]
         else:
             interval['end'] = "cen"
-
-        # location['interval'] = interval
 
     def _add_meta(self):
         """Load metadata"""
@@ -459,6 +455,7 @@ class NCBI(Base):
             attribution=False,
             assembly='GRCh38.p13'
         )
+
         self._database.metadata.put_item(Item={
             'src_name': SourceName.NCBI.value,
             'data_license': metadata.data_license,

@@ -88,7 +88,7 @@ class Ensembl(Base):
                 if f.attributes.get('ID'):
                     f_id = f.attributes.get('ID')[0].split(':')[0]
                     if f_id == 'gene':
-                        gene = self._add_feature(f)
+                        gene = self._add_gene(f)
                         if gene:
                             assert Gene(**gene)
                             self._load_symbol(gene, batch)
@@ -107,19 +107,8 @@ class Ensembl(Base):
         }
         batch.put_item(Item=symbol)
 
-    def _sha512t24u(self, blob):
-        """Compute an ASCII digest from binary data.
-
-        :param str blob: binary data
-        :return: Binary digest
-        """
-        digest = hashlib.sha512(blob).digest()
-        tdigest = digest[:24]
-        tdigest_b64u = base64.urlsafe_b64encode(tdigest).decode("ASCII")
-        return tdigest_b64u
-
-    def _add_feature(self, f):
-        """Create a gene dictionary.
+    def _add_gene(self, f):
+        """Create a transformed gene record.
 
         :param gffutils.feature.Feature f: A gene from the data
         :return: A gene dictionary if the ID attribute exists.
@@ -133,6 +122,20 @@ class Ensembl(Base):
         gene['strand'] = f.strand
         gene['src_name'] = SourceName.ENSEMBL.value
 
+        self._add_attributes(f, gene)
+        self._add_location(f, gene)
+
+        gene['label_and_type'] = \
+            f"{gene['concept_id'].lower()}##identity"
+
+        return gene
+
+    def _add_attributes(self, f, gene):
+        """Add concept_id, symbol, and other_identifiers to a gene record.
+
+        :param gffutils.feature.Feature f: A gene from the data
+        :param gene: A transformed gene record
+        """
         attributes = {
             'ID': 'concept_id',
             'Name': 'symbol',
@@ -170,6 +173,12 @@ class Ensembl(Base):
 
                 gene[attributes[key]] = val
 
+    def _add_location(self, f, gene):
+        """Add GA4GH SequenceLocation to a gene record.
+
+        :param gffutils.feature.Feature f: A gene from the data
+        :param gene: A transformed gene record
+        """
         blob = gene['symbol'].encode('utf-8')
 
         if f.start != '.' and f.end != '.':
@@ -191,14 +200,20 @@ class Ensembl(Base):
         else:
             logger.info(f"{gene['concept_id']} does not give a location.")
 
-        gene['label_and_type'] = \
-            f"{gene['concept_id'].lower()}##identity"
+    def _sha512t24u(self, blob):
+        """Compute an ASCII digest from binary data.
+           Source: GA4GH VRS
 
-        return gene
+        :param str blob: Gene symbol binary data
+        :return: Binary digest
+        """
+        digest = hashlib.sha512(blob).digest()
+        tdigest = digest[:24]
+        tdigest_b64u = base64.urlsafe_b64encode(tdigest).decode("ASCII")
+        return tdigest_b64u
 
     def _get_other_id_xref(self, src_name, src_id):
-        """
-        Get other identifier or xref
+        """Get other identifier or xref.
 
         :param str src_name: Source name
         :param src_id: The source's accession number

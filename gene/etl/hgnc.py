@@ -261,7 +261,7 @@ class HGNC(Base):
                 f":{r[src]}")
 
     def _get_location(self, r, gene):
-        """Store location in a gene record.
+        """Store GA4GH VRS ChromosomeLocation in a gene record.
 
         :param dict r: A gene record in the HGNC data file
         :param dict gene: A transformed gene record
@@ -306,8 +306,6 @@ class HGNC(Base):
         :param str loc: A gene location
         :return: A bool whether or not a gene map location is provided
         """
-        # TODO: Check if this should be included
-        #       What to do if includes both location and annotation
         annotations = {v.value for v in
                        Annotation.__members__.values()}
 
@@ -354,8 +352,8 @@ class HGNC(Base):
         """Set the location interval range.
 
         :param str loc: A gene location
-        :param arm_ix: The index of the q or p arm for a given location
-        :param dict interval: GA4GH interval
+        :param int arm_ix: The index of the q or p arm for a given location
+        :param dict interval: The GA4GH interval for a VRS object
         """
         range_ix = re.search('-', loc).start()
 
