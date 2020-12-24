@@ -95,7 +95,7 @@ class Normalizer:
         """
         del item['label_and_type']
         attr_types = ['aliases', 'other_identifiers', 'previous_symbols',
-                      'xrefs', 'location']
+                      'xrefs', 'locations']
         for attr_type in attr_types:
             if attr_type not in item.keys():
                 item[attr_type] = []

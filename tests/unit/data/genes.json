@@ -4,7 +4,7 @@
     "concept_id": "ensembl:ENSG00000223972",
     "symbol": "DDX11L1",
     "label": "DEAD/H-box helicase 11 like 1 (pseudogene)",
-    "location": [
+    "locations": [
       {
         "interval": {
           "end": "14409",
@@ -29,7 +29,7 @@
     "concept_id": "ensembl:ENSG00000141510",
     "symbol": "TP53",
     "label": "tumor protein p53",
-    "location": [
+    "locations": [
       {
         "interval": {
           "end": "7687538",
@@ -54,7 +54,7 @@
     "concept_id": "ensembl:ENSG00000278757",
     "symbol": "U6",
     "label": "U6 spliceosomal RNA",
-    "location": [
+    "locations": [
       {
         "interval": {
           "end": "516479",
@@ -79,7 +79,7 @@
     "concept_id": "ensembl:ENSG00000197180",
     "symbol": "CH17-340M24.3",
     "label": "uncharacterized protein BC009467",
-    "location": [
+    "locations": [
       {
         "interval": {
           "end": "154428479",
@@ -104,7 +104,7 @@
     "concept_id": "ensembl:ENSG00000284906",
     "symbol": "AC091057.5",
     "label": "Rho GTPase-activating protein 11B",
-    "location": [
+    "locations": [
       {
         "interval": {
           "end": "30685606",
@@ -129,7 +129,7 @@
     "concept_id": "ensembl:ENSG00000272920",
     "symbol": "hsa-mir-1253",
     "label": "hsa-mir-1253",
-    "location": [
+    "locations": [
       {
         "interval": {
           "end": "2748182",
@@ -154,7 +154,7 @@
     "concept_id": "ensembl:ENSG00000168939",
     "symbol": "SPRY3",
     "label": "sprouty RTK signaling antagonist 3",
-    "location": [
+    "locations": [
       {
         "interval": {
           "end": "155782459",
@@ -179,7 +179,7 @@
     "label": "A1BG antisense RNA 1",
     "concept_id": "hgnc:37133",
     "symbol": "A1BG-AS1",
-    "location": [
+    "locations": [
       {
         "chr": "19",
         "interval": {
@@ -242,7 +242,7 @@
     "label": "tumor protein p53",
     "concept_id": "hgnc:11998",
     "symbol": "TP53",
-    "location": [
+    "locations": [
       {
         "chr": "17",
         "interval": {
@@ -310,7 +310,7 @@
     "label": "alpha 1,3-galactosyltransferase 2",
     "concept_id": "hgnc:30005",
     "symbol": "A3GALT2",
-    "location": [
+    "locations": [
       {
         "chr": "1",
         "interval": {
@@ -370,7 +370,7 @@
     "label": "WD repeat and HMG-box DNA binding protein 1",
     "concept_id": "hgnc:23170",
     "symbol": "WDHD1",
-    "location": [
+    "locations": [
       {
         "chr": "14",
         "interval": {
@@ -416,15 +416,7 @@
     "label": "glucose-6-phosphatase regulator",
     "concept_id": "hgnc:4059",
     "symbol": "G6PR",
-    "location": [
-      {
-        "chr": null,
-        "interval": null,
-        "annotation": "reserved",
-        "species_id": "taxonomy:9606",
-        "type": "ChromosomeLocation"
-      }
-    ],
+    "location_annotation": "reserved",
     "aliases": [
         "GSD1aSP"
     ],
@@ -449,7 +441,7 @@
     "label": "piwi-interacting RNA cluster 24",
     "concept_id": "hgnc:37528",
     "symbol": "PIRC24",
-    "location": [
+    "locations": [
       {
         "chr": "6",
         "interval": null,
@@ -476,7 +468,8 @@
     "label": "G antigen 4",
     "concept_id": "hgnc:4101",
     "symbol": "GAGE4",
-    "location": [
+    "location_annotation": "not on reference assembly",
+    "locations": [
       {
         "chr": "X",
         "interval": {
@@ -484,7 +477,6 @@
           "start": "p11.2",
           "type": "CytobandInterval"
         },
-        "annotation": "not on reference assembly",
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -515,11 +507,11 @@
     "label": "MAFF interacting protein (pseudogene)",
     "concept_id": "hgnc:31102",
     "symbol": "MAFIP",
-    "location": [
+    "location_annotation": "unplaced",
+    "locations": [
       {
         "chr": "14",
         "interval": null,
-        "annotation": "unplaced",
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -558,15 +550,7 @@
     "label": "mitochondrially encoded 7S DNA",
     "concept_id": "hgnc:7409",
     "symbol": "MT-7SDNA",
-    "location": [
-      {
-        "chr": "MT",
-        "interval": null,
-        "annotation": null,
-        "species_id": "taxonomy:9606",
-        "type": "ChromosomeLocation"
-      }
-    ] ,
+    "location_annotation": "MT",
     "previous_symbols": [
       "MT7SDNA"
     ],
@@ -587,7 +571,7 @@
     "label": "cat eye syndrome chromosome region",
     "concept_id": "hgnc:1838",
     "symbol": "CECR",
-    "location": [
+    "locations": [
       {
         "chr": "22",
         "interval": {
@@ -595,7 +579,6 @@
           "start": "pter",
           "type": "CytobandInterval"
         },
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -616,7 +599,7 @@
     "label": "colony stimulating factor 2 receptor subunit alpha",
     "concept_id": "hgnc:2435",
     "symbol": "CSF2RA",
-    "location": [
+    "locations": [
       {
         "chr": "X",
         "interval": {
@@ -624,7 +607,6 @@
           "start": "p22.32",
           "type": "CytobandInterval"
         },
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       },
@@ -635,7 +617,6 @@
           "start": "p11.3",
           "type": "CytobandInterval"
         },
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -689,7 +670,7 @@
       "hgnc:20225", "ensembl:ENSG00000011332"
     ],
     "xrefs": ["omim:601670"],
-    "location": [
+    "locations": [
       {
         "chr": "19",
         "interval": {
@@ -697,7 +678,6 @@
           "start": "q13.2",
           "type": "CytobandInterval"
         },
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -740,7 +720,7 @@
         "LOC157663", "PPM2C"
     ],
     "xrefs": ["omim:605993"],
-    "location": [
+    "locations": [
       {
         "chr": "8",
         "interval": {
@@ -748,7 +728,6 @@
           "start": "q22.1",
           "type": "CytobandInterval"
         },
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -806,7 +785,7 @@
     ],
     "previous_symbols": ["LOC170187", "LOC253479"],
     "xrefs": ["omim:300531"],
-    "location": [
+    "locations": [
       {
         "chr": "Y",
         "interval": {
@@ -814,7 +793,6 @@
           "start": "q12",
           "type": "CytobandInterval"
         },
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       },
@@ -825,7 +803,6 @@
           "start": "q28",
           "type": "CytobandInterval"
         },
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -850,10 +827,9 @@
     "other_identifiers": [
         "hgnc:229"
     ],
-    "location": [
+    "locations": [
       {
         "chr": "6",
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -889,7 +865,7 @@
     ],
     "previous_symbols": ["LOC100287429"],
     "xrefs": ["omim:618554"],
-    "location": [
+    "locations": [
       {
         "chr": "12",
         "interval": {
@@ -897,7 +873,6 @@
           "start": "q24.33",
           "type": "CytobandInterval"
         },
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -920,16 +895,14 @@
     ],
     "previous_symbols": ["ANT3Y"],
     "xrefs": ["omim:403000", "omim:300151"],
-    "location": [
+    "locations": [
       {
         "chr": "X",
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       },
       {
         "chr": "Y",
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -946,7 +919,7 @@
     "label": "nonconserved acetylation island sequence 68 enhancer",
     "concept_id": "ncbigene:106783576",
     "symbol": "LOC106783576",
-    "location": [
+    "locations": [
       {
         "chr": "10",
         "interval": {
@@ -954,7 +927,6 @@
           "start": "p",
           "type": "CytobandInterval"
         },
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -973,7 +945,7 @@
     "symbol": "OMS",
     "aliases": ["COME/ROM"],
     "xrefs": ["omim:166760"],
-    "location": [
+    "locations": [
       {
         "chr": "10",
         "interval": {
@@ -981,7 +953,6 @@
           "start": "q26.3",
           "type": "CytobandInterval"
         },
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       },
@@ -992,7 +963,6 @@
           "start": "q13.42",
           "type": "CytobandInterval"
         },
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       },
@@ -1003,7 +973,6 @@
           "start": "p25.3",
           "type": "CytobandInterval"
         },
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -1021,7 +990,7 @@
     "concept_id": "ncbigene:2722",
     "symbol": "GLC1B",
     "xrefs": ["omim:606689"],
-    "location": [
+    "locations": [
       {
         "chr": "2",
         "interval": {
@@ -1029,7 +998,6 @@
           "start": "cen",
           "type": "CytobandInterval"
         },
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -1047,7 +1015,7 @@
     "concept_id": "ncbigene:50829",
     "symbol": "HDPA",
     "xrefs": ["omim:300221"],
-    "location": [
+    "locations": [
       {
         "chr": "X",
         "interval": {
@@ -1055,7 +1023,6 @@
           "start": "p22.32",
           "type": "CytobandInterval"
         },
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -1076,7 +1043,8 @@
         "hgnc:33447"
     ],
     "previous_symbols": ["LOC100289695"],
-    "location": [
+    "location_annotation": "alternate reference locus",
+    "locations": [
       {
         "chr": "6",
         "interval": {
@@ -1084,7 +1052,6 @@
           "start": "p21.3",
           "type": "CytobandInterval"
         },
-        "annotation": "alternate reference locus",
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -1102,7 +1069,7 @@
     "concept_id": "ncbigene:619511",
     "symbol": "MHB",
     "xrefs": ["omim:255160"],
-    "location": [
+    "locations": [
       {
         "chr": "3",
         "interval": {
@@ -1110,7 +1077,6 @@
           "start": "p21.32",
           "type": "CytobandInterval"
         },
-        "annotation": null,
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
@@ -1120,6 +1086,31 @@
   {
     "label_and_type": "mhb##symbol",
     "concept_id": "ncbigene:619511",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:100049159##identity",
+    "label": "spastic paraplegia 37 (autosomal dominant)",
+    "concept_id": "ncbigene:100049159",
+    "symbol": "SPG37",
+    "xrefs": ["omim:611945"],
+    "locations": [
+      {
+        "chr": "8",
+        "interval": {
+          "end": "q13.3",
+          "start": "p21.2",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "spg37##symbol",
+    "concept_id": "ncbigene:100049159",
     "src_name": "NCBI"
   }
 ]

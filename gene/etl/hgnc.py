@@ -105,8 +105,10 @@ class HGNC(Base):
                 # prev_symbols, and location in gene record
                 self._get_aliases(r, gene)
                 self._get_other_ids_xrefs(r, gene)
-                self._get_previous_symbols(r, gene)
-                self._get_location(r, gene)
+                if 'prev_symbol' in r:
+                    self._get_previous_symbols(r, gene)
+                if 'location' in r:
+                    self._get_location(r, gene)
 
                 assert Gene(**gene)
                 self._load_dynamodb(gene, batch)
@@ -176,10 +178,9 @@ class HGNC(Base):
         :param dict r: A gene record in the HGNC data file
         :param dict gene: A transformed gene record
         """
-        if 'prev_symbol' in r:
-            prev_symbols = r['prev_symbol']
-            if prev_symbols:
-                gene['previous_symbols'] = list(set(prev_symbols))
+        prev_symbols = r['prev_symbol']
+        if prev_symbols:
+            gene['previous_symbols'] = list(set(prev_symbols))
 
     def _load_previous_symbols(self, gene, batch):
         """Load previous symbols to a gene record.
@@ -264,75 +265,117 @@ class HGNC(Base):
         :param dict r: A gene record in the HGNC data file
         :param dict gene: A transformed gene record
         """
-        if 'location' in r:
-            if 'and' in r['location']:
-                locations = r['location'].split('and')
-            else:
-                locations = [r['location']]
+        # Get list of a gene's map locations
+        if 'and' in r['location']:
+            locations = r['location'].split('and')
+        else:
+            locations = [r['location']]
 
-            location_list = list()
-            for loc in locations:
-                loc = loc.strip()
-                contains_loc = True
-                location = {
-                    'interval': {
-                        'type': IntervalType.CYTOBAND.value
-                    },
-                    'species_id': 'taxonomy:9606',
-                    'type': LocationType.CHROMOSOME.value
-                }
+        location_list = list()
+        for loc in locations:
+            loc = loc.strip()
+            loc = self._set_annotation(loc, gene)
 
-                # TODO: Check if this should be included
-                #       What to do if includes both location and annotation
-                annotations = {v.value for v in
-                               Annotation.__members__.values()}
-                for annotation in annotations:
-                    if annotation in loc:
-                        location['annotation'] = annotation
-
-                        # Check if location is also included
-                        loc = loc.split(annotation)[0].strip()
-                        if not loc:
-                            contains_loc = False
-
-                if contains_loc:
-                    arm_match = re.search('[pq]', loc)
-
-                    if arm_match:
-                        # Location gives arm and sub band
-                        arm_ix = arm_match.start()
-                        location['chr'] = loc[:arm_ix]
-
-                        if '-' in loc:
-                            # Location gives both start and end
-                            range_ix = re.search('-', loc).start()
-                            start = loc[arm_ix:range_ix]
-                            end = loc[range_ix + 1:]
-
-                            # GA4GH: If start and end are on the same arm,
-                            # start MUST be the more centromeric position
-                            if end < start:
-                                location['interval']['start'] = end
-                                location['interval']['end'] = start
-                            else:
-                                location['interval']['start'] = start
-                                location['interval']['end'] = end
-
-                        else:
-                            # Location only gives start
-                            start = loc[arm_ix:]
-                            location['interval']['start'] = start
-                    else:
-                        # Location given is a single chromosome
-                        if loc == 'mitochondria':
-                            loc = 'MT'  # Be consistent with NCBI
-                        location['chr'] = loc
-                        del location['interval']
+            if loc:
+                if loc == 'mitochondria':
+                    gene['location_annotation'] = Annotation.MITOCHONDRIA.value
                 else:
-                    del location['interval']
-                assert ChromosomeLocation(**location)
-                location_list.append(location)
-            gene['location'] = location_list
+                    location = {
+                        'interval': {
+                            'type': IntervalType.CYTOBAND.value
+                        },
+                        'species_id': 'taxonomy:9606',
+                        'type': LocationType.CHROMOSOME.value
+                    }
+                    self._set_location_interval(loc, location,
+                                                location_list, r)
+                    assert ChromosomeLocation(**location)
+                    location_list.append(location)
+
+        if location_list:
+            gene['locations'] = location_list
+
+    def _set_annotation(self, loc, gene):
+        """Set the annotations attribute if one is provided.
+           Return `True` if a location is provided, `False` otherwise.
+
+        :param str loc: A gene location
+        :param dict location: GA4GH location
+        :return: A bool whether or not a gene map location is provided
+        """
+        # TODO: Check if this should be included
+        #       What to do if includes both location and annotation
+        annotations = {v.value for v in
+                       Annotation.__members__.values()}
+
+        for annotation in annotations:
+            if annotation in loc:
+                gene['location_annotation'] = annotation
+                # Check if location is also included
+                loc = loc.split(annotation)[0].strip()
+                if not loc:
+                    return None
+        return loc
+
+    def _set_location_interval(self, loc, location, location_list, r):
+        """
+
+        :param str loc: A gene location
+        :param dict location: GA4GH location
+        :param list location_list: A list of GA4GH locations
+        :param dict r: A gene record in the HGNC data file
+        """
+        arm_match = re.search('[pq]', loc)
+
+        if arm_match:
+            # Location gives arm and sub / sub band
+            arm_ix = arm_match.start()
+            location['chr'] = loc[:arm_ix]
+
+            if '-' in loc:
+                # Location gives both start and end
+                self._set_interval_range(loc, location, arm_ix, r)
+            else:
+                # Location only gives start
+                start = loc[arm_ix:]
+                location['interval']['start'] = start
+        else:
+            location['chr'] = loc
+            del location['interval']
+
+    def _set_interval_range(self, loc, location, arm_ix, r):
+        """Set the location interval range.
+
+        :param str loc: A gene location
+        :param dict location: GA4GH location
+        :param arm_ix: The index of the q or p arm for a given location
+        :return:
+        """
+        range_ix = re.search('-', loc).start()
+
+        start = loc[arm_ix:range_ix]
+        start_arm_ix = re.search("[pq]", start).start()
+        start_arm = start[start_arm_ix]
+
+        end = loc[range_ix + 1:]
+        end_arm_match = re.search("[pq]", end)
+
+        if not end_arm_match:
+            # Does not specify the arm, so use the same as start's
+            location['interval']['start'] = start
+            location['interval']['end'] = f"{start[0]}{end}"
+        else:
+            end_arm_ix = end_arm_match.start()
+            end_arm = end[end_arm_ix]
+
+            # GA4GH: If start and end are on the same arm,
+            # start MUST be the more centromeric position
+            if (start_arm == end_arm and end < start) or end_arm == 'p':
+                location['interval']['start'] = end
+                location['interval']['end'] = start
+            elif (start_arm != end_arm and end > start) or end_arm == 'q':
+                location['interval']['start'] = start
+                location['interval']['end'] = end
 
     def _load_data(self, *args, **kwargs):
         """Load the HGNC source into normalized database."""

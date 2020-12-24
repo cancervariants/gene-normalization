@@ -30,8 +30,8 @@ class IntervalType(str, Enum):
 class Interval(BaseModel):
     """GA4GH interval definition."""
 
-    end: Optional[str]  # TODO: Check if this is required
-    start: Optional[str]  # TODO: Check if this is required
+    end: Optional[str]
+    start: Optional[str]
     type: IntervalType
 
 
@@ -51,16 +51,14 @@ class Annotation(str, Enum):
     UNPLACED = "unplaced"
     RESERVED = "reserved"
     ALT_LOC = "alternate reference locus"
+    MITOCHONDRIA = 'MT'
 
 
 class Location(BaseModel):
     """Define string constraints for the location attribute."""
 
     type: LocationType
-    # TODO: Check if we can exclude this is start and end is null
     interval: Optional[Interval]
-    # TODO: Check if including, if so use better name
-    annotation: Optional[Annotation]
 
 
 class ChromosomeLocation(Location):
@@ -81,15 +79,15 @@ class Gene(BaseModel):
 
     concept_id: str
     symbol: str
-    # TODO: Check if this is required
-    location: Optional[List[Union[ChromosomeLocation, SequenceLocation]]]
+    symbol_status: Optional[SymbolStatus]
     label: Optional[str]
-    previous_symbols: Optional[List[str]]
+    strand: Optional[Strand]
+    location_annotation: Optional[Annotation]
+    locations: Optional[List[Union[ChromosomeLocation, SequenceLocation]]]
     aliases: Optional[List[str]]
+    previous_symbols: Optional[List[str]]
     other_identifiers: Optional[List[str]]
     xrefs: Optional[List[str]]
-    symbol_status: Optional[SymbolStatus]
-    strand: Optional[Strand]
 
     class Config:
         """Configure model"""
