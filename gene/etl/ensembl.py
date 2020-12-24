@@ -172,17 +172,24 @@ class Ensembl(Base):
 
         blob = gene['symbol'].encode('utf-8')
 
-        location = {
-            "interval": {
-                "end": f.end,
-                "start": f.start,
-                "type": IntervalType.SIMPLE.value
-            },
-            "sequence_id": f"ga4gh.VSL.{self._sha512t24u(blob)}",
-            "type": LocationType.SEQUENCE.value
-        }
-        assert SequenceLocation(**location)
-        gene['location'] = [location]
+        if f.start != '.' and f.end != '.':
+            if 0 <= f.start <= f.end:
+                location = {
+                    "interval": {
+                        "end": f.end,
+                        "start": f.start,
+                        "type": IntervalType.SIMPLE.value
+                    },
+                    "sequence_id": f"ga4gh.VSL.{self._sha512t24u(blob)}",
+                    "type": LocationType.SEQUENCE.value
+                }
+                assert SequenceLocation(**location)
+                gene['locations'] = [location]
+            else:
+                logger.info(f"{gene['concept_id']} has invalid interval:"
+                            f"start={f.start} end={f.end}")
+        else:
+            logger.info(f"{gene['concept_id']} does not give a location.")
 
         gene['label_and_type'] = \
             f"{gene['concept_id'].lower()}##identity"
