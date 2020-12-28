@@ -43,7 +43,8 @@ class CLI:
         elif db_url:
             db: Database = Database(db_url=db_url)
         else:
-            if click.confirm("Are you sure you want to update the production database?", default=False):
+            if click.confirm("Are you sure you want to update"
+                             " the production database?", default=False):
                 click.echo("Updating production db...")
                 db: Database = Database()
             else:
