@@ -254,7 +254,7 @@ class HGNC(Base):
                 src_type.append(
                     f"{NamespacePrefix[key.upper()].value}:{other_id}")
         else:
-            if type(r[src]) == str and ':' in r[src]:
+            if isinstance(r[src], str) and ':' in r[src]:
                 r[src] = r[src].split(':')[-1].strip()
             src_type.append(
                 f"{NamespacePrefix[key.upper()].value}"
