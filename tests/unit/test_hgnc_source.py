@@ -1208,8 +1208,8 @@ def test_mafip(mafip, hgnc):
     assert set(normalized_gene.xrefs) == set(mafip.xrefs)
     assert normalized_gene.symbol == mafip.symbol
     assert normalized_gene.locations == mafip.locations
-    assert normalized_gene.location_annotations == \
-           mafip.location_annotations
+    assert set(normalized_gene.location_annotations) == \
+           set(mafip.location_annotations)
 
     normalizer_response = hgnc.normalize('MAFIP')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -1226,7 +1226,8 @@ def test_mafip(mafip, hgnc):
     assert set(normalized_gene.xrefs) == set(mafip.xrefs)
     assert normalized_gene.symbol == mafip.symbol
     assert normalized_gene.locations == mafip.locations
-    assert normalized_gene.location_annotations == mafip.location_annotations
+    assert set(normalized_gene.location_annotations) == \
+           set(mafip.location_annotations)
 
 
 def test_mt_7sdna(mt_7sdna, hgnc):
