@@ -175,6 +175,7 @@ class Ensembl(Base):
 
     def _add_location(self, f, gene):
         """Add GA4GH SequenceLocation to a gene record.
+        https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
 
         :param gffutils.feature.Feature f: A gene from the data
         :param gene: A transformed gene record

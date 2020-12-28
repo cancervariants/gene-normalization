@@ -232,6 +232,7 @@ class NCBI(Base):
 
     def _get_vrs_location(self, row, params):
         """Store GA4GH VRS ChromosomeLocation in a gene record.
+        https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#chromosomelocation
 
         :param list row: A row in NCBI data file
         :param dict params: A transformed gene record
@@ -414,6 +415,7 @@ class NCBI(Base):
 
             # GA4GH: If start and end are on the same arm,
             # start MUST be the more centromeric position
+            # https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#cytobandinterval  # noqa: E501
             if (start_arm == end_arm and end < start) or end_arm == 'p':
                 interval['start'] = end
                 interval['end'] = start

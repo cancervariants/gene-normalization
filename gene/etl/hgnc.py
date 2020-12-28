@@ -262,6 +262,7 @@ class HGNC(Base):
 
     def _get_location(self, r, gene):
         """Store GA4GH VRS ChromosomeLocation in a gene record.
+        https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#chromosomelocation
 
         :param dict r: A gene record in the HGNC data file
         :param dict gene: A transformed gene record
@@ -374,6 +375,7 @@ class HGNC(Base):
 
             # GA4GH: If start and end are on the same arm,
             # start MUST be the more centromeric position
+            # https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#cytobandinterval  # noqa: E501
             if (start_arm == end_arm and end < start) or end_arm == 'p':
                 interval['start'] = end
                 interval['end'] = start
