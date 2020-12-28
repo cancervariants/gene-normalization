@@ -190,7 +190,7 @@ class Ensembl(Base):
                         "start": f.start,
                         "type": IntervalType.SIMPLE.value
                     },
-                    "sequence_id": f"ga4gh.VSL.{self._sha512t24u(blob)}",
+                    "sequence_id": f"ga4gh:VSL.{self._sha512t24u(blob)}",
                     "type": LocationType.SEQUENCE.value
                 }
                 assert SequenceLocation(**location)

@@ -38,7 +38,7 @@ def ddx11l1():
                     'start': '11869',
                     'type': 'SimpleInterval'
                 },
-                'sequence_id': 'ga4gh.VSL.tUaFuu4gZM0KH5h3EXTvhYi4ihJzPQF7',
+                'sequence_id': 'ga4gh:VSL.tUaFuu4gZM0KH5h3EXTvhYi4ihJzPQF7',
                 'type': 'SequenceLocation'
             }
         ],
@@ -67,7 +67,7 @@ def tp53():
                     'start': '7661779',
                     'type': 'SimpleInterval'
                 },
-                'sequence_id': 'ga4gh.VSL.z7qUxIqvCPT73USOo1SVTRbrrqejT6JP',
+                'sequence_id': 'ga4gh:VSL.z7qUxIqvCPT73USOo1SVTRbrrqejT6JP',
                 'type': 'SequenceLocation'
             }
         ],
@@ -96,7 +96,7 @@ def u6():
                     'start': '516376',
                     'type': 'SimpleInterval'
                 },
-                'sequence_id': 'ga4gh.VSL.O2QimEWWS6bLrTqe6KAP--a5-muvksxz',
+                'sequence_id': 'ga4gh:VSL.O2QimEWWS6bLrTqe6KAP--a5-muvksxz',
                 'type': 'SequenceLocation'
             }
         ],
@@ -125,7 +125,7 @@ def CH17_340M24_3():
                     'start': '154424380',
                     'type': 'SimpleInterval'
                 },
-                'sequence_id': 'ga4gh.VSL.U0lJ88JkUFNGdJ5BV8oCHy3DS453GtUO',
+                'sequence_id': 'ga4gh:VSL.U0lJ88JkUFNGdJ5BV8oCHy3DS453GtUO',
                 'type': 'SequenceLocation'
             }
         ],
@@ -154,7 +154,7 @@ def AC091057_5():
                     'start': '30624548',
                     'type': 'SimpleInterval'
                 },
-                'sequence_id': 'ga4gh.VSL.An1MlwkqjP7Jjo8k4kgefV_Ecdm8aFFP',
+                'sequence_id': 'ga4gh:VSL.An1MlwkqjP7Jjo8k4kgefV_Ecdm8aFFP',
                 'type': 'SequenceLocation'
             }
         ],
@@ -183,7 +183,7 @@ def hsa_mir_1253():
                     'start': '2748078',
                     'type': 'SimpleInterval'
                 },
-                'sequence_id': 'ga4gh.VSL.Or8qcAjmhzDybjczDhK1eB5c0LOwi4Jt',
+                'sequence_id': 'ga4gh:VSL.Or8qcAjmhzDybjczDhK1eB5c0LOwi4Jt',
                 'type': 'SequenceLocation'
             }
         ],
@@ -212,7 +212,7 @@ def spry3():
                     'start': '155612572',
                     'type': 'SimpleInterval'
                 },
-                'sequence_id': 'ga4gh.VSL.hT8OEIdtXBZqH6kjGzol_MeDsISQ9Zyp',
+                'sequence_id': 'ga4gh:VSL.hT8OEIdtXBZqH6kjGzol_MeDsISQ9Zyp',
                 'type': 'SequenceLocation'
             }
         ],
