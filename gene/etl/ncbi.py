@@ -3,7 +3,8 @@ from .base import Base
 from gene import PROJECT_ROOT, DownloadException
 from gene.database import Database
 from gene.schemas import Meta, Gene, SourceName, NamespacePrefix, \
-    ChromosomeLocation, IntervalType, LocationType, Annotation, Chromosome
+    ChromosomeLocation, IntervalType, LocationType, Annotation, Chromosome, \
+    DataLicenseAttributes
 import logging
 from pathlib import Path
 import csv
@@ -237,23 +238,19 @@ class NCBI(Base):
         :param list row: A row in NCBI data file
         :param dict params: A transformed gene record
         """
-        params['location_annotations'] = dict()
+        params['location_annotations'] = list()
         chromosomes_locations = self._set_chromsomes_locations(row, params)
         locations = chromosomes_locations['locations']
         chromosomes = chromosomes_locations['chromosomes']
 
         location_list = list()
         if chromosomes and not locations:
-            params['location_annotations']['chr'] = []
             for chromosome in chromosomes:
                 if chromosome == 'MT':
-                    params['location_annotations'] = {
-                        'chr': [Chromosome.MITOCHONDRIA.value]
-                    }
-                    break
-
-                params['location_annotations']['chr'].append(
-                    chromosome.strip())
+                    params['location_annotations'].append(
+                        Chromosome.MITOCHONDRIA.value)
+                else:
+                    params['location_annotations'].append(chromosome.strip())
         elif locations:
             self._add_chromosome_location(locations, location_list, params)
         if location_list:
@@ -307,18 +304,13 @@ class NCBI(Base):
 
             # NCBI sometimes contains invalid map locations
             if locations:
-                invalid_locations = []
                 for i in range(len(locations)):
                     loc = locations[i].strip()
                     if not re.match("^([1-9][0-9]?|X[pq]?|Y[pq]?)", loc):
                         logger.info(f'{row[2]} contains invalid map location:'
                                     f'{loc}.')
-                        invalid_locations.append(loc)
+                        params['location_annotations'].append(loc)
                         del locations[i]
-                if invalid_locations:
-                    params['location_annotations']['invalid_locations'] = \
-                        invalid_locations
-
         return {
             'locations': locations,
             'chromosomes': chromosomes
@@ -338,8 +330,7 @@ class NCBI(Base):
 
             if Annotation.ALT_LOC.value in loc:
                 loc = loc.split(f"{Annotation.ALT_LOC.value}")[0].strip()
-                params['location_annotations']['annotation'] = \
-                    Annotation.ALT_LOC.value
+                params['location_annotations'].append(Annotation.ALT_LOC.value)
 
             contains_centromere = False
             if 'cen' in loc:
@@ -375,10 +366,7 @@ class NCBI(Base):
                 # Location only gives chr
                 location = None
                 interval = None
-                if 'chr' in params['location_annotations']:
-                    params['location_annotations']['chr'].append(loc)
-                else:
-                    params['location_annotations']['chr'] = [loc]
+                params['location_annotations'].append(loc)
 
             if location and interval:
                 interval['type'] = IntervalType.CYTOBAND.value
@@ -446,17 +434,20 @@ class NCBI(Base):
         if self._data_url.startswith("http"):
             self._data_url = f"ftp://{self._data_url.split('://')[-1]}"
 
+        data_license_attributes = {
+            "non_commercial": False,
+            "share_alike": False,
+            "attribution": False
+        }
+        assert DataLicenseAttributes(**data_license_attributes)
+
         metadata = Meta(
             data_license="custom",
             data_license_url="https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
             version=self._version,
             data_url=self._data_url,
             rdp_url="https://reusabledata.org/ncbi-gene.html",
-            data_license_attributes={
-                'non_commercial': False,
-                'share_alike': False,
-                'attribution': False
-            },
+            data_license_attributes=data_license_attributes,
             genome_assemblies=['GRCh38.p13']
         )
 

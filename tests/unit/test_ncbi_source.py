@@ -32,7 +32,7 @@ def dpf1():
         'previous_symbols': [],
         'xrefs': ['omim:601670'],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': '19',
@@ -61,7 +61,7 @@ def pdp1():
         'previous_symbols': ['LOC157663', 'PPM2C'],
         'xrefs': ['omim:605993'],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': '8',
@@ -92,7 +92,7 @@ def spry3():
         'previous_symbols': ['LOC170187', 'LOC253479'],
         'xrefs': ['omim:300531'],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': 'Y',
@@ -132,9 +132,7 @@ def adcp1():
         'previous_symbols': [],
         'xrefs': [],
         'symbol_status': None,
-        'location_annotations': {
-            'chr': ['6']
-        },
+        'location_annotations': ['6'],
         'locations': []
     }
     return Gene(**params)
@@ -153,7 +151,7 @@ def afa():
         'previous_symbols': [],
         'xrefs': ['omim:106250'],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': []
     }
     return Gene(**params)
@@ -172,9 +170,7 @@ def znf84():
         'previous_symbols': ["LOC100287429"],
         'xrefs': ['omim:618554'],
         'symbol_status': None,
-        'location_annotations': {
-            'invalid_locations': ['map from Rosati ref via FISH [AFS]']
-        },
+        'location_annotations': ['map from Rosati ref via FISH [AFS]'],
         'locations': [
             {
                 'chr': '12',
@@ -204,9 +200,7 @@ def slc25a6():
         'previous_symbols': ["ANT3Y"],
         'xrefs': ['omim:300151', 'omim:403000'],
         'symbol_status': None,
-        'location_annotations': {
-            'chr': ['X', 'Y']
-        },
+        'location_annotations': ['X', 'Y'],
         'locations': []
     }
     return Gene(**params)
@@ -225,7 +219,7 @@ def loc106783576():
         'previous_symbols': [],
         'xrefs': [],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': '10',
@@ -255,7 +249,7 @@ def oms():
         'previous_symbols': [],
         'xrefs': ['omim:166760'],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': []
     }
     return Gene(**params)
@@ -274,7 +268,7 @@ def glc1b():
         'previous_symbols': [],
         'xrefs': ['omim:606689'],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': '2',
@@ -304,7 +298,7 @@ def hdpa():
         'previous_symbols': [],
         'xrefs': ['omim:300221'],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': 'X',
@@ -335,9 +329,7 @@ def prkrap1():
         'previous_symbols': ['LOC100289695'],
         'xrefs': [],
         'symbol_status': None,
-        'location_annotations': {
-            'annotation': 'alternate reference locus'
-        },
+        'location_annotations': ['alternate reference locus'],
         'locations': [
             {
                 'chr': '6',
@@ -367,7 +359,7 @@ def mhb():
         'previous_symbols': [],
         'xrefs': ['omim:255160'],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': '3',
@@ -397,7 +389,7 @@ def spg37():
         'previous_symbols': [],
         'xrefs': ['omim:611945'],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': '8',
@@ -1167,9 +1159,9 @@ def test_no_match(ncbi):
         'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/'
     assert response['meta_'].rdp_url == \
         'https://reusabledata.org/ncbi-gene.html'
-    assert not response['meta_'].non_commercial
-    assert not response['meta_'].share_alike
-    assert not response['meta_'].attribution
+    assert not response['meta_'].data_license_attributes['non_commercial']
+    assert not response['meta_'].data_license_attributes['share_alike']
+    assert not response['meta_'].data_license_attributes['attribution']
 
     # check blank
     response = ncbi.normalize('')

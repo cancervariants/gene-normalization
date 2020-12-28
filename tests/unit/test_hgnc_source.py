@@ -27,7 +27,7 @@ def a1bg_as1():
         'label': 'A1BG antisense RNA 1',
         'concept_id': 'hgnc:37133',
         'symbol': 'A1BG-AS1',
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': '19',
@@ -70,7 +70,7 @@ def tp53():
         'label': 'tumor protein p53',
         'concept_id': 'hgnc:11998',
         'symbol': 'TP53',
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': '17',
@@ -129,7 +129,7 @@ def a3galt2():
         'label': 'alpha 1,3-galactosyltransferase 2',
         'concept_id': 'hgnc:30005',
         'symbol': 'A3GALT2',
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': '1',
@@ -175,7 +175,7 @@ def wdhd1():
         'label': 'WD repeat and HMG-box DNA binding protein 1',
         'concept_id': 'hgnc:23170',
         'symbol': 'WDHD1',
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': '14',
@@ -222,9 +222,9 @@ def g6pr():
         'label': 'glucose-6-phosphatase regulator',
         'concept_id': 'hgnc:4059',
         'symbol': 'G6PR',
-        'location_annotations': {
-            'annotation': 'reserved'
-        },
+        'location_annotations': [
+            'reserved'
+        ],
         'locations': [],
         'previous_symbols': [],
         'aliases': [
@@ -250,9 +250,9 @@ def pirc24():
         'label': 'piwi-interacting RNA cluster 24',
         'concept_id': 'hgnc:37528',
         'symbol': 'PIRC24',
-        'location_annotations': {
-            'chr': ['6']
-        },
+        'location_annotations': [
+            '6'
+        ],
         'locations': [],
         'previous_symbols': [],
         'aliases': [
@@ -275,9 +275,9 @@ def gage4():
         'label': 'G antigen 4',
         'concept_id': 'hgnc:4101',
         'symbol': 'GAGE4',
-        'location_annotations': {
-            'annotation': 'not on reference assembly'
-        },
+        'location_annotations': [
+            'not on reference assembly'
+        ],
         'locations': [
             {
                 'chr': 'X',
@@ -316,10 +316,7 @@ def mafip():
         'label': 'MAFF interacting protein (pseudogene)',
         'concept_id': 'hgnc:31102',
         'symbol': 'MAFIP',
-        'location_annotations': {
-            'annotation': 'unplaced',
-            'chr': ['14']
-        },
+        'location_annotations': ['unplaced', '14'],
         'locations': [],
         'previous_symbols': [],
         'aliases': [
@@ -355,9 +352,7 @@ def mt_7sdna():
         'label': 'mitochondrially encoded 7S DNA',
         'concept_id': 'hgnc:7409',
         'symbol': 'MT-7SDNA',
-        'location_annotations': {
-            'chr': ['MT']
-        },
+        'location_annotations': ['MT'],
         'locations': [],
         'previous_symbols': [
             'MT7SDNA'
@@ -380,7 +375,7 @@ def cecr():
         'label': 'cat eye syndrome chromosome region',
         'concept_id': 'hgnc:1838',
         'symbol': 'CECR',
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': '22',
@@ -412,7 +407,7 @@ def csf2ra():
         'label': 'colony stimulating factor 2 receptor subunit alpha',
         'concept_id': 'hgnc:2435',
         'symbol': 'CSF2RA',
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': 'X',
@@ -478,7 +473,7 @@ def rps24p5():
         'label': 'ribosomal protein S24 pseudogene 5',
         'concept_id': 'hgnc:36026',
         'symbol': 'RPS24P5',
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': '1',
@@ -514,7 +509,7 @@ def trl_cag2_1():
         'label': 'tRNA-Leu (anticodon CAG) 2-1',
         'concept_id': 'hgnc:34692',
         'symbol': 'TRL-CAG2-1',
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'chr': '16',
@@ -1459,7 +1454,7 @@ def test_meta_info(a1bg_as1, hgnc):
     assert normalizer_response['meta_'].data_url == \
            'ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/'
     assert normalizer_response['meta_'].rdp_url is None
-    assert normalizer_response['meta_'].genome_assemblies is None
+    assert normalizer_response['meta_'].genome_assemblies == []
     assert normalizer_response['meta_'].data_license_attributes == {
         "non_commercial": False,
         "share_alike": False,

@@ -416,9 +416,7 @@
     "label": "glucose-6-phosphatase regulator",
     "concept_id": "hgnc:4059",
     "symbol": "G6PR",
-    "location_annotations": {
-      "annotation": "reserved"
-    },
+    "location_annotations": ["reserved"],
     "aliases": [
         "GSD1aSP"
     ],
@@ -443,9 +441,7 @@
     "label": "piwi-interacting RNA cluster 24",
     "concept_id": "hgnc:37528",
     "symbol": "PIRC24",
-    "location_annotations": {
-      "chr": ["6"]
-    },
+    "location_annotations": ["6"],
     "symbol_status": "approved",
     "other_identifiers": [
       "ncbigene:100313810"
@@ -465,9 +461,7 @@
     "label": "G antigen 4",
     "concept_id": "hgnc:4101",
     "symbol": "GAGE4",
-    "location_annotations": {
-      "annotation": "not on reference assembly"
-    },
+    "location_annotations": ["not on reference assembly"],
     "locations": [
       {
         "chr": "X",
@@ -506,10 +500,7 @@
     "label": "MAFF interacting protein (pseudogene)",
     "concept_id": "hgnc:31102",
     "symbol": "MAFIP",
-    "location_annotations": {
-      "chr": ["14"],
-      "annotation": "unplaced"
-    },
+    "location_annotations": ["14", "unplaced"],
     "symbol_status": "approved",
     "aliases": [
       "FLJ35473",
@@ -544,9 +535,7 @@
     "label": "mitochondrially encoded 7S DNA",
     "concept_id": "hgnc:7409",
     "symbol": "MT-7SDNA",
-    "location_annotations": {
-      "chr": ["MT"]
-    },
+    "location_annotations": ["MT"],
     "previous_symbols": [
       "MT7SDNA"
     ],
@@ -892,9 +881,7 @@
     "other_identifiers": [
         "hgnc:229"
     ],
-    "location_annotations": {
-      "chr": ["6"]
-    },
+    "location_annotations": ["6"],
     "src_name": "NCBI"
   },
   {
@@ -926,9 +913,7 @@
     ],
     "previous_symbols": ["LOC100287429"],
     "xrefs": ["omim:618554"],
-    "location_annotations": {
-      "invalid_locations": ["map from Rosati ref via FISH [AFS]"]
-    },
+    "location_annotations": ["map from Rosati ref via FISH [AFS]"],
     "locations": [
       {
         "chr": "12",
@@ -959,9 +944,7 @@
     ],
     "previous_symbols": ["ANT3Y"],
     "xrefs": ["omim:403000", "omim:300151"],
-    "location_annotations": {
-      "chr": ["X", "Y"]
-    },
+    "location_annotations": ["X", "Y"],
     "src_name": "NCBI"
   },
   {
@@ -1066,9 +1049,7 @@
         "hgnc:33447"
     ],
     "previous_symbols": ["LOC100289695"],
-    "location_annotations": {
-      "annotation": "alternate reference locus"
-    },
+    "location_annotations": [ "alternate reference locus"],
     "locations": [
       {
         "chr": "6",

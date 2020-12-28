@@ -30,7 +30,7 @@ def ddx11l1():
         'aliases': [],
         'other_identifiers': ['hgnc:37102'],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'interval': {
@@ -59,7 +59,7 @@ def tp53():
         'aliases': [],
         'other_identifiers': ['hgnc:11998'],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'interval': {
@@ -88,7 +88,7 @@ def u6():
         'aliases': [],
         'other_identifiers': [],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'interval': {
@@ -117,7 +117,7 @@ def CH17_340M24_3():
         'aliases': [],
         'other_identifiers': ['ncbigene:158960'],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'interval': {
@@ -146,7 +146,7 @@ def AC091057_5():
         'aliases': [],
         'other_identifiers': [],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'interval': {
@@ -175,7 +175,7 @@ def hsa_mir_1253():
         'aliases': [],
         'other_identifiers': [],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'interval': {
@@ -204,7 +204,7 @@ def spry3():
         'aliases': [],
         'other_identifiers': ['hgnc:11271'],
         'symbol_status': None,
-        'location_annotations': None,
+        'location_annotations': [],
         'locations': [
             {
                 'interval': {

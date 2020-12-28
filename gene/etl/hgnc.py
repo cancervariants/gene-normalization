@@ -3,7 +3,7 @@ from .base import Base
 from gene import PROJECT_ROOT, DownloadException
 from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene, \
     Meta, ChromosomeLocation, IntervalType, LocationType, Annotation,\
-    Chromosome
+    Chromosome, DataLicenseAttributes
 from gene.database import Database
 import logging
 import json
@@ -274,15 +274,15 @@ class HGNC(Base):
             locations = [r['location']]
 
         location_list = list()
-        gene['location_annotations'] = dict()
+        gene['location_annotations'] = list()
         for loc in locations:
             loc = loc.strip()
             loc = self._set_annotation(loc, gene)
 
             if loc:
                 if loc == 'mitochondria':
-                    gene['location_annotations']['chr'] =\
-                        [Chromosome.MITOCHONDRIA.value]
+                    gene['location_annotations'].append(
+                        Chromosome.MITOCHONDRIA.value)
                 else:
                     location = dict()
                     interval = dict()
@@ -312,7 +312,7 @@ class HGNC(Base):
 
         for annotation in annotations:
             if annotation in loc:
-                gene['location_annotations']['annotation'] = annotation
+                gene['location_annotations'].append(annotation)
                 # Check if location is also included
                 loc = loc.split(annotation)[0].strip()
                 if not loc:
@@ -344,10 +344,7 @@ class HGNC(Base):
                 interval['end'] = start
         else:
             # Only gives chromosome
-            if 'chr' in gene['location_annotations']:
-                gene['location_annotations']['chr'].append(loc)
-            else:
-                gene['location_annotations']['chr'] = [loc]
+            gene['location_annotations'].append(loc)
 
     def _set_interval_range(self, loc, arm_ix, interval):
         """Set the location interval range.
@@ -395,17 +392,20 @@ class HGNC(Base):
         if self._data_url.startswith("http"):
             self._data_url = f"ftp://{self._data_url.split('://')[-1]}"
 
+        data_license_attributes = {
+            "non_commercial": False,
+            "share_alike": False,
+            "attribution": False
+        }
+        assert DataLicenseAttributes(**data_license_attributes)
+
         metadata = Meta(
             data_license='custom',
             data_license_url='https://www.genenames.org/about/',
             version=self._version,
             data_url=self._data_url,
             rdp_url=None,
-            data_license_attributes={
-                'non_commercial': False,
-                'share_alike': False,
-                'attribution': False
-            },
+            data_license_attributes=data_license_attributes,
             genome_assemblies=[]
         )
 

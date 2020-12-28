@@ -2,7 +2,7 @@
 gene records.
 """
 from typing import Type, List, Optional, Dict, Union, Any
-from pydantic import BaseModel
+from pydantic import BaseModel, StrictBool
 from enum import Enum, IntEnum
 
 
@@ -60,14 +60,6 @@ class Chromosome(str, Enum):
     # TODO: Un value in NCBI?
 
 
-class LocationAnnotations(BaseModel):
-    """Define string constraints for location annotations."""
-
-    annotation: Optional[Annotation]
-    chr: Optional[List[Union[str, Chromosome]]]
-    invalid_locations: Optional[List[str]]
-
-
 class Location(BaseModel):
     """Define string constraints for the location attribute."""
 
@@ -96,7 +88,7 @@ class Gene(BaseModel):
     symbol_status: Optional[SymbolStatus]
     label: Optional[str]
     strand: Optional[Strand]
-    location_annotations: Optional[LocationAnnotations]
+    location_annotations: Optional[List[str]]
     locations: Optional[List[Union[ChromosomeLocation, SequenceLocation]]]
     aliases: Optional[List[str]]
     previous_symbols: Optional[List[str]]
@@ -200,12 +192,12 @@ class NamespacePrefix(Enum):
     RFAM = "rfam"
 
 
-class DataLicenseAttributes(Enum):
+class DataLicenseAttributes(BaseModel):
     """Define constraints for data license attributes."""
 
-    non_commercial: bool
-    share_alike: bool
-    attribution: bool
+    non_commercial: StrictBool
+    share_alike: StrictBool
+    attribution: StrictBool
 
 
 class Meta(BaseModel):
@@ -216,7 +208,7 @@ class Meta(BaseModel):
     version: str
     data_url: Optional[str]
     rdp_url: Optional[str]
-    data_license_attributes: DataLicenseAttributes
+    data_license_attributes: Dict[str, StrictBool]
     genome_assemblies: Optional[List[str]]
 
     class Config:
