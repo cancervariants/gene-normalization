@@ -639,6 +639,8 @@ def test_meta_info(ddx11l1, ensembl):
            'ftp://ftp.ensembl.org/pub/'
     assert normalizer_response['meta_'].rdp_url is None
     assert normalizer_response['meta_'].genome_assemblies == ['GRCh38']
-    assert normalizer_response['meta_'].non_commercial is False
-    assert normalizer_response['meta_'].share_alike is False
-    assert normalizer_response['meta_'].attribution is False
+    assert normalizer_response['meta_'].data_license_attributes == {
+        "non_commercial": False,
+        "share_alike": False,
+        "attribution": False
+    }

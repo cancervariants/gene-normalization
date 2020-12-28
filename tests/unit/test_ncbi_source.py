@@ -1200,7 +1200,9 @@ def test_meta(ncbi, pdp1):
         'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/'
     assert response['meta_'].rdp_url == \
         'https://reusabledata.org/ncbi-gene.html'
-    assert not response['meta_'].non_commercial
-    assert not response['meta_'].share_alike
-    assert not response['meta_'].attribution
     assert response['meta_'].genome_assemblies == ['GRCh38.p13']
+    assert response['meta_'].data_license_attributes == {
+        "non_commercial": False,
+        "share_alike": False,
+        "attribution": False
+    }

@@ -200,6 +200,14 @@ class NamespacePrefix(Enum):
     RFAM = "rfam"
 
 
+class DataLicenseAttributes(Enum):
+    """Define constraints for data license attributes."""
+
+    non_commercial: bool
+    share_alike: bool
+    attribution: bool
+
+
 class Meta(BaseModel):
     """Metadata for a given source to return in response object."""
 
@@ -208,9 +216,7 @@ class Meta(BaseModel):
     version: str
     data_url: Optional[str]
     rdp_url: Optional[str]
-    non_commercial: Optional[bool]
-    share_alike: Optional[bool]
-    attribution: Optional[bool]
+    data_license_attributes: DataLicenseAttributes
     genome_assemblies: Optional[List[str]]
 
     class Config:
@@ -230,9 +236,11 @@ class Meta(BaseModel):
                 "version": "20201215",
                 "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
                 "rdp_url": "https://reusabledata.org/ncbi-gene.html",
-                "non_commercial": False,
-                "share_alike": False,
-                "attribution": False,
+                'data_license_attributes': {
+                    "non_commercial": False,
+                    "share_alike": False,
+                    "attribution": False
+                },
                 "genome_assemblies": None
             }
 
@@ -267,9 +275,11 @@ class MatchesKeyed(BaseModel):
                         "version": "20201215",
                         "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
                         "rdp_url": "https://reusabledata.org/ncbi-gene.html",
-                        "non_commercial": False,
-                        "share_alike": False,
-                        "attribution": False,
+                        "data_license_attributes": {
+                            "non_commercial": False,
+                            "share_alike": False,
+                            "attribution": False
+                        },
                         "genome_assemblies": None
                     }
                 }
@@ -307,9 +317,11 @@ class MatchesListed(BaseModel):
                     "version": "20201215",
                     "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
                     "rdp_url": "https://reusabledata.org/ncbi-gene.html",
-                    "non_commercial": False,
-                    "share_alike": False,
-                    "attribution": False,
+                    "data_license_attributes": {
+                        "non_commercial": False,
+                        "share_alike": False,
+                        "attribution": False
+                    },
                     "genome_assemblies": None
                 }
             }
@@ -362,9 +374,11 @@ class Service(BaseModel):
                             "version": "102",
                             "data_url": "http://ftp.ensembl.org/pub/",
                             "rdp_url": None,
-                            "non_commercial": True,
-                            "share_alike": False,
-                            "attribution": False,
+                            "data_license_attributes": {
+                                "non_commercial": True,
+                                "share_alike": False,
+                                "attribution": False
+                            },
                             "genome_assemblies": "GRCh38"
                         }
                     }

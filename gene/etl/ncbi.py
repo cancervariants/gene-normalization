@@ -452,9 +452,11 @@ class NCBI(Base):
             version=self._version,
             data_url=self._data_url,
             rdp_url="https://reusabledata.org/ncbi-gene.html",
-            non_commercial=False,
-            share_alike=False,
-            attribution=False,
+            data_license_attributes={
+                'non_commercial': False,
+                'share_alike': False,
+                'attribution': False
+            },
             genome_assemblies=['GRCh38.p13']
         )
 
@@ -465,8 +467,6 @@ class NCBI(Base):
             'version': metadata.version,
             'data_url': metadata.data_url,
             'rdp_url': metadata.rdp_url,
-            'non_commercial': metadata.non_commercial,
-            'share_alike': metadata.share_alike,
-            'attribution': metadata.attribution,
+            'data_license_attributes': metadata.data_license_attributes,
             'genome_assemblies': metadata.genome_assemblies
         })
