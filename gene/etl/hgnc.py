@@ -403,7 +403,8 @@ class HGNC(Base):
             rdp_url=None,
             non_commercial=False,
             share_alike=False,
-            attribution=False
+            attribution=False,
+            genome_assemblies=[]
         )
 
         self._database.metadata.put_item(
@@ -417,5 +418,6 @@ class HGNC(Base):
                 'non_commercial': metadata.non_commercial,
                 'share_alike': metadata.share_alike,
                 'attribution': metadata.attribution,
+                'genome_assemblies': metadata.genome_assemblies
             }
         )

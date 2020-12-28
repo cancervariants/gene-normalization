@@ -1203,4 +1203,4 @@ def test_meta(ncbi, pdp1):
     assert not response['meta_'].non_commercial
     assert not response['meta_'].share_alike
     assert not response['meta_'].attribution
-    assert response['meta_'].assembly == 'GRCh38.p13'
+    assert response['meta_'].genome_assemblies == ['GRCh38.p13']

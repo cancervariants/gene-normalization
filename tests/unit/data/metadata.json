@@ -6,7 +6,7 @@
     "non_commercial": false,
     "share_alike": false,
     "attribution": false,
-    "assembly": "GRCh38",
+    "genome_assemblies": ["GRCh38"],
     "data_license": "custom",
     "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html"
   },
@@ -17,6 +17,7 @@
     "non_commercial": false,
     "share_alike": false,
     "attribution": false,
+    "genome_assemblies": [],
     "data_license": "custom",
     "data_license_url": "https://www.genenames.org/about/"
   },
@@ -27,7 +28,7 @@
     "non_commercial": false,
     "share_alike": false,
     "attribution": false,
-    "assembly": "GRCh38.p13",
+    "genome_assemblies":[ "GRCh38.p13"],
     "data_license": "custom",
     "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",
     "rdp_url": "https://reusabledata.org/ncbi-gene.html"

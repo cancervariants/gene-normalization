@@ -211,7 +211,7 @@ class Meta(BaseModel):
     non_commercial: Optional[bool]
     share_alike: Optional[bool]
     attribution: Optional[bool]
-    assembly: Optional[str]
+    genome_assemblies: Optional[List[str]]
 
     class Config:
         """Enables orm_mode"""
@@ -233,7 +233,7 @@ class Meta(BaseModel):
                 "non_commercial": False,
                 "share_alike": False,
                 "attribution": False,
-                "assembly": None
+                "genome_assemblies": None
             }
 
 
@@ -270,7 +270,7 @@ class MatchesKeyed(BaseModel):
                         "non_commercial": False,
                         "share_alike": False,
                         "attribution": False,
-                        "assembly": None
+                        "genome_assemblies": None
                     }
                 }
             }
@@ -310,7 +310,7 @@ class MatchesListed(BaseModel):
                     "non_commercial": False,
                     "share_alike": False,
                     "attribution": False,
-                    "assembly": None
+                    "genome_assemblies": None
                 }
             }
 
@@ -365,7 +365,7 @@ class Service(BaseModel):
                             "non_commercial": True,
                             "share_alike": False,
                             "attribution": False,
-                            "assembly": "GRCh38"
+                            "genome_assemblies": "GRCh38"
                         }
                     }
                 ]

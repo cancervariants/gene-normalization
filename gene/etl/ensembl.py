@@ -51,7 +51,7 @@ class Ensembl(Base):
             self._data_file_url = links[-1]
             fn = self._data_file_url.split('/')[-1]
             self._version = fn.split('.')[2]
-            self._assembly = fn.split('.')[1]
+            self._assembly = [fn.split('.')[1]]
         else:
             logger.error(f"Ensembl download failed with status code: "
                          f"{response.status_code}")
@@ -258,7 +258,7 @@ class Ensembl(Base):
             non_commercial=False,
             share_alike=False,
             attribution=False,
-            assembly=self._assembly
+            genome_assemblies=self._assembly
         )
 
         self._database.metadata.put_item(
@@ -272,6 +272,6 @@ class Ensembl(Base):
                 'non_commercial': metadata.non_commercial,
                 'share_alike': metadata.share_alike,
                 'attribution': metadata.attribution,
-                'assembly': metadata.assembly
+                'genome_assemblies': metadata.genome_assemblies
             }
         )

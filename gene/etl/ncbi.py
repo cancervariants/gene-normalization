@@ -455,7 +455,7 @@ class NCBI(Base):
             non_commercial=False,
             share_alike=False,
             attribution=False,
-            assembly='GRCh38.p13'
+            genome_assemblies=['GRCh38.p13']
         )
 
         self._database.metadata.put_item(Item={
@@ -468,5 +468,5 @@ class NCBI(Base):
             'non_commercial': metadata.non_commercial,
             'share_alike': metadata.share_alike,
             'attribution': metadata.attribution,
-            'assembly': metadata.assembly
+            'genome_assemblies': metadata.genome_assemblies
         })
