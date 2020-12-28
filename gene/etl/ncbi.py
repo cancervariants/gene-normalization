@@ -2,7 +2,8 @@
 from .base import Base
 from gene import PROJECT_ROOT, DownloadException
 from gene.database import Database
-from gene.schemas import Meta, Gene, SourceName, NamespacePrefix
+from gene.schemas import Meta, Gene, SourceName, NamespacePrefix, \
+    ChromosomeLocation, IntervalType, LocationType, Annotation, Chromosome
 import logging
 from pathlib import Path
 import csv
@@ -11,6 +12,7 @@ from datetime import datetime
 import gzip
 import shutil
 from os import remove
+import re
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -168,23 +170,14 @@ class NCBI(Base):
                         del params['xrefs']
                     if not params['other_identifiers']:
                         del params['other_identifiers']
-                # Get seqid
-                if row[6] != '-':
-                    if row[6] == 'Un':
-                        params['seqid'] = 'unplaced'
-                    else:
-                        params['seqid'] = row[6]
                 # get location
-                if row[7] != '-':
-                    params['location'] = row[7]
+                self._get_vrs_location(row, params)
                 # get label
                 if row[8] != '-':
                     params['label'] = row[8]
                 # add prev symbols
                 if row[1] in prev_symbols.keys():
                     params['previous_symbols'] = prev_symbols[row[1]]
-                else:
-                    params['previous_symbols'] = []
                 self._load_data(Gene(**params), batch)
 
     def _load_data(self, gene: Gene, batch):
@@ -237,6 +230,217 @@ class NCBI(Base):
         item['src_name'] = SourceName.NCBI.value
         batch.put_item(Item=item)
 
+    def _get_vrs_location(self, row, params):
+        """Store GA4GH VRS ChromosomeLocation in a gene record.
+        https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#chromosomelocation
+
+        :param list row: A row in NCBI data file
+        :param dict params: A transformed gene record
+        """
+        params['location_annotations'] = dict()
+        chromosomes_locations = self._set_chromsomes_locations(row, params)
+        locations = chromosomes_locations['locations']
+        chromosomes = chromosomes_locations['chromosomes']
+
+        location_list = list()
+        if chromosomes and not locations:
+            params['location_annotations']['chr'] = []
+            for chromosome in chromosomes:
+                if chromosome == 'MT':
+                    params['location_annotations'] = {
+                        'chr': [Chromosome.MITOCHONDRIA.value]
+                    }
+                    break
+
+                params['location_annotations']['chr'].append(
+                    chromosome.strip())
+        elif locations:
+            self._add_chromosome_location(locations, location_list, params)
+        if location_list:
+            params['locations'] = location_list
+        if not params['location_annotations']:
+            del params['location_annotations']
+
+    def _set_chromsomes_locations(self, row, params):
+        """Set chromosomes and locations for a given gene record.
+
+        :param list row: A gene row in the NCBI data file
+        :param dict params: A transformed gene record
+        :return: A dictionary containing a gene's chromosomes and locations
+        """
+        chromosomes = None
+        if row[6] != '-':
+            if '|' in row[6]:
+                chromosomes = row[6].split('|')
+            else:
+                chromosomes = [row[6]]
+
+            if len(chromosomes) >= 2:
+                if chromosomes and 'X' not in chromosomes and \
+                        'Y' not in chromosomes:
+                    logger.info(f'{row[2]} contains multiple distinct '
+                                f'chromosomes: {chromosomes}.')
+                    chromosomes = None
+
+        locations = None
+        if row[7] != '-':
+            if '|' in row[7]:
+                locations = row[7].split('|')
+            elif ';' in row[7]:
+                locations = row[7].split(';')
+            elif 'and' in row[7]:
+                locations = row[7].split('and')
+            else:
+                locations = [row[7]]
+
+            # Sometimes locations will store the same location twice
+            if len(locations) == 2:
+                if locations[0] == locations[1]:
+                    locations = [locations[0]]
+
+            # Exclude genes where there are multiple distinct locations
+            # i.e. OMS: '10q26.3', '19q13.42-q13.43', '3p25.3'
+            if len(locations) > 2:
+                logger.info(f'{row[2]} contains multiple distinct '
+                            f'locations: {locations}.')
+                locations = None
+
+            # NCBI sometimes contains invalid map locations
+            if locations:
+                invalid_locations = []
+                for i in range(len(locations)):
+                    loc = locations[i].strip()
+                    if not re.match("^([1-9][0-9]?|X[pq]?|Y[pq]?)", loc):
+                        logger.info(f'{row[2]} contains invalid map location:'
+                                    f'{loc}.')
+                        invalid_locations.append(loc)
+                        del locations[i]
+                if invalid_locations:
+                    params['location_annotations']['invalid_locations'] = \
+                        invalid_locations
+
+        return {
+            'locations': locations,
+            'chromosomes': chromosomes
+        }
+
+    def _add_chromosome_location(self, locations, location_list, params):
+        """Add a chromosome location to the location list.
+
+        :param list locations: NCBI map locations for a gene record.
+        :param list location_list: A list to store chromosome locations.
+        :param dict params: A transformed gene record
+        """
+        for i in range(len(locations)):
+            loc = locations[i].strip()
+            location = dict()
+            interval = dict()
+
+            if Annotation.ALT_LOC.value in loc:
+                loc = loc.split(f"{Annotation.ALT_LOC.value}")[0].strip()
+                params['location_annotations']['annotation'] = \
+                    Annotation.ALT_LOC.value
+
+            contains_centromere = False
+            if 'cen' in loc:
+                contains_centromere = True
+
+            arm_match = re.search("[pq]", loc)
+            if arm_match and not contains_centromere:
+                arm_ix = arm_match.start()
+                chromosome = loc[:arm_ix].strip()
+
+                # NCBI sometimes stores invalid map locations
+                # i.e. 7637 stores 'map from Rosati ref via FISH [AFS]'
+                if not re.match("^([1-9][0-9]?|X|Y|MT)$", chromosome):
+                    continue
+                location['chr'] = chromosome
+
+                # Check to see if there is a band / sub band included
+                if arm_ix != len(loc) - 1:
+                    if '-' in loc:
+                        self._set_interval_range(loc, arm_ix, interval)
+                    else:
+                        # Location only gives start
+                        start = loc[arm_ix:]
+                        interval['start'] = start
+                        interval['end'] = start
+                else:
+                    # Only arm is included
+                    interval['start'] = loc[arm_ix]
+                    interval['end'] = loc[arm_ix]
+            elif contains_centromere:
+                self._set_centromere_location(loc, location, interval)
+            else:
+                # Location only gives chr
+                location = None
+                interval = None
+                if 'chr' in params['location_annotations']:
+                    params['location_annotations']['chr'].append(loc)
+                else:
+                    params['location_annotations']['chr'] = [loc]
+
+            if location and interval:
+                interval['type'] = IntervalType.CYTOBAND.value
+                location['interval'] = interval
+                location['species_id'] = 'taxonomy:9606'
+                location['type'] = LocationType.CHROMOSOME.value
+                assert ChromosomeLocation(**location)
+                location_list.append(location)
+
+    def _set_interval_range(self, loc, arm_ix, interval):
+        """Set the location interval range.
+
+        :param str loc: A gene location
+        :param int arm_ix: The index of the q or p arm for a given location
+        :param dict interval: The GA4GH interval for a VRS object
+        """
+        # Location gives both start and end
+        range_ix = re.search('-', loc).start()
+
+        start = loc[arm_ix:range_ix]
+        start_arm_ix = re.search("[pq]", start).start()
+        start_arm = start[start_arm_ix]
+
+        end = loc[range_ix + 1:]
+        end_arm_match = re.search("[pq]", end)
+
+        if not end_arm_match:
+            # Does not specify the arm, so use the same as start's
+            interval['start'] = start
+            interval['end'] = f"{start[0]}{end}"
+        else:
+            end_arm_ix = end_arm_match.start()
+            end_arm = end[end_arm_ix]
+
+            # GA4GH: If start and end are on the same arm,
+            # start MUST be the more centromeric position
+            # https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#cytobandinterval  # noqa: E501
+            if (start_arm == end_arm and end < start) or end_arm == 'p':
+                interval['start'] = end
+                interval['end'] = start
+            elif (start_arm != end_arm and end > start) or end_arm == 'q':
+                interval['start'] = start
+                interval['end'] = end
+
+    def _set_centromere_location(self, loc, location, interval):
+        """Set centromere location for a gene.
+
+        :param str loc: A gene location
+        :param dict location: GA4GH location
+        :param interval: GA4GH interval for a VRS object
+        """
+        centromere_ix = re.search("cen", loc).start()
+        location['chr'] = loc[:centromere_ix].strip()
+        interval['start'] = "cen"
+
+        if '-' in loc:
+            # Location gives both start and end
+            range_ix = re.search('-', loc).start()
+            interval['end'] = loc[range_ix + 1:]
+        else:
+            interval['end'] = "cen"
+
     def _add_meta(self):
         """Load metadata"""
         if self._data_url.startswith("http"):
@@ -253,6 +457,7 @@ class NCBI(Base):
             attribution=False,
             assembly='GRCh38.p13'
         )
+
         self._database.metadata.put_item(Item={
             'src_name': SourceName.NCBI.value,
             'data_license': metadata.data_license,

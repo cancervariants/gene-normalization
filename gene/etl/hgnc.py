@@ -1,13 +1,16 @@
 """This module defines the HGNC ETL methods."""
 from .base import Base
 from gene import PROJECT_ROOT, DownloadException
-from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene, Meta
+from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene, \
+    Meta, ChromosomeLocation, IntervalType, LocationType, Annotation,\
+    Chromosome
 from gene.database import Database
 import logging
 import json
 import requests
 from bs4 import BeautifulSoup
 import datetime
+import re
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -97,15 +100,16 @@ class HGNC(Base):
                     elif r['status'] == 'Entry Withdrawn':
                         gene['symbol_status'] =\
                             SymbolStatus.WITHDRAWN.value
-                if 'location' in r:
-                    gene['location'] = r['location']
                 gene['src_name'] = SourceName.HGNC.value
 
-                # Store alias, other_identifier, and
-                # prev_symbols in gene record
+                # Store alias, other_identifier,
+                # prev_symbols, and location in gene record
                 self._get_aliases(r, gene)
                 self._get_other_ids_xrefs(r, gene)
-                self._get_previous_symbols(r, gene)
+                if 'prev_symbol' in r:
+                    self._get_previous_symbols(r, gene)
+                if 'location' in r:
+                    self._get_location(r, gene)
 
                 assert Gene(**gene)
                 self._load_dynamodb(gene, batch)
@@ -175,10 +179,9 @@ class HGNC(Base):
         :param dict r: A gene record in the HGNC data file
         :param dict gene: A transformed gene record
         """
-        if 'prev_symbol' in r:
-            prev_symbols = r['prev_symbol']
-            if prev_symbols:
-                gene['previous_symbols'] = list(set(prev_symbols))
+        prev_symbols = r['prev_symbol']
+        if prev_symbols:
+            gene['previous_symbols'] = list(set(prev_symbols))
 
     def _load_previous_symbols(self, gene, batch):
         """Load previous symbols to a gene record.
@@ -211,8 +214,7 @@ class HGNC(Base):
             'uniprot_ids', 'pubmed_id', 'cosmic', 'omim_id', 'mirbase',
             'homeodb', 'snornabase', 'orphanet', 'horde_id', 'merops', 'imgt',
             'iuphar', 'kznf_gene_catalog', 'mamit-trnadb', 'cd', 'lncrnadb',
-            'intermediate_filament_db', 'ena', 'pseudogene.org',
-            'refseq_accession'
+            'ena', 'pseudogene.org', 'refseq_accession'
         ]
 
         for src in sources:
@@ -252,16 +254,141 @@ class HGNC(Base):
                 src_type.append(
                     f"{NamespacePrefix[key.upper()].value}:{other_id}")
         else:
+            if isinstance(r[src], str) and ':' in r[src]:
+                r[src] = r[src].split(':')[-1].strip()
             src_type.append(
                 f"{NamespacePrefix[key.upper()].value}"
                 f":{r[src]}")
+
+    def _get_location(self, r, gene):
+        """Store GA4GH VRS ChromosomeLocation in a gene record.
+        https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#chromosomelocation
+
+        :param dict r: A gene record in the HGNC data file
+        :param dict gene: A transformed gene record
+        """
+        # Get list of a gene's map locations
+        if 'and' in r['location']:
+            locations = r['location'].split('and')
+        else:
+            locations = [r['location']]
+
+        location_list = list()
+        gene['location_annotations'] = dict()
+        for loc in locations:
+            loc = loc.strip()
+            loc = self._set_annotation(loc, gene)
+
+            if loc:
+                if loc == 'mitochondria':
+                    gene['location_annotations']['chr'] =\
+                        [Chromosome.MITOCHONDRIA.value]
+                else:
+                    location = dict()
+                    interval = dict()
+                    self._set_location(loc, location, interval, gene)
+                    if location and interval:
+                        interval['type'] = IntervalType.CYTOBAND.value
+                        location['interval'] = interval
+                        location['species_id'] = 'taxonomy:9606'
+                        location['type'] = LocationType.CHROMOSOME.value
+                        assert ChromosomeLocation(**location)
+                        location_list.append(location)
+
+        if location_list:
+            gene['locations'] = location_list
+        if not gene['location_annotations']:
+            del gene['location_annotations']
+
+    def _set_annotation(self, loc, gene):
+        """Set the annotations attribute if one is provided.
+           Return `True` if a location is provided, `False` otherwise.
+
+        :param str loc: A gene location
+        :return: A bool whether or not a gene map location is provided
+        """
+        annotations = {v.value for v in
+                       Annotation.__members__.values()}
+
+        for annotation in annotations:
+            if annotation in loc:
+                gene['location_annotations']['annotation'] = annotation
+                # Check if location is also included
+                loc = loc.split(annotation)[0].strip()
+                if not loc:
+                    return None
+        return loc
+
+    def _set_location(self, loc, location, interval, gene):
+        """Set a gene's location.
+
+        :param str loc: A gene location
+        :param dict location: GA4GH location
+        :param dict interval: GA4GH interval
+        :param dict gene: A transformed gene record
+        """
+        arm_match = re.search('[pq]', loc)
+
+        if arm_match:
+            # Location gives arm and sub / sub band
+            arm_ix = arm_match.start()
+            location['chr'] = loc[:arm_ix]
+
+            if '-' in loc:
+                # Location gives both start and end
+                self._set_interval_range(loc, arm_ix, interval)
+            else:
+                # Location only gives start
+                start = loc[arm_ix:]
+                interval['start'] = start
+                interval['end'] = start
+        else:
+            # Only gives chromosome
+            if 'chr' in gene['location_annotations']:
+                gene['location_annotations']['chr'].append(loc)
+            else:
+                gene['location_annotations']['chr'] = [loc]
+
+    def _set_interval_range(self, loc, arm_ix, interval):
+        """Set the location interval range.
+
+        :param str loc: A gene location
+        :param int arm_ix: The index of the q or p arm for a given location
+        :param dict interval: The GA4GH interval for a VRS object
+        """
+        range_ix = re.search('-', loc).start()
+
+        start = loc[arm_ix:range_ix]
+        start_arm_ix = re.search("[pq]", start).start()
+        start_arm = start[start_arm_ix]
+
+        end = loc[range_ix + 1:]
+        end_arm_match = re.search("[pq]", end)
+
+        if not end_arm_match:
+            # Does not specify the arm, so use the same as start's
+            interval['start'] = start
+            interval['end'] = f"{start[0]}{end}"
+        else:
+            end_arm_ix = end_arm_match.start()
+            end_arm = end[end_arm_ix]
+
+            # GA4GH: If start and end are on the same arm,
+            # start MUST be the more centromeric position
+            # https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#cytobandinterval  # noqa: E501
+            if (start_arm == end_arm and end < start) or end_arm == 'p':
+                interval['start'] = end
+                interval['end'] = start
+            elif (start_arm != end_arm and end > start) or end_arm == 'q':
+                interval['start'] = start
+                interval['end'] = end
 
     def _load_data(self, *args, **kwargs):
         """Load the HGNC source into normalized database."""
         self._download_data()
         self._extract_data()
-        self._transform_data()
         self._add_meta()
+        self._transform_data()
 
     def _add_meta(self, *args, **kwargs):
         """Add HGNC metadata to the gene_metadata table."""

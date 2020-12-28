@@ -16,26 +16,92 @@ class SymbolStatus(str, Enum):
 class Strand(str, Enum):
     """Define string constraints for strand attribute."""
 
-    FORWARD = '+'
-    REVERSE = '-'
+    FORWARD = "+"
+    REVERSE = "-"
+
+
+class IntervalType(str, Enum):
+    """Define string constraints for GA4GH Interval type."""
+
+    CYTOBAND = "CytobandInterval"
+    SIMPLE = "SimpleInterval"
+
+
+class Interval(BaseModel):
+    """GA4GH interval definition."""
+
+    end: str
+    start: str
+    type: IntervalType
+
+
+class LocationType(str, Enum):
+    """Define string constraints for location type attribute."""
+
+    CHROMOSOME = "ChromosomeLocation"
+    SEQUENCE = "SequenceLocation"
+
+
+class Annotation(str, Enum):
+    """Define string constraints for annotations when gene location
+    is absent.
+    """
+
+    NOT_FOUND_ON_REFERENCE = "not on reference assembly"
+    UNPLACED = "unplaced"
+    RESERVED = "reserved"
+    ALT_LOC = "alternate reference locus"
+
+
+class Chromosome(str, Enum):
+    """Define string constraints for chromosomes."""
+
+    MITOCHONDRIA = 'MT'
+    # TODO: Un value in NCBI?
+
+
+class LocationAnnotations(BaseModel):
+    """Define string constraints for location annotations."""
+
+    annotation: Optional[Annotation]
+    chr: Optional[List[Union[str, Chromosome]]]
+    invalid_locations: Optional[List[str]]
+
+
+class Location(BaseModel):
+    """Define string constraints for the location attribute."""
+
+    type: LocationType
+    interval: Interval
+
+
+class ChromosomeLocation(Location):
+    """GA4GH Chromosome Location definition."""
+
+    species_id: str
+    chr: str
+
+
+class SequenceLocation(Location):
+    """GA4GH Sequence Location definition."""
+
+    sequence_id: str
 
 
 class Gene(BaseModel):
     """Gene"""
 
-    label: Optional[str]
     concept_id: str
     symbol: str
-    previous_symbols: Optional[List[str]]
+    symbol_status: Optional[SymbolStatus]
+    label: Optional[str]
+    strand: Optional[Strand]
+    location_annotations: Optional[LocationAnnotations]
+    locations: Optional[List[Union[ChromosomeLocation, SequenceLocation]]]
     aliases: Optional[List[str]]
+    previous_symbols: Optional[List[str]]
     other_identifiers: Optional[List[str]]
     xrefs: Optional[List[str]]
-    symbol_status: Optional[SymbolStatus]
-    seqid: Optional[str]
-    start: Optional[str]
-    stop: Optional[str]
-    strand: Optional[Strand]
-    location: Optional[str]
 
     class Config:
         """Configure model"""
@@ -129,7 +195,6 @@ class NamespacePrefix(Enum):
     MAMIT = "mamittrnadb"
     CD = "hcdmdb"
     LNCRNADB = "lncrnadb"
-    INTERMEDIATE = "hifdb"
     IMGT = "imgt"  # .hla? .ligm? leave as is?
     IMGT_GENE_DB = "imgt/gene-db"  # redundant w/ above?
     RFAM = "rfam"

@@ -4,9 +4,17 @@
     "concept_id": "ensembl:ENSG00000223972",
     "symbol": "DDX11L1",
     "label": "DEAD/H-box helicase 11 like 1 (pseudogene)",
-    "seqid": "1",
-    "start": "11869",
-    "stop": "14409",
+    "locations": [
+      {
+        "interval": {
+          "end": "14409",
+          "start": "11869",
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh.VSL.tUaFuu4gZM0KH5h3EXTvhYi4ihJzPQF7",
+        "type": "SequenceLocation"
+      }
+    ],
     "strand": "+",
     "other_identifiers": ["hgnc:37102"],
     "src_name": "Ensembl"
@@ -21,9 +29,17 @@
     "concept_id": "ensembl:ENSG00000141510",
     "symbol": "TP53",
     "label": "tumor protein p53",
-    "seqid": "17",
-    "start": "7661779",
-    "stop": "7687538",
+    "locations": [
+      {
+        "interval": {
+          "end": "7687538",
+          "start": "7661779",
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh.VSL.z7qUxIqvCPT73USOo1SVTRbrrqejT6JP",
+        "type": "SequenceLocation"
+      }
+    ],
     "strand": "-",
     "other_identifiers": ["hgnc:11998"],
     "src_name": "Ensembl"
@@ -38,9 +54,17 @@
     "concept_id": "ensembl:ENSG00000278757",
     "symbol": "U6",
     "label": "U6 spliceosomal RNA",
-    "seqid": "1",
-    "start": "516376",
-    "stop": "516479",
+    "locations": [
+      {
+        "interval": {
+          "end": "516479",
+          "start": "516376",
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh.VSL.O2QimEWWS6bLrTqe6KAP--a5-muvksxz",
+        "type": "SequenceLocation"
+      }
+    ],
     "strand": "-",
     "xrefs": ["rfam:RF00026"],
     "src_name": "Ensembl"
@@ -55,9 +79,17 @@
     "concept_id": "ensembl:ENSG00000197180",
     "symbol": "CH17-340M24.3",
     "label": "uncharacterized protein BC009467",
-    "seqid": "X",
-    "start": "154424380",
-    "stop": "154428479",
+    "locations": [
+      {
+        "interval": {
+          "end": "154428479",
+          "start": "154424380",
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh.VSL.U0lJ88JkUFNGdJ5BV8oCHy3DS453GtUO",
+        "type": "SequenceLocation"
+      }
+    ],
     "strand": "-",
     "other_identifiers": ["ncbigene:158960"],
     "src_name": "Ensembl"
@@ -72,9 +104,17 @@
     "concept_id": "ensembl:ENSG00000284906",
     "symbol": "AC091057.5",
     "label": "Rho GTPase-activating protein 11B",
-    "seqid": "15",
-    "start": "30624548",
-    "stop": "30685606",
+    "locations": [
+      {
+        "interval": {
+          "end": "30685606",
+          "start": "30624548",
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh.VSL.An1MlwkqjP7Jjo8k4kgefV_Ecdm8aFFP",
+        "type": "SequenceLocation"
+      }
+    ],
     "strand": "+",
     "xrefs": ["uniprot:Q3KRB8"],
     "src_name": "Ensembl"
@@ -89,9 +129,17 @@
     "concept_id": "ensembl:ENSG00000272920",
     "symbol": "hsa-mir-1253",
     "label": "hsa-mir-1253",
-    "seqid": "17",
-    "start": "2748078",
-    "stop": "2748182",
+    "locations": [
+      {
+        "interval": {
+          "end": "2748182",
+          "start": "2748078",
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh.VSL.Or8qcAjmhzDybjczDhK1eB5c0LOwi4Jt",
+        "type": "SequenceLocation"
+      }
+    ],
     "strand": "+",
     "xrefs": ["mirbase:MI0006387"],
     "src_name": "Ensembl"
@@ -102,21 +150,57 @@
     "src_name": "Ensembl"
   },
   {
+    "label_and_type": "ensembl:ensg00000168939##identity",
+    "concept_id": "ensembl:ENSG00000168939",
+    "symbol": "SPRY3",
+    "label": "sprouty RTK signaling antagonist 3",
+    "locations": [
+      {
+        "interval": {
+          "end": "155782459",
+          "start": "155612572",
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh.VSL.hT8OEIdtXBZqH6kjGzol_MeDsISQ9Zyp",
+        "type": "SequenceLocation"
+      }
+    ],
+    "strand": "+",
+    "other_identifiers": ["hgnc:11271"],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "spry3##symbol",
+    "concept_id": "ensembl:ensg00000168939",
+    "src_name": "Ensembl"
+  },
+  {
     "label_and_type": "hgnc:37133##identity",
     "label": "A1BG antisense RNA 1",
     "concept_id": "hgnc:37133",
     "symbol": "A1BG-AS1",
-    "location": "19q13.43",
+    "locations": [
+      {
+        "chr": "19",
+        "interval": {
+          "end": "q13.43",
+          "start": "q13.43",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
     "previous_symbols": [
-        "NCRNA00181",
-        "A1BGAS",
-        "A1BG-AS"
+      "NCRNA00181",
+      "A1BGAS",
+      "A1BG-AS"
     ],
     "aliases": ["FLJ23569"],
     "symbol_status": "approved",
     "other_identifiers": [
-        "ensembl:ENSG00000268895",
-        "ncbigene:503538"
+      "ensembl:ENSG00000268895",
+      "ncbigene:503538"
     ],
     "xrefs": [
       "vega:OTTHUMG00000183508",
@@ -158,7 +242,18 @@
     "label": "tumor protein p53",
     "concept_id": "hgnc:11998",
     "symbol": "TP53",
-    "location": "17p13.1",
+    "locations": [
+      {
+        "chr": "17",
+        "interval": {
+          "end": "p13.1",
+          "start": "p13.1",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
     "aliases": [
         "p53",
         "LFS1"
@@ -215,7 +310,18 @@
     "label": "alpha 1,3-galactosyltransferase 2",
     "concept_id": "hgnc:30005",
     "symbol": "A3GALT2",
-    "location": "1p35.1",
+    "locations": [
+      {
+        "chr": "1",
+        "interval": {
+          "end": "p35.1",
+          "start": "p35.1",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
     "previous_symbols": [
         "A3GALT2P"
     ],
@@ -260,6 +366,366 @@
     "src_name": "HGNC"
   },
   {
+    "label_and_type": "hgnc:23170##identity",
+    "label": "WD repeat and HMG-box DNA binding protein 1",
+    "concept_id": "hgnc:23170",
+    "symbol": "WDHD1",
+    "locations": [
+      {
+        "chr": "14",
+        "interval": {
+          "end": "q22.3",
+          "start": "q22.2",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "aliases": [
+        "AND-1",
+        "CTF4",
+        "CHTF4"
+    ],
+    "symbol_status": "approved",
+    "other_identifiers": [
+      "ensembl:ENSG00000198554",
+      "ncbigene:11169"
+    ],
+    "xrefs": [
+      "vega:OTTHUMG00000140304",
+      "refseq:NM_007086",
+      "omim:608126",
+      "ucsc:uc001xbm.3",
+      "uniprot:O75717",
+      "ccds:CCDS41955",
+      "ccds:CCDS9721",
+      "ena.embl:AJ006266",
+      "pubmed:9175701",
+      "pubmed:20028748"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "wdhd1##symbol",
+    "concept_id": "hgnc:23170",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:4059##identity",
+    "label": "glucose-6-phosphatase regulator",
+    "concept_id": "hgnc:4059",
+    "symbol": "G6PR",
+    "location_annotations": {
+      "annotation": "reserved"
+    },
+    "aliases": [
+        "GSD1aSP"
+    ],
+    "symbol_status": "approved",
+    "other_identifiers": [
+      "ncbigene:2541"
+    ],
+    "xrefs": [
+      "pubmed:2172641",
+      "pubmed:7814621",
+      "pubmed:2996501"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "g6pr##symbol",
+    "concept_id": "hgnc:4059",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:37528##identity",
+    "label": "piwi-interacting RNA cluster 24",
+    "concept_id": "hgnc:37528",
+    "symbol": "PIRC24",
+    "location_annotations": {
+      "chr": ["6"]
+    },
+    "symbol_status": "approved",
+    "other_identifiers": [
+      "ncbigene:100313810"
+    ],
+    "xrefs": [
+      "pubmed:17881367"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "pirc24##symbol",
+    "concept_id": "hgnc:37528",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:4101##identity",
+    "label": "G antigen 4",
+    "concept_id": "hgnc:4101",
+    "symbol": "GAGE4",
+    "location_annotations": {
+      "annotation": "not on reference assembly"
+    },
+    "locations": [
+      {
+        "chr": "X",
+        "interval": {
+          "end": "p11.4",
+          "start": "p11.2",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ] ,
+    "symbol_status": "approved",
+    "aliases": [
+      "CT4.4"
+    ],
+    "other_identifiers": [
+      "ncbigene:2576"
+    ],
+    "xrefs": [
+      "refseq:NM_001474",
+      "omim:300597",
+      "uniprot:P0DSO3",
+      "ena.embl:U19145",
+      "pubmed:7544395"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "gage4##symbol",
+    "concept_id": "hgnc:4101",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:31102##identity",
+    "label": "MAFF interacting protein (pseudogene)",
+    "concept_id": "hgnc:31102",
+    "symbol": "MAFIP",
+    "location_annotations": {
+      "chr": ["14"],
+      "annotation": "unplaced"
+    },
+    "symbol_status": "approved",
+    "aliases": [
+      "FLJ35473",
+      "FLJ00219",
+      "FLJ39633",
+      "MIP",
+      "pp5644",
+      "TEKT4P4"
+    ],
+    "other_identifiers": [
+      "ensembl:ENSG00000274847",
+      "ncbigene:727764"
+    ],
+    "xrefs": [
+      "vega:OTTHUMG00000188065",
+      "refseq:NR_046439",
+      "uniprot:Q8WZ33",
+      "ena.embl:AK074146",
+      "ena.embl:AF289559",
+      "pubmed:16549056",
+      "pubmed:15881666"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "mafip##symbol",
+    "concept_id": "hgnc:31102",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:7409##identity",
+    "label": "mitochondrially encoded 7S DNA",
+    "concept_id": "hgnc:7409",
+    "symbol": "MT-7SDNA",
+    "location_annotations": {
+      "chr": ["MT"]
+    },
+    "previous_symbols": [
+      "MT7SDNA"
+    ],
+    "symbol_status": "approved",
+    "xrefs": [
+      "pubmed:24709344",
+      "pubmed:273237"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "mt-7sdna##symbol",
+    "concept_id": "hgnc:7409",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:1838##identity",
+    "label": "cat eye syndrome chromosome region",
+    "concept_id": "hgnc:1838",
+    "symbol": "CECR",
+    "locations": [
+      {
+        "chr": "22",
+        "interval": {
+          "end": "q11",
+          "start": "pter",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ] ,
+    "symbol_status": "approved",
+    "other_identifiers": [
+      "ncbigene:1055"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "cecr##symbol",
+    "concept_id": "hgnc:1838",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:2435##identity",
+    "label": "colony stimulating factor 2 receptor subunit alpha",
+    "concept_id": "hgnc:2435",
+    "symbol": "CSF2RA",
+    "locations": [
+      {
+        "chr": "X",
+        "interval": {
+          "end": "p22.32",
+          "start": "p22.32",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      },
+      {
+        "chr": "Y",
+        "interval": {
+          "end": "p11.3",
+          "start": "p11.3",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ] ,
+    "symbol_status": "approved",
+    "aliases": [
+      "CD116",
+      "alphaGMR"
+    ],
+    "previous_symbols": [
+      "CSF2R"
+    ],
+    "other_identifiers": [
+      "ensembl:ENSG00000198223",
+      "ncbigene:1438"
+    ],
+    "xrefs": [
+      "vega:OTTHUMG00000012533",
+      "refseq:NM_001161529",
+      "orphanet:209477",
+      "iuphar:1707",
+      "hcdmdb:CD116",
+      "omim:306250",
+      "omim:425000",
+      "ucsc:uc010nvv.3",
+      "uniprot:P15509",
+      "ena.embl:M64445",
+      "ccds:CCDS35190",
+      "ccds:CCDS55360",
+      "ccds:CCDS35191",
+      "ccds:CCDS55361",
+      "ccds:CCDS55359",
+      "ccds:CCDS35192",
+      "ccds:CCDS35193",
+      "pubmed:1702217"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "csf2ra##symbol",
+    "concept_id": "hgnc:2435",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:36026##identity",
+    "label": "ribosomal protein S24 pseudogene 5",
+    "concept_id": "hgnc:36026",
+    "symbol": "RPS24P5",
+    "locations": [
+      {
+        "chr": "1",
+        "interval": {
+          "end": "q41",
+          "start": "p36.13",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "symbol_status": "approved",
+    "other_identifiers": [
+      "ncbigene:100271094"
+    ],
+    "xrefs": [
+      "refseq:NG_011274",
+      "pubmed:19123937"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "rps24p5##symbol",
+    "concept_id": "hgnc:36026",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:34692##identity",
+    "label": "tRNA-Leu (anticodon CAG) 2-1",
+    "concept_id": "hgnc:34692",
+    "symbol": "TRL-CAG2-1",
+    "locations": [
+      {
+        "chr": "16",
+        "interval": {
+          "end": "q21",
+          "start": "q13",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "symbol_status": "approved",
+    "aliases": [
+      "tRNA-Leu-CAG-2-1"
+    ],
+    "previous_symbols": [
+      "TRNAL13"
+    ],
+    "other_identifiers": [
+      "ncbigene:100189130"
+    ],
+    "xrefs": [
+      "ena.embl:HG983896"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "trl-cag2-1##symbol",
+    "concept_id": "hgnc:34692",
+    "src_name": "HGNC"
+  },
+  {
     "label_and_type": "ncbigene:8193##identity",
     "label": "double PHD fingers 1",
     "concept_id": "ncbigene:8193",
@@ -269,8 +735,18 @@
       "hgnc:20225", "ensembl:ENSG00000011332"
     ],
     "xrefs": ["omim:601670"],
-    "seqid": "19",
-    "location": "19q13.2",
+    "locations": [
+      {
+        "chr": "19",
+        "interval": {
+          "end": "q13.2",
+          "start": "q13.2",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
     "src_name": "NCBI"
   },
   {
@@ -309,8 +785,18 @@
         "LOC157663", "PPM2C"
     ],
     "xrefs": ["omim:605993"],
-    "seqid": "8",
-    "location": "8q22.1",
+    "locations": [
+      {
+        "chr": "8",
+        "interval": {
+          "end": "q22.1",
+          "start": "q22.1",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
     "src_name": "NCBI"
   },
   {
@@ -351,6 +837,305 @@
   {
     "label_and_type": "ppm2c##alias",
     "concept_id": "ncbigene:54704",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:10251##identity",
+    "label": "sprouty RTK signaling antagonist 3",
+    "concept_id": "ncbigene:10251",
+    "symbol": "SPRY3",
+    "aliases": ["spry-3"],
+    "other_identifiers": [
+        "hgnc:11271", "ensembl:ENSG00000168939"
+    ],
+    "previous_symbols": ["LOC170187", "LOC253479"],
+    "xrefs": ["omim:300531"],
+    "locations": [
+      {
+        "chr": "Y",
+        "interval": {
+          "end": "q12",
+          "start": "q12",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      },
+      {
+        "chr": "X",
+        "interval": {
+          "end": "q28",
+          "start": "q28",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "spry3##symbol",
+    "concept_id": "ncbigene:10251",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "spry-3##alias",
+    "concept_id": "ncbigene:10251",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:106##identity",
+    "label": "adenosine deaminase complexing protein 1",
+    "concept_id": "ncbigene:106",
+    "symbol": "ADCP1",
+    "other_identifiers": [
+        "hgnc:229"
+    ],
+    "location_annotations": {
+      "chr": ["6"]
+    },
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "adcp1##symbol",
+    "concept_id": "ncbigene:106",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:170##identity",
+    "label": "ankyloblepharon filiforme adnatum",
+    "concept_id": "ncbigene:170",
+    "symbol": "AFA",
+    "xrefs": ["omim:106250"],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "afa##symbol",
+    "concept_id": "ncbigene:170",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:7637##identity",
+    "label": "zinc finger protein 84",
+    "concept_id": "ncbigene:7637",
+    "symbol": "ZNF84",
+    "aliases": ["HPF2"],
+    "other_identifiers": [
+        "hgnc:13159", "ensembl:ENSG00000198040"
+    ],
+    "previous_symbols": ["LOC100287429"],
+    "xrefs": ["omim:618554"],
+    "location_annotations": {
+      "invalid_locations": ["map from Rosati ref via FISH [AFS]"]
+    },
+    "locations": [
+      {
+        "chr": "12",
+        "interval": {
+          "end": "q24.33",
+          "start": "q24.33",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "znf84##symbol",
+    "concept_id": "ncbigene:7637",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:293##identity",
+    "label": "solute carrier family 25 member 6",
+    "concept_id": "ncbigene:293",
+    "symbol": "SLC25A6",
+    "aliases": ["AAC3", "ANT", "ANT 2", "ANT 3", "ANT3", "ANT3Y"],
+    "other_identifiers": [
+        "hgnc:10992", "ensembl:ENSG00000169100"
+    ],
+    "previous_symbols": ["ANT3Y"],
+    "xrefs": ["omim:403000", "omim:300151"],
+    "location_annotations": {
+      "chr": ["X", "Y"]
+    },
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "slc25a6##symbol",
+    "concept_id": "ncbigene:293",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:106783576##identity",
+    "label": "nonconserved acetylation island sequence 68 enhancer",
+    "concept_id": "ncbigene:106783576",
+    "symbol": "LOC106783576",
+    "locations": [
+      {
+        "chr": "10",
+        "interval": {
+          "end": "p",
+          "start": "p",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "loc106783576##symbol",
+    "concept_id": "ncbigene:106783576",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:619538##identity",
+    "label": "otitis media, susceptibility to",
+    "concept_id": "ncbigene:619538",
+    "symbol": "OMS",
+    "aliases": ["COME/ROM"],
+    "xrefs": ["omim:166760"],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "oms##symbol",
+    "concept_id": "ncbigene:619538",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:2722##identity",
+    "label": "glaucoma 1, open angle, B (adult-onset)",
+    "concept_id": "ncbigene:2722",
+    "symbol": "GLC1B",
+    "xrefs": ["omim:606689"],
+    "locations": [
+      {
+        "chr": "2",
+        "interval": {
+          "end": "q13",
+          "start": "cen",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "glc1b##symbol",
+    "concept_id": "ncbigene:2722",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:50829##identity",
+    "label": "Hodgkin disease, susceptibility, pseudoautosomal",
+    "concept_id": "ncbigene:50829",
+    "symbol": "HDPA",
+    "xrefs": ["omim:300221"],
+    "locations": [
+      {
+        "chr": "X",
+        "interval": {
+          "end": "pter",
+          "start": "p22.32",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "hdpa##symbol",
+    "concept_id": "ncbigene:50829",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:731716##identity",
+    "label": "protein activator of interferon induced protein kinase EIF2AK2 pseudogene 1",
+    "concept_id": "ncbigene:731716",
+    "symbol": "PRKRAP1",
+    "other_identifiers": [
+        "hgnc:33447"
+    ],
+    "previous_symbols": ["LOC100289695"],
+    "location_annotations": {
+      "annotation": "alternate reference locus"
+    },
+    "locations": [
+      {
+        "chr": "6",
+        "interval": {
+          "end": "p21.3",
+          "start": "p21.3",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "prkrap1##symbol",
+    "concept_id": "ncbigene:731716",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:619511##identity",
+    "label": "myopathy, hyaline body, autosomal recessive",
+    "concept_id": "ncbigene:619511",
+    "symbol": "MHB",
+    "xrefs": ["omim:255160"],
+    "locations": [
+      {
+        "chr": "3",
+        "interval": {
+          "end": "p22.2",
+          "start": "p21.32",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "mhb##symbol",
+    "concept_id": "ncbigene:619511",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:100049159##identity",
+    "label": "spastic paraplegia 37 (autosomal dominant)",
+    "concept_id": "ncbigene:100049159",
+    "symbol": "SPG37",
+    "xrefs": ["omim:611945"],
+    "locations": [
+      {
+        "chr": "8",
+        "interval": {
+          "end": "q13.3",
+          "start": "p21.2",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "spg37##symbol",
+    "concept_id": "ncbigene:100049159",
     "src_name": "NCBI"
   }
 ]

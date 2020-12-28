@@ -6,6 +6,7 @@ from gene.schemas import SourceName
 from timeit import default_timer as timer
 from gene.database import Database
 from boto3.dynamodb.conditions import Key
+import sys
 
 
 class CLI:
@@ -42,7 +43,13 @@ class CLI:
         elif db_url:
             db: Database = Database(db_url=db_url)
         else:
-            db: Database = Database()
+            if click.confirm("Are you sure you want to update"
+                             " the production database?", default=False):
+                click.echo("Updating production db...")
+                db: Database = Database()
+            else:
+                click.echo("Exiting CLI.")
+                sys.exit()
 
         if update_all:
             normalizers = [src for src in sources]
