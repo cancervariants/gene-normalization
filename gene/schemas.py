@@ -319,7 +319,7 @@ class Service(BaseModel):
     """Core response schema containing matches for each source"""
 
     query: str
-    warnings: Optional[Dict]
+    warnings: Optional[List]
     source_matches: Union[Dict[SourceName, MatchesKeyed], List[MatchesListed]]
 
     class Config:
@@ -335,7 +335,7 @@ class Service(BaseModel):
                 prop.pop('title', None)
             schema['example'] = {
                 "query": "BRAF",
-                "warnings": None,
+                "warnings": [],
                 "source_matches": [
                     {
                         "source": "Ensembl",

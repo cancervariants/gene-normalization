@@ -51,12 +51,10 @@ class Normalizer:
         :param str query_str: query string
         :return: dict keying warning type to warning description
         """
-        warnings = None
+        warnings = []
         nbsp = re.search('\xa0|&nbsp;', query_str)
         if nbsp:
-            warnings = {
-                'nbsp': 'Query contains non-breaking space characters.'
-            }
+            warnings = ['Query contains non-breaking space characters.']
             logger.warning(
                 f'Query ({query_str}) contains non-breaking space characters.'
             )
