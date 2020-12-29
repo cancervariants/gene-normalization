@@ -4,7 +4,7 @@ from gene import PROJECT_ROOT, DownloadException
 from gene.database import Database
 from gene.schemas import Meta, Gene, SourceName, NamespacePrefix, \
     ChromosomeLocation, IntervalType, LocationType, Annotation, Chromosome, \
-    DataLicenseAttributes
+    DataLicenseAttributes, SequenceLocation
 import logging
 from pathlib import Path
 import csv
@@ -14,6 +14,11 @@ import gzip
 import shutil
 from os import remove
 import re
+import gffutils
+from urllib.request import urlopen
+from bs4 import BeautifulSoup
+import hashlib
+import base64
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -28,8 +33,14 @@ class NCBI(Base):
     def __init__(self,
                  database: Database,
                  data_url: str = 'https://ftp.ncbi.nlm.nih.gov/gene/DATA/',
-                 info_file_url: str = 'https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz',  # noqa: E501
-                 history_file_url: str = 'https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene_history.gz'):  # noqa: E501
+                 info_file_url: str = 'https://ftp.ncbi.nlm.nih.gov/gene/DATA/'
+                                      'GENE_INFO/Mammalia/'
+                                      'Homo_sapiens.gene_info.gz',
+                 history_file_url: str = 'https://ftp.ncbi.nlm.nih.gov/gene/'
+                                         'DATA/gene_history.gz',
+                 gff_url: str = 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/'
+                                'vertebrate_mammalian/Homo_sapiens'
+                                '/latest_assembly_versions/'):
         """Construct the NCBI ETL instance.
 
         :param Database database: gene database for adding new data
@@ -38,11 +49,13 @@ class NCBI(Base):
         :param str info_file_url: default URL to gene info file on NCBI website
         :param str history_file_url: default URL to gene group file on NCBI
             website
+        :param str gff_url: default url to the latest assembly directory
         """
         self._database = database
         self._data_url = data_url
         self._info_file_url = info_file_url
         self._history_file_url = history_file_url
+        self._gff_url = gff_url
         self._normalizer_prefixes = self._get_normalizer_prefixes()
         self._extract_data()
         self._transform_data()
@@ -75,6 +88,41 @@ class NCBI(Base):
                 raise DownloadException(f"Entrez gene {ncbi_type} "
                                         f"download failed")
 
+    def _download_gff_file(self, ncbi_dir):
+        """Download NCBI GFF data file.
+
+        :param str ncbi_dir: The NCBI data directory
+        """
+        logger.info('Downloading NCBI GFF file...')
+        # Get the latest assembly version dir
+        response = requests.get(self._gff_url)
+        gff_dir = None
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            for node in soup.find_all('a'):
+                if node.get('href').startswith('GCF'):
+                    gff_dir = node.get('href')
+
+        # Get the latest gff file
+        gff_file = None
+        if gff_dir:
+            response = requests.get(self._gff_url + gff_dir)
+            if response.status_code == 200:
+                soup = BeautifulSoup(response.text, 'html.parser')
+                for node in soup.find_all('a'):
+                    if node.get('href').endswith('genomic.gff.gz'):
+                        gff_file = node.get('href')
+
+        self._assembly = \
+            f"GRCh{gff_file.split('GRCh')[-1].split('_')[0]}"
+        gff_file_url = f"{self._gff_url}{gff_dir}{gff_file}"
+
+        # Download gff file
+        file_name = ncbi_dir / f'ncbi_{self._assembly}.gff'
+        response = urlopen(gff_file_url)
+        with open(file_name, 'wb') as f:
+            f.write(gzip.decompress(response.read()))
+
     def _files_downloaded(self, data_dir: Path) -> bool:
         """Check whether needed source files exist.
 
@@ -102,6 +150,7 @@ class NCBI(Base):
         local_data_dir.mkdir(exist_ok=True, parents=True)
         if not self._files_downloaded(local_data_dir):
             self._download_data(local_data_dir)
+        self._download_gff_file(local_data_dir)
         local_files = [f for f in local_data_dir.iterdir()
                        if f.name.startswith('ncbi')]
         local_files.sort(key=lambda f: f.name.split('_')[-1], reverse=True)
@@ -109,6 +158,8 @@ class NCBI(Base):
                           if f.name.startswith('ncbi_info')][0]
         self._history_src = [f for f in local_files
                              if f.name.startswith('ncbi_history')][0]
+        self._gff_src = [f for f in local_files
+                         if f.name.startswith('ncbi_GRCh')][0]
         self._version = self._info_src.stem.split('_')[-1]
 
     def _transform_data(self):
@@ -133,6 +184,15 @@ class NCBI(Base):
         info_file = open(self._info_src, 'r')
         info = csv.reader(info_file, delimiter='\t')
         next(info)
+
+        # create db for gff file
+        # db = gffutils.create_db(str(self._gff_src),
+        #                         # dbfn=":memory:",
+        #                         dbfn="test_ncbi.db",
+        #                         force=True,
+        #                         merge_strategy="create_unique",
+        #                         keep_order=True)
+        db = gffutils.FeatureDB('test_ncbi.db', keep_order=True)
 
         with self._database.genes.batch_writer() as batch:
             for row in info:
@@ -171,8 +231,12 @@ class NCBI(Base):
                         del params['xrefs']
                     if not params['other_identifiers']:
                         del params['other_identifiers']
-                # get location
-                self._get_vrs_location(row, params)
+                # get chromosome location
+                vrs_chr_location = self._get_vrs_chr_location(row, params)
+                # get sequence location
+                vrs_sq_location = self._get_vrs_sq_location(db, row, params)
+                if vrs_chr_location or vrs_sq_location:
+                    params['locations'] = vrs_chr_location + vrs_sq_location
                 # get label
                 if row[8] != '-':
                     params['label'] = row[8]
@@ -231,12 +295,58 @@ class NCBI(Base):
         item['src_name'] = SourceName.NCBI.value
         batch.put_item(Item=item)
 
-    def _get_vrs_location(self, row, params):
+    def _sha512t24u(self, blob):
+        """Compute an ASCII digest from binary data.
+           Source: GA4GH VRS
+
+        :param str blob: Gene symbol binary data
+        :return: Binary digest
+        """
+        digest = hashlib.sha512(blob).digest()
+        tdigest = digest[:24]
+        tdigest_b64u = base64.urlsafe_b64encode(tdigest).decode("ASCII")
+        return tdigest_b64u
+
+    def _get_vrs_sq_location(self, db, row, params):
+        """Store GA4GH VRS SequenceLocation in a gene record.
+        https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
+
+        :param gffutils.interface.FeatureDB db: GFF database
+        :param list row: A row in NCBI data file
+        :param dict params: A transformed gene record
+        :return: A list of GA4GH VRS SequenceLocations
+        """
+        location_list = list()
+        gene = db[f"gene-{params['symbol']}"]
+        blob = gene.seqid.endcode('utf-8')
+        if gene.start != '.' and gene.end != '.':
+            if 0 <= gene.start <= gene.end:
+                location = {
+                    "interval": {
+                        "end": gene.end,
+                        "start": gene.start,
+                        "type": IntervalType.SIMPLE.value
+                    },
+                    # TODO: FIX
+                    "sequence_id": f"ga4gh:SQ.{self._sha512t24u(blob)}",
+                    "type": LocationType.SEQUENCE.value
+                }
+                assert SequenceLocation(**location)
+                location_list.append(location)
+            else:
+                logger.info(f"{params['concept_id']} has invalid interval:"
+                            f"start={gene.start} end={gene.end}")
+        else:
+            logger.info(f"{params['concept_id']} does not give a location.")
+        return location_list
+
+    def _get_vrs_chr_location(self, row, params):
         """Store GA4GH VRS ChromosomeLocation in a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#chromosomelocation
 
         :param list row: A row in NCBI data file
         :param dict params: A transformed gene record
+        :return: A list of GA4GH VRS ChromosomeLocations
         """
         params['location_annotations'] = list()
         chromosomes_locations = self._set_chromsomes_locations(row, params)
@@ -253,10 +363,9 @@ class NCBI(Base):
                     params['location_annotations'].append(chromosome.strip())
         elif locations:
             self._add_chromosome_location(locations, location_list, params)
-        if location_list:
-            params['locations'] = location_list
         if not params['location_annotations']:
             del params['location_annotations']
+        return location_list
 
     def _set_chromsomes_locations(self, row, params):
         """Set chromosomes and locations for a given gene record.
@@ -448,7 +557,7 @@ class NCBI(Base):
             data_url=self._data_url,
             rdp_url="https://reusabledata.org/ncbi-gene.html",
             data_license_attributes=data_license_attributes,
-            genome_assemblies=['GRCh38.p13']
+            genome_assemblies=[self._assembly]
         )
 
         self._database.metadata.put_item(Item={
