@@ -17,8 +17,7 @@ import re
 import gffutils
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-import hashlib
-import base64
+from ga4gh.core._internal.digests import sha512t24u
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -186,12 +185,12 @@ class NCBI(Base):
         next(info)
 
         # create db for gff file
-        # db = gffutils.create_db(str(self._gff_src),
-        #                         # dbfn=":memory:",
-        #                         dbfn="test_ncbi.db",
-        #                         force=True,
-        #                         merge_strategy="create_unique",
-        #                         keep_order=True)
+        db = gffutils.create_db(str(self._gff_src),
+                                # dbfn=":memory:",
+                                dbfn="test_ncbi.db",
+                                force=True,
+                                merge_strategy="create_unique",
+                                keep_order=True)
         db = gffutils.FeatureDB('test_ncbi.db', keep_order=True)
 
         with self._database.genes.batch_writer() as batch:
@@ -295,18 +294,6 @@ class NCBI(Base):
         item['src_name'] = SourceName.NCBI.value
         batch.put_item(Item=item)
 
-    def _sha512t24u(self, blob):
-        """Compute an ASCII digest from binary data.
-           Source: GA4GH VRS
-
-        :param str blob: Gene symbol binary data
-        :return: Binary digest
-        """
-        digest = hashlib.sha512(blob).digest()
-        tdigest = digest[:24]
-        tdigest_b64u = base64.urlsafe_b64encode(tdigest).decode("ASCII")
-        return tdigest_b64u
-
     def _get_vrs_sq_location(self, db, row, params):
         """Store GA4GH VRS SequenceLocation in a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
@@ -318,7 +305,7 @@ class NCBI(Base):
         """
         location_list = list()
         gene = db[f"gene-{params['symbol']}"]
-        blob = gene.seqid.endcode('utf-8')
+        blob = gene.seqid.endcode('utf-8')  # TODO: This might be wrong
         if gene.start != '.' and gene.end != '.':
             if 0 <= gene.start <= gene.end:
                 location = {
@@ -328,7 +315,7 @@ class NCBI(Base):
                         "type": IntervalType.SIMPLE.value
                     },
                     # TODO: FIX
-                    "sequence_id": f"ga4gh:SQ.{self._sha512t24u(blob)}",
+                    "sequence_id": f"ga4gh:SQ.{sha512t24u(blob)}",
                     "type": LocationType.SEQUENCE.value
                 }
                 assert SequenceLocation(**location)

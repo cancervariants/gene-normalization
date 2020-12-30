@@ -10,8 +10,7 @@ from urllib.request import urlopen
 import gzip
 from bs4 import BeautifulSoup
 import requests
-import hashlib
-import base64
+from ga4gh.core._internal.digests import sha512t24u
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -180,7 +179,7 @@ class Ensembl(Base):
         :param gffutils.feature.Feature f: A gene from the data
         :param gene: A transformed gene record
         """
-        blob = gene['symbol'].encode('utf-8')
+        blob = gene['symbol'].encode('utf-8')  # TODO: FIX. Shouldn't be symbol
 
         if f.start != '.' and f.end != '.':
             if 0 <= f.start <= f.end:
@@ -190,7 +189,7 @@ class Ensembl(Base):
                         "start": f.start,
                         "type": IntervalType.SIMPLE.value
                     },
-                    "sequence_id": f"ga4gh:VSL.{self._sha512t24u(blob)}",
+                    "sequence_id": f"ga4gh:VSL.{sha512t24u(blob)}",
                     "type": LocationType.SEQUENCE.value
                 }
                 assert SequenceLocation(**location)
@@ -200,18 +199,6 @@ class Ensembl(Base):
                             f"start={f.start} end={f.end}")
         else:
             logger.info(f"{gene['concept_id']} does not give a location.")
-
-    def _sha512t24u(self, blob):
-        """Compute an ASCII digest from binary data.
-           Source: GA4GH VRS
-
-        :param str blob: Gene symbol binary data
-        :return: Binary digest
-        """
-        digest = hashlib.sha512(blob).digest()
-        tdigest = digest[:24]
-        tdigest_b64u = base64.urlsafe_b64encode(tdigest).decode("ASCII")
-        return tdigest_b64u
 
     def _get_other_id_xref(self, src_name, src_id):
         """Get other identifier or xref.
