@@ -2,8 +2,7 @@
 from .base import Base
 from gene import PROJECT_ROOT, DownloadException
 from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene, \
-    Meta, ChromosomeLocation, IntervalType, LocationType, Annotation,\
-    Chromosome, DataLicenseAttributes
+    Meta, Annotation, Chromosome, DataLicenseAttributes
 from gene.database import Database
 import logging
 import json
@@ -11,6 +10,9 @@ import requests
 from bs4 import BeautifulSoup
 import datetime
 import re
+from ga4gh.vrs import models
+from ga4gh.core import ga4gh_identify
+import python_jsonschema_objects
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -288,12 +290,22 @@ class HGNC(Base):
                     interval = dict()
                     self._set_location(loc, location, interval, gene)
                     if location and interval:
-                        interval['type'] = IntervalType.CYTOBAND.value
-                        location['interval'] = interval
-                        location['species_id'] = 'taxonomy:9606'
-                        location['type'] = LocationType.CHROMOSOME.value
-                        assert ChromosomeLocation(**location)
-                        location_list.append(location)
+                        try:
+                            chr_location = models.ChromosomeLocation(
+                                species_id="taxonomy:9606",
+                                chr=location['chr'],
+                                interval=models.CytobandInterval(
+                                    start=interval['start'],
+                                    end=interval['end']
+                                )
+                            )
+                            chr_location._id = ga4gh_identify(chr_location)
+                            chr_location = chr_location.as_dict()
+                        except python_jsonschema_objects.validators.\
+                                ValidationError as e:
+                            logger.info(f"{e} for {gene['symbol']}")
+                        else:
+                            location_list.append(chr_location)
 
         if location_list:
             gene['locations'] = location_list

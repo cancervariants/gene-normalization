@@ -28,8 +28,10 @@ def a1bg_as1():
         'concept_id': 'hgnc:37133',
         'symbol': 'A1BG-AS1',
         'location_annotations': [],
+        'strand': None,
         'locations': [
             {
+                '_id': 'ga4gh:VCL.3Zdz1Stgx8HdWf1cT1KaUHFUQjoKTTcD',
                 'chr': '19',
                 'interval': {
                     'end': 'q13.43',
@@ -71,8 +73,10 @@ def tp53():
         'concept_id': 'hgnc:11998',
         'symbol': 'TP53',
         'location_annotations': [],
+        'strand': None,
         'locations': [
             {
+                '_id': 'ga4gh:VCL._Cl_XG2bfBUVG6uwi-jHtCHavOAyfPXN',
                 'chr': '17',
                 'interval': {
                     'end': 'p13.1',
@@ -130,8 +134,10 @@ def a3galt2():
         'concept_id': 'hgnc:30005',
         'symbol': 'A3GALT2',
         'location_annotations': [],
+        'strand': None,
         'locations': [
             {
+                '_id': 'ga4gh:VCL.Rs8bogwClWoTYjhY9vI9J3wnPEXlao-U',
                 'chr': '1',
                 'interval': {
                     'end': 'p35.1',
@@ -176,8 +182,10 @@ def wdhd1():
         'concept_id': 'hgnc:23170',
         'symbol': 'WDHD1',
         'location_annotations': [],
+        'strand': None,
         'locations': [
             {
+                '_id': 'ga4gh:VCL.M6oXAwyJ2eiZFUeA1jBaB1vKcX8OHmCY',
                 'chr': '14',
                 'interval': {
                     'end': 'q22.3',
@@ -226,6 +234,7 @@ def g6pr():
             'reserved'
         ],
         'locations': [],
+        'strand': None,
         'previous_symbols': [],
         'aliases': [
             'GSD1aSP'
@@ -254,6 +263,7 @@ def pirc24():
             '6'
         ],
         'locations': [],
+        'strand': None,
         'previous_symbols': [],
         'aliases': [
         ],
@@ -278,8 +288,10 @@ def gage4():
         'location_annotations': [
             'not on reference assembly'
         ],
+        'strand': None,
         'locations': [
             {
+                '_id': 'ga4gh:VCL.1Gv_xqaRHXVpMWdhegSuw4hBs1UtQydv',
                 'chr': 'X',
                 'interval': {
                     'end': 'p11.4',
@@ -318,6 +330,7 @@ def mafip():
         'symbol': 'MAFIP',
         'location_annotations': ['unplaced', '14'],
         'locations': [],
+        'strand': None,
         'previous_symbols': [],
         'aliases': [
             'FLJ35473',
@@ -354,6 +367,7 @@ def mt_7sdna():
         'symbol': 'MT-7SDNA',
         'location_annotations': ['MT'],
         'locations': [],
+        'strand': None,
         'previous_symbols': [
             'MT7SDNA'
         ],
@@ -376,8 +390,10 @@ def cecr():
         'concept_id': 'hgnc:1838',
         'symbol': 'CECR',
         'location_annotations': [],
+        'strand': None,
         'locations': [
             {
+                # TODO: Add _id
                 'chr': '22',
                 'interval': {
                     'end': 'q11',
@@ -408,8 +424,10 @@ def csf2ra():
         'concept_id': 'hgnc:2435',
         'symbol': 'CSF2RA',
         'location_annotations': [],
+        'strand': None,
         'locations': [
             {
+                '_id': 'ga4gh:VCL.B5KOWxL8BQRpM2MOHP-RUmGlmm4ZtMAC',
                 'chr': 'X',
                 'interval': {
                     'end': 'p22.32',
@@ -420,6 +438,7 @@ def csf2ra():
                 'type': 'ChromosomeLocation'
             },
             {
+                '_id': 'ga4gh:VCL.QzbpRniVtZz8V-7B7vKhGeX3A3huKacK',
                 'chr': 'Y',
                 'interval': {
                     'end': 'p11.3',
@@ -474,8 +493,10 @@ def rps24p5():
         'concept_id': 'hgnc:36026',
         'symbol': 'RPS24P5',
         'location_annotations': [],
+        'strand': None,
         'locations': [
             {
+                '_id': 'ga4gh:VCL.dLLTOKtFTnVd3ope5gTii1Gbdj7FxSfa',
                 'chr': '1',
                 'interval': {
                     'end': 'q41',
@@ -510,8 +531,10 @@ def trl_cag2_1():
         'concept_id': 'hgnc:34692',
         'symbol': 'TRL-CAG2-1',
         'location_annotations': [],
+        'strand': None,
         'locations': [
             {
+                '_id': 'ga4gh:VCL.32uDTWzsVj7TVoT21gSZn6-N3hMfWPC7',
                 'chr': '16',
                 'interval': {
                     'end': 'q21',
@@ -560,6 +583,7 @@ def test_concept_id_a1bg_as1(a1bg_as1, hgnc):
     assert normalized_gene.locations == a1bg_as1.locations
     assert normalized_gene.location_annotations == \
            a1bg_as1.location_annotations
+    assert normalized_gene.strand == a1bg_as1.strand
 
     normalizer_response = hgnc.normalize('HGNC:37133')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
@@ -578,6 +602,7 @@ def test_concept_id_a1bg_as1(a1bg_as1, hgnc):
     assert normalized_gene.locations == a1bg_as1.locations
     assert normalized_gene.location_annotations == \
            a1bg_as1.location_annotations
+    assert normalized_gene.strand == a1bg_as1.strand
 
     normalizer_response = hgnc.normalize('Hgnc:37133')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
@@ -596,6 +621,7 @@ def test_concept_id_a1bg_as1(a1bg_as1, hgnc):
     assert normalized_gene.locations == a1bg_as1.locations
     assert normalized_gene.location_annotations == \
            a1bg_as1.location_annotations
+    assert normalized_gene.strand == a1bg_as1.strand
 
 
 def test_a1bg_as1_symbol(a1bg_as1, hgnc):
@@ -619,6 +645,7 @@ def test_a1bg_as1_symbol(a1bg_as1, hgnc):
     assert normalized_gene.locations == a1bg_as1.locations
     assert normalized_gene.location_annotations == \
            a1bg_as1.location_annotations
+    assert normalized_gene.strand == a1bg_as1.strand
 
     normalizer_response = hgnc.normalize('A1BG-as1')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -637,6 +664,7 @@ def test_a1bg_as1_symbol(a1bg_as1, hgnc):
     assert normalized_gene.locations == a1bg_as1.locations
     assert normalized_gene.location_annotations == \
            a1bg_as1.location_annotations
+    assert normalized_gene.strand == a1bg_as1.strand
 
 
 def test_a1bg_as1_prev_symbol(a1bg_as1, hgnc):
@@ -660,6 +688,7 @@ def test_a1bg_as1_prev_symbol(a1bg_as1, hgnc):
     assert normalized_gene.locations == a1bg_as1.locations
     assert normalized_gene.location_annotations == \
            a1bg_as1.location_annotations
+    assert normalized_gene.strand == a1bg_as1.strand
 
     normalizer_response = hgnc.normalize('A1BGAS')
     assert normalizer_response['match_type'] == MatchType.PREV_SYMBOL
@@ -678,6 +707,7 @@ def test_a1bg_as1_prev_symbol(a1bg_as1, hgnc):
     assert normalized_gene.locations == a1bg_as1.locations
     assert normalized_gene.location_annotations == \
            a1bg_as1.location_annotations
+    assert normalized_gene.strand == a1bg_as1.strand
 
     normalizer_response = hgnc.normalize('A1BG-AS')
     assert normalizer_response['match_type'] == MatchType.PREV_SYMBOL
@@ -696,6 +726,7 @@ def test_a1bg_as1_prev_symbol(a1bg_as1, hgnc):
     assert normalized_gene.locations == a1bg_as1.locations
     assert normalized_gene.location_annotations == \
            a1bg_as1.location_annotations
+    assert normalized_gene.strand == a1bg_as1.strand
 
 
 def test_a1bg_as1_alias(a1bg_as1, hgnc):
@@ -719,6 +750,7 @@ def test_a1bg_as1_alias(a1bg_as1, hgnc):
     assert normalized_gene.locations == a1bg_as1.locations
     assert normalized_gene.location_annotations == \
            a1bg_as1.location_annotations
+    assert normalized_gene.strand == a1bg_as1.strand
 
     normalizer_response = hgnc.normalize('flj23569')
     assert normalizer_response['match_type'] == MatchType.ALIAS
@@ -736,6 +768,7 @@ def test_a1bg_as1_alias(a1bg_as1, hgnc):
     assert normalized_gene.locations == a1bg_as1.locations
     assert normalized_gene.location_annotations == \
            a1bg_as1.location_annotations
+    assert normalized_gene.strand == a1bg_as1.strand
 
 
 def test_concept_id_a3galt2(a3galt2, hgnc):
@@ -758,6 +791,7 @@ def test_concept_id_a3galt2(a3galt2, hgnc):
     assert normalized_gene.symbol == a3galt2.symbol
     assert normalized_gene.locations == a3galt2.locations
     assert normalized_gene.location_annotations == a3galt2.location_annotations
+    assert normalized_gene.strand == a3galt2.strand
 
     normalizer_response = hgnc.normalize('HGNC:30005')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
@@ -775,6 +809,7 @@ def test_concept_id_a3galt2(a3galt2, hgnc):
     assert normalized_gene.symbol == a3galt2.symbol
     assert normalized_gene.locations == a3galt2.locations
     assert normalized_gene.location_annotations == a3galt2.location_annotations
+    assert normalized_gene.strand == a3galt2.strand
 
     normalizer_response = hgnc.normalize('Hgnc:30005')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
@@ -792,6 +827,7 @@ def test_concept_id_a3galt2(a3galt2, hgnc):
     assert normalized_gene.symbol == a3galt2.symbol
     assert normalized_gene.locations == a3galt2.locations
     assert normalized_gene.location_annotations == a3galt2.location_annotations
+    assert normalized_gene.strand == a3galt2.strand
 
 
 def test_a3galt2_symbol(a3galt2, hgnc):
@@ -814,6 +850,7 @@ def test_a3galt2_symbol(a3galt2, hgnc):
     assert normalized_gene.symbol == a3galt2.symbol
     assert normalized_gene.locations == a3galt2.locations
     assert normalized_gene.location_annotations == a3galt2.location_annotations
+    assert normalized_gene.strand == a3galt2.strand
 
     normalizer_response = hgnc.normalize('a3galt2')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -831,6 +868,7 @@ def test_a3galt2_symbol(a3galt2, hgnc):
     assert normalized_gene.symbol == a3galt2.symbol
     assert normalized_gene.locations == a3galt2.locations
     assert normalized_gene.location_annotations == a3galt2.location_annotations
+    assert normalized_gene.strand == a3galt2.strand
 
 
 def test_a3galt2_prev_symbol(a3galt2, hgnc):
@@ -853,6 +891,7 @@ def test_a3galt2_prev_symbol(a3galt2, hgnc):
     assert normalized_gene.symbol == a3galt2.symbol
     assert normalized_gene.locations == a3galt2.locations
     assert normalized_gene.location_annotations == a3galt2.location_annotations
+    assert normalized_gene.strand == a3galt2.strand
 
     normalizer_response = hgnc.normalize('A3GALT2p')
     assert normalizer_response['match_type'] == MatchType.PREV_SYMBOL
@@ -870,6 +909,7 @@ def test_a3galt2_prev_symbol(a3galt2, hgnc):
     assert normalized_gene.symbol == a3galt2.symbol
     assert normalized_gene.locations == a3galt2.locations
     assert normalized_gene.location_annotations == a3galt2.location_annotations
+    assert normalized_gene.strand == a3galt2.strand
 
 
 def test_a3galt2_alias(a3galt2, hgnc):
@@ -892,6 +932,7 @@ def test_a3galt2_alias(a3galt2, hgnc):
     assert normalized_gene.symbol == a3galt2.symbol
     assert normalized_gene.locations == a3galt2.locations
     assert normalized_gene.location_annotations == a3galt2.location_annotations
+    assert normalized_gene.strand == a3galt2.strand
 
     normalizer_response = hgnc.normalize('igB3s')
     assert normalizer_response['match_type'] == MatchType.ALIAS
@@ -908,6 +949,7 @@ def test_a3galt2_alias(a3galt2, hgnc):
     assert normalized_gene.symbol == a3galt2.symbol
     assert normalized_gene.locations == a3galt2.locations
     assert normalized_gene.location_annotations == a3galt2.location_annotations
+    assert normalized_gene.strand == a3galt2.strand
 
 
 def test_concept_id_tp53(tp53, hgnc):
@@ -930,6 +972,7 @@ def test_concept_id_tp53(tp53, hgnc):
     assert normalized_gene.symbol == tp53.symbol
     assert normalized_gene.locations == tp53.locations
     assert normalized_gene.location_annotations == tp53.location_annotations
+    assert normalized_gene.strand == tp53.strand
 
     normalizer_response = hgnc.normalize('HGNC:11998')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
@@ -947,6 +990,7 @@ def test_concept_id_tp53(tp53, hgnc):
     assert normalized_gene.symbol == tp53.symbol
     assert normalized_gene.locations == tp53.locations
     assert normalized_gene.location_annotations == tp53.location_annotations
+    assert normalized_gene.strand == tp53.strand
 
     normalizer_response = hgnc.normalize('Hgnc:11998')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
@@ -964,6 +1008,7 @@ def test_concept_id_tp53(tp53, hgnc):
     assert normalized_gene.symbol == tp53.symbol
     assert normalized_gene.locations == tp53.locations
     assert normalized_gene.location_annotations == tp53.location_annotations
+    assert normalized_gene.strand == tp53.strand
 
 
 def test_tp53_symbol(tp53, hgnc):
@@ -986,6 +1031,7 @@ def test_tp53_symbol(tp53, hgnc):
     assert normalized_gene.symbol == tp53.symbol
     assert normalized_gene.locations == tp53.locations
     assert normalized_gene.location_annotations == tp53.location_annotations
+    assert normalized_gene.strand == tp53.strand
 
     normalizer_response = hgnc.normalize('TP53')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -1003,6 +1049,7 @@ def test_tp53_symbol(tp53, hgnc):
     assert normalized_gene.symbol == tp53.symbol
     assert normalized_gene.locations == tp53.locations
     assert normalized_gene.location_annotations == tp53.location_annotations
+    assert normalized_gene.strand == tp53.strand
 
 
 def test_tp53_alias(tp53, hgnc):
@@ -1025,6 +1072,7 @@ def test_tp53_alias(tp53, hgnc):
     assert normalized_gene.symbol == tp53.symbol
     assert normalized_gene.locations == tp53.locations
     assert normalized_gene.location_annotations == tp53.location_annotations
+    assert normalized_gene.strand == tp53.strand
 
     normalizer_response = hgnc.normalize('p53')
     assert normalizer_response['match_type'] == MatchType.ALIAS
@@ -1041,6 +1089,7 @@ def test_tp53_alias(tp53, hgnc):
     assert normalized_gene.symbol == tp53.symbol
     assert normalized_gene.locations == tp53.locations
     assert normalized_gene.location_annotations == tp53.location_annotations
+    assert normalized_gene.strand == tp53.strand
 
 
 def test_wdhd1(wdhd1, hgnc):
@@ -1061,6 +1110,7 @@ def test_wdhd1(wdhd1, hgnc):
     assert normalized_gene.symbol == wdhd1.symbol
     assert normalized_gene.locations == wdhd1.locations
     assert normalized_gene.location_annotations == wdhd1.location_annotations
+    assert normalized_gene.strand == wdhd1.strand
 
     normalizer_response = hgnc.normalize('WDHD1')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -1078,6 +1128,7 @@ def test_wdhd1(wdhd1, hgnc):
     assert normalized_gene.symbol == wdhd1.symbol
     assert normalized_gene.locations == wdhd1.locations
     assert normalized_gene.location_annotations == wdhd1.location_annotations
+    assert normalized_gene.strand == wdhd1.strand
 
 
 def test_g6pr(g6pr, hgnc):
@@ -1098,6 +1149,7 @@ def test_g6pr(g6pr, hgnc):
     assert normalized_gene.symbol == g6pr.symbol
     assert normalized_gene.locations == g6pr.locations
     assert normalized_gene.location_annotations == g6pr.location_annotations
+    assert normalized_gene.strand == g6pr.strand
 
     normalizer_response = hgnc.normalize('G6PR')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -1115,6 +1167,7 @@ def test_g6pr(g6pr, hgnc):
     assert normalized_gene.symbol == g6pr.symbol
     assert normalized_gene.locations == g6pr.locations
     assert normalized_gene.location_annotations == g6pr.location_annotations
+    assert normalized_gene.strand == g6pr.strand
 
 
 def test_pirc24(pirc24, hgnc):
@@ -1135,6 +1188,7 @@ def test_pirc24(pirc24, hgnc):
     assert normalized_gene.symbol == pirc24.symbol
     assert normalized_gene.locations == pirc24.locations
     assert normalized_gene.location_annotations == pirc24.location_annotations
+    assert normalized_gene.strand == pirc24.strand
 
     normalizer_response = hgnc.normalize('PIRC24')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -1152,6 +1206,7 @@ def test_pirc24(pirc24, hgnc):
     assert normalized_gene.symbol == pirc24.symbol
     assert normalized_gene.locations == pirc24.locations
     assert normalized_gene.location_annotations == pirc24.location_annotations
+    assert normalized_gene.strand == pirc24.strand
 
 
 def test_gage4(gage4, hgnc):
@@ -1172,6 +1227,7 @@ def test_gage4(gage4, hgnc):
     assert normalized_gene.symbol == gage4.symbol
     assert normalized_gene.locations == gage4.locations
     assert normalized_gene.location_annotations == gage4.location_annotations
+    assert normalized_gene.strand == gage4.strand
 
     normalizer_response = hgnc.normalize('GAGE4')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -1189,6 +1245,7 @@ def test_gage4(gage4, hgnc):
     assert normalized_gene.symbol == gage4.symbol
     assert normalized_gene.locations == gage4.locations
     assert normalized_gene.location_annotations == gage4.location_annotations
+    assert normalized_gene.strand == gage4.strand
 
 
 def test_mafip(mafip, hgnc):
@@ -1210,6 +1267,7 @@ def test_mafip(mafip, hgnc):
     assert normalized_gene.locations == mafip.locations
     assert set(normalized_gene.location_annotations) == \
            set(mafip.location_annotations)
+    assert normalized_gene.strand == mafip.strand
 
     normalizer_response = hgnc.normalize('MAFIP')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -1228,6 +1286,7 @@ def test_mafip(mafip, hgnc):
     assert normalized_gene.locations == mafip.locations
     assert set(normalized_gene.location_annotations) == \
            set(mafip.location_annotations)
+    assert normalized_gene.strand == mafip.strand
 
 
 def test_mt_7sdna(mt_7sdna, hgnc):
@@ -1249,6 +1308,7 @@ def test_mt_7sdna(mt_7sdna, hgnc):
     assert normalized_gene.locations == mt_7sdna.locations
     assert normalized_gene.location_annotations == \
            mt_7sdna.location_annotations
+    assert normalized_gene.strand == mt_7sdna.strand
 
     normalizer_response = hgnc.normalize('MT-7SDNA')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -1267,6 +1327,7 @@ def test_mt_7sdna(mt_7sdna, hgnc):
     assert normalized_gene.locations == mt_7sdna.locations
     assert normalized_gene.location_annotations == \
            mt_7sdna.location_annotations
+    assert normalized_gene.strand == mt_7sdna.strand
 
 
 def test_cecr(cecr, hgnc):
@@ -1287,6 +1348,7 @@ def test_cecr(cecr, hgnc):
     assert normalized_gene.symbol == cecr.symbol
     assert normalized_gene.locations == cecr.locations
     assert normalized_gene.location_annotations == cecr.location_annotations
+    assert normalized_gene.strand == cecr.strand
 
     normalizer_response = hgnc.normalize('CECR')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -1304,6 +1366,7 @@ def test_cecr(cecr, hgnc):
     assert normalized_gene.symbol == cecr.symbol
     assert normalized_gene.locations == cecr.locations
     assert normalized_gene.location_annotations == cecr.location_annotations
+    assert normalized_gene.strand == cecr.strand
 
 
 def test_csf2ra(csf2ra, hgnc):
@@ -1326,6 +1389,7 @@ def test_csf2ra(csf2ra, hgnc):
     for loc in csf2ra.locations:
         assert loc in normalized_gene.locations
     assert normalized_gene.location_annotations == csf2ra.location_annotations
+    assert normalized_gene.strand == csf2ra.strand
 
     normalizer_response = hgnc.normalize('CSF2RA')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -1345,6 +1409,7 @@ def test_csf2ra(csf2ra, hgnc):
     for loc in csf2ra.locations:
         assert loc in normalized_gene.locations
     assert normalized_gene.location_annotations == csf2ra.location_annotations
+    assert normalized_gene.strand == csf2ra.strand
 
 
 def test_rps24p5(rps24p5, hgnc):
@@ -1365,6 +1430,7 @@ def test_rps24p5(rps24p5, hgnc):
     assert normalized_gene.symbol == rps24p5.symbol
     assert normalized_gene.locations == rps24p5.locations
     assert normalized_gene.location_annotations == rps24p5.location_annotations
+    assert normalized_gene.strand == rps24p5.strand
 
     normalizer_response = hgnc.normalize('rpS24P5')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -1382,6 +1448,7 @@ def test_rps24p5(rps24p5, hgnc):
     assert normalized_gene.symbol == rps24p5.symbol
     assert normalized_gene.locations == rps24p5.locations
     assert normalized_gene.location_annotations == rps24p5.location_annotations
+    assert normalized_gene.strand == rps24p5.strand
 
 
 def test_trl_cag2_1(trl_cag2_1, hgnc):
@@ -1403,6 +1470,7 @@ def test_trl_cag2_1(trl_cag2_1, hgnc):
     assert normalized_gene.locations == trl_cag2_1.locations
     assert normalized_gene.location_annotations == \
            trl_cag2_1.location_annotations
+    assert normalized_gene.strand == trl_cag2_1.strand
 
     normalizer_response = hgnc.normalize('TRL-CAG2-1')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
@@ -1423,6 +1491,7 @@ def test_trl_cag2_1(trl_cag2_1, hgnc):
         assert loc in normalized_gene.locations
     assert normalized_gene.location_annotations == \
            trl_cag2_1.location_annotations
+    assert normalized_gene.strand == trl_cag2_1.strand
 
 
 def test_no_match(hgnc):

@@ -181,6 +181,7 @@
     "symbol": "A1BG-AS1",
     "locations": [
       {
+        "_id": "ga4gh:VCL.3Zdz1Stgx8HdWf1cT1KaUHFUQjoKTTcD",
         "chr": "19",
         "interval": {
           "end": "q13.43",
@@ -244,6 +245,7 @@
     "symbol": "TP53",
     "locations": [
       {
+        "_id": "ga4gh:VCL._Cl_XG2bfBUVG6uwi-jHtCHavOAyfPXN",
         "chr": "17",
         "interval": {
           "end": "p13.1",
@@ -312,6 +314,7 @@
     "symbol": "A3GALT2",
     "locations": [
       {
+        "_id": "ga4gh:VCL.Rs8bogwClWoTYjhY9vI9J3wnPEXlao-U",
         "chr": "1",
         "interval": {
           "end": "p35.1",
@@ -372,6 +375,7 @@
     "symbol": "WDHD1",
     "locations": [
       {
+        "_id": "ga4gh:VCL.M6oXAwyJ2eiZFUeA1jBaB1vKcX8OHmCY",
         "chr": "14",
         "interval": {
           "end": "q22.3",
@@ -464,6 +468,7 @@
     "location_annotations": ["not on reference assembly"],
     "locations": [
       {
+        "_id": "ga4gh:VCL.1Gv_xqaRHXVpMWdhegSuw4hBs1UtQydv",
         "chr": "X",
         "interval": {
           "end": "p11.4",
@@ -558,6 +563,7 @@
     "symbol": "CECR",
     "locations": [
       {
+        "_id": "TODO",
         "chr": "22",
         "interval": {
           "end": "q11",
@@ -586,6 +592,7 @@
     "symbol": "CSF2RA",
     "locations": [
       {
+        "_id": "ga4gh:VCL.B5KOWxL8BQRpM2MOHP-RUmGlmm4ZtMAC",
         "chr": "X",
         "interval": {
           "end": "p22.32",
@@ -596,6 +603,7 @@
         "type": "ChromosomeLocation"
       },
       {
+        "_id": "ga4gh:VCL.QzbpRniVtZz8V-7B7vKhGeX3A3huKacK",
         "chr": "Y",
         "interval": {
           "end": "p11.3",
@@ -652,6 +660,7 @@
     "symbol": "RPS24P5",
     "locations": [
       {
+        "_id": "ga4gh:VCL.dLLTOKtFTnVd3ope5gTii1Gbdj7FxSfa",
         "chr": "1",
         "interval": {
           "end": "q41",
@@ -684,6 +693,7 @@
     "symbol": "TRL-CAG2-1",
     "locations": [
       {
+        "_id": "ga4gh:VCL.32uDTWzsVj7TVoT21gSZn6-N3hMfWPC7",
         "chr": "16",
         "interval": {
           "end": "q21",
