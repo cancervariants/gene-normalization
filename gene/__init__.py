@@ -3,6 +3,9 @@ from pathlib import Path
 import logging
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+logging.basicConfig(
+    filename='gene.log',
+    format='[%(asctime)s] %(levelname)s : %(message)s')
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
 

@@ -22,6 +22,9 @@ boto3 = "*"
 beautifulsoup4 = "*"
 gffutils = "*"
 requests = "*"
+"biocommons.seqrepo" = "*"
+seqrepo = "*"
+"ga4gh.vrs" = {extras = ["extras"], version = "*"}
 
 [dev-packages]
 gene = {editable = true, path = "."}

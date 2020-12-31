@@ -724,8 +724,10 @@
       "hgnc:20225", "ensembl:ENSG00000011332"
     ],
     "xrefs": ["omim:601670"],
+    "strand": "-",
     "locations": [
       {
+        "_id": "ga4gh:VCL.nEPKXzyfglrOMMFySOTQ8Om_f6xmr-pP",
         "chr": "19",
         "interval": {
           "end": "q13.2",
@@ -734,6 +736,16 @@
         },
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
+      },
+      {
+        "_id": "ga4gh:VSL.5ddLPk8gIdQm3YA4r4p5NAsty9SPwXvJ",
+        "interval": {
+            "end": 38229695,
+            "start": 38211006,
+            "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
+        "type": "SequenceLocation"
       }
     ],
     "src_name": "NCBI"
@@ -774,8 +786,10 @@
         "LOC157663", "PPM2C"
     ],
     "xrefs": ["omim:605993"],
+    "strand": "+",
     "locations": [
       {
+        "_id": "ga4gh:VCL.n9W_wjDCStQf29yPcjhkMnFmESG8wN9A",
         "chr": "8",
         "interval": {
           "end": "q22.1",
@@ -784,6 +798,16 @@
         },
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
+      },
+      {
+        "_id": "ga4gh:VSL.s8NNWWCxWeiOCUa90ge6x8wxFWpO34gV",
+        "interval": {
+            "end": 93926068,
+            "start": 93916923,
+            "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.209Z7zJ-mFypBEWLk4rNC6S_OxY5p7bs",
+        "type": "SequenceLocation"
       }
     ],
     "src_name": "NCBI"
@@ -839,8 +863,10 @@
     ],
     "previous_symbols": ["LOC170187", "LOC253479"],
     "xrefs": ["omim:300531"],
+    "strand": "+",
     "locations": [
       {
+        "_id": "ga4gh:VCL.A1s9hZY1tgmRi1WuXM1ETZOqJcpo4Ftx",
         "chr": "Y",
         "interval": {
           "end": "q12",
@@ -851,6 +877,7 @@
         "type": "ChromosomeLocation"
       },
       {
+        "_id": "ga4gh:VCL.fEBeCyej0jVKsvjw4vxyW6j1h8UVLb5S",
         "chr": "X",
         "interval": {
           "end": "q28",
@@ -859,6 +886,26 @@
         },
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
+      },
+      {
+        "_id": "ga4gh:VSL.ILQGzmwapQ5xuIBoFPDTKUOuN9gJNSqp",
+        "interval": {
+            "end": 155782459,
+            "start": 155612586,
+            "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
+        "type": "SequenceLocation"
+      },
+      {
+        "_id": "ga4gh:VSL.aVFuwMTMH7TcoS-A6qMnK8c9cBZCd3xp",
+        "interval": {
+            "end": 56968979,
+            "start": 56954255,
+            "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
+        "type": "SequenceLocation"
       }
     ],
     "src_name": "NCBI"
@@ -914,8 +961,10 @@
     "previous_symbols": ["LOC100287429"],
     "xrefs": ["omim:618554"],
     "location_annotations": ["map from Rosati ref via FISH [AFS]"],
+    "strand": "+",
     "locations": [
       {
+        "_id": "ga4gh:VCL.CusjBE-q66vf4v8VSHRhMxjR_4G688Ve",
         "chr": "12",
         "interval": {
           "end": "q24.33",
@@ -924,6 +973,16 @@
         },
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
+      },
+      {
+        "_id": "ga4gh:VSL.xuSNWLM7M4vru2gbt2hOfmjL7GD_UYdA",
+        "interval": {
+            "end": 133063299,
+            "start": 133037301,
+            "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl",
+        "type": "SequenceLocation"
       }
     ],
     "src_name": "NCBI"
@@ -945,6 +1004,29 @@
     "previous_symbols": ["ANT3Y"],
     "xrefs": ["omim:403000", "omim:300151"],
     "location_annotations": ["X", "Y"],
+    "strand": "-",
+    "locations": [
+        {
+          "_id": "ga4gh:VSL.8LvkImsib1GaFH8UQrz9DwjdrgkWNmdD",
+          "interval": {
+              "end": 1392113,
+              "start": 1386152,
+              "type": "SimpleInterval"
+          },
+          "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
+          "type": "SequenceLocation"
+        },
+        {
+          "_id": "ga4gh:VSL.8eVnvARnHOCVKJ6vDCHFPmbrnjrmixB_",
+          "interval": {
+              "end": 1392113,
+              "start": 1386152,
+              "type": "SimpleInterval"
+          },
+          "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
+          "type": "SequenceLocation"
+        }
+    ],
     "src_name": "NCBI"
   },
   {
@@ -959,6 +1041,7 @@
     "symbol": "LOC106783576",
     "locations": [
       {
+        "_id": "TODO",
         "chr": "10",
         "interval": {
           "end": "p",
@@ -977,20 +1060,6 @@
     "src_name": "NCBI"
   },
   {
-    "label_and_type": "ncbigene:619538##identity",
-    "label": "otitis media, susceptibility to",
-    "concept_id": "ncbigene:619538",
-    "symbol": "OMS",
-    "aliases": ["COME/ROM"],
-    "xrefs": ["omim:166760"],
-    "src_name": "NCBI"
-  },
-  {
-    "label_and_type": "oms##symbol",
-    "concept_id": "ncbigene:619538",
-    "src_name": "NCBI"
-  },
-  {
     "label_and_type": "ncbigene:2722##identity",
     "label": "glaucoma 1, open angle, B (adult-onset)",
     "concept_id": "ncbigene:2722",
@@ -998,6 +1067,7 @@
     "xrefs": ["omim:606689"],
     "locations": [
       {
+        "_id": "TODO",
         "chr": "2",
         "interval": {
           "end": "q13",
@@ -1023,6 +1093,7 @@
     "xrefs": ["omim:300221"],
     "locations": [
       {
+        "_id": "TODO",
         "chr": "X",
         "interval": {
           "end": "pter",
@@ -1050,8 +1121,10 @@
     ],
     "previous_symbols": ["LOC100289695"],
     "location_annotations": [ "alternate reference locus"],
+    "strand": "+",
     "locations": [
       {
+        "_id": "ga4gh:VCL.HeTd-jABCr22v4rUfVWJbkz2NkPyGScK",
         "chr": "6",
         "interval": {
           "end": "p21.3",
@@ -1060,6 +1133,16 @@
         },
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
+      },
+      {
+        "_id": "ga4gh:VSL.Sk6GHE3MekN_PaimBKBmsQR6pLqQ-SAN",
+        "interval": {
+            "end": 3941874,
+            "start": 3940270,
+            "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.MjujHSAsgNWRTX4w3ysM7b5OVhZpdXu1",
+        "type": "SequenceLocation"
       }
     ],
     "src_name": "NCBI"
@@ -1077,6 +1160,7 @@
     "xrefs": ["omim:255160"],
     "locations": [
       {
+        "_id": "",
         "chr": "3",
         "interval": {
           "end": "p22.2",
@@ -1102,6 +1186,7 @@
     "xrefs": ["omim:611945"],
     "locations": [
       {
+        "_id": "",
         "chr": "8",
         "interval": {
           "end": "q13.3",

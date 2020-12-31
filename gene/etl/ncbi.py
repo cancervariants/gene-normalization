@@ -3,8 +3,7 @@ from .base import Base
 from gene import PROJECT_ROOT, DownloadException
 from gene.database import Database
 from gene.schemas import Meta, Gene, SourceName, NamespacePrefix, \
-    ChromosomeLocation, IntervalType, LocationType, Annotation, Chromosome, \
-    DataLicenseAttributes, SequenceLocation
+    Annotation, Chromosome, DataLicenseAttributes
 import logging
 from pathlib import Path
 import csv
@@ -17,7 +16,10 @@ import re
 import gffutils
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
-from ga4gh.core._internal.digests import sha512t24u
+from biocommons.seqrepo import SeqRepo
+from ga4gh.vrs import models
+from ga4gh.core import ga4gh_identify
+import python_jsonschema_objects
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -59,9 +61,11 @@ class NCBI(Base):
         self._extract_data()
         self._transform_data()
 
-    def _download_data(self, data_dir):
-        ncbi_dir = PROJECT_ROOT / 'data' / 'ncbi'
+    def _download_data(self, ncbi_dir):
+        """Download NCBI info, history, and GRCh38 files.
 
+        :param str ncbi_dir: The NCBI data directory
+        """
         logger.info('Downloading Entrez gene info.')
         for ncbi_type in ['info', 'history']:
             if ncbi_type == 'info':
@@ -70,16 +74,16 @@ class NCBI(Base):
                 response = requests.get(self._history_file_url, stream=True)
             if response.status_code == 200:
                 version = datetime.today().strftime('%Y%m%d')
-                with open(ncbi_dir / f'ncbi_gene_{ncbi_type}.gz', 'wb') as f:
+                with open(f'{ncbi_dir}/ncbi_gene_{ncbi_type}.gz', 'wb') as f:
                     f.write(response.content)
                     f.close()
                 with gzip.open(
-                        ncbi_dir / f'ncbi_gene_{ncbi_type}.gz', "rb") as gz:
-                    with open(ncbi_dir / f"ncbi_{ncbi_type}_{version}.tsv",
+                        f'{ncbi_dir}/ncbi_gene_{ncbi_type}.gz', "rb") as gz:
+                    with open(f"{ncbi_dir}/ncbi_{ncbi_type}_{version}.tsv",
                               'wb') as f_out:
                         shutil.copyfileobj(gz, f_out)
                         f_out.close()
-                remove(ncbi_dir / f'ncbi_gene_{ncbi_type}.gz')
+                remove(f'{ncbi_dir}/ncbi_gene_{ncbi_type}.gz')
             else:
                 logger.error(
                     f"Entrez gene {ncbi_type} download failed with status "
@@ -117,7 +121,7 @@ class NCBI(Base):
         gff_file_url = f"{self._gff_url}{gff_dir}{gff_file}"
 
         # Download gff file
-        file_name = ncbi_dir / f'ncbi_{self._assembly}.gff'
+        file_name = f'{ncbi_dir}/ncbi_{self._assembly}.gff'
         response = urlopen(gff_file_url)
         with open(file_name, 'wb') as f:
             f.write(gzip.decompress(response.read()))
@@ -184,14 +188,18 @@ class NCBI(Base):
         info = csv.reader(info_file, delimiter='\t')
         next(info)
 
+        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / '2020-11-27'
+        sr = SeqRepo(seqrepo_dir)
+
         # create db for gff file
-        db = gffutils.create_db(str(self._gff_src),
-                                # dbfn=":memory:",
-                                dbfn="test_ncbi.db",
-                                force=True,
-                                merge_strategy="create_unique",
+        # db = gffutils.create_db(str(self._gff_src),
+        #                         dbfn=":memory:",
+        #                         # dbfn=f"{PROJECT_ROOT}/data/ncbi/test_ncbi.db",  # noqa: E501
+        #                         force=True,
+        #                         merge_strategy="create_unique",
+        #                         keep_order=True)
+        db = gffutils.FeatureDB(f"{PROJECT_ROOT}/data/ncbi/test_ncbi.db",
                                 keep_order=True)
-        db = gffutils.FeatureDB('test_ncbi.db', keep_order=True)
 
         with self._database.genes.batch_writer() as batch:
             for row in info:
@@ -232,8 +240,21 @@ class NCBI(Base):
                         del params['other_identifiers']
                 # get chromosome location
                 vrs_chr_location = self._get_vrs_chr_location(row, params)
+                if 'exclude' in vrs_chr_location:
+                    # Exclude genes with multiple distinct locations (e.g. OMS)
+                    continue
+                # TODO: Check this logic
+                if not vrs_chr_location and 'location_annotations' in params:
+                    # If only chromosomes given
+                    if 'X' in params['location_annotations'] and \
+                            'Y' in params['location_annotations']:
+                        n = 2
+                    else:
+                        n = 1
+                else:
+                    n = len(vrs_chr_location)
                 # get sequence location
-                vrs_sq_location = self._get_vrs_sq_location(db, row, params)
+                vrs_sq_location = self._get_vrs_sq_location(db, sr, params, n)
                 if vrs_chr_location or vrs_sq_location:
                     params['locations'] = vrs_chr_location + vrs_sq_location
                 # get label
@@ -294,37 +315,46 @@ class NCBI(Base):
         item['src_name'] = SourceName.NCBI.value
         batch.put_item(Item=item)
 
-    def _get_vrs_sq_location(self, db, row, params):
+    def _get_vrs_sq_location(self, db, sr, params, n):
         """Store GA4GH VRS SequenceLocation in a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
 
-        :param gffutils.interface.FeatureDB db: GFF database
-        :param list row: A row in NCBI data file
+        :param FeatureDB db: GFF database
+        :param  SeqRepo sr: Access to the seqrepo
         :param dict params: A transformed gene record
+        :param int n: Number of locations to look for
         :return: A list of GA4GH VRS SequenceLocations
         """
+        # TODO: Might want to include all even if not in nbci_info file
         location_list = list()
-        gene = db[f"gene-{params['symbol']}"]
-        blob = gene.seqid.endcode('utf-8')  # TODO: This might be wrong
-        if gene.start != '.' and gene.end != '.':
-            if 0 <= gene.start <= gene.end:
-                location = {
-                    "interval": {
-                        "end": gene.end,
-                        "start": gene.start,
-                        "type": IntervalType.SIMPLE.value
-                    },
-                    # TODO: FIX
-                    "sequence_id": f"ga4gh:SQ.{sha512t24u(blob)}",
-                    "type": LocationType.SEQUENCE.value
-                }
-                assert SequenceLocation(**location)
-                location_list.append(location)
+        for i in range(n):
+            try:
+                if i == 0:
+                    query_str = f"gene-{params['symbol']}"
+                else:
+                    query_str = f"gene-{params['symbol']}-{i+1}"
+                gene = db[query_str]
+            except gffutils.exceptions.FeatureNotFoundError:
+                # TODO: Does this need to be logged?
+                logger.info(f"{params['symbol']} not found in NCBI gff file.")
             else:
-                logger.info(f"{params['concept_id']} has invalid interval:"
-                            f"start={gene.start} end={gene.end}")
-        else:
-            logger.info(f"{params['concept_id']} does not give a location.")
+                params['strand'] = gene.strand
+                aliases = sr.translate_alias(gene.seqid)
+                sequence_id = [a for a in aliases if a.startswith('ga4gh')][0]
+                if gene.start != '.' and gene.end != '.' and sequence_id:
+                    if 0 <= gene.start <= gene.end:
+                        seq_location = models.SequenceLocation(
+                            sequence_id=sequence_id,
+                            interval=models.SimpleInterval(
+                                start=gene.start,
+                                end=gene.end
+                            )
+                        ).as_dict()
+                        location_list.append(seq_location)
+                    else:
+                        logger.info(f"{params['concept_id']} has invalid "
+                                    f"interval: start={gene.start} "
+                                    f"end={gene.end}")
         return location_list
 
     def _get_vrs_chr_location(self, row, params):
@@ -339,6 +369,8 @@ class NCBI(Base):
         chromosomes_locations = self._set_chromsomes_locations(row, params)
         locations = chromosomes_locations['locations']
         chromosomes = chromosomes_locations['chromosomes']
+        if chromosomes_locations['exclude']:
+            return ['exclude']
 
         location_list = list()
         if chromosomes and not locations:
@@ -376,6 +408,7 @@ class NCBI(Base):
                     chromosomes = None
 
         locations = None
+        exclude = False
         if row[7] != '-':
             if '|' in row[7]:
                 locations = row[7].split('|')
@@ -397,6 +430,7 @@ class NCBI(Base):
                 logger.info(f'{row[2]} contains multiple distinct '
                             f'locations: {locations}.')
                 locations = None
+                exclude = True
 
             # NCBI sometimes contains invalid map locations
             if locations:
@@ -409,7 +443,8 @@ class NCBI(Base):
                         del locations[i]
         return {
             'locations': locations,
-            'chromosomes': chromosomes
+            'chromosomes': chromosomes,
+            'exclude': exclude
         }
 
     def _add_chromosome_location(self, locations, location_list, params):
@@ -465,12 +500,29 @@ class NCBI(Base):
                 params['location_annotations'].append(loc)
 
             if location and interval:
-                interval['type'] = IntervalType.CYTOBAND.value
-                location['interval'] = interval
-                location['species_id'] = 'taxonomy:9606'
-                location['type'] = LocationType.CHROMOSOME.value
-                assert ChromosomeLocation(**location)
-                location_list.append(location)
+                if interval['start'] == 'p' and interval['end'] == 'p':
+                    interval['start'] = 'pter'
+                    interval['end'] = 'cen'
+                elif interval['start'] == 'q' and interval['end'] == 'q':
+                    interval['start'] = 'cen'
+                    interval['end'] = 'qter'
+
+                try:
+                    chr_location = models.ChromosomeLocation(
+                        species_id="taxonomy:9606",
+                        chr=location['chr'],
+                        interval=models.CytobandInterval(
+                            start=interval['start'],
+                            end=interval['end']
+                        )
+                    )
+                    chr_location._id = ga4gh_identify(chr_location)
+                    chr_location = chr_location.as_dict()
+                except python_jsonschema_objects.validators.ValidationError \
+                        as e:
+                    logger.info(f"{e} for {params['symbol']}")
+                else:
+                    location_list.append(chr_location)
 
     def _set_interval_range(self, loc, arm_ix, interval):
         """Set the location interval range.

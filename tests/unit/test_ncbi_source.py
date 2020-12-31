@@ -33,8 +33,10 @@ def dpf1():
         'xrefs': ['omim:601670'],
         'symbol_status': None,
         'location_annotations': [],
+        'strand': '-',
         'locations': [
             {
+                '_id': 'ga4gh:VCL.nEPKXzyfglrOMMFySOTQ8Om_f6xmr-pP',
                 'chr': '19',
                 'interval': {
                     'end': 'q13.2',
@@ -43,6 +45,16 @@ def dpf1():
                 },
                 'species_id': 'taxonomy:9606',
                 'type': 'ChromosomeLocation'
+            },
+            {
+                '_id': 'ga4gh:VSL.5ddLPk8gIdQm3YA4r4p5NAsty9SPwXvJ',
+                'interval': {
+                    'end': 38229695,
+                    'start': 38211006,
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl',
+                'type': 'SequenceLocation'
             }
         ]
     }
@@ -62,8 +74,10 @@ def pdp1():
         'xrefs': ['omim:605993'],
         'symbol_status': None,
         'location_annotations': [],
+        'strand': '+',
         'locations': [
             {
+                '_id': 'ga4gh:VCL.n9W_wjDCStQf29yPcjhkMnFmESG8wN9A',
                 'chr': '8',
                 'interval': {
                     'end': 'q22.1',
@@ -72,6 +86,16 @@ def pdp1():
                 },
                 'species_id': 'taxonomy:9606',
                 'type': 'ChromosomeLocation'
+            },
+            {
+                '_id': 'ga4gh:VSL.s8NNWWCxWeiOCUa90ge6x8wxFWpO34gV',
+                'interval': {
+                    'end': 93926068,
+                    'start': 93916923,
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh:SQ.209Z7zJ-mFypBEWLk4rNC6S_OxY5p7bs',
+                'type': 'SequenceLocation'
             }
         ]
 
@@ -93,8 +117,10 @@ def spry3():
         'xrefs': ['omim:300531'],
         'symbol_status': None,
         'location_annotations': [],
+        'strand': '+',
         'locations': [
             {
+                '_id': 'ga4gh:VCL.A1s9hZY1tgmRi1WuXM1ETZOqJcpo4Ftx',
                 'chr': 'Y',
                 'interval': {
                     'end': 'q12',
@@ -105,6 +131,7 @@ def spry3():
                 'type': 'ChromosomeLocation'
             },
             {
+                '_id': 'ga4gh:VCL.fEBeCyej0jVKsvjw4vxyW6j1h8UVLb5S',
                 'chr': 'X',
                 'interval': {
                     'end': 'q28',
@@ -113,6 +140,26 @@ def spry3():
                 },
                 'species_id': 'taxonomy:9606',
                 'type': 'ChromosomeLocation'
+            },
+            {
+                '_id': 'ga4gh:VSL.ILQGzmwapQ5xuIBoFPDTKUOuN9gJNSqp',
+                'interval': {
+                    'end': 155782459,
+                    'start': 155612586,
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP',
+                'type': 'SequenceLocation'
+            },
+            {
+                '_id': 'ga4gh:VSL.aVFuwMTMH7TcoS-A6qMnK8c9cBZCd3xp',
+                'interval': {
+                    'end': 56968979,
+                    'start': 56954255,
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5',
+                'type': 'SequenceLocation'
             }
         ]
     }
@@ -132,6 +179,7 @@ def adcp1():
         'previous_symbols': [],
         'xrefs': [],
         'symbol_status': None,
+        'strand': None,
         'location_annotations': ['6'],
         'locations': []
     }
@@ -151,6 +199,7 @@ def afa():
         'previous_symbols': [],
         'xrefs': ['omim:106250'],
         'symbol_status': None,
+        'strand': None,
         'location_annotations': [],
         'locations': []
     }
@@ -171,8 +220,10 @@ def znf84():
         'xrefs': ['omim:618554'],
         'symbol_status': None,
         'location_annotations': ['map from Rosati ref via FISH [AFS]'],
+        'strand': '+',
         'locations': [
             {
+                '_id': 'ga4gh:VCL.CusjBE-q66vf4v8VSHRhMxjR_4G688Ve',
                 'chr': '12',
                 'interval': {
                     'end': 'q24.33',
@@ -181,6 +232,16 @@ def znf84():
                 },
                 'species_id': 'taxonomy:9606',
                 'type': 'ChromosomeLocation'
+            },
+            {
+                '_id': 'ga4gh:VSL.xuSNWLM7M4vru2gbt2hOfmjL7GD_UYdA',
+                'interval': {
+                    'end': 133063299,
+                    'start': 133037301,
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh:SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl',
+                'type': 'SequenceLocation'
             }
         ]
     }
@@ -201,7 +262,29 @@ def slc25a6():
         'xrefs': ['omim:300151', 'omim:403000'],
         'symbol_status': None,
         'location_annotations': ['X', 'Y'],
-        'locations': []
+        'strand': '-',
+        'locations': [
+            {
+                '_id': 'ga4gh:VSL.8LvkImsib1GaFH8UQrz9DwjdrgkWNmdD',
+                'interval': {
+                    'end': 1392113,
+                    'start': 1386152,
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP',
+                'type': 'SequenceLocation'
+            },
+            {
+                '_id': 'ga4gh:VSL.8eVnvARnHOCVKJ6vDCHFPmbrnjrmixB_',
+                'interval': {
+                    'end': 1392113,
+                    'start': 1386152,
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5',
+                'type': 'SequenceLocation'
+            }
+        ]
     }
     return Gene(**params)
 
@@ -220,37 +303,20 @@ def loc106783576():
         'xrefs': [],
         'symbol_status': None,
         'location_annotations': [],
+        'strand': None,
         'locations': [
             {
+                # TODO: Add _id
                 'chr': '10',
                 'interval': {
-                    'end': 'p',
-                    'start': 'p',
+                    'end': 'cen',
+                    'start': 'pter',
                     'type': 'CytobandInterval'
                 },
                 'species_id': 'taxonomy:9606',
                 'type': 'ChromosomeLocation'
             }
         ]
-    }
-    return Gene(**params)
-
-
-# Contain 3 different map locations on diff chromosomes --> locations = []
-@pytest.fixture(scope='module')
-def oms():
-    """Create gene fixture for OMS."""
-    params = {
-        'label': 'otitis media, susceptibility to',
-        'concept_id': 'ncbigene:619538',
-        'symbol': 'OMS',
-        'aliases': ['COME/ROM'],
-        'other_identifiers': [],
-        'previous_symbols': [],
-        'xrefs': ['omim:166760'],
-        'symbol_status': None,
-        'location_annotations': [],
-        'locations': []
     }
     return Gene(**params)
 
@@ -269,8 +335,10 @@ def glc1b():
         'xrefs': ['omim:606689'],
         'symbol_status': None,
         'location_annotations': [],
+        'strand': None,
         'locations': [
             {
+                # TODO: Add _id
                 'chr': '2',
                 'interval': {
                     'end': 'q13',
@@ -299,8 +367,10 @@ def hdpa():
         'xrefs': ['omim:300221'],
         'symbol_status': None,
         'location_annotations': [],
+        'strand': None,
         'locations': [
             {
+                # TODO: Add _id
                 'chr': 'X',
                 'interval': {
                     'end': 'pter',
@@ -330,8 +400,10 @@ def prkrap1():
         'xrefs': [],
         'symbol_status': None,
         'location_annotations': ['alternate reference locus'],
+        'strand': '+',
         'locations': [
             {
+                '_id': 'ga4gh:VCL.HeTd-jABCr22v4rUfVWJbkz2NkPyGScK',
                 'chr': '6',
                 'interval': {
                     'end': 'p21.3',
@@ -340,6 +412,16 @@ def prkrap1():
                 },
                 'species_id': 'taxonomy:9606',
                 'type': 'ChromosomeLocation'
+            },
+            {
+                '_id': 'ga4gh:VSL.Sk6GHE3MekN_PaimBKBmsQR6pLqQ-SAN',
+                'interval': {
+                    'end': 3941874,
+                    'start': 3940270,
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh:SQ.MjujHSAsgNWRTX4w3ysM7b5OVhZpdXu1',
+                'type': 'SequenceLocation'
             }
         ]
     }
@@ -360,8 +442,10 @@ def mhb():
         'xrefs': ['omim:255160'],
         'symbol_status': None,
         'location_annotations': [],
+        'strand': None,
         'locations': [
             {
+                '_id': 'ga4gh:VCL.PmDNdCjReNknhXkJ8pa0JycdqrDB_iA9',
                 'chr': '3',
                 'interval': {
                     'end': 'p22.2',
@@ -390,8 +474,10 @@ def spg37():
         'xrefs': ['omim:611945'],
         'symbol_status': None,
         'location_annotations': [],
+        'strand': None,
         'locations': [
             {
+                '_id': 'ga4gh:VCL.ChJbiddzOb-Rihzjj0Ct3WJawCYJN41c',
                 'chr': '8',
                 'interval': {
                     'end': 'q13.3',
@@ -859,6 +945,7 @@ def test_slc25a6(ncbi, slc25a6):
     assert record.symbol_status == slc25a6.symbol_status
     assert record.strand == slc25a6.strand
     assert len(record.locations) == len(slc25a6.locations)
+    assert record.locations == slc25a6.locations
     for loc in slc25a6.locations:
         assert loc in record.locations
     assert record.location_annotations == slc25a6.location_annotations
@@ -919,43 +1006,11 @@ def test_loc106783576(ncbi, loc106783576):
     assert record.location_annotations == loc106783576.location_annotations
 
 
-def test_oms(ncbi, oms):
+def test_oms(ncbi):
     """Test that OMS matches to correct gene concept."""
     response = ncbi.normalize('NCBIgene:619538')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == oms.label
-    assert record.concept_id == oms.concept_id
-    assert record.symbol == oms.symbol
-    assert set(record.aliases) == set(oms.aliases)
-    assert set(record.previous_symbols) == set(oms.previous_symbols)
-    assert set(record.xrefs) == set(oms.xrefs)
-    assert set(record.other_identifiers) == set(oms.other_identifiers)
-    assert record.symbol_status == oms.symbol_status
-    assert record.strand == oms.strand
-    assert len(record.locations) == len(oms.locations)
-    for loc in oms.locations:
-        assert loc in record.locations
-    assert record.location_annotations == oms.location_annotations
-
-    response = ncbi.normalize('OMS')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == oms.label
-    assert record.concept_id == oms.concept_id
-    assert record.symbol == oms.symbol
-    assert set(record.aliases) == set(oms.aliases)
-    assert set(record.previous_symbols) == set(oms.previous_symbols)
-    assert set(record.xrefs) == set(oms.xrefs)
-    assert set(record.other_identifiers) == set(oms.other_identifiers)
-    assert record.symbol_status == oms.symbol_status
-    assert record.strand == oms.strand
-    assert len(record.locations) == len(oms.locations)
-    for loc in oms.locations:
-        assert loc in record.locations
-    assert record.location_annotations == oms.location_annotations
+    assert response['match_type'] == 0
+    assert len(response['records']) == 0
 
 
 def test_glc1b(ncbi, glc1b):
