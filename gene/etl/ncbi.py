@@ -339,7 +339,6 @@ class NCBI(Base):
                 logger.info(f"{params['symbol']} not found in NCBI gff file.")
             else:
                 params['strand'] = gene.strand
-                # TODO: Fix seqid. Might need prefix
                 aliases = sr.translate_alias(gene.seqid)
                 sequence_id = [a for a in aliases if a.startswith('ga4gh')][0]
                 if gene.start != '.' and gene.end != '.' and sequence_id:

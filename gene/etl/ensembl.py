@@ -86,12 +86,19 @@ class Ensembl(Base):
         seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / '2020-11-27'
         sr = SeqRepo(seqrepo_dir)
 
+        # Get accession numbers
+        accession_numbers = dict()
+        for item in db.features_of_type('scaffold'):
+            accession_numbers[item[0]] = item[8]['Alias'][-1]
+        for item in db.features_of_type('chromosome'):
+            accession_numbers[item[0]] = item[8]['Alias'][-1]
+
         with self._database.genes.batch_writer() as batch:
             for f in db.all_features():
                 if f.attributes.get('ID'):
                     f_id = f.attributes.get('ID')[0].split(':')[0]
                     if f_id == 'gene':
-                        gene = self._add_gene(f, sr)
+                        gene = self._add_gene(f, sr, accession_numbers)
                         if gene:
                             assert Gene(**gene)
                             self._load_symbol(gene, batch)
@@ -110,11 +117,13 @@ class Ensembl(Base):
         }
         batch.put_item(Item=symbol)
 
-    def _add_gene(self, f, sr):
+    def _add_gene(self, f, sr, accession_numbers):
         """Create a transformed gene record.
 
         :param gffutils.feature.Feature f: A gene from the data
-        :param  SeqRepo sr: Access to the seqrepo
+        :param SeqRepo sr: Access to the seqrepo
+        :param dict accession_numbers: Accession numbers for each
+            chromosome and scaffold
         :return: A gene dictionary if the ID attribute exists.
                  Else return None.
         """
@@ -127,7 +136,7 @@ class Ensembl(Base):
         gene['src_name'] = SourceName.ENSEMBL.value
 
         self._add_attributes(f, gene)
-        self._add_location(f, gene, sr)
+        self._add_location(f, gene, sr, accession_numbers)
 
         gene['label_and_type'] = \
             f"{gene['concept_id'].lower()}##identity"
@@ -177,16 +186,17 @@ class Ensembl(Base):
 
                 gene[attributes[key]] = val
 
-    def _add_location(self, f, gene, sr):
+    def _add_location(self, f, gene, sr, accession_numbers):
         """Add GA4GH SequenceLocation to a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
 
         :param gffutils.feature.Feature f: A gene from the data
         :param dict gene: A transformed gene record
+        :param dict accession_numbers: Accession numbers for each chromosome
+            and scaffold
         :param  SeqRepo sr: Access to the seqrepo
         """
-        # TODO: Fix seqid. Might need prefix
-        aliases = sr.translate_alias(f.seqid)
+        aliases = sr.translate_alias(accession_numbers[f.seqid])
         sequence_id = [a for a in aliases if a.startswith('ga4gh')][0]
 
         if f.start != '.' and f.end != '.':

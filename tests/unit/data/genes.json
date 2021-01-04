@@ -6,12 +6,13 @@
     "label": "DEAD/H-box helicase 11 like 1 (pseudogene)",
     "locations": [
       {
+        '_id': 'ga4gh:VSL.iTXYEeSmSj73q-lpxtKLlnp_1OlX658F',
         "interval": {
           "end": "14409",
           "start": "11869",
           "type": "SimpleInterval"
         },
-        "sequence_id": "ga4gh:VSL.tUaFuu4gZM0KH5h3EXTvhYi4ihJzPQF7",
+        'sequence_id': 'ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO',
         "type": "SequenceLocation"
       }
     ],
@@ -31,12 +32,13 @@
     "label": "tumor protein p53",
     "locations": [
       {
+         '_id': 'ga4gh:VSL.FfERYK71L10OLwk6QGoG8OPLgl7PItgK',
         "interval": {
           "end": "7687538",
           "start": "7661779",
           "type": "SimpleInterval"
         },
-        "sequence_id": "ga4gh:VSL.z7qUxIqvCPT73USOo1SVTRbrrqejT6JP",
+        'sequence_id': 'ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7',
         "type": "SequenceLocation"
       }
     ],
@@ -56,12 +58,13 @@
     "label": "U6 spliceosomal RNA",
     "locations": [
       {
+        '_id': 'ga4gh:VSL.7Gh2fIORi69Fm1UMai49Ek-6HQNzuyqv',
         "interval": {
           "end": "516479",
           "start": "516376",
           "type": "SimpleInterval"
         },
-        "sequence_id": "ga4gh:VSL.O2QimEWWS6bLrTqe6KAP--a5-muvksxz",
+        'sequence_id': 'ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO',
         "type": "SequenceLocation"
       }
     ],
@@ -81,12 +84,13 @@
     "label": "uncharacterized protein BC009467",
     "locations": [
       {
+        '_id': 'ga4gh:VSL.jYXDbpQN9ABQO0MTYg01CGpcGXDT4b0d',
         "interval": {
           "end": "154428479",
           "start": "154424380",
           "type": "SimpleInterval"
         },
-        "sequence_id": "ga4gh:VSL.U0lJ88JkUFNGdJ5BV8oCHy3DS453GtUO",
+        'sequence_id': 'ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP',
         "type": "SequenceLocation"
       }
     ],
@@ -106,12 +110,13 @@
     "label": "Rho GTPase-activating protein 11B",
     "locations": [
       {
+        '_id': 'ga4gh:VSL.UJx3xHRkDuoALaGxyic-cPQNQnXYiAM8',
         "interval": {
           "end": "30685606",
           "start": "30624548",
           "type": "SimpleInterval"
         },
-        "sequence_id": "ga4gh:VSL.An1MlwkqjP7Jjo8k4kgefV_Ecdm8aFFP",
+        'sequence_id': 'ga4gh:SQ.AsXvWL1-2i5U_buw6_niVIxD6zTbAuS6',
         "type": "SequenceLocation"
       }
     ],
@@ -131,12 +136,13 @@
     "label": "hsa-mir-1253",
     "locations": [
       {
+        '_id': 'ga4gh:VSL.hS8fW7o0qqy15qOnQOKv1VqOZQDBswNI',
         "interval": {
           "end": "2748182",
           "start": "2748078",
           "type": "SimpleInterval"
         },
-        "sequence_id": "ga4gh:VSL.Or8qcAjmhzDybjczDhK1eB5c0LOwi4Jt",
+        'sequence_id': 'ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7',
         "type": "SequenceLocation"
       }
     ],
@@ -156,12 +162,13 @@
     "label": "sprouty RTK signaling antagonist 3",
     "locations": [
       {
+        '_id': 'ga4gh:VSL.h8YcFZq0v-Vwj6aGarOvh1R3LFNGD0YU',
         "interval": {
           "end": "155782459",
           "start": "155612572",
           "type": "SimpleInterval"
         },
-        "sequence_id": "ga4gh:VSL.hT8OEIdtXBZqH6kjGzol_MeDsISQ9Zyp",
+        'sequence_id': 'ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP',
         "type": "SequenceLocation"
       }
     ],
@@ -172,6 +179,30 @@
   {
     "label_and_type": "spry3##symbol",
     "concept_id": "ensembl:ensg00000168939",
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000278704##identity",
+    "concept_id": "ensembl:ENSG00000278704",
+    "symbol": "BX004987.1",
+    "locations": [
+      {
+        '_id': 'ga4gh:VSL.0JJsYiFwwNH2-7rYKj1ZitEcFRxIGwdQ',
+        "interval": {
+          "end": "58376",
+          "start": "56140",
+          "type": "SimpleInterval"
+        },
+        'sequence_id': 'ga4gh:SQ.K_ieIfNIy1Ktulg8QSlhvJvm_1uQOtjD',
+        "type": "SequenceLocation"
+      }
+    ],
+    "strand": "-",
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "bx004987.1##symbol",
+    "concept_id": "ensembl:ensg00000278704",
     "src_name": "Ensembl"
   },
   {

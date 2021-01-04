@@ -33,12 +33,13 @@ def ddx11l1():
         'location_annotations': [],
         'locations': [
             {
+                '_id': 'ga4gh:VSL.iTXYEeSmSj73q-lpxtKLlnp_1OlX658F',
                 'interval': {
                     'end': '14409',
                     'start': '11869',
                     'type': 'SimpleInterval'
                 },
-                'sequence_id': 'ga4gh:VSL.tUaFuu4gZM0KH5h3EXTvhYi4ihJzPQF7',
+                'sequence_id': 'ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO',
                 'type': 'SequenceLocation'
             }
         ],
@@ -62,12 +63,13 @@ def tp53():
         'location_annotations': [],
         'locations': [
             {
+                '_id': 'ga4gh:VSL.FfERYK71L10OLwk6QGoG8OPLgl7PItgK',
                 'interval': {
                     'end': '7687538',
                     'start': '7661779',
                     'type': 'SimpleInterval'
                 },
-                'sequence_id': 'ga4gh:VSL.z7qUxIqvCPT73USOo1SVTRbrrqejT6JP',
+                'sequence_id': 'ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7',
                 'type': 'SequenceLocation'
             }
         ],
@@ -91,12 +93,13 @@ def u6():
         'location_annotations': [],
         'locations': [
             {
+                '_id': 'ga4gh:VSL.7Gh2fIORi69Fm1UMai49Ek-6HQNzuyqv',
                 'interval': {
                     'end': '516479',
                     'start': '516376',
                     'type': 'SimpleInterval'
                 },
-                'sequence_id': 'ga4gh:VSL.O2QimEWWS6bLrTqe6KAP--a5-muvksxz',
+                'sequence_id': 'ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO',
                 'type': 'SequenceLocation'
             }
         ],
@@ -120,12 +123,13 @@ def CH17_340M24_3():
         'location_annotations': [],
         'locations': [
             {
+                '_id': 'ga4gh:VSL.jYXDbpQN9ABQO0MTYg01CGpcGXDT4b0d',
                 'interval': {
                     'end': '154428479',
                     'start': '154424380',
                     'type': 'SimpleInterval'
                 },
-                'sequence_id': 'ga4gh:VSL.U0lJ88JkUFNGdJ5BV8oCHy3DS453GtUO',
+                'sequence_id': 'ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP',
                 'type': 'SequenceLocation'
             }
         ],
@@ -149,12 +153,13 @@ def AC091057_5():
         'location_annotations': [],
         'locations': [
             {
+                '_id': 'ga4gh:VSL.UJx3xHRkDuoALaGxyic-cPQNQnXYiAM8',
                 'interval': {
                     'end': '30685606',
                     'start': '30624548',
                     'type': 'SimpleInterval'
                 },
-                'sequence_id': 'ga4gh:VSL.An1MlwkqjP7Jjo8k4kgefV_Ecdm8aFFP',
+                'sequence_id': 'ga4gh:SQ.AsXvWL1-2i5U_buw6_niVIxD6zTbAuS6',
                 'type': 'SequenceLocation'
             }
         ],
@@ -178,12 +183,13 @@ def hsa_mir_1253():
         'location_annotations': [],
         'locations': [
             {
+                '_id': 'ga4gh:VSL.hS8fW7o0qqy15qOnQOKv1VqOZQDBswNI',
                 'interval': {
                     'end': '2748182',
                     'start': '2748078',
                     'type': 'SimpleInterval'
                 },
-                'sequence_id': 'ga4gh:VSL.Or8qcAjmhzDybjczDhK1eB5c0LOwi4Jt',
+                'sequence_id': 'ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7',
                 'type': 'SequenceLocation'
             }
         ],
@@ -207,16 +213,47 @@ def spry3():
         'location_annotations': [],
         'locations': [
             {
+                '_id': 'ga4gh:VSL.h8YcFZq0v-Vwj6aGarOvh1R3LFNGD0YU',
                 'interval': {
                     'end': '155782459',
                     'start': '155612572',
                     'type': 'SimpleInterval'
                 },
-                'sequence_id': 'ga4gh:VSL.hT8OEIdtXBZqH6kjGzol_MeDsISQ9Zyp',
+                'sequence_id': 'ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP',
                 'type': 'SequenceLocation'
             }
         ],
         'strand': '+',
+        'xrefs': []
+    }
+    return Gene(**params)
+
+
+@pytest.fixture(scope='module')
+def bx004987_1():
+    """Create a BX004987.1 test fixture."""
+    params = {
+        'concept_id': 'ensembl:ENSG00000278704',
+        'symbol': 'BX004987.1',
+        'label': None,
+        'previous_symbols': [],
+        'aliases': [],
+        'other_identifiers': [],
+        'symbol_status': None,
+        'location_annotations': [],
+        'locations': [
+            {
+                '_id': 'ga4gh:VSL.0JJsYiFwwNH2-7rYKj1ZitEcFRxIGwdQ',
+                'interval': {
+                    'end': '58376',
+                    'start': '56140',
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh:SQ.K_ieIfNIy1Ktulg8QSlhvJvm_1uQOtjD',
+                'type': 'SequenceLocation'
+            }
+        ],
+        'strand': '-',
         'xrefs': []
     }
     return Gene(**params)
@@ -606,6 +643,47 @@ def test_spry3(spry3, ensembl):
     assert normalized_gene.strand == spry3.strand
     assert normalized_gene.locations == spry3.locations
     assert normalized_gene.location_annotations == spry3.location_annotations
+
+
+def test_bx004987_1(bx004987_1, ensembl):
+    """Test that bx004987_1 gene normalizes to correct gene concept."""
+    normalizer_response = ensembl.normalize('ENSG00000278704')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == bx004987_1.label
+    assert normalized_gene.concept_id == bx004987_1.concept_id
+    assert set(normalized_gene.aliases) == set(bx004987_1.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(bx004987_1.other_identifiers)
+    assert normalized_gene.symbol_status == bx004987_1.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(bx004987_1.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(bx004987_1.xrefs)
+    assert normalized_gene.symbol == bx004987_1.symbol
+    assert normalized_gene.strand == bx004987_1.strand
+    assert normalized_gene.locations == bx004987_1.locations
+    assert normalized_gene.location_annotations == \
+           bx004987_1.location_annotations
+
+    normalizer_response = ensembl.normalize('BX004987.1')
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == bx004987_1.label
+    assert normalized_gene.concept_id == bx004987_1.concept_id
+    assert set(normalized_gene.aliases) == set(bx004987_1.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(bx004987_1.other_identifiers)
+    assert normalized_gene.symbol_status == bx004987_1.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(bx004987_1.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(bx004987_1.xrefs)
+    assert normalized_gene.symbol == bx004987_1.symbol
+    assert normalized_gene.strand == bx004987_1.strand
+    assert normalized_gene.locations == bx004987_1.locations
+    assert normalized_gene.location_annotations == \
+           bx004987_1.location_annotations
 
 
 def test_no_match(ensembl):
