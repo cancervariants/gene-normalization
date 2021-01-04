@@ -6,13 +6,13 @@
     "label": "DEAD/H-box helicase 11 like 1 (pseudogene)",
     "locations": [
       {
-        '_id': 'ga4gh:VSL.iTXYEeSmSj73q-lpxtKLlnp_1OlX658F',
+        "_id": "ga4gh:VSL.iTXYEeSmSj73q-lpxtKLlnp_1OlX658F",
         "interval": {
           "end": "14409",
           "start": "11869",
           "type": "SimpleInterval"
         },
-        'sequence_id': 'ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO',
+        "sequence_id": "ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
         "type": "SequenceLocation"
       }
     ],
@@ -32,13 +32,13 @@
     "label": "tumor protein p53",
     "locations": [
       {
-         '_id': 'ga4gh:VSL.FfERYK71L10OLwk6QGoG8OPLgl7PItgK',
+         "_id": "ga4gh:VSL.FfERYK71L10OLwk6QGoG8OPLgl7PItgK",
         "interval": {
           "end": "7687538",
           "start": "7661779",
           "type": "SimpleInterval"
         },
-        'sequence_id': 'ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7',
+        "sequence_id": "ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7",
         "type": "SequenceLocation"
       }
     ],
@@ -58,13 +58,13 @@
     "label": "U6 spliceosomal RNA",
     "locations": [
       {
-        '_id': 'ga4gh:VSL.7Gh2fIORi69Fm1UMai49Ek-6HQNzuyqv',
+        "_id": "ga4gh:VSL.7Gh2fIORi69Fm1UMai49Ek-6HQNzuyqv",
         "interval": {
           "end": "516479",
           "start": "516376",
           "type": "SimpleInterval"
         },
-        'sequence_id': 'ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO',
+        "sequence_id": "ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
         "type": "SequenceLocation"
       }
     ],
@@ -84,13 +84,13 @@
     "label": "uncharacterized protein BC009467",
     "locations": [
       {
-        '_id': 'ga4gh:VSL.jYXDbpQN9ABQO0MTYg01CGpcGXDT4b0d',
+        "_id": "ga4gh:VSL.jYXDbpQN9ABQO0MTYg01CGpcGXDT4b0d",
         "interval": {
           "end": "154428479",
           "start": "154424380",
           "type": "SimpleInterval"
         },
-        'sequence_id': 'ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP',
+        "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
         "type": "SequenceLocation"
       }
     ],
@@ -110,13 +110,13 @@
     "label": "Rho GTPase-activating protein 11B",
     "locations": [
       {
-        '_id': 'ga4gh:VSL.UJx3xHRkDuoALaGxyic-cPQNQnXYiAM8',
+        "_id": "ga4gh:VSL.UJx3xHRkDuoALaGxyic-cPQNQnXYiAM8",
         "interval": {
           "end": "30685606",
           "start": "30624548",
           "type": "SimpleInterval"
         },
-        'sequence_id': 'ga4gh:SQ.AsXvWL1-2i5U_buw6_niVIxD6zTbAuS6',
+        "sequence_id": "ga4gh:SQ.AsXvWL1-2i5U_buw6_niVIxD6zTbAuS6",
         "type": "SequenceLocation"
       }
     ],
@@ -136,13 +136,13 @@
     "label": "hsa-mir-1253",
     "locations": [
       {
-        '_id': 'ga4gh:VSL.hS8fW7o0qqy15qOnQOKv1VqOZQDBswNI',
+        "_id": "ga4gh:VSL.hS8fW7o0qqy15qOnQOKv1VqOZQDBswNI",
         "interval": {
           "end": "2748182",
           "start": "2748078",
           "type": "SimpleInterval"
         },
-        'sequence_id': 'ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7',
+        "sequence_id": "ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7",
         "type": "SequenceLocation"
       }
     ],
@@ -162,13 +162,13 @@
     "label": "sprouty RTK signaling antagonist 3",
     "locations": [
       {
-        '_id': 'ga4gh:VSL.h8YcFZq0v-Vwj6aGarOvh1R3LFNGD0YU',
+        "_id": "ga4gh:VSL.h8YcFZq0v-Vwj6aGarOvh1R3LFNGD0YU",
         "interval": {
           "end": "155782459",
           "start": "155612572",
           "type": "SimpleInterval"
         },
-        'sequence_id': 'ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP',
+        "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
         "type": "SequenceLocation"
       }
     ],
@@ -187,13 +187,13 @@
     "symbol": "BX004987.1",
     "locations": [
       {
-        '_id': 'ga4gh:VSL.0JJsYiFwwNH2-7rYKj1ZitEcFRxIGwdQ',
+        "_id": "ga4gh:VSL.0JJsYiFwwNH2-7rYKj1ZitEcFRxIGwdQ",
         "interval": {
           "end": "58376",
           "start": "56140",
           "type": "SimpleInterval"
         },
-        'sequence_id': 'ga4gh:SQ.K_ieIfNIy1Ktulg8QSlhvJvm_1uQOtjD',
+        "sequence_id": "ga4gh:SQ.K_ieIfNIy1Ktulg8QSlhvJvm_1uQOtjD",
         "type": "SequenceLocation"
       }
     ],
