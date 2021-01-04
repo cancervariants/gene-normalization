@@ -1,8 +1,7 @@
 """This module defines the Ensembl ETL methods."""
 from .base import Base
 from gene import PROJECT_ROOT, DownloadException
-from gene.schemas import SourceName, NamespacePrefix, Strand, Gene, Meta, \
-    SequenceLocation, LocationType, IntervalType
+from gene.schemas import SourceName, NamespacePrefix, Strand, Gene, Meta
 import logging
 from gene.database import Database
 import gffutils
@@ -10,7 +9,9 @@ from urllib.request import urlopen
 import gzip
 from bs4 import BeautifulSoup
 import requests
-from ga4gh.core._internal.digests import sha512t24u
+from biocommons.seqrepo import SeqRepo
+from ga4gh.vrs import models
+from ga4gh.core import ga4gh_identify
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -82,12 +83,15 @@ class Ensembl(Base):
                                 merge_strategy="create_unique",
                                 keep_order=True)
 
+        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / '2020-11-27'
+        sr = SeqRepo(seqrepo_dir)
+
         with self._database.genes.batch_writer() as batch:
             for f in db.all_features():
                 if f.attributes.get('ID'):
                     f_id = f.attributes.get('ID')[0].split(':')[0]
                     if f_id == 'gene':
-                        gene = self._add_gene(f)
+                        gene = self._add_gene(f, sr)
                         if gene:
                             assert Gene(**gene)
                             self._load_symbol(gene, batch)
@@ -106,10 +110,11 @@ class Ensembl(Base):
         }
         batch.put_item(Item=symbol)
 
-    def _add_gene(self, f):
+    def _add_gene(self, f, sr):
         """Create a transformed gene record.
 
         :param gffutils.feature.Feature f: A gene from the data
+        :param  SeqRepo sr: Access to the seqrepo
         :return: A gene dictionary if the ID attribute exists.
                  Else return None.
         """
@@ -122,7 +127,7 @@ class Ensembl(Base):
         gene['src_name'] = SourceName.ENSEMBL.value
 
         self._add_attributes(f, gene)
-        self._add_location(f, gene)
+        self._add_location(f, gene, sr)
 
         gene['label_and_type'] = \
             f"{gene['concept_id'].lower()}##identity"
@@ -172,33 +177,32 @@ class Ensembl(Base):
 
                 gene[attributes[key]] = val
 
-    def _add_location(self, f, gene):
+    def _add_location(self, f, gene, sr):
         """Add GA4GH SequenceLocation to a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
 
         :param gffutils.feature.Feature f: A gene from the data
-        :param gene: A transformed gene record
+        :param dict gene: A transformed gene record
+        :param  SeqRepo sr: Access to the seqrepo
         """
-        blob = gene['symbol'].encode('utf-8')  # TODO: FIX. Shouldn't be symbol
+        # TODO: Fix seqid. Might need prefix
+        aliases = sr.translate_alias(f.seqid)
+        sequence_id = [a for a in aliases if a.startswith('ga4gh')][0]
 
         if f.start != '.' and f.end != '.':
             if 0 <= f.start <= f.end:
-                location = {
-                    "interval": {
-                        "end": f.end,
-                        "start": f.start,
-                        "type": IntervalType.SIMPLE.value
-                    },
-                    "sequence_id": f"ga4gh:VSL.{sha512t24u(blob)}",
-                    "type": LocationType.SEQUENCE.value
-                }
-                assert SequenceLocation(**location)
-                gene['locations'] = [location]
+                seq_location = models.SequenceLocation(
+                    sequence_id=sequence_id,
+                    interval=models.SimpleInterval(
+                        start=f.start,
+                        end=f.end
+                    )
+                )
+                seq_location._id = ga4gh_identify(seq_location)
+                gene['locations'] = [seq_location.as_dict()]
             else:
                 logger.info(f"{gene['concept_id']} has invalid interval:"
                             f"start={f.start} end={f.end}")
-        else:
-            logger.info(f"{gene['concept_id']} does not give a location.")
 
     def _get_other_id_xref(self, src_name, src_id):
         """Get other identifier or xref.

@@ -339,6 +339,7 @@ class NCBI(Base):
                 logger.info(f"{params['symbol']} not found in NCBI gff file.")
             else:
                 params['strand'] = gene.strand
+                # TODO: Fix seqid. Might need prefix
                 aliases = sr.translate_alias(gene.seqid)
                 sequence_id = [a for a in aliases if a.startswith('ga4gh')][0]
                 if gene.start != '.' and gene.end != '.' and sequence_id:
@@ -349,8 +350,9 @@ class NCBI(Base):
                                 start=gene.start,
                                 end=gene.end
                             )
-                        ).as_dict()
-                        location_list.append(seq_location)
+                        )
+                        seq_location._id = ga4gh_identify(seq_location)
+                        location_list.append(seq_location.as_dict())
                     else:
                         logger.info(f"{params['concept_id']} has invalid "
                                     f"interval: start={gene.start} "
