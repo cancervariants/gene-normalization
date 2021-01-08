@@ -373,8 +373,8 @@ def hdpa():
                 # TODO: Add _id
                 'chr': 'X',
                 'interval': {
-                    'end': 'pter',
-                    'start': 'p22.32',
+                    'end': 'p22.32',
+                    'start': 'pter',
                     'type': 'CytobandInterval'
                 },
                 'species_id': 'taxonomy:9606',
@@ -445,11 +445,11 @@ def mhb():
         'strand': None,
         'locations': [
             {
-                '_id': 'ga4gh:VCL.PmDNdCjReNknhXkJ8pa0JycdqrDB_iA9',
+                '_id': 'ga4gh:VCL.2WDJu032Gc_9BN4qiNELb577XomiZv8z',
                 'chr': '3',
                 'interval': {
-                    'end': 'p22.2',
-                    'start': 'p21.32',
+                    'end': 'p21.32',
+                    'start': 'p22.2',
                     'type': 'CytobandInterval'
                 },
                 'species_id': 'taxonomy:9606',

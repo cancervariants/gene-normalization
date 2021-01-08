@@ -376,21 +376,20 @@ class HGNC(Base):
 
         if not end_arm_match:
             # Does not specify the arm, so use the same as start's
-            interval['start'] = start
-            interval['end'] = f"{start[0]}{end}"
-        else:
-            end_arm_ix = end_arm_match.start()
-            end_arm = end[end_arm_ix]
+            end = f"{start[0]}{end}"
+            end_arm_match = re.search("[pq]", end)
 
-            # GA4GH: If start and end are on the same arm,
-            # start MUST be the more centromeric position
-            # https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#cytobandinterval  # noqa: E501
-            if (start_arm == end_arm and end < start) or end_arm == 'p':
-                interval['start'] = end
-                interval['end'] = start
-            elif (start_arm != end_arm and end > start) or end_arm == 'q':
-                interval['start'] = start
-                interval['end'] = end
+        end_arm_ix = end_arm_match.start()
+        end_arm = end[end_arm_ix]
+
+        if (start_arm == end_arm and start > end) or \
+                (start_arm != end_arm and start_arm == 'p' and end_arm == 'q'):
+            interval['start'] = start
+            interval['end'] = end
+        elif (start_arm == end_arm and start < end) or \
+                (start_arm != end_arm and start_arm == 'q' and end_arm == 'p'):
+            interval['start'] = end
+            interval['end'] = start
 
     def _load_data(self, *args, **kwargs):
         """Load the HGNC source into normalized database."""
@@ -428,7 +427,7 @@ class HGNC(Base):
                 'data_license_url': metadata.data_license_url,
                 'version': metadata.version,
                 'data_url': metadata.data_url,
-                # 'rdp_url': metadata.rdp_url,  # TODO: ADD
+                'rdp_url': metadata.rdp_url,
                 'data_license_attributes': metadata.data_license_attributes,
                 'genome_assemblies': metadata.genome_assemblies
             }

@@ -185,11 +185,11 @@ def wdhd1():
         'strand': None,
         'locations': [
             {
-                '_id': 'ga4gh:VCL.M6oXAwyJ2eiZFUeA1jBaB1vKcX8OHmCY',
+                '_id': 'ga4gh:VCL.R_izmPbRVtPQ2HwflIVh1XLXvRtVi-a7',
                 'chr': '14',
                 'interval': {
-                    'end': 'q22.3',
-                    'start': 'q22.2',
+                    'end': 'q22.2',
+                    'start': 'q22.3',
                     'type': 'CytobandInterval'
                 },
                 'species_id': 'taxonomy:9606',
@@ -291,11 +291,11 @@ def gage4():
         'strand': None,
         'locations': [
             {
-                '_id': 'ga4gh:VCL.1Gv_xqaRHXVpMWdhegSuw4hBs1UtQydv',
+                '_id': 'ga4gh:VCL.AlwtARlUTZiNX3NEEKab-X5eeayXd8v8',
                 'chr': 'X',
                 'interval': {
-                    'end': 'p11.4',
-                    'start': 'p11.2',
+                    'end': 'p11.2',
+                    'start': 'p11.4',
                     'type': 'CytobandInterval'
                 },
                 'species_id': 'taxonomy:9606',
@@ -534,11 +534,11 @@ def trl_cag2_1():
         'strand': None,
         'locations': [
             {
-                '_id': 'ga4gh:VCL.32uDTWzsVj7TVoT21gSZn6-N3hMfWPC7',
+                '_id': 'ga4gh:VCL.r_iXu-FjXuJjmeNhmDEputf6tgjXRQIr',
                 'chr': '16',
                 'interval': {
-                    'end': 'q21',
-                    'start': 'q13',
+                    'end': 'q13',
+                    'start': 'q21',
                     'type': 'CytobandInterval'
                 },
                 'species_id': 'taxonomy:9606',

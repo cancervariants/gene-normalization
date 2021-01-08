@@ -271,7 +271,7 @@ class Ensembl(Base):
                 'data_license_url': metadata.data_license_url,
                 'version': metadata.version,
                 'data_url': metadata.data_url,
-                # 'rdp_url': metadata.rdp_url,  # TODO: Add
+                'rdp_url': metadata.rdp_url,
                 'data_license_attributes': metadata.data_license_attributes,
                 'genome_assemblies': metadata.genome_assemblies
             }

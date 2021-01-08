@@ -544,21 +544,20 @@ class NCBI(Base):
 
         if not end_arm_match:
             # Does not specify the arm, so use the same as start's
-            interval['start'] = start
-            interval['end'] = f"{start[0]}{end}"
-        else:
-            end_arm_ix = end_arm_match.start()
-            end_arm = end[end_arm_ix]
+            end = f"{start[0]}{end}"
+            end_arm_match = re.search("[pq]", end)
 
-            # GA4GH: If start and end are on the same arm,
-            # start MUST be the more centromeric position
-            # https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#cytobandinterval  # noqa: E501
-            if (start_arm == end_arm and end < start) or end_arm == 'p':
-                interval['start'] = end
-                interval['end'] = start
-            elif (start_arm != end_arm and end > start) or end_arm == 'q':
-                interval['start'] = start
-                interval['end'] = end
+        end_arm_ix = end_arm_match.start()
+        end_arm = end[end_arm_ix]
+
+        if (start_arm == end_arm and start > end) or \
+                (start_arm != end_arm and start_arm == 'p' and end_arm == 'q'):
+            interval['start'] = start
+            interval['end'] = end
+        elif (start_arm == end_arm and start < end) or \
+                (start_arm != end_arm and start_arm == 'q' and end_arm == 'p'):
+            interval['start'] = end
+            interval['end'] = start
 
     def _set_centromere_location(self, loc, location, interval):
         """Set centromere location for a gene.
@@ -568,14 +567,21 @@ class NCBI(Base):
         :param interval: GA4GH interval for a VRS object
         """
         centromere_ix = re.search("cen", loc).start()
-        location['chr'] = loc[:centromere_ix].strip()
-        interval['start'] = "cen"
-
         if '-' in loc:
             # Location gives both start and end
             range_ix = re.search('-', loc).start()
-            interval['end'] = loc[range_ix + 1:]
+            if 'q' in loc:
+                location['chr'] = loc[:centromere_ix].strip()
+                interval['start'] = "cen"
+                interval['end'] = loc[range_ix + 1:]
+            elif 'p' in loc:
+                p_ix = re.search("p", loc).start()
+                location['chr'] = loc[:p_ix].strip()
+                interval['end'] = "cen"
+                interval['start'] = loc[:range_ix]
         else:
+            location['chr'] = loc[:centromere_ix].strip()
+            interval['start'] = "cen"
             interval['end'] = "cen"
 
     def _add_meta(self):
