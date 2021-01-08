@@ -132,7 +132,6 @@ class Ensembl(Base):
             gene['strand'] = Strand.REVERSE
         elif f.strand == '+':
             gene['strand'] = Strand.FORWARD
-        gene['strand'] = f.strand
         gene['src_name'] = SourceName.ENSEMBL.value
 
         self._add_attributes(f, gene)

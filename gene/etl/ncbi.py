@@ -24,9 +24,6 @@ import python_jsonschema_objects
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
 
-# set of valid concept ID prefixes for parsing cross-refs to other sources
-VALID_CID_PREFIXES = {v.value for v in NamespacePrefix.__members__.values()}
-
 
 class NCBI(Base):
     """ETL class for NCBI source"""
@@ -165,9 +162,11 @@ class NCBI(Base):
                          if f.name.startswith('ncbi_GRCh')][0]
         self._version = self._info_src.stem.split('_')[-1]
 
-    def _transform_data(self):
-        """Modify data and pass to loading functions."""
-        self._add_meta()
+    def _get_prev_symbols(self):
+        """Store a gene's symbol history.
+
+        :return: A dictionary of a gene's previous symbols
+        """
         # get symbol history
         history_file = open(self._history_src, 'r')
         history = csv.reader(history_file, delimiter='\t')
@@ -182,88 +181,120 @@ class NCBI(Base):
                 else:
                     prev_symbols[gene_id] = [row[3]]
         history_file.close()
+        return prev_symbols
 
+    def _add_other_ids_xrefs(self, val, params):
+        """Add other identifiers and xrefs to a transformed gene.
+
+        :param list val: A list of source ids for a given gene
+        :param dict params: A transformed gene record
+        """
+        params['xrefs'] = []
+        params['other_identifiers'] = []
+        for src in val:
+            src_name = src.split(':')[0].upper()
+            src_id = src.split(':')[-1]
+            if src_name in NamespacePrefix.__members__ and \
+                    NamespacePrefix[src_name].value in \
+                    self._normalizer_prefixes:
+                params['other_identifiers'].append(
+                    f"{NamespacePrefix[src_name].value}"
+                    f":{src_id}")
+            else:
+                if src.startswith("MIM"):
+                    prefix = NamespacePrefix.OMIM.value
+                elif src.startswith("IMGT/GENE-DB"):
+                    prefix = NamespacePrefix.IMGT_GENE_DB.value
+                elif src.startswith("miRBase"):
+                    prefix = NamespacePrefix.MIRBASE.value
+                else:
+                    prefix = None
+                if prefix:
+                    params['xrefs'].append(f"{prefix}:{src_id}")
+                else:
+                    logger.info(f"{src_name} is not in NameSpacePrefix.")
+        if not params['xrefs']:
+            del params['xrefs']
+        if not params['other_identifiers']:
+            del params['other_identifiers']
+
+    def _get_gene_info(self, prev_symbols):
+        """Store genes from NCBI info file.
+
+        :param dict prev_symbols: A dictionary of a gene's previous symbols
+        :return: A dictionary of gene's from the NCBI info file.
+        """
         # open info file, skip headers
         info_file = open(self._info_src, 'r')
         info = csv.reader(info_file, delimiter='\t')
         next(info)
 
-        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / '2020-11-27'
-        sr = SeqRepo(seqrepo_dir)
+        info_genes = dict()
+        for row in info:
+            params = dict()
+            params['concept_id'] = f"{NamespacePrefix.NCBI.value}:{row[1]}"
+            # get symbol
+            params['symbol'] = row[2]
+            # get aliases
+            if row[4] != '-':
+                params['aliases'] = row[4].split('|')
+            else:
+                params['aliases'] = []
+            # get other identifiers
+            if row[5] != '-':
+                xrefs = row[5].split('|')
+                self._add_other_ids_xrefs(xrefs, params)
+            # get chromosome location
+            vrs_chr_location = self._get_vrs_chr_location(row, params)
+            if 'exclude' in vrs_chr_location:
+                # Exclude genes with multiple distinct locations (e.g. OMS)
+                continue
+            else:
+                params['locations'] = vrs_chr_location
+            # get label
+            if row[8] != '-':
+                params['label'] = row[8]
+            # add prev symbols
+            if row[1] in prev_symbols.keys():
+                params['previous_symbols'] = prev_symbols[row[1]]
+            info_genes[f"gene-{params['symbol']}"] = params
+        return info_genes
 
-        # create db for gff file
-        # db = gffutils.create_db(str(self._gff_src),
-        #                         dbfn=":memory:",
-        #                         # dbfn=f"{PROJECT_ROOT}/data/ncbi/test_ncbi.db",  # noqa: E501
-        #                         force=True,
-        #                         merge_strategy="create_unique",
-        #                         keep_order=True)
-        db = gffutils.FeatureDB(f"{PROJECT_ROOT}/data/ncbi/test_ncbi.db",
-                                keep_order=True)
+    def _get_gene_gff(self, db, info_genes, sr):
+        """Store genes from NCBI gff file.
 
-        with self._database.genes.batch_writer() as batch:
-            for row in info:
-                params = dict()
-                params['concept_id'] = f"{NamespacePrefix.NCBI.value}:{row[1]}"
-                # get symbol
-                params['symbol'] = row[2]
-                # get aliases
-                if row[4] != '-':
-                    params['aliases'] = row[4].split('|')
-                else:
-                    params['aliases'] = []
-                # get other identifiers
-                if row[5] != '-':
-                    params['xrefs'] = []
-                    params['other_identifiers'] = []
-                    xrefs = row[5].split('|')
-                    for ref in xrefs:
-                        src = ref.split(':')[0].upper()
-                        src_id = ref.split(':')[-1]
-                        if src in NamespacePrefix.__members__ and \
-                                NamespacePrefix[src].value in \
-                                self._normalizer_prefixes:
-                            params['other_identifiers'].append(
-                                f"{NamespacePrefix[src].value}"
-                                f":{src_id}")
+        :param FeatureDB db: GFF database
+        :param dict info_genes: A dictionary of gene's from the NCBI info file.
+        :param SeqRepo sr: Access to the seqrepo
+        """
+        for f in db.all_features():
+            if f.attributes.get('ID'):
+                f_id = f.attributes.get('ID')[0]
+                if f_id.startswith('gene'):
+                    if f_id in info_genes:
+                        # Just need to add SequenceLocation
+                        params = info_genes.get(f_id)
+                        # TODO: Check this logic
+                        if not params['locations'] and \
+                                'location_annotations' in params:
+                            # If only chromosomes given
+                            if 'X' in params['location_annotations'] and \
+                                    'Y' in params['location_annotations']:
+                                n = 2
+                            else:
+                                n = 1
                         else:
-                            if ref.startswith("MIM:"):
-                                prefix = NamespacePrefix.OMIM.value
-                            elif ref.startswith("IMGT/GENE-DB:"):
-                                prefix = NamespacePrefix.IMGT_GENE_DB.value
-                            elif ref.startswith("miRBase:"):
-                                prefix = NamespacePrefix.MIRBASE.value
-                            params['xrefs'].append(f"{prefix}:{src_id}")
-                    if not params['xrefs']:
-                        del params['xrefs']
-                    if not params['other_identifiers']:
-                        del params['other_identifiers']
-                # get chromosome location
-                vrs_chr_location = self._get_vrs_chr_location(row, params)
-                if 'exclude' in vrs_chr_location:
-                    # Exclude genes with multiple distinct locations (e.g. OMS)
-                    continue
-                # TODO: Check this logic
-                if not vrs_chr_location and 'location_annotations' in params:
-                    # If only chromosomes given
-                    if 'X' in params['location_annotations'] and \
-                            'Y' in params['location_annotations']:
-                        n = 2
+                            n = len(params['locations'])
+                        vrs_sq_location = self._get_vrs_sq_location(db, sr,
+                                                                    params, n)
+                        if vrs_sq_location:
+                            for sq_loc in vrs_sq_location:
+                                params['locations'].append(sq_loc)
+                        if not params['locations']:
+                            del params['locations']
                     else:
-                        n = 1
-                else:
-                    n = len(vrs_chr_location)
-                # get sequence location
-                vrs_sq_location = self._get_vrs_sq_location(db, sr, params, n)
-                if vrs_chr_location or vrs_sq_location:
-                    params['locations'] = vrs_chr_location + vrs_sq_location
-                # get label
-                if row[8] != '-':
-                    params['label'] = row[8]
-                # add prev symbols
-                if row[1] in prev_symbols.keys():
-                    params['previous_symbols'] = prev_symbols[row[1]]
-                self._load_data(Gene(**params), batch)
+                        # Need to add entire gene
+                        self._add_gff_gene(db, f, sr)
 
     def _load_data(self, gene: Gene, batch):
         """Load individual Gene item.
@@ -315,17 +346,61 @@ class NCBI(Base):
         item['src_name'] = SourceName.NCBI.value
         batch.put_item(Item=item)
 
+    def _add_gff_gene(self, db, f, sr):
+        """Create a transformed gene recor from NCBI gff file.
+
+        :param FeatureDB db: GFF database
+        :param Feature f: A gene from the gff data file
+        :param SeqRepo sr: Access to the seqrepo
+        :return: A gene dictionary if the ID attribute exists.
+                 Else return None.
+        """
+        gene = dict()
+        gene['src_name'] = SourceName.NCBI.value
+
+        self._add_attributes(f, gene)
+        self._get_vrs_sq_location(db, sr, gene, 1)
+
+        gene['label_and_type'] = \
+            f"{gene['concept_id'].lower()}##identity"
+
+    def _add_attributes(self, f, gene):
+        """Add concept_id, symbol, and other_identifiers to a gene record.
+
+        :param gffutils.feature.Feature f: A gene from the data
+        :param gene: A transformed gene record
+        """
+        attributes = {
+            'ID': 'concept_id',
+            'Name': 'symbol',
+            'description': 'other_identifiers'
+        }
+
+        for attribute in f.attributes.items():
+            key = attribute[0]
+
+            if key in attributes.keys():
+                val = attribute[1]
+
+                if len(val) == 1 and key != 'Dbxref':
+                    val = val[0]
+
+                if key == 'Dbxref':
+                    self._add_other_ids_xrefs(val, gene)
+                    continue
+
+                gene[attributes[key]] = val
+
     def _get_vrs_sq_location(self, db, sr, params, n):
         """Store GA4GH VRS SequenceLocation in a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
 
         :param FeatureDB db: GFF database
-        :param  SeqRepo sr: Access to the seqrepo
+        :param SeqRepo sr: Access to the seqrepo
         :param dict params: A transformed gene record
         :param int n: Number of locations to look for
         :return: A list of GA4GH VRS SequenceLocations
         """
-        # TODO: Might want to include all even if not in nbci_info file
         location_list = list()
         for i in range(n):
             try:
@@ -357,6 +432,28 @@ class NCBI(Base):
                                     f"interval: start={gene.start} "
                                     f"end={gene.end}")
         return location_list
+
+    def _get_other_id_xref(self, src_name, src_id):
+        """Get other identifier or xref.
+
+        :param str src_name: Source name
+        :param src_id: The source's accession number
+        :return: A dict containing an other identifier or xref
+        """
+        source = dict()
+        if src_name.startswith('HGNC'):
+            source['other_identifiers'] = \
+                [f"{NamespacePrefix.HGNC.value}:{src_id}"]
+        elif src_name.startswith('NCBI'):
+            source['other_identifiers'] = \
+                [f"{NamespacePrefix.NCBI.value}:{src_id}"]
+        elif src_name.startswith('UniProt'):
+            source['xrefs'] = [f"{NamespacePrefix.UNIPROT.value}:{src_id}"]
+        elif src_name.startswith('miRBase'):
+            source['xrefs'] = [f"{NamespacePrefix.MIRBASE.value}:{src_id}"]
+        elif src_name.startswith('RFAM'):
+            source['xrefs'] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]
+        return source
 
     def _get_vrs_chr_location(self, row, params):
         """Store GA4GH VRS ChromosomeLocation in a gene record.
@@ -583,6 +680,31 @@ class NCBI(Base):
             location['chr'] = loc[:centromere_ix].strip()
             interval['start'] = "cen"
             interval['end'] = "cen"
+
+    def _transform_data(self):
+        """Modify data and pass to loading functions."""
+        self._add_meta()
+        prev_symbols = self._get_prev_symbols()
+        info_genes = self._get_gene_info(prev_symbols)
+
+        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / '2020-11-27'
+        sr = SeqRepo(seqrepo_dir)
+
+        # create db for gff file
+        # db = gffutils.create_db(str(self._gff_src),
+        #                         dbfn=":memory:",
+        #                         # dbfn=f"{PROJECT_ROOT}/data/ncbi/test_ncbi.db",  # noqa: E501
+        #                         force=True,
+        #                         merge_strategy="create_unique",
+        #                         keep_order=True)
+        db = gffutils.FeatureDB(f"{PROJECT_ROOT}/data/ncbi/test_ncbi.db",
+                                keep_order=True)
+
+        self._get_gene_gff(db, info_genes, sr)
+
+        with self._database.genes.batch_writer() as batch:
+            for gene in info_genes.keys():
+                self._load_data(Gene(**info_genes[gene]), batch)
 
     def _add_meta(self):
         """Load metadata"""
