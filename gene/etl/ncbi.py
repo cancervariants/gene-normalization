@@ -194,18 +194,20 @@ class NCBI(Base):
         for src in val:
             src_name = src.split(':')[0].upper()
             src_id = src.split(':')[-1]
-            if src_name in NamespacePrefix.__members__ and \
+            if src_name == "GENEID":
+                params['concept_id'] = f"{NamespacePrefix.NCBI.value}:{src_id}"
+            elif src_name in NamespacePrefix.__members__ and \
                     NamespacePrefix[src_name].value in \
                     self._normalizer_prefixes:
                 params['other_identifiers'].append(
                     f"{NamespacePrefix[src_name].value}"
                     f":{src_id}")
             else:
-                if src.startswith("MIM"):
+                if src_name.startswith("MIM"):
                     prefix = NamespacePrefix.OMIM.value
-                elif src.startswith("IMGT/GENE-DB"):
+                elif src_name.startswith("IMGT/GENE-DB"):
                     prefix = NamespacePrefix.IMGT_GENE_DB.value
-                elif src.startswith("miRBase"):
+                elif src_name.startswith("MIRBASE"):
                     prefix = NamespacePrefix.MIRBASE.value
                 else:
                     prefix = None
@@ -249,15 +251,16 @@ class NCBI(Base):
             if 'exclude' in vrs_chr_location:
                 # Exclude genes with multiple distinct locations (e.g. OMS)
                 continue
-            else:
-                params['locations'] = vrs_chr_location
+            if not vrs_chr_location:
+                vrs_chr_location = []
+            params['locations'] = vrs_chr_location
             # get label
             if row[8] != '-':
                 params['label'] = row[8]
             # add prev symbols
             if row[1] in prev_symbols.keys():
                 params['previous_symbols'] = prev_symbols[row[1]]
-            info_genes[f"gene-{params['symbol']}"] = params
+            info_genes[params['symbol']] = params
         return info_genes
 
     def _get_gene_gff(self, db, info_genes, sr):
@@ -271,30 +274,19 @@ class NCBI(Base):
             if f.attributes.get('ID'):
                 f_id = f.attributes.get('ID')[0]
                 if f_id.startswith('gene'):
-                    if f_id in info_genes:
+                    symbol = f.attributes['Name'][0]
+                    if symbol in info_genes:
                         # Just need to add SequenceLocation
-                        params = info_genes.get(f_id)
-                        # TODO: Check this logic
-                        if not params['locations'] and \
-                                'location_annotations' in params:
-                            # If only chromosomes given
-                            if 'X' in params['location_annotations'] and \
-                                    'Y' in params['location_annotations']:
-                                n = 2
-                            else:
-                                n = 1
-                        else:
-                            n = len(params['locations'])
-                        vrs_sq_location = self._get_vrs_sq_location(db, sr,
-                                                                    params, n)
+                        params = info_genes.get(symbol)
+                        vrs_sq_location = \
+                            self._get_vrs_sq_location(db, sr, params, f_id)
                         if vrs_sq_location:
-                            for sq_loc in vrs_sq_location:
-                                params['locations'].append(sq_loc)
-                        if not params['locations']:
-                            del params['locations']
+                            params['locations'].append(vrs_sq_location)
                     else:
+                        logger.info(f"{f_id}: {symbol} not in info file.")
                         # Need to add entire gene
-                        self._add_gff_gene(db, f, sr)
+                        gene = self._add_gff_gene(db, f, sr, f_id)
+                        info_genes[gene['symbol']] = gene
 
     def _load_data(self, gene: Gene, batch):
         """Load individual Gene item.
@@ -346,23 +338,27 @@ class NCBI(Base):
         item['src_name'] = SourceName.NCBI.value
         batch.put_item(Item=item)
 
-    def _add_gff_gene(self, db, f, sr):
+    def _add_gff_gene(self, db, f, sr, f_id):
         """Create a transformed gene recor from NCBI gff file.
 
         :param FeatureDB db: GFF database
         :param Feature f: A gene from the gff data file
         :param SeqRepo sr: Access to the seqrepo
+        :param str f_id: The feature's ID
         :return: A gene dictionary if the ID attribute exists.
                  Else return None.
         """
-        gene = dict()
-        gene['src_name'] = SourceName.NCBI.value
-
-        self._add_attributes(f, gene)
-        self._get_vrs_sq_location(db, sr, gene, 1)
-
-        gene['label_and_type'] = \
-            f"{gene['concept_id'].lower()}##identity"
+        params = dict()
+        params['src_name'] = SourceName.NCBI.value
+        self._add_attributes(f, params)
+        sq_loc = self._get_vrs_sq_location(db, sr, params, f_id)
+        if sq_loc:
+            params['locations'] = [sq_loc]
+        else:
+            params['locations'] = list()
+        params['label_and_type'] = \
+            f"{params['concept_id'].lower()}##identity"
+        return params
 
     def _add_attributes(self, f, gene):
         """Add concept_id, symbol, and other_identifiers to a gene record.
@@ -370,16 +366,11 @@ class NCBI(Base):
         :param gffutils.feature.Feature f: A gene from the data
         :param gene: A transformed gene record
         """
-        attributes = {
-            'ID': 'concept_id',
-            'Name': 'symbol',
-            'description': 'other_identifiers'
-        }
+        attributes = ['ID', 'Name', 'description', 'Dbxref']
 
         for attribute in f.attributes.items():
             key = attribute[0]
-
-            if key in attributes.keys():
+            if key in attributes:
                 val = attribute[1]
 
                 if len(val) == 1 and key != 'Dbxref':
@@ -387,51 +378,45 @@ class NCBI(Base):
 
                 if key == 'Dbxref':
                     self._add_other_ids_xrefs(val, gene)
-                    continue
+                elif key == 'Name':
+                    gene['symbol'] = val
 
-                gene[attributes[key]] = val
-
-    def _get_vrs_sq_location(self, db, sr, params, n):
+    def _get_vrs_sq_location(self, db, sr, params, f_id):
         """Store GA4GH VRS SequenceLocation in a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
 
         :param FeatureDB db: GFF database
         :param SeqRepo sr: Access to the seqrepo
         :param dict params: A transformed gene record
-        :param int n: Number of locations to look for
+        :param str f_id: The feature's ID
         :return: A list of GA4GH VRS SequenceLocations
         """
-        location_list = list()
-        for i in range(n):
-            try:
-                if i == 0:
-                    query_str = f"gene-{params['symbol']}"
-                else:
-                    query_str = f"gene-{params['symbol']}-{i+1}"
-                gene = db[query_str]
-            except gffutils.exceptions.FeatureNotFoundError:
-                # TODO: Does this need to be logged?
-                logger.info(f"{params['symbol']} not found in NCBI gff file.")
-            else:
-                params['strand'] = gene.strand
-                aliases = sr.translate_alias(gene.seqid)
-                sequence_id = [a for a in aliases if a.startswith('ga4gh')][0]
-                if gene.start != '.' and gene.end != '.' and sequence_id:
-                    if 0 <= gene.start <= gene.end:
-                        seq_location = models.SequenceLocation(
-                            sequence_id=sequence_id,
-                            interval=models.SimpleInterval(
-                                start=gene.start,
-                                end=gene.end
-                            )
+        location = dict()
+        try:
+            gene = db[f_id]
+        except gffutils.exceptions.FeatureNotFoundError:
+            # TODO: Does this need to be logged?
+            logger.info(f"{f_id} not found in NCBI gff file.")
+        else:
+            params['strand'] = gene.strand
+            aliases = sr.translate_alias(gene.seqid)
+            sequence_id = [a for a in aliases if a.startswith('ga4gh')][0]
+            if gene.start != '.' and gene.end != '.' and sequence_id:
+                if 0 <= gene.start <= gene.end:
+                    seq_location = models.SequenceLocation(
+                        sequence_id=sequence_id,
+                        interval=models.SimpleInterval(
+                            start=gene.start,
+                            end=gene.end
                         )
-                        seq_location._id = ga4gh_identify(seq_location)
-                        location_list.append(seq_location.as_dict())
-                    else:
-                        logger.info(f"{params['concept_id']} has invalid "
-                                    f"interval: start={gene.start} "
-                                    f"end={gene.end}")
-        return location_list
+                    )
+                    seq_location._id = ga4gh_identify(seq_location)
+                    location = seq_location.as_dict()
+                else:
+                    logger.info(f"{params['concept_id']} has invalid "
+                                f"interval: start={gene.start} "
+                                f"end={gene.end}")
+        return location
 
     def _get_other_id_xref(self, src_name, src_id):
         """Get other identifier or xref.

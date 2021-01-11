@@ -422,6 +422,16 @@ def prkrap1():
                 },
                 'sequence_id': 'ga4gh:SQ.MjujHSAsgNWRTX4w3ysM7b5OVhZpdXu1',
                 'type': 'SequenceLocation'
+            },
+            {
+                '_id': 'ga4gh:VSL.WTVn8f6OmsdbiEniT8W4CHuHJdp78oBP',
+                'interval': {
+                    'end': 3932085,
+                    'start': 3930481,
+                    'type': 'SimpleInterval'
+                },
+                'sequence_id': 'ga4gh:SQ.Q8IworEhpLeXwpz1CHM7C3luysh-ltx-',
+                'type': 'SequenceLocation'
             }
         ]
     }
