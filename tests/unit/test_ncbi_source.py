@@ -306,7 +306,7 @@ def loc106783576():
         'strand': None,
         'locations': [
             {
-                # TODO: Add _id
+                '_id': 'ga4gh:VCL.RFN35KQMhqzhmo4QP7AxKAzlPtnh7slL',
                 'chr': '10',
                 'interval': {
                     'end': 'cen',
@@ -338,7 +338,7 @@ def glc1b():
         'strand': None,
         'locations': [
             {
-                # TODO: Add _id
+                '_id': 'ga4gh:VCL.HStPIl_6UkNQmbjZW1TeUmHFMptbIj6t',
                 'chr': '2',
                 'interval': {
                     'end': 'q13',
@@ -370,7 +370,7 @@ def hdpa():
         'strand': None,
         'locations': [
             {
-                # TODO: Add _id
+                '_id': 'ga4gh:VCL.faRHNO_VJMssbjYQ628mfdRgLqg9qK2b',
                 'chr': 'X',
                 'interval': {
                     'end': 'p22.32',

@@ -393,7 +393,7 @@ def cecr():
         'strand': None,
         'locations': [
             {
-                # TODO: Add _id
+                '_id': 'ga4gh:VCL.-hT6Cp6B32GmZTD8BXh1xf6SJeLM1uN7',
                 'chr': '22',
                 'interval': {
                     'end': 'q11',

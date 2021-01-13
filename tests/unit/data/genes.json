@@ -594,7 +594,7 @@
     "symbol": "CECR",
     "locations": [
       {
-        "_id": "TODO",
+        "_id": "ga4gh:VCL.-hT6Cp6B32GmZTD8BXh1xf6SJeLM1uN7",
         "chr": "22",
         "interval": {
           "end": "q11",
@@ -1082,7 +1082,7 @@
     "symbol": "LOC106783576",
     "locations": [
       {
-        "_id": "TODO",
+        "_id": "ga4gh:VCL.RFN35KQMhqzhmo4QP7AxKAzlPtnh7slL",
         "chr": "10",
         "interval": {
           "end": "cen",
@@ -1108,7 +1108,7 @@
     "xrefs": ["omim:606689"],
     "locations": [
       {
-        "_id": "TODO",
+        "_id": "ga4gh:VCL.HStPIl_6UkNQmbjZW1TeUmHFMptbIj6t",
         "chr": "2",
         "interval": {
           "end": "q13",
@@ -1134,7 +1134,7 @@
     "xrefs": ["omim:300221"],
     "locations": [
       {
-        "_id": "TODO",
+        "_id": "ga4gh:VCL.faRHNO_VJMssbjYQ628mfdRgLqg9qK2b",
         "chr": "X",
         "interval": {
           "end": "p22.32",
