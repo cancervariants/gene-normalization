@@ -54,6 +54,8 @@ class CLI:
         if update_all:
             normalizers = [src for src in sources]
             CLI()._update_normalizers(normalizers, sources, db)
+        elif not normalizer:
+            CLI()._help_msg()
         else:
             normalizers = normalizer.lower().split()
 
@@ -66,6 +68,14 @@ class CLI:
                 raise Exception(f"Not valid source(s): {non_sources}")
 
             CLI()._update_normalizers(normalizers, sources, db)
+
+    def _help_msg(self):
+        """Display help message."""
+        ctx = click.get_current_context()
+        click.echo(
+            "Must either enter 1 or more sources, or use `--update_all` parameter")  # noqa: E501
+        click.echo(ctx.get_help())
+        ctx.exit()
 
     def _check_norm_srcs_match(self, sources, normalizers):
         """Check that entered normalizers are actual sources."""
