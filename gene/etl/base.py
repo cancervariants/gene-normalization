@@ -3,6 +3,10 @@ from abc import ABC, abstractmethod
 from gene.database import Database
 from gene.schemas import SourceName, NamespacePrefix
 
+NORMALIZER_SRCS = {src for src in SourceName.__members__}
+NORMALIZER_SRC_PREFIXES = \
+    {NamespacePrefix[src.upper()].value for src in NORMALIZER_SRCS}
+
 
 class Base(ABC):
     """The ETL base class."""
@@ -23,14 +27,3 @@ class Base(ABC):
     @abstractmethod
     def _add_meta(self, *args, **kwargs):
         raise NotImplementedError
-
-    def _get_normalizer_prefixes(self):
-        """Retrieve normalizer sources' prefixes.
-
-        :return: A list containing normalizer sources' prefixes
-        """
-        normalizer_srcs = {src for src in SourceName.__members__}
-        normalizer_srcs_prefixes = list()
-        for src in normalizer_srcs:
-            normalizer_srcs_prefixes.append(NamespacePrefix[src.upper()].value)
-        return normalizer_srcs_prefixes

@@ -1,5 +1,5 @@
 """This module defines ETL methods for the NCBI data source."""
-from .base import Base
+from .base import Base, NORMALIZER_SRC_PREFIXES
 from gene import PROJECT_ROOT, DownloadException
 from gene.database import Database
 from gene.schemas import Meta, Gene, SourceName, NamespacePrefix, \
@@ -54,7 +54,6 @@ class NCBI(Base):
         self._info_file_url = info_file_url
         self._history_file_url = history_file_url
         self._gff_url = gff_url
-        self._normalizer_prefixes = self._get_normalizer_prefixes()
         self._extract_data()
         self._transform_data()
 
@@ -197,8 +196,7 @@ class NCBI(Base):
             if src_name == "GENEID":
                 params['concept_id'] = f"{NamespacePrefix.NCBI.value}:{src_id}"
             elif src_name in NamespacePrefix.__members__ and \
-                    NamespacePrefix[src_name].value in \
-                    self._normalizer_prefixes:
+                    NamespacePrefix[src_name].value in NORMALIZER_SRC_PREFIXES:
                 params['other_identifiers'].append(
                     f"{NamespacePrefix[src_name].value}"
                     f":{src_id}")

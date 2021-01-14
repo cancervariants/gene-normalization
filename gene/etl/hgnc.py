@@ -1,5 +1,5 @@
 """This module defines the HGNC ETL methods."""
-from .base import Base
+from .base import Base, NORMALIZER_SRC_PREFIXES
 from gene import PROJECT_ROOT, DownloadException
 from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene, \
     Meta, Annotation, Chromosome
@@ -36,7 +36,6 @@ class HGNC(Base):
         self._data_url = data_url
         self._data_file_url = data_url + data_file_ext
         self._version = None
-        self._normalizer_prefixes = self._get_normalizer_prefixes()
         self._load_data()
 
     def _download_data(self, *args, **kwargs):
@@ -230,7 +229,7 @@ class HGNC(Base):
                     key = src
                 if key.upper() in NamespacePrefix.__members__:
                     if NamespacePrefix[key.upper()]\
-                            .value in self._normalizer_prefixes:
+                            .value in NORMALIZER_SRC_PREFIXES:
                         self._get_other_id_xref(key, src, r, other_ids)
                     else:
                         self._get_other_id_xref(key, src, r, xrefs)
