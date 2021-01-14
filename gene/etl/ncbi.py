@@ -17,7 +17,6 @@ import gffutils
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from biocommons.seqrepo import SeqRepo
-import python_jsonschema_objects
 from gene.vrs_locations import SequenceLocation, ChromosomeLocation
 
 logger = logging.getLogger('gene')
@@ -518,7 +517,6 @@ class NCBI(Base):
         for i in range(len(locations)):
             loc = locations[i].strip()
             location = dict()
-            interval = dict()
 
             if Annotation.ALT_LOC.value in loc:
                 loc = loc.split(f"{Annotation.ALT_LOC.value}")[0].strip()
@@ -544,47 +542,32 @@ class NCBI(Base):
                     if '-' in loc:
                         self._chromosome_location.set_interval_range(loc,
                                                                      arm_ix,
-                                                                     interval)
+                                                                     location)
                     else:
                         # Location only gives start
                         start = loc[arm_ix:]
-                        interval['start'] = start
-                        interval['end'] = start
+                        location['start'] = start
+                        location['end'] = start
                 else:
                     # Only arm is included
-                    interval['start'] = loc[arm_ix]
-                    interval['end'] = loc[arm_ix]
+                    location['start'] = loc[arm_ix]
+                    location['end'] = loc[arm_ix]
             elif contains_centromere:
-                self._set_centromere_location(loc, location, interval)
+                self._set_centromere_location(loc, location)
             else:
                 # Location only gives chr
-                location = None
-                interval = None
                 params['location_annotations'].append(loc)
 
-            if location and interval:
-                if interval['start'] == 'p' and interval['end'] == 'p':
-                    interval['start'] = 'pter'
-                    interval['end'] = 'cen'
-                elif interval['start'] == 'q' and interval['end'] == 'q':
-                    interval['start'] = 'cen'
-                    interval['end'] = 'qter'
-                try:
-                    chr_location = \
-                        self._chromosome_location.add_location(location,
-                                                               interval)
-                except python_jsonschema_objects.validators.ValidationError \
-                        as e:
-                    logger.info(f"{e} for {params['symbol']}")
-                else:
-                    location_list.append(chr_location)
+            chr_location = \
+                self._chromosome_location.get_location(location, params)
+            if chr_location:
+                location_list.append(chr_location)
 
-    def _set_centromere_location(self, loc, location, interval):
+    def _set_centromere_location(self, loc, location):
         """Set centromere location for a gene.
 
         :param str loc: A gene location
         :param dict location: GA4GH location
-        :param interval: GA4GH interval for a VRS object
         """
         centromere_ix = re.search("cen", loc).start()
         if '-' in loc:
@@ -592,17 +575,17 @@ class NCBI(Base):
             range_ix = re.search('-', loc).start()
             if 'q' in loc:
                 location['chr'] = loc[:centromere_ix].strip()
-                interval['start'] = "cen"
-                interval['end'] = loc[range_ix + 1:]
+                location['start'] = "cen"
+                location['end'] = loc[range_ix + 1:]
             elif 'p' in loc:
                 p_ix = re.search("p", loc).start()
                 location['chr'] = loc[:p_ix].strip()
-                interval['end'] = "cen"
-                interval['start'] = loc[:range_ix]
+                location['end'] = "cen"
+                location['start'] = loc[:range_ix]
         else:
             location['chr'] = loc[:centromere_ix].strip()
-            interval['start'] = "cen"
-            interval['end'] = "cen"
+            location['start'] = "cen"
+            location['end'] = "cen"
 
     def _transform_data(self):
         """Modify data and pass to loading functions."""
@@ -614,12 +597,10 @@ class NCBI(Base):
         sr = SeqRepo(seqrepo_dir)
 
         # create db for gff file
-        # db = gffutils.create_db(str(self._gff_src),
-        #                         dbfn=":memory:",
-        #                         force=True,
-        #                         merge_strategy="create_unique",
-        #                         keep_order=True)
-        db = gffutils.FeatureDB(f"{PROJECT_ROOT}/data/ncbi/test_ncbi.db",
+        db = gffutils.create_db(str(self._gff_src),
+                                dbfn=":memory:",
+                                force=True,
+                                merge_strategy="create_unique",
                                 keep_order=True)
 
         self._get_gene_gff(db, info_genes, sr)

@@ -77,13 +77,10 @@ class Ensembl(Base):
 
     def _transform_data(self, *args, **kwargs):
         """Transform the Ensembl source."""
-        # db = gffutils.create_db(str(self._data_src),
-        #                         dbfn=":memory:",
-        #                         force=True,
-        #                         merge_strategy="create_unique",
-        #                         keep_order=True)
-        db = gffutils.FeatureDB(f"{PROJECT_ROOT}/data/olddata/"
-                                f"ensembl/data/test_ensembl.db",
+        db = gffutils.create_db(str(self._data_src),
+                                dbfn=":memory:",
+                                force=True,
+                                merge_strategy="create_unique",
                                 keep_order=True)
 
         seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / '2020-11-27'

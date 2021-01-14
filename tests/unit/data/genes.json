@@ -755,6 +755,51 @@
     "concept_id": "hgnc:34692",
     "src_name": "HGNC"
   },
+    {
+    "label_and_type": "hgnc:7603##identity",
+    "label": "myosin VB",
+    "concept_id": "hgnc:7603",
+    "symbol": "MYO5B",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.1vd9qlPiSSaDZC5X4jIKpapokxvKrITd",
+        "chr": "18",
+        "interval": {
+          "end": "qter",
+          "start": "cen",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "symbol_status": "approved",
+    "aliases": [
+      "KIAA1119"
+    ],
+    "other_identifiers": [
+      "ncbigene:4645",
+      "ensembl:ENSG00000167306"
+    ],
+    "xrefs": [
+      "vega:OTTHUMG00000179843",
+      "refseq:NM_001080467",
+      "omim:606540",
+      "ucsc:uc002leb.3",
+      "uniprot:Q9ULV0",
+      "orphanet:171089",
+      "ccds:CCDS42436",
+      "ena.embl:AB032945",
+      "pubmed:8884266",
+      "pubmed:17462998"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "myo5b##symbol",
+    "concept_id": "hgnc:7603",
+    "src_name": "HGNC"
+  },
   {
     "label_and_type": "ncbigene:8193##identity",
     "label": "double PHD fingers 1",

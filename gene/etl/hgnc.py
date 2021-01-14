@@ -10,7 +10,6 @@ import requests
 from bs4 import BeautifulSoup
 import datetime
 import re
-import python_jsonschema_objects
 from gene.vrs_locations import ChromosomeLocation
 
 logger = logging.getLogger('gene')
@@ -287,18 +286,11 @@ class HGNC(Base):
                         Chromosome.MITOCHONDRIA.value)
                 else:
                     location = dict()
-                    interval = dict()
-                    self._set_location(loc, location, interval, gene)
-                    if location and interval:
-                        try:
-                            chr_location = \
-                                self._chromosome_location.add_location(
-                                    location, interval)
-                        except python_jsonschema_objects.validators.\
-                                ValidationError as e:
-                            logger.info(f"{e} for {gene['symbol']}")
-                        else:
-                            location_list.append(chr_location)
+                    self._set_location(loc, location, gene)
+                    chr_location = \
+                        self._chromosome_location.get_location(location, gene)
+                    if chr_location:
+                        location_list.append(chr_location)
 
         if location_list:
             gene['locations'] = location_list
@@ -324,12 +316,11 @@ class HGNC(Base):
                     return None
         return loc
 
-    def _set_location(self, loc, location, interval, gene):
+    def _set_location(self, loc, location, gene):
         """Set a gene's location.
 
         :param str loc: A gene location
         :param dict location: GA4GH location
-        :param dict interval: GA4GH interval
         :param dict gene: A transformed gene record
         """
         arm_match = re.search('[pq]', loc)
@@ -342,12 +333,12 @@ class HGNC(Base):
             if '-' in loc:
                 # Location gives both start and end
                 self._chromosome_location.set_interval_range(loc,
-                                                             arm_ix, interval)
+                                                             arm_ix, location)
             else:
                 # Location only gives start
                 start = loc[arm_ix:]
-                interval['start'] = start
-                interval['end'] = start
+                location['start'] = start
+                location['end'] = start
         else:
             # Only gives chromosome
             gene['location_annotations'].append(loc)

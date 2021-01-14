@@ -562,6 +562,53 @@ def trl_cag2_1():
     return Gene(**params)
 
 
+@pytest.fixture(scope='module')
+def myo5b():
+    """Create a MYO5B gene fixture."""
+    params = {
+        'label': 'myosin VB',
+        'concept_id': 'hgnc:7603',
+        'symbol': 'MYO5B',
+        'location_annotations': [],
+        'strand': None,
+        'locations': [
+            {
+                '_id': 'ga4gh:VCL.1vd9qlPiSSaDZC5X4jIKpapokxvKrITd',
+                'chr': '18',
+                'interval': {
+                    'end': 'qter',
+                    'start': 'cen',
+                    'type': 'CytobandInterval'
+                },
+                'species_id': 'taxonomy:9606',
+                'type': 'ChromosomeLocation'
+            }
+        ],
+        'previous_symbols': [],
+        'aliases': [
+            'KIAA1119'
+        ],
+        'symbol_status': 'approved',
+        'other_identifiers': [
+            'ensembl:ENSG00000167306',
+            'ncbigene:4645'
+        ],
+        'xrefs': [
+            'vega:OTTHUMG00000179843',
+            'refseq:NM_001080467',
+            'omim:606540',
+            'ucsc:uc002leb.3',
+            'uniprot:Q9ULV0',
+            'orphanet:171089',
+            'ccds:CCDS42436',
+            'ena.embl:AB032945',
+            'pubmed:8884266',
+            'pubmed:17462998'
+        ]
+    }
+    return Gene(**params)
+
+
 def test_concept_id_a1bg_as1(a1bg_as1, hgnc):
     """Test that a1bg_as1 gene normalizes to correct gene concept
     as a CONCEPT_ID match.
@@ -1492,6 +1539,49 @@ def test_trl_cag2_1(trl_cag2_1, hgnc):
     assert normalized_gene.location_annotations == \
            trl_cag2_1.location_annotations
     assert normalized_gene.strand == trl_cag2_1.strand
+
+
+def test_myo5b(myo5b, hgnc):
+    """Test that MYO5B gene normalizes to correct gene concept."""
+    normalizer_response = hgnc.normalize('hgnc:7603')
+    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == myo5b.label
+    assert normalized_gene.concept_id == myo5b.concept_id
+    assert set(normalized_gene.aliases) == set(myo5b.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(myo5b.other_identifiers)
+    assert normalized_gene.symbol_status == myo5b.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(myo5b.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(myo5b.xrefs)
+    assert normalized_gene.symbol == myo5b.symbol
+    assert normalized_gene.locations == myo5b.locations
+    assert normalized_gene.location_annotations == \
+           myo5b.location_annotations
+    assert normalized_gene.strand == myo5b.strand
+
+    normalizer_response = hgnc.normalize('MYO5B')
+    assert normalizer_response['match_type'] == MatchType.SYMBOL
+    assert len(normalizer_response['records']) == 1
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == myo5b.label
+    assert normalized_gene.concept_id == myo5b.concept_id
+    assert set(normalized_gene.aliases) == set(myo5b.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(myo5b.other_identifiers)
+    assert normalized_gene.symbol_status == myo5b.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(myo5b.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(myo5b.xrefs)
+    assert normalized_gene.symbol == myo5b.symbol
+    assert len(normalized_gene.locations) == len(myo5b.locations)
+    for loc in myo5b.locations:
+        assert loc in normalized_gene.locations
+    assert normalized_gene.location_annotations == \
+           myo5b.location_annotations
+    assert normalized_gene.strand == myo5b.strand
 
 
 def test_no_match(hgnc):

@@ -3,6 +3,7 @@ from ga4gh.vrs import models
 from ga4gh.core import ga4gh_identify
 import re
 import logging
+import python_jsonschema_objects
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -11,30 +12,58 @@ logger.setLevel(logging.DEBUG)
 class ChromosomeLocation:
     """The class for GA4GH Chromosome Location."""
 
-    def add_location(self, location, interval):
+    def add_location(self, location):
         """Get a gene's Chromosome Location.
 
         :param dict location: A gene's location.
-        :param dict interval: A gene's start and end location.
         :return: A dictionary of a GA4GH VRS ChromosomeLocation.
         """
         chr_location = models.ChromosomeLocation(
             species_id="taxonomy:9606",
             chr=location['chr'],
             interval=models.CytobandInterval(
-                start=interval['start'],
-                end=interval['end']
+                start=location['start'],
+                end=location['end']
             )
         )
         chr_location._id = ga4gh_identify(chr_location)
         return chr_location.as_dict()
 
-    def set_interval_range(self, loc, arm_ix, interval):
+    def get_location(self, location, gene):
+        """Transform a gene's location into a Chromosome Location.
+
+        :param dict location: A gene's location.
+        :param dict gene: A transformed gene record.
+        :return: If location is a valid VRS ChromosomeLocation, return a
+         dictionary containing the ChromosomeLocation.
+         Else, return None.
+        """
+        if 'chr' in location and 'start' in location \
+                and 'end' in location:
+            if location['start'] == 'p' and location['end'] == 'p':
+                location['start'] = 'pter'
+                location['end'] = 'cen'
+            elif location['start'] == 'q' and \
+                    location['end'] == 'q':
+                location['start'] = 'cen'
+                location['end'] = 'qter'
+            try:
+                chr_location = \
+                    self.add_location(
+                        location)
+            except python_jsonschema_objects.validators. \
+                    ValidationError as e:
+                logger.info(f"{e} for {gene['symbol']}")
+            else:
+                return chr_location
+        return None
+
+    def set_interval_range(self, loc, arm_ix, location):
         """Set the location interval range.
 
         :param str loc: A gene location
         :param int arm_ix: The index of the q or p arm for a given location
-        :param dict interval: The GA4GH interval for a VRS object
+        :param dict location: A gene's location
         """
         range_ix = re.search('-', loc).start()
 
@@ -55,9 +84,9 @@ class ChromosomeLocation:
 
         if (start_arm == end_arm and start > end) or \
                 (start_arm != end_arm and start_arm == 'p' and end_arm == 'q'):
-            interval['start'] = start
-            interval['end'] = end
+            location['start'] = start
+            location['end'] = end
         elif (start_arm == end_arm and start < end) or \
                 (start_arm != end_arm and start_arm == 'q' and end_arm == 'p'):
-            interval['start'] = end
-            interval['end'] = start
+            location['start'] = end
+            location['end'] = start
