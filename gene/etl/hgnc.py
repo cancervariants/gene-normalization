@@ -10,9 +10,8 @@ import requests
 from bs4 import BeautifulSoup
 import datetime
 import re
-from ga4gh.vrs import models
-from ga4gh.core import ga4gh_identify
 import python_jsonschema_objects
+from gene.vrs_locations import ChromosomeLocation
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -34,6 +33,7 @@ class HGNC(Base):
                                   for the Non Alt Loci set
         """
         self._database = database
+        self._chromosome_location = ChromosomeLocation()
         self._data_url = data_url
         self._data_file_url = data_url + data_file_ext
         self._version = None
@@ -291,16 +291,9 @@ class HGNC(Base):
                     self._set_location(loc, location, interval, gene)
                     if location and interval:
                         try:
-                            chr_location = models.ChromosomeLocation(
-                                species_id="taxonomy:9606",
-                                chr=location['chr'],
-                                interval=models.CytobandInterval(
-                                    start=interval['start'],
-                                    end=interval['end']
-                                )
-                            )
-                            chr_location._id = ga4gh_identify(chr_location)
-                            chr_location = chr_location.as_dict()
+                            chr_location = \
+                                self._chromosome_location.add_location(
+                                    location, interval)
                         except python_jsonschema_objects.validators.\
                                 ValidationError as e:
                             logger.info(f"{e} for {gene['symbol']}")
@@ -348,7 +341,8 @@ class HGNC(Base):
 
             if '-' in loc:
                 # Location gives both start and end
-                self._set_interval_range(loc, arm_ix, interval)
+                self._chromosome_location.set_interval_range(loc,
+                                                             arm_ix, interval)
             else:
                 # Location only gives start
                 start = loc[arm_ix:]
@@ -357,39 +351,6 @@ class HGNC(Base):
         else:
             # Only gives chromosome
             gene['location_annotations'].append(loc)
-
-    def _set_interval_range(self, loc, arm_ix, interval):
-        """Set the location interval range.
-
-        :param str loc: A gene location
-        :param int arm_ix: The index of the q or p arm for a given location
-        :param dict interval: The GA4GH interval for a VRS object
-        """
-        range_ix = re.search('-', loc).start()
-
-        start = loc[arm_ix:range_ix]
-        start_arm_ix = re.search("[pq]", start).start()
-        start_arm = start[start_arm_ix]
-
-        end = loc[range_ix + 1:]
-        end_arm_match = re.search("[pq]", end)
-
-        if not end_arm_match:
-            # Does not specify the arm, so use the same as start's
-            end = f"{start[0]}{end}"
-            end_arm_match = re.search("[pq]", end)
-
-        end_arm_ix = end_arm_match.start()
-        end_arm = end[end_arm_ix]
-
-        if (start_arm == end_arm and start > end) or \
-                (start_arm != end_arm and start_arm == 'p' and end_arm == 'q'):
-            interval['start'] = start
-            interval['end'] = end
-        elif (start_arm == end_arm and start < end) or \
-                (start_arm != end_arm and start_arm == 'q' and end_arm == 'p'):
-            interval['start'] = end
-            interval['end'] = start
 
     def _load_data(self, *args, **kwargs):
         """Load the HGNC source into normalized database."""

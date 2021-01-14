@@ -17,9 +17,8 @@ import gffutils
 from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from biocommons.seqrepo import SeqRepo
-from ga4gh.vrs import models
-from ga4gh.core import ga4gh_identify
 import python_jsonschema_objects
+from gene.vrs_locations import SequenceLocation, ChromosomeLocation
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -50,6 +49,8 @@ class NCBI(Base):
         :param str gff_url: default url to the latest assembly directory
         """
         self._database = database
+        self._sequence_location = SequenceLocation()
+        self._chromosome_location = ChromosomeLocation()
         self._data_url = data_url
         self._info_file_url = info_file_url
         self._history_file_url = history_file_url
@@ -283,7 +284,6 @@ class NCBI(Base):
                         if vrs_sq_location:
                             params['locations'].append(vrs_sq_location)
                     else:
-                        logger.info(f"{f_id}: {symbol} not in info file.")
                         # Need to add entire gene
                         gene = self._add_gff_gene(db, f, sr, f_id)
                         info_genes[gene['symbol']] = gene
@@ -389,34 +389,12 @@ class NCBI(Base):
         :param SeqRepo sr: Access to the seqrepo
         :param dict params: A transformed gene record
         :param str f_id: The feature's ID
-        :return: A list of GA4GH VRS SequenceLocations
+        :return: A GA4GH VRS SequenceLocation
         """
-        location = dict()
-        try:
-            gene = db[f_id]
-        except gffutils.exceptions.FeatureNotFoundError:
-            # TODO: Does this need to be logged?
-            logger.info(f"{f_id} not found in NCBI gff file.")
-        else:
-            params['strand'] = gene.strand
-            aliases = sr.translate_alias(gene.seqid)
-            sequence_id = [a for a in aliases if a.startswith('ga4gh')][0]
-            if gene.start != '.' and gene.end != '.' and sequence_id:
-                if 0 <= gene.start <= gene.end:
-                    seq_location = models.SequenceLocation(
-                        sequence_id=sequence_id,
-                        interval=models.SimpleInterval(
-                            start=gene.start,
-                            end=gene.end
-                        )
-                    )
-                    seq_location._id = ga4gh_identify(seq_location)
-                    location = seq_location.as_dict()
-                else:
-                    logger.info(f"{params['concept_id']} has invalid "
-                                f"interval: start={gene.start} "
-                                f"end={gene.end}")
-        return location
+        gene = db[f_id]
+        params['strand'] = gene.strand
+        return self._sequence_location.add_location(gene.seqid, gene,
+                                                    params, sr)
 
     def _get_other_id_xref(self, src_name, src_id):
         """Get other identifier or xref.
@@ -564,7 +542,9 @@ class NCBI(Base):
                 # Check to see if there is a band / sub band included
                 if arm_ix != len(loc) - 1:
                     if '-' in loc:
-                        self._set_interval_range(loc, arm_ix, interval)
+                        self._chromosome_location.set_interval_range(loc,
+                                                                     arm_ix,
+                                                                     interval)
                     else:
                         # Location only gives start
                         start = loc[arm_ix:]
@@ -589,57 +569,15 @@ class NCBI(Base):
                 elif interval['start'] == 'q' and interval['end'] == 'q':
                     interval['start'] = 'cen'
                     interval['end'] = 'qter'
-
                 try:
-                    chr_location = models.ChromosomeLocation(
-                        species_id="taxonomy:9606",
-                        chr=location['chr'],
-                        interval=models.CytobandInterval(
-                            start=interval['start'],
-                            end=interval['end']
-                        )
-                    )
-                    chr_location._id = ga4gh_identify(chr_location)
-                    chr_location = chr_location.as_dict()
+                    chr_location = \
+                        self._chromosome_location.add_location(location,
+                                                               interval)
                 except python_jsonschema_objects.validators.ValidationError \
                         as e:
                     logger.info(f"{e} for {params['symbol']}")
                 else:
                     location_list.append(chr_location)
-
-    def _set_interval_range(self, loc, arm_ix, interval):
-        """Set the location interval range.
-
-        :param str loc: A gene location
-        :param int arm_ix: The index of the q or p arm for a given location
-        :param dict interval: The GA4GH interval for a VRS object
-        """
-        # Location gives both start and end
-        range_ix = re.search('-', loc).start()
-
-        start = loc[arm_ix:range_ix]
-        start_arm_ix = re.search("[pq]", start).start()
-        start_arm = start[start_arm_ix]
-
-        end = loc[range_ix + 1:]
-        end_arm_match = re.search("[pq]", end)
-
-        if not end_arm_match:
-            # Does not specify the arm, so use the same as start's
-            end = f"{start[0]}{end}"
-            end_arm_match = re.search("[pq]", end)
-
-        end_arm_ix = end_arm_match.start()
-        end_arm = end[end_arm_ix]
-
-        if (start_arm == end_arm and start > end) or \
-                (start_arm != end_arm and start_arm == 'p' and end_arm == 'q'):
-            interval['start'] = start
-            interval['end'] = end
-        elif (start_arm == end_arm and start < end) or \
-                (start_arm != end_arm and start_arm == 'q' and end_arm == 'p'):
-            interval['start'] = end
-            interval['end'] = start
 
     def _set_centromere_location(self, loc, location, interval):
         """Set centromere location for a gene.
@@ -676,10 +614,12 @@ class NCBI(Base):
         sr = SeqRepo(seqrepo_dir)
 
         # create db for gff file
-        db = gffutils.create_db(str(self._gff_src),
-                                dbfn=":memory:",
-                                force=True,
-                                merge_strategy="create_unique",
+        # db = gffutils.create_db(str(self._gff_src),
+        #                         dbfn=":memory:",
+        #                         force=True,
+        #                         merge_strategy="create_unique",
+        #                         keep_order=True)
+        db = gffutils.FeatureDB(f"{PROJECT_ROOT}/data/ncbi/test_ncbi.db",
                                 keep_order=True)
 
         self._get_gene_gff(db, info_genes, sr)

@@ -10,8 +10,7 @@ import gzip
 from bs4 import BeautifulSoup
 import requests
 from biocommons.seqrepo import SeqRepo
-from ga4gh.vrs import models
-from ga4gh.core import ga4gh_identify
+from gene.vrs_locations import SequenceLocation
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -33,6 +32,7 @@ class Ensembl(Base):
                              gff3 files for homo sapiens
         """
         self._database = database
+        self._sequence_location = SequenceLocation()
         self._data_url = data_url
         self._gff3_url = data_url + gff3_ext
         self._data_file_url = None
@@ -77,10 +77,13 @@ class Ensembl(Base):
 
     def _transform_data(self, *args, **kwargs):
         """Transform the Ensembl source."""
-        db = gffutils.create_db(str(self._data_src),
-                                dbfn=":memory:",
-                                force=True,
-                                merge_strategy="create_unique",
+        # db = gffutils.create_db(str(self._data_src),
+        #                         dbfn=":memory:",
+        #                         force=True,
+        #                         merge_strategy="create_unique",
+        #                         keep_order=True)
+        db = gffutils.FeatureDB(f"{PROJECT_ROOT}/data/olddata/"
+                                f"ensembl/data/test_ensembl.db",
                                 keep_order=True)
 
         seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / '2020-11-27'
@@ -139,7 +142,9 @@ class Ensembl(Base):
         gene['src_name'] = SourceName.ENSEMBL.value
 
         self._add_attributes(f, gene)
-        self._add_location(f, gene, sr, accession_numbers)
+        location = self._add_location(f, gene, sr, accession_numbers)
+        if location:
+            gene['locations'] = [location]
 
         gene['label_and_type'] = \
             f"{gene['concept_id'].lower()}##identity"
@@ -199,23 +204,8 @@ class Ensembl(Base):
             and scaffold
         :param  SeqRepo sr: Access to the seqrepo
         """
-        aliases = sr.translate_alias(accession_numbers[f.seqid])
-        sequence_id = [a for a in aliases if a.startswith('ga4gh')][0]
-
-        if f.start != '.' and f.end != '.' and sequence_id:
-            if 0 <= f.start <= f.end:
-                seq_location = models.SequenceLocation(
-                    sequence_id=sequence_id,
-                    interval=models.SimpleInterval(
-                        start=f.start,
-                        end=f.end
-                    )
-                )
-                seq_location._id = ga4gh_identify(seq_location)
-                gene['locations'] = [seq_location.as_dict()]
-            else:
-                logger.info(f"{gene['concept_id']} has invalid interval:"
-                            f"start={f.start} end={f.end}")
+        return self._sequence_location.add_location(accession_numbers[f.seqid],
+                                                    f, gene, sr)
 
     def _get_other_id_xref(self, src_name, src_id):
         """Get other identifier or xref.
