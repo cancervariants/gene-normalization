@@ -3,8 +3,13 @@ on: [push, pull_request]
 jobs:
     test:
         runs-on: ubuntu-latest
-#        env:
-#            GENE_DB_TEST: TEST
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.DUMMY_AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.DUMMY_AWS_SECRET_ACCESS_KEY }}
+            AWS_DEFAULT_REGION: us-east-2
+            AWS_DEFAULT_OUTPUT: text
+            GENE_NORM_DB_URL: http://localhost:8000
+            TEST: GENE_TEST
         steps:
             - uses: actions/checkout@v2
 
@@ -16,7 +21,16 @@ jobs:
             - name: Install dependencies
               run: |
                   python3 -m pip install pipenv
-                  pipenv sync
+                  pipenv install --dev
+
+            - name: Build local DynamoDB
+              run: |
+                chmod +x ./tests/unit/dynamodb_build.bash
+                ./tests/unit/dynamodb_build.bash
+
+            - name: Load and Test DynamoDB
+              run: |
+                pipenv run pytest tests/unit/test_database.py
 
             - run: pipenv run flake8
-#            - run: pipenv run pytest tests/
+            - run: pipenv run pytest tests/

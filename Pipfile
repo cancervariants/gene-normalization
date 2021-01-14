@@ -18,8 +18,16 @@ fastapi = "*"
 uvicorn = "*"
 click = "*"
 civicpy = "*"
+boto3 = "*"
+beautifulsoup4 = "*"
+gffutils = "*"
+requests = "*"
+"biocommons.seqrepo" = "*"
+seqrepo = "*"
+"ga4gh.vrs" = "==0.6.3rc0"
 
 [dev-packages]
+gene = {editable = true, path = "."}
 
 [requires]
 python_version = "3.8"
