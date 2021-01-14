@@ -57,7 +57,7 @@ class Ensembl(Base):
                          f"{response.status_code}")
             raise DownloadException("Ensembl download failed.")
 
-    def _download_data(self, *args, **kwargs):
+    def _download_data(self):
         """Download Ensembl GFF3 data file."""
         logger.info('Downloading Ensembl...')
         ens_dir = PROJECT_ROOT / 'data' / 'ensembl'
@@ -84,6 +84,10 @@ class Ensembl(Base):
                                 keep_order=True)
 
         seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / '2020-11-27'
+        if not seqrepo_dir.exists():
+            logger.error("Could not find seqrepo 2020-11-27 directory.")
+            raise NotADirectoryError("Could not find seqrepo "
+                                     "2020-11-27 directory.")
         sr = SeqRepo(seqrepo_dir)
 
         # Get accession numbers
@@ -198,7 +202,7 @@ class Ensembl(Base):
         aliases = sr.translate_alias(accession_numbers[f.seqid])
         sequence_id = [a for a in aliases if a.startswith('ga4gh')][0]
 
-        if f.start != '.' and f.end != '.':
+        if f.start != '.' and f.end != '.' and sequence_id:
             if 0 <= f.start <= f.end:
                 seq_location = models.SequenceLocation(
                     sequence_id=sequence_id,

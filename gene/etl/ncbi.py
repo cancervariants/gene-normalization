@@ -3,7 +3,7 @@ from .base import Base
 from gene import PROJECT_ROOT, DownloadException
 from gene.database import Database
 from gene.schemas import Meta, Gene, SourceName, NamespacePrefix, \
-    Annotation, Chromosome, DataLicenseAttributes
+    Annotation, Chromosome
 import logging
 from pathlib import Path
 import csv
@@ -676,13 +676,10 @@ class NCBI(Base):
         sr = SeqRepo(seqrepo_dir)
 
         # create db for gff file
-        # db = gffutils.create_db(str(self._gff_src),
-        #                         dbfn=":memory:",
-        #                         # dbfn=f"{PROJECT_ROOT}/data/ncbi/test_ncbi.db",  # noqa: E501
-        #                         force=True,
-        #                         merge_strategy="create_unique",
-        #                         keep_order=True)
-        db = gffutils.FeatureDB(f"{PROJECT_ROOT}/data/ncbi/test_ncbi.db",
+        db = gffutils.create_db(str(self._gff_src),
+                                dbfn=":memory:",
+                                force=True,
+                                merge_strategy="create_unique",
                                 keep_order=True)
 
         self._get_gene_gff(db, info_genes, sr)
@@ -696,20 +693,18 @@ class NCBI(Base):
         if self._data_url.startswith("http"):
             self._data_url = f"ftp://{self._data_url.split('://')[-1]}"
 
-        data_license_attributes = {
-            "non_commercial": False,
-            "share_alike": False,
-            "attribution": False
-        }
-        assert DataLicenseAttributes(**data_license_attributes)
-
         metadata = Meta(
             data_license="custom",
-            data_license_url="https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
+            data_license_url="https://www.ncbi.nlm.nih.gov/home/"
+                             "about/policies/",
             version=self._version,
             data_url=self._data_url,
             rdp_url="https://reusabledata.org/ncbi-gene.html",
-            data_license_attributes=data_license_attributes,
+            data_license_attributes={
+                'non_commercial': False,
+                'share_alike': False,
+                'attribution': False
+            },
             genome_assemblies=[self._assembly]
         )
 

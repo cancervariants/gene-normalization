@@ -2,7 +2,7 @@
 from .base import Base
 from gene import PROJECT_ROOT, DownloadException
 from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene, \
-    Meta, Annotation, Chromosome, DataLicenseAttributes
+    Meta, Annotation, Chromosome
 from gene.database import Database
 import logging
 import json
@@ -403,20 +403,17 @@ class HGNC(Base):
         if self._data_url.startswith("http"):
             self._data_url = f"ftp://{self._data_url.split('://')[-1]}"
 
-        data_license_attributes = {
-            "non_commercial": False,
-            "share_alike": False,
-            "attribution": False
-        }
-        assert DataLicenseAttributes(**data_license_attributes)
-
         metadata = Meta(
             data_license='custom',
             data_license_url='https://www.genenames.org/about/',
             version=self._version,
             data_url=self._data_url,
             rdp_url=None,
-            data_license_attributes=data_license_attributes,
+            data_license_attributes={
+                'non_commercial': False,
+                'share_alike': False,
+                'attribution': False
+            },
             genome_assemblies=[]
         )
 
