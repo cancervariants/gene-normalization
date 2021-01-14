@@ -25,6 +25,10 @@ requests = "*"
 "biocommons.seqrepo" = "*"
 seqrepo = "*"
 "ga4gh.vrs" = "==0.6.3rc0"
+uvloop = "*"
+websockets = "*"
+httptools = "*"
+typing-extensions = "*"
 
 [dev-packages]
 gene = {editable = true, path = "."}
