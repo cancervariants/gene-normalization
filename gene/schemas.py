@@ -57,12 +57,12 @@ class Chromosome(str, Enum):
     """Define string constraints for chromosomes."""
 
     MITOCHONDRIA = 'MT'
-    # TODO: Un value in NCBI?
 
 
 class Location(BaseModel):
     """Define string constraints for the location attribute."""
 
+    _id: Optional[str]
     type: LocationType
     interval: Interval
 
