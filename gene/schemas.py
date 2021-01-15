@@ -4,6 +4,7 @@ gene records.
 from typing import Type, List, Optional, Dict, Union, Any
 from pydantic import BaseModel, StrictBool
 from enum import Enum, IntEnum
+from pydantic.fields import Field
 
 
 class SymbolStatus(str, Enum):
@@ -62,14 +63,9 @@ class Chromosome(str, Enum):
 class Location(BaseModel):
     """Define string constraints for the location attribute."""
 
-    _id: Optional[str]
+    id: Optional[str] = Field(..., alias='_id')
     type: LocationType
     interval: Interval
-
-    class Config:
-        """Assign the attributes to the Location model"""
-
-        extra = 'allow'
 
 
 class ChromosomeLocation(Location):
@@ -94,7 +90,7 @@ class Gene(BaseModel):
     label: Optional[str]
     strand: Optional[Strand]
     location_annotations: Optional[List[str]]
-    locations: Optional[List[Union[ChromosomeLocation, SequenceLocation]]]
+    locations: Optional[List[Location]]
     aliases: Optional[List[str]]
     previous_symbols: Optional[List[str]]
     other_identifiers: Optional[List[str]]
