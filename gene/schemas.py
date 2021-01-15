@@ -21,19 +21,20 @@ class Strand(str, Enum):
     REVERSE = "-"
 
 
-class IntervalType(str, Enum):
-    """Define string constraints for GA4GH Interval type."""
-
-    CYTOBAND = "CytobandInterval"
-    SIMPLE = "SimpleInterval"
-
-
-class Interval(BaseModel):
-    """GA4GH interval definition."""
+class CytobandInterval(BaseModel):
+    """GA4GH cytoband interval definition."""
 
     end: str
     start: str
-    type: IntervalType
+    type = "CytobandInterval"
+
+
+class SimpleInterval(BaseModel):
+    """GA4GH simple interval definition."""
+
+    end: int
+    start: int
+    type = "SimpleInterval"
 
 
 class LocationType(str, Enum):
@@ -63,9 +64,8 @@ class Chromosome(str, Enum):
 class Location(BaseModel):
     """Define string constraints for the location attribute."""
 
-    id: Optional[str] = Field(..., alias='_id')
+    id: str = Field(..., alias='_id')
     type: LocationType
-    interval: Interval
 
 
 class ChromosomeLocation(Location):
@@ -73,12 +73,14 @@ class ChromosomeLocation(Location):
 
     species_id: str
     chr: str
+    interval: CytobandInterval
 
 
 class SequenceLocation(Location):
     """GA4GH Sequence Location definition."""
 
     sequence_id: str
+    interval: SimpleInterval
 
 
 class Gene(BaseModel):
@@ -90,7 +92,7 @@ class Gene(BaseModel):
     label: Optional[str]
     strand: Optional[Strand]
     location_annotations: Optional[List[str]]
-    locations: Optional[List[Location]]
+    locations: Optional[List[Union[ChromosomeLocation, SequenceLocation]]]
     aliases: Optional[List[str]]
     previous_symbols: Optional[List[str]]
     other_identifiers: Optional[List[str]]
@@ -117,11 +119,8 @@ class Gene(BaseModel):
                 "aliases": [],
                 "other_identifiers": [],
                 "symbol_status": None,
-                "seqid": "7",
-                "start": "140719327",
-                "stop": "140924929",
                 "strand": "-",
-                "location": None
+                "location": []
             }
 
 
@@ -354,11 +353,8 @@ class Service(BaseModel):
                                 "aliases": [],
                                 "other_identifiers": [],
                                 "symbol_status": None,
-                                "seqid": "7",
-                                "start": "140719327",
-                                "stop": "140924929",
                                 "strand": "-",
-                                "location": None
+                                "locations": []
                             }
                         ],
                         "meta_": {
