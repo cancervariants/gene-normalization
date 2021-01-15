@@ -28,6 +28,25 @@ class CytobandInterval(BaseModel):
     start: str
     type = "CytobandInterval"
 
+    class Config:
+        """Configure model"""
+
+        orm_mode = True
+
+        @staticmethod
+        def schema_extra(schema: Dict[str, Any],
+                         model: Type['CytobandInterval']) -> None:
+            """Configure OpenAPI schema"""
+            if 'title' in schema.keys():
+                schema.pop('title', None)
+            for p in schema.get('properties', {}).values():
+                p.pop('title', None)
+            schema['example'] = {
+                "end": "q22.2",
+                "start": "q22.3",
+                "type": "CytobandInterval"
+            }
+
 
 class SimpleInterval(BaseModel):
     """GA4GH simple interval definition."""
@@ -35,6 +54,25 @@ class SimpleInterval(BaseModel):
     end: int
     start: int
     type = "SimpleInterval"
+
+    class Config:
+        """Configure model"""
+
+        orm_mode = True
+
+        @staticmethod
+        def schema_extra(schema: Dict[str, Any],
+                         model: Type['SimpleInterval']) -> None:
+            """Configure OpenAPI schema"""
+            if 'title' in schema.keys():
+                schema.pop('title', None)
+            for p in schema.get('properties', {}).values():
+                p.pop('title', None)
+            schema['example'] = {
+                "end": 44908822,
+                "start": 44908821,
+                "type": "SimpleInterval"
+            }
 
 
 class LocationType(str, Enum):
@@ -75,12 +113,59 @@ class ChromosomeLocation(Location):
     chr: str
     interval: CytobandInterval
 
+    class Config:
+        """Configure model"""
+
+        orm_mode = True
+
+        @staticmethod
+        def schema_extra(schema: Dict[str, Any],
+                         model: Type['ChromosomeLocation']) -> None:
+            """Configure OpenAPI schema"""
+            if 'title' in schema.keys():
+                schema.pop('title', None)
+            for p in schema.get('properties', {}).values():
+                p.pop('title', None)
+            schema['example'] = {
+                "chr": "11",
+                "interval": {
+                    "end": "q22.2",
+                    "start": "q22.3",
+                    "type": "CytobandInterval"
+                },
+                "species_id": "taxonomy:9606",
+                "type": "ChromosomeLocation"
+            }
+
 
 class SequenceLocation(Location):
     """GA4GH Sequence Location definition."""
 
     sequence_id: str
     interval: SimpleInterval
+
+    class Config:
+        """Configure model"""
+
+        orm_mode = True
+
+        @staticmethod
+        def schema_extra(schema: Dict[str, Any],
+                         model: Type['SequenceLocation']) -> None:
+            """Configure OpenAPI schema"""
+            if 'title' in schema.keys():
+                schema.pop('title', None)
+            for p in schema.get('properties', {}).values():
+                p.pop('title', None)
+            schema['example'] = {
+                "interval": {
+                    "end": 44908822,
+                    "start": 44908821,
+                    "type": "SimpleInterval"
+                },
+                "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
+                "type": "SequenceLocation"
+            }
 
 
 class Gene(BaseModel):
