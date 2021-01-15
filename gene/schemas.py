@@ -66,6 +66,11 @@ class Location(BaseModel):
     type: LocationType
     interval: Interval
 
+    class Config:
+        """Assign the attributes to the Location model"""
+
+        extra = 'allow'
+
 
 class ChromosomeLocation(Location):
     """GA4GH Chromosome Location definition."""
