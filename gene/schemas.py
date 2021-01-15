@@ -4,6 +4,7 @@ gene records.
 from typing import Type, List, Optional, Dict, Union, Any
 from pydantic import BaseModel, StrictBool
 from enum import Enum, IntEnum
+from pydantic.fields import Field
 
 
 class SymbolStatus(str, Enum):
@@ -20,19 +21,58 @@ class Strand(str, Enum):
     REVERSE = "-"
 
 
-class IntervalType(str, Enum):
-    """Define string constraints for GA4GH Interval type."""
-
-    CYTOBAND = "CytobandInterval"
-    SIMPLE = "SimpleInterval"
-
-
-class Interval(BaseModel):
-    """GA4GH interval definition."""
+class CytobandInterval(BaseModel):
+    """GA4GH cytoband interval definition."""
 
     end: str
     start: str
-    type: IntervalType
+    type = "CytobandInterval"
+
+    class Config:
+        """Configure model"""
+
+        orm_mode = True
+
+        @staticmethod
+        def schema_extra(schema: Dict[str, Any],
+                         model: Type['CytobandInterval']) -> None:
+            """Configure OpenAPI schema"""
+            if 'title' in schema.keys():
+                schema.pop('title', None)
+            for p in schema.get('properties', {}).values():
+                p.pop('title', None)
+            schema['example'] = {
+                "end": "q22.2",
+                "start": "q22.3",
+                "type": "CytobandInterval"
+            }
+
+
+class SimpleInterval(BaseModel):
+    """GA4GH simple interval definition."""
+
+    end: int
+    start: int
+    type = "SimpleInterval"
+
+    class Config:
+        """Configure model"""
+
+        orm_mode = True
+
+        @staticmethod
+        def schema_extra(schema: Dict[str, Any],
+                         model: Type['SimpleInterval']) -> None:
+            """Configure OpenAPI schema"""
+            if 'title' in schema.keys():
+                schema.pop('title', None)
+            for p in schema.get('properties', {}).values():
+                p.pop('title', None)
+            schema['example'] = {
+                "end": 44908822,
+                "start": 44908821,
+                "type": "SimpleInterval"
+            }
 
 
 class LocationType(str, Enum):
@@ -57,14 +97,13 @@ class Chromosome(str, Enum):
     """Define string constraints for chromosomes."""
 
     MITOCHONDRIA = 'MT'
-    # TODO: Un value in NCBI?
 
 
 class Location(BaseModel):
     """Define string constraints for the location attribute."""
 
+    id: str = Field(..., alias='_id')
     type: LocationType
-    interval: Interval
 
 
 class ChromosomeLocation(Location):
@@ -72,12 +111,61 @@ class ChromosomeLocation(Location):
 
     species_id: str
     chr: str
+    interval: CytobandInterval
+
+    class Config:
+        """Configure model"""
+
+        orm_mode = True
+
+        @staticmethod
+        def schema_extra(schema: Dict[str, Any],
+                         model: Type['ChromosomeLocation']) -> None:
+            """Configure OpenAPI schema"""
+            if 'title' in schema.keys():
+                schema.pop('title', None)
+            for p in schema.get('properties', {}).values():
+                p.pop('title', None)
+            schema['example'] = {
+                "chr": "11",
+                "interval": {
+                    "end": "q22.2",
+                    "start": "q22.3",
+                    "type": "CytobandInterval"
+                },
+                "species_id": "taxonomy:9606",
+                "type": "ChromosomeLocation"
+            }
 
 
 class SequenceLocation(Location):
     """GA4GH Sequence Location definition."""
 
     sequence_id: str
+    interval: SimpleInterval
+
+    class Config:
+        """Configure model"""
+
+        orm_mode = True
+
+        @staticmethod
+        def schema_extra(schema: Dict[str, Any],
+                         model: Type['SequenceLocation']) -> None:
+            """Configure OpenAPI schema"""
+            if 'title' in schema.keys():
+                schema.pop('title', None)
+            for p in schema.get('properties', {}).values():
+                p.pop('title', None)
+            schema['example'] = {
+                "interval": {
+                    "end": 44908822,
+                    "start": 44908821,
+                    "type": "SimpleInterval"
+                },
+                "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
+                "type": "SequenceLocation"
+            }
 
 
 class Gene(BaseModel):
@@ -116,11 +204,8 @@ class Gene(BaseModel):
                 "aliases": [],
                 "other_identifiers": [],
                 "symbol_status": None,
-                "seqid": "7",
-                "start": "140719327",
-                "stop": "140924929",
                 "strand": "-",
-                "location": None
+                "location": []
             }
 
 
@@ -353,11 +438,8 @@ class Service(BaseModel):
                                 "aliases": [],
                                 "other_identifiers": [],
                                 "symbol_status": None,
-                                "seqid": "7",
-                                "start": "140719327",
-                                "stop": "140924929",
                                 "strand": "-",
-                                "location": None
+                                "locations": []
                             }
                         ],
                         "meta_": {

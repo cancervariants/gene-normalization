@@ -275,7 +275,7 @@ def slc25a6():
                 'type': 'SequenceLocation'
             },
             {
-                '_id': 'ga4gh:VSL.8eVnvARnHOCVKJ6vDCHFPmbrnjrmixB_',
+                '_id': 'ga4gh:VSL.QLShSFmwPqUKTzjNS-x3Y3DZtOV4SK4J',
                 'interval': {
                     'end': 1392113,
                     'start': 1386152,
@@ -487,7 +487,7 @@ def spg37():
         'strand': None,
         'locations': [
             {
-                '_id': 'ga4gh:VCL.ChJbiddzOb-Rihzjj0Ct3WJawCYJN41c',
+                '_id': 'ga4gh:VCL.P5jAIluXneqHZMV9FBEQ2ZqOpO-8fqbP',
                 'chr': '8',
                 'interval': {
                     'end': 'q13.3',

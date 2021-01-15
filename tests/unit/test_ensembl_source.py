@@ -35,8 +35,8 @@ def ddx11l1():
             {
                 '_id': 'ga4gh:VSL.iTXYEeSmSj73q-lpxtKLlnp_1OlX658F',
                 'interval': {
-                    'end': '14409',
-                    'start': '11869',
+                    'end': 14409,
+                    'start': 11869,
                     'type': 'SimpleInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO',
@@ -65,8 +65,8 @@ def tp53():
             {
                 '_id': 'ga4gh:VSL.FfERYK71L10OLwk6QGoG8OPLgl7PItgK',
                 'interval': {
-                    'end': '7687538',
-                    'start': '7661779',
+                    'end': 7687538,
+                    'start': 7661779,
                     'type': 'SimpleInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7',
@@ -95,8 +95,8 @@ def u6():
             {
                 '_id': 'ga4gh:VSL.7Gh2fIORi69Fm1UMai49Ek-6HQNzuyqv',
                 'interval': {
-                    'end': '516479',
-                    'start': '516376',
+                    'end': 516479,
+                    'start': 516376,
                     'type': 'SimpleInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO',
@@ -123,10 +123,10 @@ def CH17_340M24_3():
         'location_annotations': [],
         'locations': [
             {
-                '_id': 'ga4gh:VSL.jYXDbpQN9ABQO0MTYg01CGpcGXDT4b0d',
+                '_id': 'ga4gh:VSL.L5PJ5tioPr5ozAj1Ad0VIG-qHrGXnMUh',
                 'interval': {
-                    'end': '154428479',
-                    'start': '154424380',
+                    'end': 154428479,
+                    'start': 154424380,
                     'type': 'SimpleInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP',
@@ -155,8 +155,8 @@ def AC091057_5():
             {
                 '_id': 'ga4gh:VSL.UJx3xHRkDuoALaGxyic-cPQNQnXYiAM8',
                 'interval': {
-                    'end': '30685606',
-                    'start': '30624548',
+                    'end': 30685606,
+                    'start': 30624548,
                     'type': 'SimpleInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.AsXvWL1-2i5U_buw6_niVIxD6zTbAuS6',
@@ -185,8 +185,8 @@ def hsa_mir_1253():
             {
                 '_id': 'ga4gh:VSL.hS8fW7o0qqy15qOnQOKv1VqOZQDBswNI',
                 'interval': {
-                    'end': '2748182',
-                    'start': '2748078',
+                    'end': 2748182,
+                    'start': 2748078,
                     'type': 'SimpleInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7',
@@ -215,8 +215,8 @@ def spry3():
             {
                 '_id': 'ga4gh:VSL.h8YcFZq0v-Vwj6aGarOvh1R3LFNGD0YU',
                 'interval': {
-                    'end': '155782459',
-                    'start': '155612572',
+                    'end': 155782459,
+                    'start': 155612572,
                     'type': 'SimpleInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP',
@@ -245,8 +245,8 @@ def bx004987_1():
             {
                 '_id': 'ga4gh:VSL.0JJsYiFwwNH2-7rYKj1ZitEcFRxIGwdQ',
                 'interval': {
-                    'end': '58376',
-                    'start': '56140',
+                    'end': 58376,
+                    'start': 56140,
                     'type': 'SimpleInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.K_ieIfNIy1Ktulg8QSlhvJvm_1uQOtjD',

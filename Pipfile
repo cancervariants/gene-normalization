@@ -5,15 +5,7 @@ name = "pypi"
 
 [packages]
 pydantic = "*"
-pytest = "*"
-pre-commit = "*"
-flake8 = "*"
-flake8-docstrings = "*"
-coverage = "*"
-pytest-cov = "*"
-coveralls = "*"
 twine = "*"
-jupyterlab = "*"
 fastapi = "*"
 uvicorn = "*"
 click = "*"
@@ -25,9 +17,21 @@ requests = "*"
 "biocommons.seqrepo" = "*"
 seqrepo = "*"
 "ga4gh.vrs" = "==0.6.3rc0"
+uvloop = "*"
+websockets = "*"
+httptools = "*"
+typing-extensions = "*"
 
 [dev-packages]
 gene = {editable = true, path = "."}
+pytest = "*"
+pre-commit = "*"
+flake8 = "*"
+flake8-docstrings = "*"
+coverage = "*"
+coveralls = "*"
+pytest-cov = "*"
+jupyterlab = "*"
 
 [requires]
 python_version = "3.8"
