@@ -449,7 +449,7 @@ class Service(BaseModel):
                             "data_url": "http://ftp.ensembl.org/pub/",
                             "rdp_url": None,
                             "data_license_attributes": {
-                                "non_commercial": True,
+                                "non_commercial": False,
                                 "share_alike": False,
                                 "attribution": False
                             },
