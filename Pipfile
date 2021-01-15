@@ -5,15 +5,7 @@ name = "pypi"
 
 [packages]
 pydantic = "*"
-pytest = "*"
-pre-commit = "*"
-flake8 = "*"
-flake8-docstrings = "*"
-coverage = "*"
-pytest-cov = "*"
-coveralls = "*"
 twine = "*"
-jupyterlab = "*"
 fastapi = "*"
 uvicorn = "*"
 click = "*"
@@ -32,6 +24,14 @@ typing-extensions = "*"
 
 [dev-packages]
 gene = {editable = true, path = "."}
+pytest = "*"
+pre-commit = "*"
+flake8 = "*"
+flake8-docstrings = "*"
+coverage = "*"
+coveralls = "*"
+pytest-cov = "*"
+jupyterlab = "*"
 
 [requires]
 python_version = "3.8"
