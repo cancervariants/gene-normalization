@@ -98,14 +98,6 @@ class Normalizer:
             if attr_type not in item.keys():
                 item[attr_type] = []
 
-        # TODO: Temporary fix
-        if item['locations']:
-            locations = item['locations']
-            for loc in locations:
-                if 'id' in loc:
-                    loc['_id'] = loc['id']
-                    del loc['id']
-
         gene = Gene(**item)
         src_name = item['src_name']
 

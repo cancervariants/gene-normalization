@@ -285,13 +285,12 @@ class NCBI(Base):
                         gene = self._add_gff_gene(db, f, sr, f_id)
                         info_genes[gene['symbol']] = gene
 
-    def _load_data(self, gene: Gene, batch):
+    def _load_data(self, item, batch):
         """Load individual Gene item.
 
-        :param Gene gene: gene instance to load into db
+        :param dict item: A transformed gene record
         :param batch: boto3 batch writer
         """
-        item = gene.dict()
         concept_id_lower = item['concept_id'].lower()
 
         pk = f"{item['symbol'].lower()}##symbol"
@@ -301,7 +300,7 @@ class NCBI(Base):
             'src_name': SourceName.NCBI.value
         })
 
-        if item['aliases']:
+        if 'aliases' in item and item['aliases']:
             item['aliases'] = list(set(item['aliases']))
             aliases = {alias.lower() for alias in item['aliases']}
             for alias in aliases:
@@ -311,10 +310,8 @@ class NCBI(Base):
                     'concept_id': concept_id_lower,
                     'src_name': SourceName.NCBI.value
                 })
-        else:
-            del item['aliases']
 
-        if item['previous_symbols']:
+        if 'previous_symbols' in item and item['previous_symbols']:
             item['previous_symbols'] = list(set(item['previous_symbols']))
             item_prev_symbols = {s.lower() for s in item['previous_symbols']}
             for symbol in item_prev_symbols:
@@ -324,8 +321,6 @@ class NCBI(Base):
                     'concept_id': concept_id_lower,
                     'src_name': SourceName.NCBI.value
                 })
-        else:
-            del item['previous_symbols']
 
         filtered_item = {k: v for k, v in item.items() if v is not None}
         item.clear()
@@ -605,7 +600,8 @@ class NCBI(Base):
 
         with self._database.genes.batch_writer() as batch:
             for gene in info_genes.keys():
-                self._load_data(Gene(**info_genes[gene]), batch)
+                assert Gene(**info_genes[gene])
+                self._load_data(info_genes[gene], batch)
 
     def _add_meta(self):
         """Load metadata"""
