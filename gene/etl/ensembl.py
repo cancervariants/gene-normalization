@@ -33,7 +33,7 @@ class Ensembl(Base):
         self._data_url = data_url
         self._data_file_url = None
         self._version = '102'
-        self._assembly = None
+        self._assembly = 'GRCh38'
         self._load_data()
 
     def _download_data(self):
@@ -217,8 +217,8 @@ class Ensembl(Base):
         """Load the Ensembl source into normalized database."""
         self._download_data()
         self._extract_data()
-        # self._add_meta()
-        # self._transform_data()
+        self._add_meta()
+        self._transform_data()
 
     def _add_meta(self, *args, **kwargs):
         """Add Ensembl metadata."""
@@ -234,7 +234,7 @@ class Ensembl(Base):
                 'share_alike': False,
                 'attribution': False
             },
-            genome_assemblies=self._assembly
+            genome_assemblies=[self._assembly]
         )
 
         self._database.metadata.put_item(
