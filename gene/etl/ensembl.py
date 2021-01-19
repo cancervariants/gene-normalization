@@ -1,16 +1,16 @@
 """This module defines the Ensembl ETL methods."""
 from .base import Base
-from gene import PROJECT_ROOT, DownloadException
+from gene import PROJECT_ROOT
 from gene.schemas import SourceName, NamespacePrefix, Strand, Gene, Meta
 import logging
 from gene.database import Database
 import gffutils
-from urllib.request import urlopen
 import gzip
-from bs4 import BeautifulSoup
-import requests
 from biocommons.seqrepo import SeqRepo
 from gene.vrs_locations import SequenceLocation
+from ftplib import FTP
+import shutil
+from os import remove
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -21,51 +21,38 @@ class Ensembl(Base):
 
     def __init__(self,
                  database: Database,
-                 data_url='http://ftp.ensembl.org/pub/',
-                 gff3_ext='current_gff3/homo_sapiens'
+                 data_url='ftp://ftp.ensembl.org/pub/',
                  ):
         """Initialize Ensembl ETL class.
 
         :param Database database: DynamoDB database
         :param str data_url: URL to Ensembl's FTP site
-        :param str gff3_ext: Extension to Ensembl's current
-                             gff3 files for homo sapiens
         """
         self._database = database
         self._sequence_location = SequenceLocation()
         self._data_url = data_url
-        self._gff3_url = data_url + gff3_ext
         self._data_file_url = None
-        self._version = None
+        self._version = '102'
         self._assembly = None
         self._load_data()
-
-    def _get_data_file_url_version(self):
-        """Get the most recent version of the gff3 data file."""
-        response = requests.get(self._gff3_url)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            links = [self._gff3_url + '/' + node.get('href')
-                     for node in soup.find_all('a')
-                     if node.get('href').endswith('gz')]
-            self._data_file_url = links[-1]
-            fn = self._data_file_url.split('/')[-1]
-            self._version = fn.split('.')[2]
-            self._assembly = [fn.split('.')[1]]
-        else:
-            logger.error(f"Ensembl download failed with status code: "
-                         f"{response.status_code}")
-            raise DownloadException("Ensembl download failed.")
 
     def _download_data(self):
         """Download Ensembl GFF3 data file."""
         logger.info('Downloading Ensembl...')
         ens_dir = PROJECT_ROOT / 'data' / 'ensembl'
         ens_dir.mkdir(exist_ok=True, parents=True)
-        file_name = ens_dir / f'ensembl_{self._version}.gff3'
-        response = urlopen(self._data_file_url)
-        with open(file_name, 'wb') as f:
-            f.write(gzip.decompress(response.read()))
+        with FTP('ftp.ensembl.org') as ftp:
+            ftp.login()
+            ftp.cwd('pub/current_gff3/homo_sapiens/')
+            fn = 'ensembl_102.gff3'
+            gz_filepath = ens_dir / f'{fn}.gz'
+            with open(gz_filepath, 'wb') as fp:
+                ftp.retrbinary('RETR Homo_sapiens.GRCh38.102.gff3.gz',
+                               fp.write)
+        with gzip.open(gz_filepath, 'rb') as f_in:
+            with open(ens_dir / fn, 'wb') as f_out:
+                shutil.copyfileobj(f_in, f_out)
+        remove(gz_filepath)
 
     def _extract_data(self, *args, **kwargs):
         """Extract data from the Ensembl source."""
@@ -228,17 +215,13 @@ class Ensembl(Base):
 
     def _load_data(self, *args, **kwargs):
         """Load the Ensembl source into normalized database."""
-        self._get_data_file_url_version()
         self._download_data()
         self._extract_data()
-        self._add_meta()
-        self._transform_data()
+        # self._add_meta()
+        # self._transform_data()
 
     def _add_meta(self, *args, **kwargs):
         """Add Ensembl metadata."""
-        if self._data_url.startswith("http"):
-            self._data_url = f"ftp://{self._data_url.split('://')[-1]}"
-
         metadata = Meta(
             data_license='custom',
             data_license_url='https://useast.ensembl.org/info/about'
