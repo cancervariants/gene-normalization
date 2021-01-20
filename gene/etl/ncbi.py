@@ -40,7 +40,7 @@ class NCBI(Base):
         self._data_url = data_url
         self._assembly = assembly
         self._extract_data()
-        # self._transform_data()
+        self._transform_data()
 
     def _download_data(self, ncbi_dir: Path):
         """Download NCBI info, history, and GRCh38 files.
