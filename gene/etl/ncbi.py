@@ -1,23 +1,21 @@
 """This module defines ETL methods for the NCBI data source."""
 from .base import Base, NORMALIZER_SRC_PREFIXES
-from gene import PROJECT_ROOT, DownloadException
+from gene import PROJECT_ROOT
 from gene.database import Database
 from gene.schemas import Meta, Gene, SourceName, NamespacePrefix, \
     Annotation, Chromosome
 import logging
 from pathlib import Path
 import csv
-import requests
 from datetime import datetime
 import gzip
 import shutil
 from os import remove
 import re
 import gffutils
-from urllib.request import urlopen
-from bs4 import BeautifulSoup
 from biocommons.seqrepo import SeqRepo
 from gene.vrs_locations import SequenceLocation, ChromosomeLocation
+from ftplib import FTP
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -28,99 +26,61 @@ class NCBI(Base):
 
     def __init__(self,
                  database: Database,
-                 data_url: str = 'https://ftp.ncbi.nlm.nih.gov/gene/DATA/',
-                 info_file_url: str = 'https://ftp.ncbi.nlm.nih.gov/gene/DATA/'
-                                      'GENE_INFO/Mammalia/'
-                                      'Homo_sapiens.gene_info.gz',
-                 history_file_url: str = 'https://ftp.ncbi.nlm.nih.gov/gene/'
-                                         'DATA/gene_history.gz',
-                 gff_url: str = 'https://ftp.ncbi.nlm.nih.gov/genomes/refseq/'
-                                'vertebrate_mammalian/Homo_sapiens'
-                                '/latest_assembly_versions/'):
+                 data_url: str = 'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/',
+                 assembly: str = 'GRCh38.p13'):
         """Construct the NCBI ETL instance.
 
         :param Database database: gene database for adding new data
-        :param str data_url: URL to directory on NCBI website containing gene
-            source material
-        :param str info_file_url: default URL to gene info file on NCBI website
-        :param str history_file_url: default URL to gene group file on NCBI
-            website
-        :param str gff_url: default url to the latest assembly directory
+        :param str data_url: NCBI's FTP site containing gene source material
+        :param str assembly: The genome assembly
         """
         self._database = database
         self._sequence_location = SequenceLocation()
         self._chromosome_location = ChromosomeLocation()
         self._data_url = data_url
-        self._info_file_url = info_file_url
-        self._history_file_url = history_file_url
-        self._gff_url = gff_url
+        self._assembly = assembly
         self._extract_data()
         self._transform_data()
 
-    def _download_data(self, ncbi_dir):
+    def _download_data(self, ncbi_dir: Path):
         """Download NCBI info, history, and GRCh38 files.
 
         :param str ncbi_dir: The NCBI data directory
         """
-        logger.info('Downloading Entrez gene info.')
-        for ncbi_type in ['info', 'history']:
-            if ncbi_type == 'info':
-                response = requests.get(self._info_file_url, stream=True)
-            else:
-                response = requests.get(self._history_file_url, stream=True)
-            if response.status_code == 200:
-                version = datetime.today().strftime('%Y%m%d')
-                with open(f'{ncbi_dir}/ncbi_gene_{ncbi_type}.gz', 'wb') as f:
-                    f.write(response.content)
-                    f.close()
-                with gzip.open(
-                        f'{ncbi_dir}/ncbi_gene_{ncbi_type}.gz', "rb") as gz:
-                    with open(f"{ncbi_dir}/ncbi_{ncbi_type}_{version}.tsv",
-                              'wb') as f_out:
-                        shutil.copyfileobj(gz, f_out)
-                        f_out.close()
-                remove(f'{ncbi_dir}/ncbi_gene_{ncbi_type}.gz')
-            else:
-                logger.error(
-                    f"Entrez gene {ncbi_type} download failed with status "
-                    f"code: {response.status_code}")
-                raise DownloadException(f"Entrez gene {ncbi_type} "
-                                        f"download failed")
+        host = 'ftp.ncbi.nlm.nih.gov'
+        version = datetime.today().strftime('%Y%m%d')
 
-    def _download_gff_file(self, ncbi_dir):
-        """Download NCBI GFF data file.
+        # Download info
+        data_dir = 'gene/DATA/GENE_INFO/Mammalia/'
+        fn = f'ncbi_info_{version}.tsv'
+        data_fn = 'Homo_sapiens.gene_info.gz'
+        self._ftp_download(host, data_dir, fn, ncbi_dir, data_fn)
 
-        :param str ncbi_dir: The NCBI data directory
-        """
-        logger.info('Downloading NCBI GFF file...')
-        # Get the latest assembly version dir
-        response = requests.get(self._gff_url)
-        gff_dir = None
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            for node in soup.find_all('a'):
-                if node.get('href').startswith('GCF'):
-                    gff_dir = node.get('href')
+        # Download history
+        data_dir = 'gene/DATA/'
+        fn = f'ncbi_history_{version}.tsv'
+        data_fn = 'gene_history.gz'
+        self._ftp_download(host, data_dir, fn, ncbi_dir, data_fn)
 
-        # Get the latest gff file
-        gff_file = None
-        if gff_dir:
-            response = requests.get(self._gff_url + gff_dir)
-            if response.status_code == 200:
-                soup = BeautifulSoup(response.text, 'html.parser')
-                for node in soup.find_all('a'):
-                    if node.get('href').endswith('genomic.gff.gz'):
-                        gff_file = node.get('href')
+        # Download gff
+        data_dir = 'genomes/refseq/vertebrate_mammalian/Homo_sapiens/' \
+                   'latest_assembly_versions/GCF_000001405.39_GRCh38.p13/'
+        fn = f'ncbi_{self._assembly}.gff'
+        data_fn = 'GCF_000001405.39_GRCh38.p13_genomic.gff.gz'
+        self._ftp_download(host, data_dir, fn, ncbi_dir, data_fn)
 
-        self._assembly = \
-            f"GRCh{gff_file.split('GRCh')[-1].split('_')[0]}"
-        gff_file_url = f"{self._gff_url}{gff_dir}{gff_file}"
-
-        # Download gff file
-        file_name = f'{ncbi_dir}/ncbi_{self._assembly}.gff'
-        response = urlopen(gff_file_url)
-        with open(file_name, 'wb') as f:
-            f.write(gzip.decompress(response.read()))
+    def _ftp_download(self, host: str, data_dir: str, fn: str, ncbi_dir: Path,
+                      data_fn: str):
+        with FTP(host) as ftp:
+            ftp.login()
+            ftp.cwd(data_dir)
+            gz_filepath = ncbi_dir / f'{fn}.gz'
+            with open(gz_filepath, 'wb') as fp:
+                ftp.retrbinary(f'RETR {data_fn}', fp.write)
+            with gzip.open(gz_filepath, 'rb') as f_in:
+                with open(ncbi_dir / fn, 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+            remove(gz_filepath)
 
     def _files_downloaded(self, data_dir: Path) -> bool:
         """Check whether needed source files exist.
@@ -132,13 +92,16 @@ class NCBI(Base):
 
         info_downloaded: bool = False
         history_downloaded: bool = False
+        gff_downloaded: bool = False
 
         for f in files:
             if f.name.startswith('ncbi_info'):
                 info_downloaded = True
             elif f.name.startswith('ncbi_history'):
                 history_downloaded = True
-        return info_downloaded and history_downloaded
+            elif f.name.startswith('ncbi_GRCh38'):
+                gff_downloaded = True
+        return info_downloaded and history_downloaded and gff_downloaded
 
     def _extract_data(self):
         """Gather data from local files or download from source.
@@ -149,7 +112,6 @@ class NCBI(Base):
         local_data_dir.mkdir(exist_ok=True, parents=True)
         if not self._files_downloaded(local_data_dir):
             self._download_data(local_data_dir)
-        self._download_gff_file(local_data_dir)
         local_files = [f for f in local_data_dir.iterdir()
                        if f.name.startswith('ncbi')]
         local_files.sort(key=lambda f: f.name.split('_')[-1], reverse=True)
