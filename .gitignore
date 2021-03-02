@@ -156,3 +156,6 @@ data/*
 
 # DynamoDB Local
 dynamodb_local_latest/*
+
+Pipfile.lock
+*.toml

@@ -21,6 +21,7 @@ uvloop = "*"
 websockets = "*"
 httptools = "*"
 typing-extensions = "*"
+build = "*"
 
 [dev-packages]
 gene = {editable = true, path = "."}
