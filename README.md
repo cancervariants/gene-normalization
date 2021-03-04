@@ -52,9 +52,9 @@ pipenv run pytest
 From the project root, run the following:
 
 ```shell script
- uvicorn main:app --reload
+ uvicorn gene.main:app --reload
 ```
 
 Next, view the OpenAPI docs on your local machine: 
 
-http://127.0.0.1:8000/docs
+http://127.0.0.1:8000/gene

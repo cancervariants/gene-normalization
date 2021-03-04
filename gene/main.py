@@ -2,6 +2,7 @@
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.openapi.utils import get_openapi
 from typing import Optional
+from gene import __version__
 from gene.query import Normalizer, InvalidParameterException
 from gene.schemas import Service
 import html
@@ -17,7 +18,7 @@ def custom_openapi():
         return app.openapi_schema
     openapi_schema = get_openapi(
         title="The VICC Gene Normalizer",
-        version="0.1.0",
+        version=__version__,
         openapi_version="3.0.3",
         description="Normalize gene terms.",
         routes=app.routes

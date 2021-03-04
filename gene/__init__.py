@@ -10,6 +10,9 @@ logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
 
 
+__version__ = "0.1.1"
+
+
 class DownloadException(Exception):
     """Exception for failures relating to source file downloads."""
 
