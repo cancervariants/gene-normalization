@@ -1,9 +1,12 @@
 """Test DynamoDB"""
 import pytest
 from gene.database import Database
-from gene import TEST_ROOT
 import json
 import os
+from pathlib import Path
+
+
+TEST_ROOT = Path(__file__).resolve().parents[2]
 
 
 @pytest.fixture(scope='module')
