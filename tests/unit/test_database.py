@@ -1,9 +1,12 @@
 """Test DynamoDB"""
 import pytest
 from gene.database import Database
-from gene import PROJECT_ROOT
 import json
 import os
+from pathlib import Path
+
+
+TEST_ROOT = Path(__file__).resolve().parents[2]
 
 
 @pytest.fixture(scope='module')
@@ -16,7 +19,7 @@ def db():
                 self.load_test_data()
 
         def load_test_data(self):
-            with open(f'{PROJECT_ROOT}/tests/unit/'
+            with open(f'{TEST_ROOT}/tests/unit/'
                       f'data/genes.json', 'r') as f:
                 genes = json.load(f)
                 with self.db.genes.batch_writer() as batch:
@@ -24,7 +27,7 @@ def db():
                         batch.put_item(Item=gene)
                 f.close()
 
-            with open(f'{PROJECT_ROOT}/tests/unit/'
+            with open(f'{TEST_ROOT}/tests/unit/'
                       f'data/metadata.json', 'r') as f:
                 metadata = json.load(f)
                 with self.db.metadata.batch_writer() as batch:
