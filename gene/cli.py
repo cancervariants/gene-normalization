@@ -17,7 +17,7 @@ import sys
 @click.option(
     '--dev',
     is_flag=True,
-    help="Working in development environment on localhost port 8001."
+    help="Working in development environment on localhost port 8000."
 )
 @click.option(
     '--db_url',
@@ -36,7 +36,7 @@ def update_normalizer_db(normalizer, dev, db_url, update_all):
         'ncbi': NCBI
     }
     if dev:
-        db: Database = Database(db_url='http://localhost:8001')
+        db: Database = Database(db_url='http://localhost:8000')
     elif db_url:
         db: Database = Database(db_url=db_url)
     else:
