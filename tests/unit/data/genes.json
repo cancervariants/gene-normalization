@@ -755,7 +755,7 @@
     "concept_id": "hgnc:34692",
     "src_name": "HGNC"
   },
-    {
+  {
     "label_and_type": "hgnc:7603##identity",
     "label": "myosin VB",
     "concept_id": "hgnc:7603",
@@ -798,6 +798,49 @@
   {
     "label_and_type": "myo5b##symbol",
     "concept_id": "hgnc:7603",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:4641##identity",
+    "label": "glutathione S-transferase theta 1",
+    "concept_id": "hgnc:4641",
+    "symbol": "GSTT1",
+    "location_annotations": ["alternate reference locus"],
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.EfA-UFrmtjncDxutoiP6PWxu32UtH1Zu",
+        "chr": "22",
+        "interval": {
+          "end": "q11.23",
+          "start": "q11.23",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "symbol_status": "approved",
+    "aliases": [
+      "2.5.1.18"
+    ],
+    "other_identifiers": [
+      "ncbigene:2952",
+      "ensembl:ENSG00000277656"
+    ],
+    "xrefs": [
+      "refseq:NM_000853",
+      "omim:600436",
+      "ucsc:uc002zze.4",
+      "uniprot:P30711",
+      "orphanet:470418",
+      "ena.embl:KI270879",
+      "pubmed:8617495"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "gstt1##symbol",
+    "concept_id": "hgnc:4641",
     "src_name": "HGNC"
   },
   {

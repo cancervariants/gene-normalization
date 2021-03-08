@@ -20,6 +20,9 @@ def hgnc():
     return h
 
 
+# Test Non Alt Loci Set
+
+
 @pytest.fixture(scope='module')
 def a1bg_as1():
     """Create an A1BG-AS1 gene fixture."""
@@ -609,979 +612,300 @@ def myo5b():
     return Gene(**params)
 
 
-def test_concept_id_a1bg_as1(a1bg_as1, hgnc):
-    """Test that a1bg_as1 gene normalizes to correct gene concept
-    as a CONCEPT_ID match.
-    """
-    normalizer_response = hgnc.normalize('hgnc:37133')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
+# Test Alt Loci Set
+
+
+@pytest.fixture(scope='module')
+def gstt1():
+    """Create an GSTT1 gene fixture."""
+    params = {
+        'label': 'glutathione S-transferase theta 1',
+        'concept_id': 'hgnc:4641',
+        'symbol': 'GSTT1',
+        'location_annotations': ['alternate reference locus'],
+        'strand': None,
+        'locations': [
+            {
+                '_id': 'ga4gh:VCL.EfA-UFrmtjncDxutoiP6PWxu32UtH1Zu',
+                'chr': '22',
+                'interval': {
+                    'end': 'q11.23',
+                    'start': 'q11.23',
+                    'type': 'CytobandInterval'
+                },
+                'species_id': 'taxonomy:9606',
+                'type': 'ChromosomeLocation'
+            }
+        ],
+        'previous_symbols': [],
+        'aliases': ['2.5.1.18'],
+        'symbol_status': 'approved',
+        'xrefs': [
+            'refseq:NM_000853',
+            'omim:600436',
+            'ucsc:uc002zze.4',
+            'uniprot:P30711',
+            'orphanet:470418',
+            'ena.embl:KI270879',
+            'pubmed:8617495'
+        ],
+        'other_identifiers': [
+            'ensembl:ENSG00000277656',
+            'ncbigene:2952'
+        ]
+    }
+    return Gene(**params)
+
+
+def assertion_checks(normalizer_response, test_gene, n_records, match_type):
+    """Check that normalizer_response and test_gene are the same."""
+    assert normalizer_response['match_type'] == match_type
+    assert len(normalizer_response['records']) == n_records
     normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a1bg_as1.label
-    assert normalized_gene.concept_id == a1bg_as1.concept_id
-    assert set(normalized_gene.aliases) == set(a1bg_as1.aliases)
+    assert normalized_gene.label == test_gene.label
+    assert normalized_gene.concept_id == test_gene.concept_id
+    assert set(normalized_gene.aliases) == set(test_gene.aliases)
     assert set(normalized_gene.other_identifiers) == \
-           set(a1bg_as1.other_identifiers)
-    assert normalized_gene.symbol_status == a1bg_as1.symbol_status
+           set(test_gene.other_identifiers)
+    assert normalized_gene.symbol_status == test_gene.symbol_status
     assert set(normalized_gene.previous_symbols) == \
-           set(a1bg_as1.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a1bg_as1.xrefs)
-    assert normalized_gene.symbol == a1bg_as1.symbol
-    assert normalized_gene.locations == a1bg_as1.locations
-    assert normalized_gene.location_annotations == \
-           a1bg_as1.location_annotations
-    assert normalized_gene.strand == a1bg_as1.strand
+           set(test_gene.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(test_gene.xrefs)
+    assert normalized_gene.symbol == test_gene.symbol
+    assert normalized_gene.locations == test_gene.locations
+    assert set(normalized_gene.location_annotations) == \
+           set(test_gene.location_annotations)
+    assert normalized_gene.strand == test_gene.strand
+
+
+def test_a1bg_as1(a1bg_as1, hgnc):
+    """Test that a1bg_as1 normalizes to correct gene concept."""
+    # Concept ID
+    normalizer_response = hgnc.normalize('hgnc:37133')
+    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.CONCEPT_ID)
 
     normalizer_response = hgnc.normalize('HGNC:37133')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a1bg_as1.label
-    assert normalized_gene.concept_id == a1bg_as1.concept_id
-    assert set(normalized_gene.aliases) == set(a1bg_as1.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a1bg_as1.other_identifiers)
-    assert normalized_gene.symbol_status == a1bg_as1.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a1bg_as1.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a1bg_as1.xrefs)
-    assert normalized_gene.symbol == a1bg_as1.symbol
-    assert normalized_gene.locations == a1bg_as1.locations
-    assert normalized_gene.location_annotations == \
-           a1bg_as1.location_annotations
-    assert normalized_gene.strand == a1bg_as1.strand
+    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.CONCEPT_ID)
 
     normalizer_response = hgnc.normalize('Hgnc:37133')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a1bg_as1.label
-    assert normalized_gene.concept_id == a1bg_as1.concept_id
-    assert set(normalized_gene.aliases) == set(a1bg_as1.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a1bg_as1.other_identifiers)
-    assert normalized_gene.symbol_status == a1bg_as1.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a1bg_as1.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a1bg_as1.xrefs)
-    assert normalized_gene.symbol == a1bg_as1.symbol
-    assert normalized_gene.locations == a1bg_as1.locations
-    assert normalized_gene.location_annotations == \
-           a1bg_as1.location_annotations
-    assert normalized_gene.strand == a1bg_as1.strand
+    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.CONCEPT_ID)
 
-
-def test_a1bg_as1_symbol(a1bg_as1, hgnc):
-    """Test that a1bg_as1 gene normalizes to correct gene concept
-    as an symbol match.
-    """
+    # Symbol
     normalizer_response = hgnc.normalize('A1BG-AS1')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a1bg_as1.label
-    assert normalized_gene.concept_id == a1bg_as1.concept_id
-    assert set(normalized_gene.aliases) == set(a1bg_as1.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a1bg_as1.other_identifiers)
-    assert normalized_gene.symbol_status == a1bg_as1.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a1bg_as1.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a1bg_as1.xrefs)
-    assert normalized_gene.symbol == a1bg_as1.symbol
-    assert normalized_gene.locations == a1bg_as1.locations
-    assert normalized_gene.location_annotations == \
-           a1bg_as1.location_annotations
-    assert normalized_gene.strand == a1bg_as1.strand
+    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.SYMBOL)
 
     normalizer_response = hgnc.normalize('A1BG-as1')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a1bg_as1.label
-    assert normalized_gene.concept_id == a1bg_as1.concept_id
-    assert set(normalized_gene.aliases) == set(a1bg_as1.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a1bg_as1.other_identifiers)
-    assert normalized_gene.symbol_status == a1bg_as1.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a1bg_as1.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a1bg_as1.xrefs)
-    assert normalized_gene.symbol == a1bg_as1.symbol
-    assert normalized_gene.locations == a1bg_as1.locations
-    assert normalized_gene.location_annotations == \
-           a1bg_as1.location_annotations
-    assert normalized_gene.strand == a1bg_as1.strand
+    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.SYMBOL)
 
-
-def test_a1bg_as1_prev_symbol(a1bg_as1, hgnc):
-    """Test that a1bg_as1 gene normalizes to correct gene concept
-    as an PREV_SYMBOL match.
-    """
+    # Previous Symbol
     normalizer_response = hgnc.normalize('NCRNA00181')
-    assert normalizer_response['match_type'] == MatchType.PREV_SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a1bg_as1.label
-    assert normalized_gene.concept_id == a1bg_as1.concept_id
-    assert set(normalized_gene.aliases) == set(a1bg_as1.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a1bg_as1.other_identifiers)
-    assert normalized_gene.symbol_status == a1bg_as1.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a1bg_as1.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a1bg_as1.xrefs)
-    assert normalized_gene.symbol == a1bg_as1.symbol
-    assert normalized_gene.locations == a1bg_as1.locations
-    assert normalized_gene.location_annotations == \
-           a1bg_as1.location_annotations
-    assert normalized_gene.strand == a1bg_as1.strand
+    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.PREV_SYMBOL)
 
     normalizer_response = hgnc.normalize('A1BGAS')
-    assert normalizer_response['match_type'] == MatchType.PREV_SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a1bg_as1.label
-    assert normalized_gene.concept_id == a1bg_as1.concept_id
-    assert set(normalized_gene.aliases) == set(a1bg_as1.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a1bg_as1.other_identifiers)
-    assert normalized_gene.symbol_status == a1bg_as1.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a1bg_as1.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a1bg_as1.xrefs)
-    assert normalized_gene.symbol == a1bg_as1.symbol
-    assert normalized_gene.locations == a1bg_as1.locations
-    assert normalized_gene.location_annotations == \
-           a1bg_as1.location_annotations
-    assert normalized_gene.strand == a1bg_as1.strand
+    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.PREV_SYMBOL)
 
     normalizer_response = hgnc.normalize('A1BG-AS')
-    assert normalizer_response['match_type'] == MatchType.PREV_SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a1bg_as1.label
-    assert normalized_gene.concept_id == a1bg_as1.concept_id
-    assert set(normalized_gene.aliases) == set(a1bg_as1.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a1bg_as1.other_identifiers)
-    assert normalized_gene.symbol_status == a1bg_as1.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a1bg_as1.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a1bg_as1.xrefs)
-    assert normalized_gene.symbol == a1bg_as1.symbol
-    assert normalized_gene.locations == a1bg_as1.locations
-    assert normalized_gene.location_annotations == \
-           a1bg_as1.location_annotations
-    assert normalized_gene.strand == a1bg_as1.strand
+    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.PREV_SYMBOL)
 
-
-def test_a1bg_as1_alias(a1bg_as1, hgnc):
-    """Test that alias term normalizes to correct gene concept as an
-    ALIAS match.
-    """
+    # Alias
     normalizer_response = hgnc.normalize('FLJ23569')
-    assert normalizer_response['match_type'] == MatchType.ALIAS
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a1bg_as1.label
-    assert normalized_gene.concept_id == a1bg_as1.concept_id
-    assert set(normalized_gene.aliases) == set(a1bg_as1.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a1bg_as1.other_identifiers)
-    assert normalized_gene.symbol_status == a1bg_as1.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a1bg_as1.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a1bg_as1.xrefs)
-    assert normalized_gene.symbol == a1bg_as1.symbol
-    assert normalized_gene.locations == a1bg_as1.locations
-    assert normalized_gene.location_annotations == \
-           a1bg_as1.location_annotations
-    assert normalized_gene.strand == a1bg_as1.strand
+    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.ALIAS)
 
     normalizer_response = hgnc.normalize('flj23569')
-    assert normalizer_response['match_type'] == MatchType.ALIAS
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a1bg_as1.label
-    assert normalized_gene.concept_id == a1bg_as1.concept_id
-    assert set(normalized_gene.aliases) == set(a1bg_as1.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a1bg_as1.other_identifiers)
-    assert normalized_gene.symbol_status == a1bg_as1.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a1bg_as1.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a1bg_as1.xrefs)
-    assert normalized_gene.symbol == a1bg_as1.symbol
-    assert normalized_gene.locations == a1bg_as1.locations
-    assert normalized_gene.location_annotations == \
-           a1bg_as1.location_annotations
-    assert normalized_gene.strand == a1bg_as1.strand
+    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.ALIAS)
 
 
-def test_concept_id_a3galt2(a3galt2, hgnc):
-    """Test that a3galt2 gene normalizes to correct gene concept
-    as a CONCEPT_ID match.
-    """
+def test_a3galt2(a3galt2, hgnc):
+    """Test that a3galt2 normalizes to correct gene concept."""
+    # Concept ID
     normalizer_response = hgnc.normalize('hgnc:30005')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a3galt2.label
-    assert normalized_gene.concept_id == a3galt2.concept_id
-    assert set(normalized_gene.aliases) == set(a3galt2.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a3galt2.other_identifiers)
-    assert normalized_gene.symbol_status == a3galt2.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a3galt2.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a3galt2.xrefs)
-    assert normalized_gene.symbol == a3galt2.symbol
-    assert normalized_gene.locations == a3galt2.locations
-    assert normalized_gene.location_annotations == a3galt2.location_annotations
-    assert normalized_gene.strand == a3galt2.strand
+    assertion_checks(normalizer_response, a3galt2, 1, MatchType.CONCEPT_ID)
 
     normalizer_response = hgnc.normalize('HGNC:30005')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a3galt2.label
-    assert normalized_gene.concept_id == a3galt2.concept_id
-    assert set(normalized_gene.aliases) == set(a3galt2.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a3galt2.other_identifiers)
-    assert normalized_gene.symbol_status == a3galt2.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a3galt2.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a3galt2.xrefs)
-    assert normalized_gene.symbol == a3galt2.symbol
-    assert normalized_gene.locations == a3galt2.locations
-    assert normalized_gene.location_annotations == a3galt2.location_annotations
-    assert normalized_gene.strand == a3galt2.strand
+    assertion_checks(normalizer_response, a3galt2, 1, MatchType.CONCEPT_ID)
 
     normalizer_response = hgnc.normalize('Hgnc:30005')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a3galt2.label
-    assert normalized_gene.concept_id == a3galt2.concept_id
-    assert set(normalized_gene.aliases) == set(a3galt2.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a3galt2.other_identifiers)
-    assert normalized_gene.symbol_status == a3galt2.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a3galt2.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a3galt2.xrefs)
-    assert normalized_gene.symbol == a3galt2.symbol
-    assert normalized_gene.locations == a3galt2.locations
-    assert normalized_gene.location_annotations == a3galt2.location_annotations
-    assert normalized_gene.strand == a3galt2.strand
+    assertion_checks(normalizer_response, a3galt2, 1, MatchType.CONCEPT_ID)
 
-
-def test_a3galt2_symbol(a3galt2, hgnc):
-    """Test that a3galt2 gene normalizes to correct gene concept
-    as an symbol match.
-    """
+    # Symbol
     normalizer_response = hgnc.normalize('A3GALT2')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a3galt2.label
-    assert normalized_gene.concept_id == a3galt2.concept_id
-    assert set(normalized_gene.aliases) == set(a3galt2.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a3galt2.other_identifiers)
-    assert normalized_gene.symbol_status == a3galt2.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a3galt2.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a3galt2.xrefs)
-    assert normalized_gene.symbol == a3galt2.symbol
-    assert normalized_gene.locations == a3galt2.locations
-    assert normalized_gene.location_annotations == a3galt2.location_annotations
-    assert normalized_gene.strand == a3galt2.strand
+    assertion_checks(normalizer_response, a3galt2, 1, MatchType.SYMBOL)
 
     normalizer_response = hgnc.normalize('a3galt2')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a3galt2.label
-    assert normalized_gene.concept_id == a3galt2.concept_id
-    assert set(normalized_gene.aliases) == set(a3galt2.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a3galt2.other_identifiers)
-    assert normalized_gene.symbol_status == a3galt2.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a3galt2.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a3galt2.xrefs)
-    assert normalized_gene.symbol == a3galt2.symbol
-    assert normalized_gene.locations == a3galt2.locations
-    assert normalized_gene.location_annotations == a3galt2.location_annotations
-    assert normalized_gene.strand == a3galt2.strand
+    assertion_checks(normalizer_response, a3galt2, 1, MatchType.SYMBOL)
 
-
-def test_a3galt2_prev_symbol(a3galt2, hgnc):
-    """Test that a3galt2 gene normalizes to correct gene concept
-    as an PREV_SYMBOL match.
-    """
+    # Previous Symbol
     normalizer_response = hgnc.normalize('A3GALT2P')
-    assert normalizer_response['match_type'] == MatchType.PREV_SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a3galt2.label
-    assert normalized_gene.concept_id == a3galt2.concept_id
-    assert set(normalized_gene.aliases) == set(a3galt2.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a3galt2.other_identifiers)
-    assert normalized_gene.symbol_status == a3galt2.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a3galt2.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a3galt2.xrefs)
-    assert normalized_gene.symbol == a3galt2.symbol
-    assert normalized_gene.locations == a3galt2.locations
-    assert normalized_gene.location_annotations == a3galt2.location_annotations
-    assert normalized_gene.strand == a3galt2.strand
+    assertion_checks(normalizer_response, a3galt2, 1, MatchType.PREV_SYMBOL)
 
     normalizer_response = hgnc.normalize('A3GALT2p')
-    assert normalizer_response['match_type'] == MatchType.PREV_SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a3galt2.label
-    assert normalized_gene.concept_id == a3galt2.concept_id
-    assert set(normalized_gene.aliases) == set(a3galt2.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a3galt2.other_identifiers)
-    assert normalized_gene.symbol_status == a3galt2.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a3galt2.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a3galt2.xrefs)
-    assert normalized_gene.symbol == a3galt2.symbol
-    assert normalized_gene.locations == a3galt2.locations
-    assert normalized_gene.location_annotations == a3galt2.location_annotations
-    assert normalized_gene.strand == a3galt2.strand
+    assertion_checks(normalizer_response, a3galt2, 1, MatchType.PREV_SYMBOL)
 
-
-def test_a3galt2_alias(a3galt2, hgnc):
-    """Test that alias term normalizes to correct gene concept as an
-    ALIAS match.
-    """
+    # Alias
     normalizer_response = hgnc.normalize('IGBS3S')
-    assert normalizer_response['match_type'] == MatchType.ALIAS
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a3galt2.label
-    assert normalized_gene.concept_id == a3galt2.concept_id
-    assert set(normalized_gene.aliases) == set(a3galt2.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a3galt2.other_identifiers)
-    assert normalized_gene.symbol_status == a3galt2.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a3galt2.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a3galt2.xrefs)
-    assert normalized_gene.symbol == a3galt2.symbol
-    assert normalized_gene.locations == a3galt2.locations
-    assert normalized_gene.location_annotations == a3galt2.location_annotations
-    assert normalized_gene.strand == a3galt2.strand
+    assertion_checks(normalizer_response, a3galt2, 1, MatchType.ALIAS)
 
     normalizer_response = hgnc.normalize('igB3s')
-    assert normalizer_response['match_type'] == MatchType.ALIAS
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == a3galt2.label
-    assert normalized_gene.concept_id == a3galt2.concept_id
-    assert set(normalized_gene.aliases) == set(a3galt2.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(a3galt2.other_identifiers)
-    assert normalized_gene.symbol_status == a3galt2.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(a3galt2.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(a3galt2.xrefs)
-    assert normalized_gene.symbol == a3galt2.symbol
-    assert normalized_gene.locations == a3galt2.locations
-    assert normalized_gene.location_annotations == a3galt2.location_annotations
-    assert normalized_gene.strand == a3galt2.strand
+    assertion_checks(normalizer_response, a3galt2, 1, MatchType.ALIAS)
 
 
-def test_concept_id_tp53(tp53, hgnc):
-    """Test that tp53 gene normalizes to correct gene concept
-    as a CONCEPT_ID match.
-    """
+def test_tp53(tp53, hgnc):
+    """Test that tp53 normalizes to correct gene concept."""
+    # Concept ID
     normalizer_response = hgnc.normalize('hgnc:11998')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == tp53.label
-    assert normalized_gene.concept_id == tp53.concept_id
-    assert set(normalized_gene.aliases) == set(tp53.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(tp53.other_identifiers)
-    assert normalized_gene.symbol_status == tp53.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(tp53.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(tp53.xrefs)
-    assert normalized_gene.symbol == tp53.symbol
-    assert normalized_gene.locations == tp53.locations
-    assert normalized_gene.location_annotations == tp53.location_annotations
-    assert normalized_gene.strand == tp53.strand
+    assertion_checks(normalizer_response, tp53, 1, MatchType.CONCEPT_ID)
 
     normalizer_response = hgnc.normalize('HGNC:11998')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == tp53.label
-    assert normalized_gene.concept_id == tp53.concept_id
-    assert set(normalized_gene.aliases) == set(tp53.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(tp53.other_identifiers)
-    assert normalized_gene.symbol_status == tp53.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(tp53.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(tp53.xrefs)
-    assert normalized_gene.symbol == tp53.symbol
-    assert normalized_gene.locations == tp53.locations
-    assert normalized_gene.location_annotations == tp53.location_annotations
-    assert normalized_gene.strand == tp53.strand
+    assertion_checks(normalizer_response, tp53, 1, MatchType.CONCEPT_ID)
 
     normalizer_response = hgnc.normalize('Hgnc:11998')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == tp53.label
-    assert normalized_gene.concept_id == tp53.concept_id
-    assert set(normalized_gene.aliases) == set(tp53.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(tp53.other_identifiers)
-    assert normalized_gene.symbol_status == tp53.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(tp53.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(tp53.xrefs)
-    assert normalized_gene.symbol == tp53.symbol
-    assert normalized_gene.locations == tp53.locations
-    assert normalized_gene.location_annotations == tp53.location_annotations
-    assert normalized_gene.strand == tp53.strand
+    assertion_checks(normalizer_response, tp53, 1, MatchType.CONCEPT_ID)
 
-
-def test_tp53_symbol(tp53, hgnc):
-    """Test that tp53 gene normalizes to correct gene concept
-    as an symbol match.
-    """
+    # Symbol
     normalizer_response = hgnc.normalize('tp53')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == tp53.label
-    assert normalized_gene.concept_id == tp53.concept_id
-    assert set(normalized_gene.aliases) == set(tp53.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(tp53.other_identifiers)
-    assert normalized_gene.symbol_status == tp53.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(tp53.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(tp53.xrefs)
-    assert normalized_gene.symbol == tp53.symbol
-    assert normalized_gene.locations == tp53.locations
-    assert normalized_gene.location_annotations == tp53.location_annotations
-    assert normalized_gene.strand == tp53.strand
+    assertion_checks(normalizer_response, tp53, 1, MatchType.SYMBOL)
 
     normalizer_response = hgnc.normalize('TP53')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == tp53.label
-    assert normalized_gene.concept_id == tp53.concept_id
-    assert set(normalized_gene.aliases) == set(tp53.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(tp53.other_identifiers)
-    assert normalized_gene.symbol_status == tp53.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(tp53.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(tp53.xrefs)
-    assert normalized_gene.symbol == tp53.symbol
-    assert normalized_gene.locations == tp53.locations
-    assert normalized_gene.location_annotations == tp53.location_annotations
-    assert normalized_gene.strand == tp53.strand
+    assertion_checks(normalizer_response, tp53, 1, MatchType.SYMBOL)
 
-
-def test_tp53_alias(tp53, hgnc):
-    """Test that alias term normalizes to correct gene concept as an
-    ALIAS match.
-    """
+    # Alias
     normalizer_response = hgnc.normalize('LFS1')
-    assert normalizer_response['match_type'] == MatchType.ALIAS
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == tp53.label
-    assert normalized_gene.concept_id == tp53.concept_id
-    assert set(normalized_gene.aliases) == set(tp53.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(tp53.other_identifiers)
-    assert normalized_gene.symbol_status == tp53.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(tp53.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(tp53.xrefs)
-    assert normalized_gene.symbol == tp53.symbol
-    assert normalized_gene.locations == tp53.locations
-    assert normalized_gene.location_annotations == tp53.location_annotations
-    assert normalized_gene.strand == tp53.strand
+    assertion_checks(normalizer_response, tp53, 1, MatchType.ALIAS)
 
     normalizer_response = hgnc.normalize('p53')
-    assert normalizer_response['match_type'] == MatchType.ALIAS
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == tp53.label
-    assert normalized_gene.concept_id == tp53.concept_id
-    assert set(normalized_gene.aliases) == set(tp53.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(tp53.other_identifiers)
-    assert normalized_gene.symbol_status == tp53.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(tp53.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(tp53.xrefs)
-    assert normalized_gene.symbol == tp53.symbol
-    assert normalized_gene.locations == tp53.locations
-    assert normalized_gene.location_annotations == tp53.location_annotations
-    assert normalized_gene.strand == tp53.strand
+    assertion_checks(normalizer_response, tp53, 1, MatchType.ALIAS)
 
 
 def test_wdhd1(wdhd1, hgnc):
-    """Test that wdhd1 gene normalizes to correct gene concept."""
+    """Test that a1bg_as1 normalizes to correct gene concept."""
+    # Concept ID
     normalizer_response = hgnc.normalize('hgnc:23170')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == wdhd1.label
-    assert normalized_gene.concept_id == wdhd1.concept_id
-    assert set(normalized_gene.aliases) == set(wdhd1.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(wdhd1.other_identifiers)
-    assert normalized_gene.symbol_status == wdhd1.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(wdhd1.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(wdhd1.xrefs)
-    assert normalized_gene.symbol == wdhd1.symbol
-    assert normalized_gene.locations == wdhd1.locations
-    assert normalized_gene.location_annotations == wdhd1.location_annotations
-    assert normalized_gene.strand == wdhd1.strand
+    assertion_checks(normalizer_response, wdhd1, 1, MatchType.CONCEPT_ID)
 
+    # Symbol
     normalizer_response = hgnc.normalize('WDHD1')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == wdhd1.label
-    assert normalized_gene.concept_id == wdhd1.concept_id
-    assert set(normalized_gene.aliases) == set(wdhd1.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(wdhd1.other_identifiers)
-    assert normalized_gene.symbol_status == wdhd1.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(wdhd1.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(wdhd1.xrefs)
-    assert normalized_gene.symbol == wdhd1.symbol
-    assert normalized_gene.locations == wdhd1.locations
-    assert normalized_gene.location_annotations == wdhd1.location_annotations
-    assert normalized_gene.strand == wdhd1.strand
+    assertion_checks(normalizer_response, wdhd1, 1, MatchType.SYMBOL)
 
 
 def test_g6pr(g6pr, hgnc):
-    """Test that g6pr gene normalizes to correct gene concept."""
+    """Test that g6pr normalizes to correct gene concept."""
+    # Concept ID
     normalizer_response = hgnc.normalize('hgnc:4059')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == g6pr.label
-    assert normalized_gene.concept_id == g6pr.concept_id
-    assert set(normalized_gene.aliases) == set(g6pr.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(g6pr.other_identifiers)
-    assert normalized_gene.symbol_status == g6pr.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(g6pr.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(g6pr.xrefs)
-    assert normalized_gene.symbol == g6pr.symbol
-    assert normalized_gene.locations == g6pr.locations
-    assert normalized_gene.location_annotations == g6pr.location_annotations
-    assert normalized_gene.strand == g6pr.strand
+    assertion_checks(normalizer_response, g6pr, 1, MatchType.CONCEPT_ID)
 
+    # Symbol
     normalizer_response = hgnc.normalize('G6PR')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == g6pr.label
-    assert normalized_gene.concept_id == g6pr.concept_id
-    assert set(normalized_gene.aliases) == set(g6pr.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(g6pr.other_identifiers)
-    assert normalized_gene.symbol_status == g6pr.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(g6pr.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(g6pr.xrefs)
-    assert normalized_gene.symbol == g6pr.symbol
-    assert normalized_gene.locations == g6pr.locations
-    assert normalized_gene.location_annotations == g6pr.location_annotations
-    assert normalized_gene.strand == g6pr.strand
+    assertion_checks(normalizer_response, g6pr, 1, MatchType.SYMBOL)
 
 
 def test_pirc24(pirc24, hgnc):
-    """Test that pirc24 gene normalizes to correct gene concept."""
+    """Test that pirc24 normalizes to correct gene concept."""
+    # Concept ID
     normalizer_response = hgnc.normalize('hgnc:37528')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == pirc24.label
-    assert normalized_gene.concept_id == pirc24.concept_id
-    assert set(normalized_gene.aliases) == set(pirc24.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(pirc24.other_identifiers)
-    assert normalized_gene.symbol_status == pirc24.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(pirc24.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(pirc24.xrefs)
-    assert normalized_gene.symbol == pirc24.symbol
-    assert normalized_gene.locations == pirc24.locations
-    assert normalized_gene.location_annotations == pirc24.location_annotations
-    assert normalized_gene.strand == pirc24.strand
+    assertion_checks(normalizer_response, pirc24, 1, MatchType.CONCEPT_ID)
 
+    # Symbol
     normalizer_response = hgnc.normalize('PIRC24')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == pirc24.label
-    assert normalized_gene.concept_id == pirc24.concept_id
-    assert set(normalized_gene.aliases) == set(pirc24.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(pirc24.other_identifiers)
-    assert normalized_gene.symbol_status == pirc24.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(pirc24.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(pirc24.xrefs)
-    assert normalized_gene.symbol == pirc24.symbol
-    assert normalized_gene.locations == pirc24.locations
-    assert normalized_gene.location_annotations == pirc24.location_annotations
-    assert normalized_gene.strand == pirc24.strand
+    assertion_checks(normalizer_response, pirc24, 1, MatchType.SYMBOL)
 
 
 def test_gage4(gage4, hgnc):
-    """Test that gage4 gene normalizes to correct gene concept."""
+    """Test that gage4 normalizes to correct gene concept."""
+    # Concept ID
     normalizer_response = hgnc.normalize('hgnc:4101')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == gage4.label
-    assert normalized_gene.concept_id == gage4.concept_id
-    assert set(normalized_gene.aliases) == set(gage4.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(gage4.other_identifiers)
-    assert normalized_gene.symbol_status == gage4.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(gage4.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(gage4.xrefs)
-    assert normalized_gene.symbol == gage4.symbol
-    assert normalized_gene.locations == gage4.locations
-    assert normalized_gene.location_annotations == gage4.location_annotations
-    assert normalized_gene.strand == gage4.strand
+    assertion_checks(normalizer_response, gage4, 1, MatchType.CONCEPT_ID)
 
+    # Symbol
     normalizer_response = hgnc.normalize('GAGE4')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == gage4.label
-    assert normalized_gene.concept_id == gage4.concept_id
-    assert set(normalized_gene.aliases) == set(gage4.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(gage4.other_identifiers)
-    assert normalized_gene.symbol_status == gage4.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(gage4.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(gage4.xrefs)
-    assert normalized_gene.symbol == gage4.symbol
-    assert normalized_gene.locations == gage4.locations
-    assert normalized_gene.location_annotations == gage4.location_annotations
-    assert normalized_gene.strand == gage4.strand
+    assertion_checks(normalizer_response, gage4, 1, MatchType.SYMBOL)
 
 
 def test_mafip(mafip, hgnc):
-    """Test that mafip gene normalizes to correct gene concept."""
+    """Test that mafip normalizes to correct gene concept."""
+    # Concept ID
     normalizer_response = hgnc.normalize('hgnc:31102')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == mafip.label
-    assert normalized_gene.concept_id == mafip.concept_id
-    assert set(normalized_gene.aliases) == set(mafip.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(mafip.other_identifiers)
-    assert normalized_gene.symbol_status == mafip.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(mafip.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(mafip.xrefs)
-    assert normalized_gene.symbol == mafip.symbol
-    assert normalized_gene.locations == mafip.locations
-    assert set(normalized_gene.location_annotations) == \
-           set(mafip.location_annotations)
-    assert normalized_gene.strand == mafip.strand
+    assertion_checks(normalizer_response, mafip, 1, MatchType.CONCEPT_ID)
 
+    # Symbol
     normalizer_response = hgnc.normalize('MAFIP')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == mafip.label
-    assert normalized_gene.concept_id == mafip.concept_id
-    assert set(normalized_gene.aliases) == set(mafip.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(mafip.other_identifiers)
-    assert normalized_gene.symbol_status == mafip.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(mafip.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(mafip.xrefs)
-    assert normalized_gene.symbol == mafip.symbol
-    assert normalized_gene.locations == mafip.locations
-    assert set(normalized_gene.location_annotations) == \
-           set(mafip.location_annotations)
-    assert normalized_gene.strand == mafip.strand
+    assertion_checks(normalizer_response, mafip, 1, MatchType.SYMBOL)
 
 
 def test_mt_7sdna(mt_7sdna, hgnc):
-    """Test that mt_7sdna gene normalizes to correct gene concept."""
+    """Test that mt_7sdna normalizes to correct gene concept."""
+    # Concept ID
     normalizer_response = hgnc.normalize('hgnc:7409')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == mt_7sdna.label
-    assert normalized_gene.concept_id == mt_7sdna.concept_id
-    assert set(normalized_gene.aliases) == set(mt_7sdna.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(mt_7sdna.other_identifiers)
-    assert normalized_gene.symbol_status == mt_7sdna.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(mt_7sdna.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(mt_7sdna.xrefs)
-    assert normalized_gene.symbol == mt_7sdna.symbol
-    assert normalized_gene.locations == mt_7sdna.locations
-    assert normalized_gene.location_annotations == \
-           mt_7sdna.location_annotations
-    assert normalized_gene.strand == mt_7sdna.strand
+    assertion_checks(normalizer_response, mt_7sdna, 1, MatchType.CONCEPT_ID)
 
+    # Symbol
     normalizer_response = hgnc.normalize('MT-7SDNA')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == mt_7sdna.label
-    assert normalized_gene.concept_id == mt_7sdna.concept_id
-    assert set(normalized_gene.aliases) == set(mt_7sdna.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(mt_7sdna.other_identifiers)
-    assert normalized_gene.symbol_status == mt_7sdna.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(mt_7sdna.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(mt_7sdna.xrefs)
-    assert normalized_gene.symbol == mt_7sdna.symbol
-    assert normalized_gene.locations == mt_7sdna.locations
-    assert normalized_gene.location_annotations == \
-           mt_7sdna.location_annotations
-    assert normalized_gene.strand == mt_7sdna.strand
+    assertion_checks(normalizer_response, mt_7sdna, 1, MatchType.SYMBOL)
 
 
 def test_cecr(cecr, hgnc):
-    """Test that cecr gene normalizes to correct gene concept."""
+    """Test that cecr normalizes to correct gene concept."""
+    # Concept ID
     normalizer_response = hgnc.normalize('hgnc:1838')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == cecr.label
-    assert normalized_gene.concept_id == cecr.concept_id
-    assert set(normalized_gene.aliases) == set(cecr.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(cecr.other_identifiers)
-    assert normalized_gene.symbol_status == cecr.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(cecr.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(cecr.xrefs)
-    assert normalized_gene.symbol == cecr.symbol
-    assert normalized_gene.locations == cecr.locations
-    assert normalized_gene.location_annotations == cecr.location_annotations
-    assert normalized_gene.strand == cecr.strand
+    assertion_checks(normalizer_response, cecr, 1, MatchType.CONCEPT_ID)
 
+    # Symbol
     normalizer_response = hgnc.normalize('CECR')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == cecr.label
-    assert normalized_gene.concept_id == cecr.concept_id
-    assert set(normalized_gene.aliases) == set(cecr.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(cecr.other_identifiers)
-    assert normalized_gene.symbol_status == cecr.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(cecr.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(cecr.xrefs)
-    assert normalized_gene.symbol == cecr.symbol
-    assert normalized_gene.locations == cecr.locations
-    assert normalized_gene.location_annotations == cecr.location_annotations
-    assert normalized_gene.strand == cecr.strand
+    assertion_checks(normalizer_response, cecr, 1, MatchType.SYMBOL)
 
 
 def test_csf2ra(csf2ra, hgnc):
-    """Test that csf2ra gene normalizes to correct gene concept."""
+    """Test that csf2ra normalizes to correct gene concept."""
+    # Concept ID
     normalizer_response = hgnc.normalize('hgnc:2435')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == csf2ra.label
-    assert normalized_gene.concept_id == csf2ra.concept_id
-    assert set(normalized_gene.aliases) == set(csf2ra.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(csf2ra.other_identifiers)
-    assert normalized_gene.symbol_status == csf2ra.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(csf2ra.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(csf2ra.xrefs)
-    assert normalized_gene.symbol == csf2ra.symbol
-    assert len(normalized_gene.locations) == len(csf2ra.locations)
-    for loc in csf2ra.locations:
-        assert loc in normalized_gene.locations
-    assert normalized_gene.location_annotations == csf2ra.location_annotations
-    assert normalized_gene.strand == csf2ra.strand
+    assertion_checks(normalizer_response, csf2ra, 1, MatchType.CONCEPT_ID)
 
+    # Symbol
     normalizer_response = hgnc.normalize('CSF2RA')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == csf2ra.label
-    assert normalized_gene.concept_id == csf2ra.concept_id
-    assert set(normalized_gene.aliases) == set(csf2ra.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(csf2ra.other_identifiers)
-    assert normalized_gene.symbol_status == csf2ra.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(csf2ra.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(csf2ra.xrefs)
-    assert normalized_gene.symbol == csf2ra.symbol
-    assert len(normalized_gene.locations) == len(csf2ra.locations)
-    for loc in csf2ra.locations:
-        assert loc in normalized_gene.locations
-    assert normalized_gene.location_annotations == csf2ra.location_annotations
-    assert normalized_gene.strand == csf2ra.strand
+    assertion_checks(normalizer_response, csf2ra, 1, MatchType.SYMBOL)
 
 
 def test_rps24p5(rps24p5, hgnc):
-    """Test that RPS24P5 gene normalizes to correct gene concept."""
+    """Test that rps24p5 normalizes to correct gene concept."""
+    # Concept ID
     normalizer_response = hgnc.normalize('hgnc:36026')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == rps24p5.label
-    assert normalized_gene.concept_id == rps24p5.concept_id
-    assert set(normalized_gene.aliases) == set(rps24p5.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(rps24p5.other_identifiers)
-    assert normalized_gene.symbol_status == rps24p5.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(rps24p5.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(rps24p5.xrefs)
-    assert normalized_gene.symbol == rps24p5.symbol
-    assert normalized_gene.locations == rps24p5.locations
-    assert normalized_gene.location_annotations == rps24p5.location_annotations
-    assert normalized_gene.strand == rps24p5.strand
+    assertion_checks(normalizer_response, rps24p5, 1, MatchType.CONCEPT_ID)
 
+    # Symbol
     normalizer_response = hgnc.normalize('rpS24P5')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == rps24p5.label
-    assert normalized_gene.concept_id == rps24p5.concept_id
-    assert set(normalized_gene.aliases) == set(rps24p5.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(rps24p5.other_identifiers)
-    assert normalized_gene.symbol_status == rps24p5.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(rps24p5.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(rps24p5.xrefs)
-    assert normalized_gene.symbol == rps24p5.symbol
-    assert normalized_gene.locations == rps24p5.locations
-    assert normalized_gene.location_annotations == rps24p5.location_annotations
-    assert normalized_gene.strand == rps24p5.strand
+    assertion_checks(normalizer_response, rps24p5, 1, MatchType.SYMBOL)
 
 
 def test_trl_cag2_1(trl_cag2_1, hgnc):
-    """Test that TRL-CAG2-1 gene normalizes to correct gene concept."""
+    """Test that trl_cag2_1 normalizes to correct gene concept."""
+    # Concept ID
     normalizer_response = hgnc.normalize('hgnc:34692')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == trl_cag2_1.label
-    assert normalized_gene.concept_id == trl_cag2_1.concept_id
-    assert set(normalized_gene.aliases) == set(trl_cag2_1.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(trl_cag2_1.other_identifiers)
-    assert normalized_gene.symbol_status == trl_cag2_1.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(trl_cag2_1.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(trl_cag2_1.xrefs)
-    assert normalized_gene.symbol == trl_cag2_1.symbol
-    assert normalized_gene.locations == trl_cag2_1.locations
-    assert normalized_gene.location_annotations == \
-           trl_cag2_1.location_annotations
-    assert normalized_gene.strand == trl_cag2_1.strand
+    assertion_checks(normalizer_response, trl_cag2_1, 1, MatchType.CONCEPT_ID)
 
+    # Symbol
     normalizer_response = hgnc.normalize('TRL-CAG2-1')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == trl_cag2_1.label
-    assert normalized_gene.concept_id == trl_cag2_1.concept_id
-    assert set(normalized_gene.aliases) == set(trl_cag2_1.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(trl_cag2_1.other_identifiers)
-    assert normalized_gene.symbol_status == trl_cag2_1.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(trl_cag2_1.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(trl_cag2_1.xrefs)
-    assert normalized_gene.symbol == trl_cag2_1.symbol
-    assert len(normalized_gene.locations) == len(trl_cag2_1.locations)
-    for loc in trl_cag2_1.locations:
-        assert loc in normalized_gene.locations
-    assert normalized_gene.location_annotations == \
-           trl_cag2_1.location_annotations
-    assert normalized_gene.strand == trl_cag2_1.strand
+    assertion_checks(normalizer_response, trl_cag2_1, 1, MatchType.SYMBOL)
 
 
 def test_myo5b(myo5b, hgnc):
-    """Test that MYO5B gene normalizes to correct gene concept."""
+    """Test that myo5b normalizes to correct gene concept."""
+    # Concept ID
     normalizer_response = hgnc.normalize('hgnc:7603')
-    assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == myo5b.label
-    assert normalized_gene.concept_id == myo5b.concept_id
-    assert set(normalized_gene.aliases) == set(myo5b.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(myo5b.other_identifiers)
-    assert normalized_gene.symbol_status == myo5b.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(myo5b.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(myo5b.xrefs)
-    assert normalized_gene.symbol == myo5b.symbol
-    assert normalized_gene.locations == myo5b.locations
-    assert normalized_gene.location_annotations == \
-           myo5b.location_annotations
-    assert normalized_gene.strand == myo5b.strand
+    assertion_checks(normalizer_response, myo5b, 1, MatchType.CONCEPT_ID)
 
+    # Symbol
     normalizer_response = hgnc.normalize('MYO5B')
-    assert normalizer_response['match_type'] == MatchType.SYMBOL
-    assert len(normalizer_response['records']) == 1
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == myo5b.label
-    assert normalized_gene.concept_id == myo5b.concept_id
-    assert set(normalized_gene.aliases) == set(myo5b.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(myo5b.other_identifiers)
-    assert normalized_gene.symbol_status == myo5b.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(myo5b.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(myo5b.xrefs)
-    assert normalized_gene.symbol == myo5b.symbol
-    assert len(normalized_gene.locations) == len(myo5b.locations)
-    for loc in myo5b.locations:
-        assert loc in normalized_gene.locations
-    assert normalized_gene.location_annotations == \
-           myo5b.location_annotations
-    assert normalized_gene.strand == myo5b.strand
+    assertion_checks(normalizer_response, myo5b, 1, MatchType.SYMBOL)
+
+
+def test_gstt1(gstt1, hgnc):
+    """Test that gstt1 normalizes to correct gene concept."""
+    # Concept ID
+    normalizer_response = hgnc.normalize('hgnc:4641')
+    assertion_checks(normalizer_response, gstt1, 1, MatchType.CONCEPT_ID)
+
+    # Symbol
+    normalizer_response = hgnc.normalize('GSTT1')
+    assertion_checks(normalizer_response, gstt1, 1, MatchType.SYMBOL)
 
 
 def test_no_match(hgnc):
