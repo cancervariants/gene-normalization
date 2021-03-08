@@ -22,14 +22,14 @@ class HGNC(Base):
     def __init__(self,
                  database: Database,
                  data_url='http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/',
-                 data_file_ext='json/non_alt_loci_set.json',
+                 data_file_ext='json/hgnc_complete_set.json',
                  ):
         """Initialize HGNC ETL class.
 
         :param Database database: DynamoDB database
         :param str data_url: URL to HGNC's FTP site
         :param str data_file_ext: Extension to HGNC's current JSON data file
-                                  for the Non Alt Loci set
+                                  for the complete data set
         """
         self._database = database
         self._chromosome_location = ChromosomeLocation()
@@ -51,7 +51,7 @@ class HGNC(Base):
         if r.status_code == 200:
             soup = BeautifulSoup(r.text, 'html.parser')
             v_date = soup.find(
-                'a', text='non_alt_loci_set.json').next_sibling.split()[0]
+                'a', text='hgnc_complete_set.json').next_sibling.split()[0]
             self._version =\
                 datetime.datetime.strptime(v_date,
                                            '%d-%b-%Y').strftime('%Y%m%d')
