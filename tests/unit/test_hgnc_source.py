@@ -673,8 +673,8 @@ def assertion_checks(normalizer_response, test_gene, n_records, match_type):
     assert set(normalized_gene.xrefs) == set(test_gene.xrefs)
     assert normalized_gene.symbol == test_gene.symbol
     assert normalized_gene.locations == test_gene.locations
-    assert normalized_gene.location_annotations == \
-           test_gene.location_annotations
+    assert set(normalized_gene.location_annotations) == \
+           set(test_gene.location_annotations)
     assert normalized_gene.strand == test_gene.strand
 
 
