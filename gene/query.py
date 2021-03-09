@@ -264,7 +264,9 @@ class QueryHandler:
             if len(sources) == 0:
                 return resp
 
-        resp = self.check_other_ids(resp, sources)
+        (resp, sources) = self.check_other_ids(resp, sources)
+        if len(sources) == 0:
+            return resp
 
         # remaining sources get no match
         resp = self.fill_no_matches(resp)
@@ -276,7 +278,8 @@ class QueryHandler:
 
         :param Dict resp: in-progress response object to return to client
         :param Set[str] sources: remaining unmatched sources
-        :return: Updated resp object
+        :return: Tuple with updated resp object and updated set of unmatched
+            sources
         """
         other_identifiers = list()
         source_matches = resp['source_matches']
@@ -304,7 +307,7 @@ class QueryHandler:
             (resp, src_name) = self.add_record(resp, item, MatchType.OTHER_ID)
             sources = sources - {src_name}
 
-        return resp
+        return (resp, sources)
 
     def response_list(self, query: str, sources: List[str]) -> Dict:
         """Return response as list, where the first key-value in each item

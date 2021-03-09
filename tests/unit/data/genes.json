@@ -945,8 +945,8 @@
     "src_name": "HGNC"
   },
   {
-    "label_and_type": "gstt1##symbol",
-    "concept_id": "ache:108",
+    "label_and_type": "ache##symbol",
+    "concept_id": "hgnc:108",
     "src_name": "HGNC"
   },
   {
@@ -1014,7 +1014,7 @@
   },
   {
     "label_and_type": "ncbigene:54704##identity",
-    "label": "pyruvate dehyrogenase phosphatase catalytic subunit 1",
+    "label": "pyruvate dehydrogenase phosphatase catalytic subunit 1",
     "concept_id": "ncbigene:54704",
     "symbol": "PDP1",
     "aliases": [
