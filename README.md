@@ -15,6 +15,19 @@ Once installed, from the project root dir, just run:
 pipenv sync
 ```
 
+Gene Normalization relies on [SeqRepo](https://github.com/biocommons/biocommons.seqrepo) data. 
+
+From the _gene_ directory of the repository:
+```
+pip install seqrepo
+mkdir -p data/seqrepo
+seqrepo -r data/seqrepo pull -i 2020-11-27
+chmod -R u+w data/seqrepo
+cd data/seqrepo
+seqrepo_date_dir=$(ls -d */)
+mv $seqrepo_date_dir 2020-11-27
+```
+
 ### Deploying DynamoDB Locally
 
 We use Amazon DynamoDB for our database. To deploy locally, follow [these instructions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html).
