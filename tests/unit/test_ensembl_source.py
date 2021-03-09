@@ -1,7 +1,7 @@
 """Test that the gene normalizer works as intended for the Ensembl source."""
 import pytest
 from gene.schemas import Gene, MatchType
-from gene.query import Normalizer
+from gene.query import QueryHandler
 
 
 @pytest.fixture(scope='module')
@@ -9,10 +9,11 @@ def ensembl():
     """Build ensembl test fixture."""
     class QueryGetter:
         def __init__(self):
-            self.normalizer = Normalizer()
+            self.query_handler = QueryHandler()
 
-        def normalize(self, query_str, incl='ensembl'):
-            resp = self.normalizer.normalize(query_str, keyed=True, incl=incl)
+        def search(self, query_str, incl='ensembl'):
+            resp = self.query_handler.search_sources(query_str, keyed=True,
+                                                     incl=incl)
             return resp['source_matches']['Ensembl']
 
     e = QueryGetter()
@@ -263,7 +264,7 @@ def test_concept_id_ddx11l1(ddx11l1, ensembl):
     """Test that ddx11l1 gene normalizes to correct gene concept
     as a CONCEPT_ID match.
     """
-    normalizer_response = ensembl.normalize('ensembl:ENSG00000223972')
+    normalizer_response = ensembl.search('ensembl:ENSG00000223972')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -281,7 +282,7 @@ def test_concept_id_ddx11l1(ddx11l1, ensembl):
     assert normalized_gene.locations == ddx11l1.locations
     assert normalized_gene.location_annotations == ddx11l1.location_annotations
 
-    normalizer_response = ensembl.normalize('ENSG00000223972')
+    normalizer_response = ensembl.search('ENSG00000223972')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -299,7 +300,7 @@ def test_concept_id_ddx11l1(ddx11l1, ensembl):
     assert normalized_gene.locations == ddx11l1.locations
     assert normalized_gene.location_annotations == ddx11l1.location_annotations
 
-    normalizer_response = ensembl.normalize('ENSEMBL:ENSG00000223972')
+    normalizer_response = ensembl.search('ENSEMBL:ENSG00000223972')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -322,7 +323,7 @@ def test_ddx11l1_symbol(ddx11l1, ensembl):
     """Test that ddx11l1 gene normalizes to correct gene concept
     as an symbol match.
     """
-    normalizer_response = ensembl.normalize('ddx11l1')
+    normalizer_response = ensembl.search('ddx11l1')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -340,7 +341,7 @@ def test_ddx11l1_symbol(ddx11l1, ensembl):
     assert normalized_gene.locations == ddx11l1.locations
     assert normalized_gene.location_annotations == ddx11l1.location_annotations
 
-    normalizer_response = ensembl.normalize('DDX11L1')
+    normalizer_response = ensembl.search('DDX11L1')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -363,7 +364,7 @@ def test_concept_id_tp53(tp53, ensembl):
     """Test that tp53 gene normalizes to correct gene concept
     as a CONCEPT_ID match.
     """
-    normalizer_response = ensembl.normalize('ENSG00000141510')
+    normalizer_response = ensembl.search('ENSG00000141510')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -381,7 +382,7 @@ def test_concept_id_tp53(tp53, ensembl):
     assert normalized_gene.locations == tp53.locations
     assert normalized_gene.location_annotations == tp53.location_annotations
 
-    normalizer_response = ensembl.normalize('ensembl:ENSG00000141510')
+    normalizer_response = ensembl.search('ensembl:ENSG00000141510')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -399,7 +400,7 @@ def test_concept_id_tp53(tp53, ensembl):
     assert normalized_gene.locations == tp53.locations
     assert normalized_gene.location_annotations == tp53.location_annotations
 
-    normalizer_response = ensembl.normalize('ENSEMBL:ENSG00000141510')
+    normalizer_response = ensembl.search('ENSEMBL:ENSG00000141510')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -422,7 +423,7 @@ def test_tp53_symbol(tp53, ensembl):
     """Test that tp53 gene normalizes to correct gene concept
     as an symbol match.
     """
-    normalizer_response = ensembl.normalize('tp53')
+    normalizer_response = ensembl.search('tp53')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -440,7 +441,7 @@ def test_tp53_symbol(tp53, ensembl):
     assert normalized_gene.locations == tp53.locations
     assert normalized_gene.location_annotations == tp53.location_annotations
 
-    normalizer_response = ensembl.normalize('tp53')
+    normalizer_response = ensembl.search('tp53')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -461,7 +462,7 @@ def test_tp53_symbol(tp53, ensembl):
 
 def test_u6(u6, ensembl):
     """Test that U6 gene normalizes to correct gene concept."""
-    normalizer_response = ensembl.normalize('ENSG00000278757')
+    normalizer_response = ensembl.search('ENSG00000278757')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -479,13 +480,13 @@ def test_u6(u6, ensembl):
     assert normalized_gene.locations == u6.locations
     assert normalized_gene.location_annotations == u6.location_annotations
 
-    normalizer_response = ensembl.normalize('U6')
+    normalizer_response = ensembl.search('U6')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
 
 
 def test_CH17_340M24_3(CH17_340M24_3, ensembl):
     """Test that CH17_340M24_3 gene normalizes to correct gene concept."""
-    normalizer_response = ensembl.normalize('ENSG00000197180')
+    normalizer_response = ensembl.search('ENSG00000197180')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -504,7 +505,7 @@ def test_CH17_340M24_3(CH17_340M24_3, ensembl):
     assert normalized_gene.location_annotations == \
            CH17_340M24_3.location_annotations
 
-    normalizer_response = ensembl.normalize('CH17-340M24.3')
+    normalizer_response = ensembl.search('CH17-340M24.3')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -526,7 +527,7 @@ def test_CH17_340M24_3(CH17_340M24_3, ensembl):
 
 def test_AC091057_5(AC091057_5, ensembl):
     """Test that AC091057_5 gene normalizes to correct gene concept."""
-    normalizer_response = ensembl.normalize('ENSG00000284906')
+    normalizer_response = ensembl.search('ENSG00000284906')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -545,7 +546,7 @@ def test_AC091057_5(AC091057_5, ensembl):
     assert normalized_gene.location_annotations == \
            AC091057_5.location_annotations
 
-    normalizer_response = ensembl.normalize('AC091057.5')
+    normalizer_response = ensembl.search('AC091057.5')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -567,7 +568,7 @@ def test_AC091057_5(AC091057_5, ensembl):
 
 def test_hsa_mir_1253(hsa_mir_1253, ensembl):
     """Test that hsa_mir_1253 gene normalizes to correct gene concept."""
-    normalizer_response = ensembl.normalize('ENSG00000272920')
+    normalizer_response = ensembl.search('ENSG00000272920')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -586,7 +587,7 @@ def test_hsa_mir_1253(hsa_mir_1253, ensembl):
     assert normalized_gene.location_annotations == \
            hsa_mir_1253.location_annotations
 
-    normalizer_response = ensembl.normalize('hsa-mir-1253')
+    normalizer_response = ensembl.search('hsa-mir-1253')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -608,7 +609,7 @@ def test_hsa_mir_1253(hsa_mir_1253, ensembl):
 
 def test_spry3(spry3, ensembl):
     """Test that spry3 gene normalizes to correct gene concept."""
-    normalizer_response = ensembl.normalize('EnSG00000168939')
+    normalizer_response = ensembl.search('EnSG00000168939')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -626,7 +627,7 @@ def test_spry3(spry3, ensembl):
     assert normalized_gene.locations == spry3.locations
     assert normalized_gene.location_annotations == spry3.location_annotations
 
-    normalizer_response = ensembl.normalize('spry3')
+    normalizer_response = ensembl.search('spry3')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -647,7 +648,7 @@ def test_spry3(spry3, ensembl):
 
 def test_bx004987_1(bx004987_1, ensembl):
     """Test that bx004987_1 gene normalizes to correct gene concept."""
-    normalizer_response = ensembl.normalize('ENSG00000278704')
+    normalizer_response = ensembl.search('ENSG00000278704')
     assert normalizer_response['match_type'] == MatchType.CONCEPT_ID
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -666,7 +667,7 @@ def test_bx004987_1(bx004987_1, ensembl):
     assert normalized_gene.location_annotations == \
            bx004987_1.location_annotations
 
-    normalizer_response = ensembl.normalize('BX004987.1')
+    normalizer_response = ensembl.search('BX004987.1')
     assert normalizer_response['match_type'] == MatchType.SYMBOL
     assert len(normalizer_response['records']) == 1
     normalized_gene = normalizer_response['records'][0]
@@ -688,27 +689,27 @@ def test_bx004987_1(bx004987_1, ensembl):
 
 def test_no_match(ensembl):
     """Test that a term normalizes to correct gene concept as a NO match."""
-    normalizer_response = ensembl.normalize('A1BG - AS1')
+    normalizer_response = ensembl.search('A1BG - AS1')
     assert normalizer_response['match_type'] == MatchType.NO_MATCH
     assert len(normalizer_response['records']) == 0
 
-    normalizer_response = ensembl.normalize('hnc:5')
+    normalizer_response = ensembl.search('hnc:5')
     assert normalizer_response['match_type'] == MatchType.NO_MATCH
 
     # Test empty query
-    normalizer_response = ensembl.normalize('')
+    normalizer_response = ensembl.search('')
     assert normalizer_response['match_type'] == MatchType.NO_MATCH
     assert len(normalizer_response['records']) == 0
 
     # Do not search on label
-    normalizer_response = ensembl.normalize('A1BG antisense RNA 1')
+    normalizer_response = ensembl.search('A1BG antisense RNA 1')
     assert normalizer_response['match_type'] == MatchType.NO_MATCH
     assert len(normalizer_response['records']) == 0
 
 
 def test_meta_info(ddx11l1, ensembl):
     """Test that the meta field is correct."""
-    normalizer_response = ensembl.normalize('chromosome:1')
+    normalizer_response = ensembl.search('chromosome:1')
     assert normalizer_response['meta_'].data_license == 'custom'
     assert normalizer_response['meta_'].data_license_url ==\
            'https://useast.ensembl.org/info/about/legal/disclaimer.html'

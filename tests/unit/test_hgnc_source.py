@@ -1,7 +1,7 @@
 """Test that the gene normalizer works as intended for the HGNC source."""
 import pytest
 from gene.schemas import Gene, MatchType
-from gene.query import Normalizer
+from gene.query import QueryHandler
 from datetime import datetime
 
 
@@ -10,10 +10,11 @@ def hgnc():
     """Build hgnc test fixture."""
     class QueryGetter:
         def __init__(self):
-            self.normalizer = Normalizer()
+            self.query_handler = QueryHandler()
 
-        def normalize(self, query_str, incl='hgnc'):
-            resp = self.normalizer.normalize(query_str, keyed=True, incl=incl)
+        def search(self, query_str, incl='hgnc'):
+            resp = self.query_handler.search_sources(query_str, keyed=True,
+                                                     incl=incl)
             return resp['source_matches']['HGNC']
 
     h = QueryGetter()
@@ -681,256 +682,256 @@ def assertion_checks(normalizer_response, test_gene, n_records, match_type):
 def test_a1bg_as1(a1bg_as1, hgnc):
     """Test that a1bg_as1 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.normalize('hgnc:37133')
+    normalizer_response = hgnc.search('hgnc:37133')
     assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.CONCEPT_ID)
 
-    normalizer_response = hgnc.normalize('HGNC:37133')
+    normalizer_response = hgnc.search('HGNC:37133')
     assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.CONCEPT_ID)
 
-    normalizer_response = hgnc.normalize('Hgnc:37133')
+    normalizer_response = hgnc.search('Hgnc:37133')
     assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.normalize('A1BG-AS1')
+    normalizer_response = hgnc.search('A1BG-AS1')
     assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.SYMBOL)
 
-    normalizer_response = hgnc.normalize('A1BG-as1')
+    normalizer_response = hgnc.search('A1BG-as1')
     assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.SYMBOL)
 
     # Previous Symbol
-    normalizer_response = hgnc.normalize('NCRNA00181')
+    normalizer_response = hgnc.search('NCRNA00181')
     assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.PREV_SYMBOL)
 
-    normalizer_response = hgnc.normalize('A1BGAS')
+    normalizer_response = hgnc.search('A1BGAS')
     assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.PREV_SYMBOL)
 
-    normalizer_response = hgnc.normalize('A1BG-AS')
+    normalizer_response = hgnc.search('A1BG-AS')
     assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.PREV_SYMBOL)
 
     # Alias
-    normalizer_response = hgnc.normalize('FLJ23569')
+    normalizer_response = hgnc.search('FLJ23569')
     assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.ALIAS)
 
-    normalizer_response = hgnc.normalize('flj23569')
+    normalizer_response = hgnc.search('flj23569')
     assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.ALIAS)
 
 
 def test_a3galt2(a3galt2, hgnc):
     """Test that a3galt2 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.normalize('hgnc:30005')
+    normalizer_response = hgnc.search('hgnc:30005')
     assertion_checks(normalizer_response, a3galt2, 1, MatchType.CONCEPT_ID)
 
-    normalizer_response = hgnc.normalize('HGNC:30005')
+    normalizer_response = hgnc.search('HGNC:30005')
     assertion_checks(normalizer_response, a3galt2, 1, MatchType.CONCEPT_ID)
 
-    normalizer_response = hgnc.normalize('Hgnc:30005')
+    normalizer_response = hgnc.search('Hgnc:30005')
     assertion_checks(normalizer_response, a3galt2, 1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.normalize('A3GALT2')
+    normalizer_response = hgnc.search('A3GALT2')
     assertion_checks(normalizer_response, a3galt2, 1, MatchType.SYMBOL)
 
-    normalizer_response = hgnc.normalize('a3galt2')
+    normalizer_response = hgnc.search('a3galt2')
     assertion_checks(normalizer_response, a3galt2, 1, MatchType.SYMBOL)
 
     # Previous Symbol
-    normalizer_response = hgnc.normalize('A3GALT2P')
+    normalizer_response = hgnc.search('A3GALT2P')
     assertion_checks(normalizer_response, a3galt2, 1, MatchType.PREV_SYMBOL)
 
-    normalizer_response = hgnc.normalize('A3GALT2p')
+    normalizer_response = hgnc.search('A3GALT2p')
     assertion_checks(normalizer_response, a3galt2, 1, MatchType.PREV_SYMBOL)
 
     # Alias
-    normalizer_response = hgnc.normalize('IGBS3S')
+    normalizer_response = hgnc.search('IGBS3S')
     assertion_checks(normalizer_response, a3galt2, 1, MatchType.ALIAS)
 
-    normalizer_response = hgnc.normalize('igB3s')
+    normalizer_response = hgnc.search('igB3s')
     assertion_checks(normalizer_response, a3galt2, 1, MatchType.ALIAS)
 
 
 def test_tp53(tp53, hgnc):
     """Test that tp53 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.normalize('hgnc:11998')
+    normalizer_response = hgnc.search('hgnc:11998')
     assertion_checks(normalizer_response, tp53, 1, MatchType.CONCEPT_ID)
 
-    normalizer_response = hgnc.normalize('HGNC:11998')
+    normalizer_response = hgnc.search('HGNC:11998')
     assertion_checks(normalizer_response, tp53, 1, MatchType.CONCEPT_ID)
 
-    normalizer_response = hgnc.normalize('Hgnc:11998')
+    normalizer_response = hgnc.search('Hgnc:11998')
     assertion_checks(normalizer_response, tp53, 1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.normalize('tp53')
+    normalizer_response = hgnc.search('tp53')
     assertion_checks(normalizer_response, tp53, 1, MatchType.SYMBOL)
 
-    normalizer_response = hgnc.normalize('TP53')
+    normalizer_response = hgnc.search('TP53')
     assertion_checks(normalizer_response, tp53, 1, MatchType.SYMBOL)
 
     # Alias
-    normalizer_response = hgnc.normalize('LFS1')
+    normalizer_response = hgnc.search('LFS1')
     assertion_checks(normalizer_response, tp53, 1, MatchType.ALIAS)
 
-    normalizer_response = hgnc.normalize('p53')
+    normalizer_response = hgnc.search('p53')
     assertion_checks(normalizer_response, tp53, 1, MatchType.ALIAS)
 
 
 def test_wdhd1(wdhd1, hgnc):
     """Test that a1bg_as1 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.normalize('hgnc:23170')
+    normalizer_response = hgnc.search('hgnc:23170')
     assertion_checks(normalizer_response, wdhd1, 1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.normalize('WDHD1')
+    normalizer_response = hgnc.search('WDHD1')
     assertion_checks(normalizer_response, wdhd1, 1, MatchType.SYMBOL)
 
 
 def test_g6pr(g6pr, hgnc):
     """Test that g6pr normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.normalize('hgnc:4059')
+    normalizer_response = hgnc.search('hgnc:4059')
     assertion_checks(normalizer_response, g6pr, 1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.normalize('G6PR')
+    normalizer_response = hgnc.search('G6PR')
     assertion_checks(normalizer_response, g6pr, 1, MatchType.SYMBOL)
 
 
 def test_pirc24(pirc24, hgnc):
     """Test that pirc24 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.normalize('hgnc:37528')
+    normalizer_response = hgnc.search('hgnc:37528')
     assertion_checks(normalizer_response, pirc24, 1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.normalize('PIRC24')
+    normalizer_response = hgnc.search('PIRC24')
     assertion_checks(normalizer_response, pirc24, 1, MatchType.SYMBOL)
 
 
 def test_gage4(gage4, hgnc):
     """Test that gage4 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.normalize('hgnc:4101')
+    normalizer_response = hgnc.search('hgnc:4101')
     assertion_checks(normalizer_response, gage4, 1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.normalize('GAGE4')
+    normalizer_response = hgnc.search('GAGE4')
     assertion_checks(normalizer_response, gage4, 1, MatchType.SYMBOL)
 
 
 def test_mafip(mafip, hgnc):
     """Test that mafip normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.normalize('hgnc:31102')
+    normalizer_response = hgnc.search('hgnc:31102')
     assertion_checks(normalizer_response, mafip, 1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.normalize('MAFIP')
+    normalizer_response = hgnc.search('MAFIP')
     assertion_checks(normalizer_response, mafip, 1, MatchType.SYMBOL)
 
 
 def test_mt_7sdna(mt_7sdna, hgnc):
     """Test that mt_7sdna normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.normalize('hgnc:7409')
+    normalizer_response = hgnc.search('hgnc:7409')
     assertion_checks(normalizer_response, mt_7sdna, 1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.normalize('MT-7SDNA')
+    normalizer_response = hgnc.search('MT-7SDNA')
     assertion_checks(normalizer_response, mt_7sdna, 1, MatchType.SYMBOL)
 
 
 def test_cecr(cecr, hgnc):
     """Test that cecr normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.normalize('hgnc:1838')
+    normalizer_response = hgnc.search('hgnc:1838')
     assertion_checks(normalizer_response, cecr, 1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.normalize('CECR')
+    normalizer_response = hgnc.search('CECR')
     assertion_checks(normalizer_response, cecr, 1, MatchType.SYMBOL)
 
 
 def test_csf2ra(csf2ra, hgnc):
     """Test that csf2ra normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.normalize('hgnc:2435')
+    normalizer_response = hgnc.search('hgnc:2435')
     assertion_checks(normalizer_response, csf2ra, 1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.normalize('CSF2RA')
+    normalizer_response = hgnc.search('CSF2RA')
     assertion_checks(normalizer_response, csf2ra, 1, MatchType.SYMBOL)
 
 
 def test_rps24p5(rps24p5, hgnc):
     """Test that rps24p5 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.normalize('hgnc:36026')
+    normalizer_response = hgnc.search('hgnc:36026')
     assertion_checks(normalizer_response, rps24p5, 1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.normalize('rpS24P5')
+    normalizer_response = hgnc.search('rpS24P5')
     assertion_checks(normalizer_response, rps24p5, 1, MatchType.SYMBOL)
 
 
 def test_trl_cag2_1(trl_cag2_1, hgnc):
     """Test that trl_cag2_1 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.normalize('hgnc:34692')
+    normalizer_response = hgnc.search('hgnc:34692')
     assertion_checks(normalizer_response, trl_cag2_1, 1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.normalize('TRL-CAG2-1')
+    normalizer_response = hgnc.search('TRL-CAG2-1')
     assertion_checks(normalizer_response, trl_cag2_1, 1, MatchType.SYMBOL)
 
 
 def test_myo5b(myo5b, hgnc):
     """Test that myo5b normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.normalize('hgnc:7603')
+    normalizer_response = hgnc.search('hgnc:7603')
     assertion_checks(normalizer_response, myo5b, 1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.normalize('MYO5B')
+    normalizer_response = hgnc.search('MYO5B')
     assertion_checks(normalizer_response, myo5b, 1, MatchType.SYMBOL)
 
 
 def test_gstt1(gstt1, hgnc):
     """Test that gstt1 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.normalize('hgnc:4641')
+    normalizer_response = hgnc.search('hgnc:4641')
     assertion_checks(normalizer_response, gstt1, 1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.normalize('GSTT1')
+    normalizer_response = hgnc.search('GSTT1')
     assertion_checks(normalizer_response, gstt1, 1, MatchType.SYMBOL)
 
 
 def test_no_match(hgnc):
     """Test that a term normalizes to correct gene concept as a NO match."""
-    normalizer_response = hgnc.normalize('A1BG - AS1')
+    normalizer_response = hgnc.search('A1BG - AS1')
     assert normalizer_response['match_type'] == MatchType.NO_MATCH
     assert len(normalizer_response['records']) == 0
 
-    normalizer_response = hgnc.normalize('hnc:5')
+    normalizer_response = hgnc.search('hnc:5')
     assert normalizer_response['match_type'] == MatchType.NO_MATCH
 
     # Test empty query
-    normalizer_response = hgnc.normalize('')
+    normalizer_response = hgnc.search('')
     assert normalizer_response['match_type'] == MatchType.NO_MATCH
     assert len(normalizer_response['records']) == 0
 
     # Do not search on label
-    normalizer_response = hgnc.normalize('A1BG antisense RNA 1')
+    normalizer_response = hgnc.search('A1BG antisense RNA 1')
     assert normalizer_response['match_type'] == MatchType.NO_MATCH
     assert len(normalizer_response['records']) == 0
 
 
 def test_meta_info(a1bg_as1, hgnc):
     """Test that the meta field is correct."""
-    normalizer_response = hgnc.normalize('HGNC:37133')
+    normalizer_response = hgnc.search('HGNC:37133')
     assert normalizer_response['meta_'].data_license == 'custom'
     assert normalizer_response['meta_'].data_license_url == \
            'https://www.genenames.org/about/'

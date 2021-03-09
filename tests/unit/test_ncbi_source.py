@@ -1,7 +1,7 @@
 """Test import of NCBI source data"""
 import pytest
 from gene.schemas import Gene
-from gene.query import Normalizer
+from gene.query import QueryHandler
 from datetime import datetime
 
 
@@ -10,10 +10,11 @@ def ncbi():
     """Build ncbi test fixture."""
     class QueryGetter:
         def __init__(self):
-            self.normalizer = Normalizer()
+            self.query_handler = QueryHandler()
 
-        def normalize(self, query_str, incl='ncbi'):
-            resp = self.normalizer.normalize(query_str, keyed=True, incl=incl)
+        def search(self, query_str, incl='ncbi'):
+            resp = self.query_handler.search_sources(query_str, keyed=True,
+                                                     incl=incl)
             return resp['source_matches']['NCBI']
 
     n = QueryGetter()
@@ -65,7 +66,7 @@ def dpf1():
 def pdp1():
     """Create gene fixture for PDP1."""
     params = {
-        'label': 'pyruvate dehyrogenase phosphatase catalytic subunit 1',
+        'label': 'pyruvate dehydrogenase phosphatase catalytic subunit 1',
         'concept_id': 'ncbigene:54704',
         'symbol': 'PDP1',
         'aliases': ['PDH', 'PDP', 'PDPC', 'PPM2A', 'PPM2C'],
@@ -504,7 +505,7 @@ def spg37():
 
 def test_concept_id(ncbi, dpf1, pdp1, spry3):
     """Test query normalizing on gene concept ID."""
-    response = ncbi.normalize('ncbigene:8193')
+    response = ncbi.search('ncbigene:8193')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -520,7 +521,7 @@ def test_concept_id(ncbi, dpf1, pdp1, spry3):
     assert record.locations == dpf1.locations
     assert record.location_annotations == dpf1.location_annotations
 
-    response = ncbi.normalize('ncbigene:54704')
+    response = ncbi.search('ncbigene:54704')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -538,7 +539,7 @@ def test_concept_id(ncbi, dpf1, pdp1, spry3):
     assert record.location_annotations == pdp1.location_annotations
     assert record.location_annotations == pdp1.location_annotations
 
-    response = ncbi.normalize('NCBIGENE:54704')
+    response = ncbi.search('NCBIGENE:54704')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -556,7 +557,7 @@ def test_concept_id(ncbi, dpf1, pdp1, spry3):
     assert record.location_annotations == pdp1.location_annotations
     assert record.location_annotations == pdp1.location_annotations
 
-    response = ncbi.normalize('ncbIgene:8193')
+    response = ncbi.search('ncbIgene:8193')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -572,7 +573,7 @@ def test_concept_id(ncbi, dpf1, pdp1, spry3):
     assert record.locations == dpf1.locations
     assert record.location_annotations == dpf1.location_annotations
 
-    response = ncbi.normalize('NCBIgene:10251')
+    response = ncbi.search('NCBIgene:10251')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -590,22 +591,22 @@ def test_concept_id(ncbi, dpf1, pdp1, spry3):
         assert loc in record.locations
     assert record.location_annotations == spry3.location_annotations
 
-    response = ncbi.normalize('ncblgene:8193')
+    response = ncbi.search('ncblgene:8193')
     assert response['match_type'] == 0
 
-    response = ncbi.normalize('NCBIGENE54704')
+    response = ncbi.search('NCBIGENE54704')
     assert response['match_type'] == 0
 
-    response = ncbi.normalize('54704')
+    response = ncbi.search('54704')
     assert response['match_type'] == 0
 
-    response = ncbi.normalize('ncbigene;54704')
+    response = ncbi.search('ncbigene;54704')
     assert response['match_type'] == 0
 
 
 def test_symbol(ncbi, dpf1, pdp1, spry3):
     """Test query normalizing on gene symbol."""
-    response = ncbi.normalize('DPF1')
+    response = ncbi.search('DPF1')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -621,7 +622,7 @@ def test_symbol(ncbi, dpf1, pdp1, spry3):
     assert record.locations == dpf1.locations
     assert record.location_annotations == dpf1.location_annotations
 
-    response = ncbi.normalize('PDP1')
+    response = ncbi.search('PDP1')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -637,7 +638,7 @@ def test_symbol(ncbi, dpf1, pdp1, spry3):
     assert record.locations == pdp1.locations
     assert record.location_annotations == pdp1.location_annotations
 
-    response = ncbi.normalize('pdp1')
+    response = ncbi.search('pdp1')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -652,7 +653,7 @@ def test_symbol(ncbi, dpf1, pdp1, spry3):
     assert record.strand == pdp1.strand
     assert record.locations == pdp1.locations
 
-    response = ncbi.normalize('DpF1')
+    response = ncbi.search('DpF1')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -668,7 +669,7 @@ def test_symbol(ncbi, dpf1, pdp1, spry3):
     assert record.locations == dpf1.locations
     assert record.location_annotations == dpf1.location_annotations
 
-    response = ncbi.normalize('sprY3')
+    response = ncbi.search('sprY3')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -686,24 +687,24 @@ def test_symbol(ncbi, dpf1, pdp1, spry3):
         assert loc in record.locations
     assert record.location_annotations == spry3.location_annotations
 
-    response = ncbi.normalize('DPF 1')
+    response = ncbi.search('DPF 1')
     assert response['match_type'] == 0
 
-    response = ncbi.normalize('DPG1')
+    response = ncbi.search('DPG1')
     assert response['match_type'] == 0
 
-    response = ncbi.normalize(
+    response = ncbi.search(
         'pyruvate dehyrogenase phosphatase catalytic subunit 1'
     )
     assert response['match_type'] != 100
 
-    response = ncbi.normalize('PDP')
+    response = ncbi.search('PDP')
     assert response['match_type'] != 100
 
 
 def test_prev_symbol(ncbi, pdp1):
     """Test that query term normalizes for gene aliases."""
-    response = ncbi.normalize('LOC157663')
+    response = ncbi.search('LOC157663')
     assert response['match_type'] == 80
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -719,15 +720,15 @@ def test_prev_symbol(ncbi, pdp1):
     assert record.locations == pdp1.locations
     assert record.location_annotations == pdp1.location_annotations
 
-    response2 = ncbi.normalize('PPM2C')
+    response2 = ncbi.search('PPM2C')
     assert response == response2
-    response3 = ncbi.normalize('loc157663')
+    response3 = ncbi.search('loc157663')
     assert response == response3
 
 
 def test_alias(ncbi, dpf1, pdp1, spry3):
     """Test that query term normalizes for gene aliases."""
-    response = ncbi.normalize('BAF45b')
+    response = ncbi.search('BAF45b')
     assert response['match_type'] == 60
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -744,12 +745,12 @@ def test_alias(ncbi, dpf1, pdp1, spry3):
     assert record.location_annotations == dpf1.location_annotations
 
     # check that different aliases return equivalent object
-    response2 = ncbi.normalize('NEUD4')
+    response2 = ncbi.search('NEUD4')
     assert response == response2
-    response2 = ncbi.normalize('neuro-d4')
+    response2 = ncbi.search('neuro-d4')
     assert response == response2
 
-    response = ncbi.normalize('PDH')
+    response = ncbi.search('PDH')
     assert response['match_type'] == 60
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -766,17 +767,17 @@ def test_alias(ncbi, dpf1, pdp1, spry3):
     assert record.location_annotations == pdp1.location_annotations
 
     # check that different aliases return equivalent object
-    response2 = ncbi.normalize('PDP')
+    response2 = ncbi.search('PDP')
     assert response == response2
-    response2 = ncbi.normalize('PDPC')
+    response2 = ncbi.search('PDPC')
     assert response == response2
-    response2 = ncbi.normalize('PPM2A')
+    response2 = ncbi.search('PPM2A')
     assert response == response2
-    response2 = ncbi.normalize('PPM2C')
+    response2 = ncbi.search('PPM2C')
     assert response2['match_type'] == 80  # should match as prev_symbol
 
     # check correct case handling
-    response = ncbi.normalize('pdh')
+    response = ncbi.search('pdh')
     assert response['match_type'] == 60
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -792,7 +793,7 @@ def test_alias(ncbi, dpf1, pdp1, spry3):
     assert record.locations == pdp1.locations
     assert record.location_annotations == pdp1.location_annotations
 
-    response = ncbi.normalize('BAF45B')
+    response = ncbi.search('BAF45B')
     assert response['match_type'] == 60
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -808,7 +809,7 @@ def test_alias(ncbi, dpf1, pdp1, spry3):
     assert record.locations == dpf1.locations
     assert record.location_annotations == dpf1.location_annotations
 
-    response = ncbi.normalize('SPRY-3')
+    response = ncbi.search('SPRY-3')
     assert response['match_type'] == 60
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -829,7 +830,7 @@ def test_alias(ncbi, dpf1, pdp1, spry3):
 
 def test_adcp1(ncbi, adcp1):
     """Test that ADCP1 matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:106')
+    response = ncbi.search('NCBIgene:106')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -846,7 +847,7 @@ def test_adcp1(ncbi, adcp1):
     assert record.locations == adcp1.locations
     assert record.location_annotations == adcp1.location_annotations
 
-    response = ncbi.normalize('ADCP1')
+    response = ncbi.search('ADCP1')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -867,7 +868,7 @@ def test_adcp1(ncbi, adcp1):
 
 def test_afa(ncbi, afa):
     """Test that AFA matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:170')
+    response = ncbi.search('NCBIgene:170')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -883,7 +884,7 @@ def test_afa(ncbi, afa):
     assert record.locations == afa.locations
     assert record.location_annotations == afa.location_annotations
 
-    response = ncbi.normalize('AFA')
+    response = ncbi.search('AFA')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -902,7 +903,7 @@ def test_afa(ncbi, afa):
 
 def test_znf84(ncbi, znf84):
     """Test that ZNF84 matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:7637')
+    response = ncbi.search('NCBIgene:7637')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -920,7 +921,7 @@ def test_znf84(ncbi, znf84):
         assert loc in record.locations
     assert record.location_annotations == znf84.location_annotations
 
-    response = ncbi.normalize('ZNF84')
+    response = ncbi.search('ZNF84')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -941,7 +942,7 @@ def test_znf84(ncbi, znf84):
 
 def test_slc25a6(ncbi, slc25a6):
     """Test that SLC25A6 matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:293')
+    response = ncbi.search('NCBIgene:293')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -960,7 +961,7 @@ def test_slc25a6(ncbi, slc25a6):
         assert loc in record.locations
     assert record.location_annotations == slc25a6.location_annotations
 
-    response = ncbi.normalize('SLC25A6')
+    response = ncbi.search('SLC25A6')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -981,7 +982,7 @@ def test_slc25a6(ncbi, slc25a6):
 
 def test_loc106783576(ncbi, loc106783576):
     """Test that LOC106783576 matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:106783576')
+    response = ncbi.search('NCBIgene:106783576')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -998,7 +999,7 @@ def test_loc106783576(ncbi, loc106783576):
     assert record.locations == loc106783576.locations
     assert record.location_annotations == loc106783576.location_annotations
 
-    response = ncbi.normalize('LOC106783576')
+    response = ncbi.search('LOC106783576')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -1018,14 +1019,14 @@ def test_loc106783576(ncbi, loc106783576):
 
 def test_oms(ncbi):
     """Test that OMS matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:619538')
+    response = ncbi.search('NCBIgene:619538')
     assert response['match_type'] == 0
     assert len(response['records']) == 0
 
 
 def test_glc1b(ncbi, glc1b):
     """Test that GLC1B matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:2722')
+    response = ncbi.search('NCBIgene:2722')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -1042,7 +1043,7 @@ def test_glc1b(ncbi, glc1b):
     assert record.locations == glc1b.locations
     assert record.location_annotations == glc1b.location_annotations
 
-    response = ncbi.normalize('GLC1B')
+    response = ncbi.search('GLC1B')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -1062,7 +1063,7 @@ def test_glc1b(ncbi, glc1b):
 
 def test_hdpa(ncbi, hdpa):
     """Test that HDPA matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:50829')
+    response = ncbi.search('NCBIgene:50829')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -1079,7 +1080,7 @@ def test_hdpa(ncbi, hdpa):
     assert record.locations == hdpa.locations
     assert record.location_annotations == hdpa.location_annotations
 
-    response = ncbi.normalize('HDPA')
+    response = ncbi.search('HDPA')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -1099,7 +1100,7 @@ def test_hdpa(ncbi, hdpa):
 
 def test_prkrap1(ncbi, prkrap1):
     """Test that PRKRAP1 matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:731716')
+    response = ncbi.search('NCBIgene:731716')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -1117,7 +1118,7 @@ def test_prkrap1(ncbi, prkrap1):
         assert loc in record.locations
     assert record.location_annotations == prkrap1.location_annotations
 
-    response = ncbi.normalize('PRKRAP1')
+    response = ncbi.search('PRKRAP1')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -1138,7 +1139,7 @@ def test_prkrap1(ncbi, prkrap1):
 
 def test_mhb(ncbi, mhb):
     """Test that MHB matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:619511')
+    response = ncbi.search('NCBIgene:619511')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -1155,7 +1156,7 @@ def test_mhb(ncbi, mhb):
     assert record.locations == mhb.locations
     assert record.location_annotations == mhb.location_annotations
 
-    response = ncbi.normalize('MHB')
+    response = ncbi.search('MHB')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -1175,7 +1176,7 @@ def test_mhb(ncbi, mhb):
 
 def test_spg37(ncbi, spg37):
     """Test that SPG37 matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:100049159')
+    response = ncbi.search('NCBIgene:100049159')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -1192,7 +1193,7 @@ def test_spg37(ncbi, spg37):
     assert record.locations == spg37.locations
     assert record.location_annotations == spg37.location_annotations
 
-    response = ncbi.normalize('SPG37')
+    response = ncbi.search('SPG37')
     assert response['match_type'] == 100
     assert len(response['records']) == 1
     record = response['records'][0]
@@ -1212,7 +1213,7 @@ def test_spg37(ncbi, spg37):
 
 def test_no_match(ncbi):
     """Test that nonexistent query doesn't normalize to a match."""
-    response = ncbi.normalize('cisplatin')
+    response = ncbi.search('cisplatin')
     assert response['match_type'] == 0
     assert len(response['records']) == 0
     # double-check that meta still populates
@@ -1229,26 +1230,26 @@ def test_no_match(ncbi):
     assert not response['meta_'].data_license_attributes['attribution']
 
     # check blank
-    response = ncbi.normalize('')
+    response = ncbi.search('')
     assert response['match_type'] == 0
 
     # check some strange characters
-    response = ncbi.normalize('----')
+    response = ncbi.search('----')
     assert response['match_type'] == 0
 
-    response = ncbi.normalize('""')
+    response = ncbi.search('""')
     assert response['match_type'] == 0
 
-    response = ncbi.normalize('~~~')
+    response = ncbi.search('~~~')
     assert response['match_type'] == 0
 
-    response = ncbi.normalize(' ')
+    response = ncbi.search(' ')
     assert response['match_type'] == 0
 
 
 def test_meta(ncbi, pdp1):
     """Test NCBI source metadata."""
-    response = ncbi.normalize('PDP1')
+    response = ncbi.search('PDP1')
     assert response['meta_'].data_license == 'custom'
     assert response['meta_'].data_license_url == \
         'https://www.ncbi.nlm.nih.gov/home/about/policies/'

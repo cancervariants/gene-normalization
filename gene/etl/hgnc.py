@@ -123,6 +123,7 @@ class HGNC(Base):
         self._load_approved_symbol(gene, batch)
         self._load_aliases(gene, batch)
         self._load_previous_symbols(gene, batch)
+        self._load_other_ids(gene, batch)
         batch.put_item(Item=gene)
 
     def _load_approved_symbol(self, gene, batch):
@@ -134,7 +135,7 @@ class HGNC(Base):
         symbol = {
             'label_and_type':
                 f"{gene['symbol'].lower()}##symbol",
-            'concept_id': f"{gene['concept_id']}",
+            'concept_id': f"{gene['concept_id'].lower()}",
             'src_name': SourceName.HGNC.value
         }
         batch.put_item(Item=symbol)
@@ -168,7 +169,7 @@ class HGNC(Base):
             for alias in aliases:
                 alias = {
                     'label_and_type': f"{alias}##alias",
-                    'concept_id': f"{gene['concept_id']}",
+                    'concept_id': f"{gene['concept_id'].lower()}",
                     'src_name': SourceName.HGNC.value
                 }
                 batch.put_item(Item=alias)
@@ -196,10 +197,25 @@ class HGNC(Base):
             for prev_symbol in prev_symbols:
                 prev_symbol = {
                     'label_and_type': f"{prev_symbol}##prev_symbol",
-                    'concept_id': f"{gene['concept_id']}",
+                    'concept_id': f"{gene['concept_id'].lower()}",
                     'src_name': SourceName.HGNC.value
                 }
                 batch.put_item(Item=prev_symbol)
+
+    def _load_other_ids(self, gene, batch):
+        """Insert other_id data into the database.
+
+        :param dict gene: A transformed gene record
+        :param BatchWriter batch: Object to write data to DynamoDB
+        """
+        if 'other_identifiers' in gene:
+            for other_id in gene['other_identifiers']:
+                other_id = {
+                    'label_and_type': f"{other_id.lower()}##other_id",
+                    'concept_id': f"{gene['concept_id'].lower()}",
+                    'src_name': SourceName.HGNC.value
+                }
+                batch.put_item(Item=other_id)
 
     def _get_other_ids_xrefs(self, r, gene):
         """Store other identifiers and/or xrefs in a gene record.

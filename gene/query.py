@@ -32,13 +32,13 @@ class InvalidParameterException(Exception):
         super().__init__(message)
 
 
-class Normalizer:
+class QueryHandler:
     """Class for normalizer management. Stores reference to database instance
     and normalizes query input.
     """
 
     def __init__(self, db_url: str = '', db_region: str = 'us-east-2'):
-        """Initialize Normalizer instance.
+        """Initialize QueryHandler instance.
 
         :param str db_url: URL to database source.
         :param str db_region: AWS default region.
@@ -232,12 +232,12 @@ class Normalizer:
             print(e.response['Error']['Message'])
         return (resp, sources)
 
-    def response_keyed(self, query: str, sources: Set[str]) -> Dict:
+    def response_keyed(self, query: str, sources: List[str]) -> Dict:
         """Return response as dict where key is source name and value
         is a list of records. Corresponds to `keyed=true` API parameter.
 
         :param str query: string to match against
-        :param Set[str] sources: sources to match from
+        :param List[str] sources: sources to match from
         :return: completed response object to return to client
         """
         resp = {
@@ -264,8 +264,45 @@ class Normalizer:
             if len(sources) == 0:
                 return resp
 
+        resp = self.check_other_ids(resp, sources)
+
         # remaining sources get no match
         resp = self.fill_no_matches(resp)
+
+        return resp
+
+    def check_other_ids(self, resp, sources):
+        """Check query for other_identifier match.
+
+        :param Dict resp: in-progress response object to return to client
+        :param Set[str] sources: remaining unmatched sources
+        :return: Updated resp object
+        """
+        other_identifiers = list()
+        source_matches = resp['source_matches']
+        for source_match in source_matches:
+            if source_matches[source_match] and \
+                    source_matches[source_match]['records']:
+                for record in source_matches[source_match]['records']:
+                    if record.other_identifiers:
+                        other_identifiers += record.other_identifiers
+
+        other_id_items = []
+        for other_id in other_identifiers:
+            pk = f"{other_id.lower()}##identity"
+            filter_exp = Key('label_and_type').eq(pk)
+            try:
+                result = self.db.genes.query(
+                    KeyConditionExpression=filter_exp
+                )
+                if len(result['Items']) > 0:
+                    other_id_items += result['Items']
+            except ClientError as e:
+                print(e.response['Error']['Message'])
+
+        for item in other_id_items:
+            (resp, src_name) = self.add_record(resp, item, MatchType.OTHER_ID)
+            sources = sources - {src_name}
 
         return resp
 
@@ -291,8 +328,8 @@ class Normalizer:
 
         return response_dict
 
-    def normalize(self, query_str: str, keyed: bool = False,
-                  incl: str = '', excl: str = '', **params):
+    def search_sources(self, query_str: str, keyed: bool = False,
+                       incl: str = '', excl: str = '', **params):
         """Fetch normalized gene objects.
 
         :param str query_str: query, a string, to search for
