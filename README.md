@@ -96,8 +96,12 @@ python3 -m gene.cli --update_all --dev
 ```
 
 ### Starting the gene normalization service
+You must set the `GENE_NORM_DB_URL` enviornment variable to the database URL endpoint. 
+```shell script
+ export GENE_NORM_DB_URL=http://localhost:8000
+```
 
-From the project root, run the following:
+With the environment variable now set, you can start the application. From the project root, run the following:
 
 ```shell script
  uvicorn gene.main:app --reload
