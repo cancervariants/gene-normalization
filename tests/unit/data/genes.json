@@ -248,6 +248,35 @@
     "src_name": "Ensembl"
   },
   {
+    "label_and_type": "hgnc:108##other_id",
+    "concept_id": "ensembl:ensg00000087085",
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000097007##identity",
+    "other_identifiers": [
+      "hgnc:76"
+    ],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "hgnc:76##other_id",
+    "concept_id": "ensembl:ensg00000097007",
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000157764##identity",
+    "other_identifiers": [
+      "hgnc:1097"
+    ],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "hgnc:1097##other_id",
+    "concept_id": "ensembl:ensg00000157764",
+    "src_name": "Ensembl"
+  },
+  {
     "label_and_type": "hgnc:37133##identity",
     "label": "A1BG antisense RNA 1",
     "concept_id": "hgnc:37133",
@@ -950,6 +979,52 @@
     "src_name": "HGNC"
   },
   {
+    "label_and_type": "ncbigene:43##other_id",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000087085##other_id",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:1097##identity",
+    "other_identifiers": [
+      "ensembl:ENSG00000157764",
+      "ncbigene:673"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ncbigene:673##other_id",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000157764##other_id",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:76##identity",
+    "other_identifiers": [
+      "ensembl:ENSG00000097007",
+      "ncbigene:25"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ncbigene:25##other_id",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000097007##other_id",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
     "label_and_type": "ncbigene:8193##identity",
     "label": "double PHD fingers 1",
     "concept_id": "ncbigene:8193",
@@ -1562,6 +1637,52 @@
   {
     "label_and_type": "ache##symbol",
     "concept_id": "ncbigene:43",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "hgnc:108##other_id",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000087085##other_id",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:673##identity",
+    "other_identifiers": [
+      "hgnc:1097",
+      "ensembl:ENSG00000157764"
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "hgnc:1097##other_id",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000157764##other_id",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:25##identity",
+    "other_identifiers": [
+      "hgnc:76",
+      "ensembl:ENSG00000097007"
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "hgnc:76##other_id",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000097007##other_id",
+    "concept_id": "ncbigene:25",
     "src_name": "NCBI"
   }
 ]

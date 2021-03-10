@@ -75,8 +75,8 @@ def test_invalid_parameter_exception(query_handler):
         resp = query_handler.search('BRAF', incl='hgnc', excl='hgnc')  # noqa: F841, E501
 
 
-def test_ncbi_43_query(query_handler, num_sources):
-    """Test that ACHE concept_id shows a match for each source."""
+def test_ache_query(query_handler, num_sources):
+    """Test that ACHE concept_id shows other_id mathces."""
     resp = query_handler.search('ncbigene:43', keyed=True)
     matches = resp['source_matches']
     assert len(matches) == num_sources
@@ -92,6 +92,54 @@ def test_ncbi_43_query(query_handler, num_sources):
     assert matches['NCBI']['match_type'] == MatchType.OTHER_ID
 
     resp = query_handler.search('ensembl:ENSG00000087085', keyed=True)
+    matches = resp['source_matches']
+    assert len(matches) == num_sources
+    assert matches['HGNC']['match_type'] == MatchType.OTHER_ID
+    assert matches['Ensembl']['match_type'] == MatchType.CONCEPT_ID
+    assert matches['NCBI']['match_type'] == MatchType.OTHER_ID
+
+
+def test_braf_query(query_handler, num_sources):
+    """Test that BRAF concept_id shows other_id matches."""
+    resp = query_handler.search('ncbigene:673', keyed=True)
+    matches = resp['source_matches']
+    assert len(matches) == num_sources
+    assert matches['HGNC']['match_type'] == MatchType.OTHER_ID
+    assert matches['Ensembl']['match_type'] == MatchType.NO_MATCH
+    assert matches['NCBI']['match_type'] == MatchType.CONCEPT_ID
+
+    resp = query_handler.search('hgnc:1097', keyed=True)
+    matches = resp['source_matches']
+    assert len(matches) == num_sources
+    assert matches['HGNC']['match_type'] == MatchType.CONCEPT_ID
+    assert matches['Ensembl']['match_type'] == MatchType.OTHER_ID
+    assert matches['NCBI']['match_type'] == MatchType.OTHER_ID
+
+    resp = query_handler.search('ensembl:ENSG00000157764', keyed=True)
+    matches = resp['source_matches']
+    assert len(matches) == num_sources
+    assert matches['HGNC']['match_type'] == MatchType.OTHER_ID
+    assert matches['Ensembl']['match_type'] == MatchType.CONCEPT_ID
+    assert matches['NCBI']['match_type'] == MatchType.OTHER_ID
+
+
+def test_abl1_query(query_handler, num_sources):
+    """Test that ABL1 concept_id shows other_id matches."""
+    resp = query_handler.search('ncbigene:25', keyed=True)
+    matches = resp['source_matches']
+    assert len(matches) == num_sources
+    assert matches['HGNC']['match_type'] == MatchType.OTHER_ID
+    assert matches['Ensembl']['match_type'] == MatchType.NO_MATCH
+    assert matches['NCBI']['match_type'] == MatchType.CONCEPT_ID
+
+    resp = query_handler.search('hgnc:76', keyed=True)
+    matches = resp['source_matches']
+    assert len(matches) == num_sources
+    assert matches['HGNC']['match_type'] == MatchType.CONCEPT_ID
+    assert matches['Ensembl']['match_type'] == MatchType.OTHER_ID
+    assert matches['NCBI']['match_type'] == MatchType.OTHER_ID
+
+    resp = query_handler.search('ensembl:ENSG00000097007', keyed=True)
     matches = resp['source_matches']
     assert len(matches) == num_sources
     assert matches['HGNC']['match_type'] == MatchType.OTHER_ID
