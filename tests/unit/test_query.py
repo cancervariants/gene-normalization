@@ -81,7 +81,7 @@ def test_ncbi_43_query(query_handler, num_sources):
     matches = resp['source_matches']
     assert len(matches) == num_sources
     assert matches['HGNC']['match_type'] == MatchType.OTHER_ID
-    assert matches['Ensembl']['match_type'] == MatchType.OTHER_ID
+    assert matches['Ensembl']['match_type'] == MatchType.NO_MATCH
     assert matches['NCBI']['match_type'] == MatchType.CONCEPT_ID
 
     resp = query_handler.search('hgnc:108', keyed=True)
@@ -96,4 +96,4 @@ def test_ncbi_43_query(query_handler, num_sources):
     assert len(matches) == num_sources
     assert matches['HGNC']['match_type'] == MatchType.OTHER_ID
     assert matches['Ensembl']['match_type'] == MatchType.CONCEPT_ID
-    assert matches['NCBI']['match_type'] == MatchType.NO_MATCH
+    assert matches['NCBI']['match_type'] == MatchType.OTHER_ID
