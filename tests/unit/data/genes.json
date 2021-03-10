@@ -254,6 +254,22 @@
   },
   {
     "label_and_type": "ensembl:ensg00000097007##identity",
+    "concept_id": "ensembl:ENSG00000097007",
+    "symbol": "ABL1",
+    "label": "ABL proto-oncogene 1, non-receptor tyrosine kinase",
+    "strand": "+",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.HqNwGZwH-66U56AkU0ia4QWN2ASpDRS3",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
+        "interval": {
+          "end": 130887675,
+          "start": 130713016,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
     "other_identifiers": [
       "hgnc:76"
     ],
@@ -266,6 +282,22 @@
   },
   {
     "label_and_type": "ensembl:ensg00000157764##identity",
+    "concept_id": "ensembl:ENSG00000157764",
+    "symbol": "BRAF",
+    "label": "B-Raf proto-oncogene, serine/threonine kinase",
+    "strand": "-",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.yVv8OqIODws5WLrSMcydC7roEuhujq0w",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+        "interval": {
+          "end": 140924929,
+          "start": 140719327,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
     "other_identifiers": [
       "hgnc:1097"
     ],
@@ -990,9 +1022,44 @@
   },
   {
     "label_and_type": "hgnc:1097##identity",
+    "concept_id": "hgnc:1097",
+    "symbol": "BRAF",
+    "symbol_status": "approved",
+    "label": "B-Raf proto-oncogene, serine/threonine kinase",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
+        "type": "ChromosomeLocation",
+        "species_id": "taxonomy:9606",
+        "chr": "7",
+        "interval": {
+          "end": "q34",
+          "start": "q34",
+          "type": "CytobandInterval"
+        }
+      }
+    ],
+    "aliases": [
+      "BRAF1"
+    ],
     "other_identifiers": [
       "ensembl:ENSG00000157764",
       "ncbigene:673"
+    ],
+    "xrefs": [
+      "vega:OTTHUMG00000157457",
+      "ucsc:uc003vwc.5",
+      "ccds:CCDS5863",
+      "ccds:CCDS87555",
+      "uniprot:P15056",
+      "pubmed:2284096",
+      "pubmed:1565476",
+      "cosmic:BRAF",
+      "omim:164757",
+      "orphanet:119066",
+      "iuphar:1943",
+      "ena.embl:M95712",
+      "refseq:NM_004333"
     ],
     "src_name": "HGNC"
   },
@@ -1008,9 +1075,49 @@
   },
   {
     "label_and_type": "hgnc:76##identity",
+    "concept_id": "hgnc:76",
+    "symbol": "ABL1",
+    "symbol_status": "approved",
+    "label": "ABL proto-oncogene 1, non-receptor tyrosine kinase",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.WvMfE67KxSDAV8JaK593TI74yyJWIsMQ",
+        "type": "ChromosomeLocation",
+        "species_id": "taxonomy:9606",
+        "chr": "9",
+        "interval": {
+          "end": "q34.12",
+          "start": "q34.12",
+          "type": "CytobandInterval"
+        }
+      }
+    ],
+    "aliases": [
+      "c-ABL",
+      "JTK7",
+      "p150"
+    ],
+    "previous_symbols": [
+      "ABL"
+    ],
     "other_identifiers": [
       "ensembl:ENSG00000097007",
       "ncbigene:25"
+    ],
+    "xrefs": [
+      "vega:OTTHUMG00000020813",
+      "ucsc:uc004bzv.4",
+      "ccds:CCDS35166",
+      "ccds:CCDS35165",
+      "uniprot:P00519",
+      "pubmed:1857987",
+      "pubmed:12626632",
+      "cosmic:ABL1",
+      "omim:189980",
+      "orphanet:117691",
+      "iuphar:1923",
+      "ena.embl:M14752",
+      "refseq:NM_007313"
     ],
     "src_name": "HGNC"
   },
@@ -1651,9 +1758,46 @@
   },
   {
     "label_and_type": "ncbigene:673##identity",
+    "concept_id": "ncbigene:673",
+    "symbol": "BRAF",
+    "label": "B-Raf proto-oncogene, serine/threonine kinase",
+    "strand": "-",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
+        "type": "ChromosomeLocation",
+        "species_id": "taxonomy:9606",
+        "chr": "7",
+        "interval": {
+          "end": "q34",
+          "start": "q34",
+          "type": "CytobandInterval"
+        }
+      },
+      {
+        "_id": "ga4gh:VSL.pmvErcgG96dcFyrZ4YiiSnFa5jJCCZmp",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+        "interval": {
+          "end": 140924929,
+          "start": 140713328,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
+    "aliases": [
+      "RAFB1",
+      "NS7",
+      "B-RAF1",
+      "BRAF1",
+      "B-raf"
+    ],
     "other_identifiers": [
       "hgnc:1097",
       "ensembl:ENSG00000157764"
+    ],
+    "xrefs": [
+      "omim:164757"
     ],
     "src_name": "NCBI"
   },
@@ -1669,9 +1813,54 @@
   },
   {
     "label_and_type": "ncbigene:25##identity",
+    "concept_id": "ncbigene:25",
+    "symbol": "ABL1",
+    "label": "ABL proto-oncogene 1, non-receptor tyrosine kinase",
+    "strand": "+",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.WvMfE67KxSDAV8JaK593TI74yyJWIsMQ",
+        "type": "ChromosomeLocation",
+        "species_id": "taxonomy:9606",
+        "chr": "9",
+        "interval": {
+          "end": "q34.12",
+          "start": "q34.12",
+          "type": "CytobandInterval"
+        }
+      },
+      {
+        "_id": "ga4gh:VSL.r8YW4n2xNqifnz-dmlnRjmbCYqUGqnDk",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
+        "interval": {
+          "end": 130887675,
+          "start": 130713881,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
+    "aliases": [
+      "CHDSKM",
+      "BCR-ABL",
+      "ABL",
+      "v-abl",
+      "JTK7",
+      "c-ABL",
+      "p150",
+      "c-ABL1",
+      "bcr/abl"
+    ],
+    "previous_symbols": [
+      "LOC116063",
+      "LOC112779"
+    ],
     "other_identifiers": [
       "hgnc:76",
       "ensembl:ENSG00000097007"
+    ],
+    "xrefs": [
+      "omim:189980"
     ],
     "src_name": "NCBI"
   },
