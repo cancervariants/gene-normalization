@@ -52,18 +52,21 @@ excl_descr = """Optional. Comma-separated list of source names to exclude in
              response. Will include all other sources. Returns HTTP status
              code 422: Unprocessable Entity if both 'incl' and 'excl'
              parameters are given."""
+search_description = ("For each source, return strongest-match concepts "
+                      "for query string provided by user")
 
 
 @app.get("/gene/search",
          summary=read_query_summary,
          operation_id="getQueryResponse",
          response_description=response_description,
-         response_model=Service
+         response_model=Service,
+         description=search_description
          )
 def search(q: str = Query(..., description=q_descr),  # noqa: D103
            keyed: Optional[bool] = Query(False, description=keyed_descr),
-           incl: Optional[str] = Query('', description=incl_descr),
-           excl: Optional[str] = Query('', description=excl_descr)):
+           incl: Optional[str] = Query(None, description=incl_descr),
+           excl: Optional[str] = Query(None, description=excl_descr)):
     """Return strongest match concepts to query string provided by user.
 
     :param str q: gene search term
