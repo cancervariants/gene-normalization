@@ -21,7 +21,7 @@ class Database:
             }
             if 'GENE_NORM_EB_PROD' not in environ.keys():
                 # EB Instance should not have to confirm.
-                # This is used only for using production via CLI
+                # This is used only for updating production via CLI
                 if click.confirm("Are you sure you want to use the "
                                  "production database?", default=False):
                     click.echo("***PRODUCTION DATABASE IN USE***")
