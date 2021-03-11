@@ -76,7 +76,7 @@ def test_invalid_parameter_exception(query_handler):
 
 
 def test_ache_query(query_handler, num_sources):
-    """Test that ACHE concept_id shows other_id mathces."""
+    """Test that ACHE concept_id shows other_id matches."""
     resp = query_handler.search('ncbigene:43', keyed=True)
     matches = resp['source_matches']
     assert len(matches) == num_sources
