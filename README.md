@@ -62,7 +62,7 @@ pipenv run pytest
 
 ### Updating the gene normalization database
 
-Before you use the CLI to update the database, run the following in a separate terminal to start DynamoDB on `port 8000`:
+Before you use the CLI to update the database, run the following in a separate terminal to start a local DynamoDB service on `port 8000`:
 
 ```
 java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
@@ -81,7 +81,7 @@ From the project root, run the following to update the HGNC source:
 python3 -m gene.cli --normalizer="hgnc"
 ```
 
-To update multiple sources, you can use the `normalizer` flag with the source names separated by spaces.
+To update multiple sources, you can use the `--normalizer` flag with the source names separated by spaces.
 
 #### Update all sources
 
@@ -109,7 +109,7 @@ python3 -m gene.cli --update_all --dev
 ```
 
 ### Starting the gene normalization service
-You must set the `GENE_NORM_DB_URL` enviornment variable to the database URL endpoint. 
+You must set the `GENE_NORM_DB_URL` environment variable to the database URL endpoint. 
 ```shell script
  export GENE_NORM_DB_URL=http://localhost:8000
 ```
