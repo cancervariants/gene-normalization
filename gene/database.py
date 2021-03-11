@@ -2,6 +2,8 @@
 import boto3
 from os import environ
 from typing import List
+import click
+import sys
 
 
 class Database:
@@ -13,31 +15,43 @@ class Database:
         :param str db_url: URL endpoint for DynamoDB source
         :param str region_name: default AWS region
         """
-        if db_url:
-            self.ddb = boto3.resource('dynamodb', region_name=region_name,
-                                      endpoint_url=db_url)
-            self.ddb_client = boto3.client('dynamodb',
-                                           region_name=region_name,
-                                           endpoint_url=db_url)
-        elif 'GENE_NORM_DB_URL' in environ.keys():
-            db_url = environ['GENE_NORM_DB_URL']
-            self.ddb = boto3.resource('dynamodb', region_name=region_name,
-                                      endpoint_url=db_url)
-            self.ddb_client = boto3.client('dynamodb',
-                                           region_name=region_name,
-                                           endpoint_url=db_url)
+        if 'GENE_NORM_PROD' in environ.keys():
+            boto_params = {
+                'region_name': region_name
+            }
+            if 'GENE_NORM_EB_PROD' not in environ.keys():
+                # EB Instance should not have to confirm.
+                # This is used only for updating production via CLI
+                if click.confirm("Are you sure you want to use the "
+                                 "production database?", default=False):
+                    click.echo("***PRODUCTION DATABASE IN USE***")
+                else:
+                    click.echo("Exiting.")
+                    sys.exit()
         else:
-            self.ddb = boto3.resource('dynamodb', region_name=region_name)
-            self.ddb_client = boto3.client('dynamodb',
-                                           region_name=region_name)
+            if db_url:
+                endpoint_url = db_url
+            elif 'GENE_NORM_DB_URL' in environ.keys():
+                endpoint_url = environ['GENE_NORM_DB_URL']
+            else:
+                endpoint_url = 'http://localhost:8000'
+            click.echo(f"***Using Database Endpoint: {endpoint_url}***")
+            boto_params = {
+                'region_name': region_name,
+                'endpoint_url': endpoint_url
+            }
 
-        if db_url or 'GENE_NORM_DB_URL' in environ.keys():
-            existing_tables = self.ddb_client.list_tables()['TableNames']
+        self.dynamodb = boto3.resource('dynamodb', **boto_params)
+        self.dynamodb_client = boto3.client('dynamodb', **boto_params)
+
+        # Create tables if nonexistent if not connecting to production database
+        if 'GENE_NORM_PROD' not in environ.keys():
+            existing_tables = self.dynamodb_client.list_tables()['TableNames']
             self.create_genes_table(existing_tables)
             self.create_meta_data_table(existing_tables)
 
-        self.genes = self.ddb.Table('gene_concepts')
-        self.metadata = self.ddb.Table('gene_metadata')
+        self.genes = self.dynamodb.Table('gene_concepts')
+        self.metadata = self.dynamodb.Table('gene_metadata')
         self.cached_sources = {}
 
     def create_genes_table(self, existing_tables: List[str]):
@@ -47,7 +61,7 @@ class Database:
         """
         table_name = 'gene_concepts'
         if table_name not in existing_tables:
-            self.ddb.create_table(
+            self.dynamodb.create_table(
                 TableName=table_name,
                 KeySchema=[
                     {
@@ -105,7 +119,7 @@ class Database:
         """
         table_name = 'gene_metadata'
         if table_name not in existing_tables:
-            self.ddb.create_table(
+            self.dynamodb.create_table(
                 TableName=table_name,
                 KeySchema=[
                     {

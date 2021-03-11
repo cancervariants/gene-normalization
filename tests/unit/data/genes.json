@@ -17,7 +17,9 @@
       }
     ],
     "strand": "+",
-    "other_identifiers": ["hgnc:37102"],
+    "other_identifiers": [
+      "hgnc:37102"
+    ],
     "src_name": "Ensembl"
   },
   {
@@ -32,7 +34,7 @@
     "label": "tumor protein p53",
     "locations": [
       {
-         "_id": "ga4gh:VSL.FfERYK71L10OLwk6QGoG8OPLgl7PItgK",
+        "_id": "ga4gh:VSL.FfERYK71L10OLwk6QGoG8OPLgl7PItgK",
         "interval": {
           "end": 7687538,
           "start": 7661779,
@@ -43,7 +45,9 @@
       }
     ],
     "strand": "-",
-    "other_identifiers": ["hgnc:11998"],
+    "other_identifiers": [
+      "hgnc:11998"
+    ],
     "src_name": "Ensembl"
   },
   {
@@ -69,7 +73,9 @@
       }
     ],
     "strand": "-",
-    "xrefs": ["rfam:RF00026"],
+    "xrefs": [
+      "rfam:RF00026"
+    ],
     "src_name": "Ensembl"
   },
   {
@@ -95,7 +101,9 @@
       }
     ],
     "strand": "-",
-    "other_identifiers": ["ncbigene:158960"],
+    "other_identifiers": [
+      "ncbigene:158960"
+    ],
     "src_name": "Ensembl"
   },
   {
@@ -121,7 +129,9 @@
       }
     ],
     "strand": "+",
-    "xrefs": ["uniprot:Q3KRB8"],
+    "xrefs": [
+      "uniprot:Q3KRB8"
+    ],
     "src_name": "Ensembl"
   },
   {
@@ -147,7 +157,9 @@
       }
     ],
     "strand": "+",
-    "xrefs": ["mirbase:MI0006387"],
+    "xrefs": [
+      "mirbase:MI0006387"
+    ],
     "src_name": "Ensembl"
   },
   {
@@ -173,7 +185,9 @@
       }
     ],
     "strand": "+",
-    "other_identifiers": ["hgnc:11271"],
+    "other_identifiers": [
+      "hgnc:11271"
+    ],
     "src_name": "Ensembl"
   },
   {
@@ -206,6 +220,95 @@
     "src_name": "Ensembl"
   },
   {
+    "label_and_type": "ensembl:ensg00000087085##identity",
+    "concept_id": "ensembl:ENSG00000087085",
+    "symbol": "ACHE",
+    "label": "acetylcholinesterase (Cartwright blood group)",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.SWENJPb__SVgxImg-Ybyr2jzqXUahRDf",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+        "interval": {
+          "end": 100896974,
+          "start": 100889994,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
+    "strand": "-",
+    "other_identifiers": [
+      "hgnc:108"
+    ],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "ache##symbol",
+    "concept_id": "ensembl:ensg00000087085",
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "hgnc:108##other_id",
+    "concept_id": "ensembl:ensg00000087085",
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000097007##identity",
+    "concept_id": "ensembl:ENSG00000097007",
+    "symbol": "ABL1",
+    "label": "ABL proto-oncogene 1, non-receptor tyrosine kinase",
+    "strand": "+",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.HqNwGZwH-66U56AkU0ia4QWN2ASpDRS3",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
+        "interval": {
+          "end": 130887675,
+          "start": 130713016,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
+    "other_identifiers": [
+      "hgnc:76"
+    ],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "hgnc:76##other_id",
+    "concept_id": "ensembl:ensg00000097007",
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000157764##identity",
+    "concept_id": "ensembl:ENSG00000157764",
+    "symbol": "BRAF",
+    "label": "B-Raf proto-oncogene, serine/threonine kinase",
+    "strand": "-",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.yVv8OqIODws5WLrSMcydC7roEuhujq0w",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+        "interval": {
+          "end": 140924929,
+          "start": 140719327,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
+    "other_identifiers": [
+      "hgnc:1097"
+    ],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "hgnc:1097##other_id",
+    "concept_id": "ensembl:ensg00000157764",
+    "src_name": "Ensembl"
+  },
+  {
     "label_and_type": "hgnc:37133##identity",
     "label": "A1BG antisense RNA 1",
     "concept_id": "hgnc:37133",
@@ -228,7 +331,9 @@
       "A1BGAS",
       "A1BG-AS"
     ],
-    "aliases": ["FLJ23569"],
+    "aliases": [
+      "FLJ23569"
+    ],
     "symbol_status": "approved",
     "other_identifiers": [
       "ensembl:ENSG00000268895",
@@ -288,13 +393,13 @@
       }
     ],
     "aliases": [
-        "p53",
-        "LFS1"
+      "p53",
+      "LFS1"
     ],
     "symbol_status": "approved",
     "other_identifiers": [
-        "ensembl:ENSG00000141510",
-        "ncbigene:7157"
+      "ensembl:ENSG00000141510",
+      "ncbigene:7157"
     ],
     "xrefs": [
       "vega:OTTHUMG00000162125",
@@ -357,11 +462,11 @@
       }
     ],
     "previous_symbols": [
-        "A3GALT2P"
+      "A3GALT2P"
     ],
     "aliases": [
-        "IGBS3S",
-        "IGB3S"
+      "IGBS3S",
+      "IGB3S"
     ],
     "symbol_status": "approved",
     "other_identifiers": [
@@ -418,9 +523,9 @@
       }
     ],
     "aliases": [
-        "AND-1",
-        "CTF4",
-        "CHTF4"
+      "AND-1",
+      "CTF4",
+      "CHTF4"
     ],
     "symbol_status": "approved",
     "other_identifiers": [
@@ -451,9 +556,11 @@
     "label": "glucose-6-phosphatase regulator",
     "concept_id": "hgnc:4059",
     "symbol": "G6PR",
-    "location_annotations": ["reserved"],
+    "location_annotations": [
+      "reserved"
+    ],
     "aliases": [
-        "GSD1aSP"
+      "GSD1aSP"
     ],
     "symbol_status": "approved",
     "other_identifiers": [
@@ -476,7 +583,9 @@
     "label": "piwi-interacting RNA cluster 24",
     "concept_id": "hgnc:37528",
     "symbol": "PIRC24",
-    "location_annotations": ["6"],
+    "location_annotations": [
+      "6"
+    ],
     "symbol_status": "approved",
     "other_identifiers": [
       "ncbigene:100313810"
@@ -496,7 +605,9 @@
     "label": "G antigen 4",
     "concept_id": "hgnc:4101",
     "symbol": "GAGE4",
-    "location_annotations": ["not on reference assembly"],
+    "location_annotations": [
+      "not on reference assembly"
+    ],
     "locations": [
       {
         "_id": "ga4gh:VCL.AlwtARlUTZiNX3NEEKab-X5eeayXd8v8",
@@ -509,7 +620,7 @@
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
-    ] ,
+    ],
     "symbol_status": "approved",
     "aliases": [
       "CT4.4"
@@ -536,7 +647,10 @@
     "label": "MAFF interacting protein (pseudogene)",
     "concept_id": "hgnc:31102",
     "symbol": "MAFIP",
-    "location_annotations": ["14", "unplaced"],
+    "location_annotations": [
+      "14",
+      "unplaced"
+    ],
     "symbol_status": "approved",
     "aliases": [
       "FLJ35473",
@@ -571,7 +685,9 @@
     "label": "mitochondrially encoded 7S DNA",
     "concept_id": "hgnc:7409",
     "symbol": "MT-7SDNA",
-    "location_annotations": ["MT"],
+    "location_annotations": [
+      "MT"
+    ],
     "previous_symbols": [
       "MT7SDNA"
     ],
@@ -604,7 +720,7 @@
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
-    ] ,
+    ],
     "symbol_status": "approved",
     "other_identifiers": [
       "ncbigene:1055"
@@ -644,7 +760,7 @@
         "species_id": "taxonomy:9606",
         "type": "ChromosomeLocation"
       }
-    ] ,
+    ],
     "symbol_status": "approved",
     "aliases": [
       "CD116",
@@ -805,7 +921,9 @@
     "label": "glutathione S-transferase theta 1",
     "concept_id": "hgnc:4641",
     "symbol": "GSTT1",
-    "location_annotations": ["alternate reference locus"],
+    "location_annotations": [
+      "alternate reference locus"
+    ],
     "locations": [
       {
         "_id": "ga4gh:VCL.EfA-UFrmtjncDxutoiP6PWxu32UtH1Zu",
@@ -844,15 +962,192 @@
     "src_name": "HGNC"
   },
   {
+    "label_and_type": "hgnc:108##identity",
+    "label": "acetylcholinesterase (Cartwright blood group)",
+    "concept_id": "hgnc:108",
+    "symbol": "ACHE",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
+        "type": "ChromosomeLocation",
+        "species_id": "taxonomy:9606",
+        "chr": "7",
+        "interval": {
+          "end": "q22.1",
+          "start": "q22.1",
+          "type": "CytobandInterval"
+        }
+      }
+    ],
+    "symbol_status": "approved",
+    "aliases": [
+      "3.1.1.7"
+    ],
+    "previous_symbols": [
+      "YT"
+    ],
+    "other_identifiers": [
+      "ncbigene:43",
+      "ensembl:ENSG00000087085"
+    ],
+    "xrefs": [
+      "vega:OTTHUMG00000157033",
+      "ucsc:uc003uxi.4",
+      "ccds:CCDS5710",
+      "ccds:CCDS64736",
+      "ccds:CCDS5709",
+      "uniprot:P22303",
+      "pubmed:1380483",
+      "omim:100740",
+      "merops:S09.979",
+      "iuphar:2465",
+      "refseq:NM_015831"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ache##symbol",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ncbigene:43##other_id",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000087085##other_id",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:1097##identity",
+    "concept_id": "hgnc:1097",
+    "symbol": "BRAF",
+    "symbol_status": "approved",
+    "label": "B-Raf proto-oncogene, serine/threonine kinase",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
+        "type": "ChromosomeLocation",
+        "species_id": "taxonomy:9606",
+        "chr": "7",
+        "interval": {
+          "end": "q34",
+          "start": "q34",
+          "type": "CytobandInterval"
+        }
+      }
+    ],
+    "aliases": [
+      "BRAF1"
+    ],
+    "other_identifiers": [
+      "ensembl:ENSG00000157764",
+      "ncbigene:673"
+    ],
+    "xrefs": [
+      "vega:OTTHUMG00000157457",
+      "ucsc:uc003vwc.5",
+      "ccds:CCDS5863",
+      "ccds:CCDS87555",
+      "uniprot:P15056",
+      "pubmed:2284096",
+      "pubmed:1565476",
+      "cosmic:BRAF",
+      "omim:164757",
+      "orphanet:119066",
+      "iuphar:1943",
+      "ena.embl:M95712",
+      "refseq:NM_004333"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ncbigene:673##other_id",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000157764##other_id",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "hgnc:76##identity",
+    "concept_id": "hgnc:76",
+    "symbol": "ABL1",
+    "symbol_status": "approved",
+    "label": "ABL proto-oncogene 1, non-receptor tyrosine kinase",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.WvMfE67KxSDAV8JaK593TI74yyJWIsMQ",
+        "type": "ChromosomeLocation",
+        "species_id": "taxonomy:9606",
+        "chr": "9",
+        "interval": {
+          "end": "q34.12",
+          "start": "q34.12",
+          "type": "CytobandInterval"
+        }
+      }
+    ],
+    "aliases": [
+      "c-ABL",
+      "JTK7",
+      "p150"
+    ],
+    "previous_symbols": [
+      "ABL"
+    ],
+    "other_identifiers": [
+      "ensembl:ENSG00000097007",
+      "ncbigene:25"
+    ],
+    "xrefs": [
+      "vega:OTTHUMG00000020813",
+      "ucsc:uc004bzv.4",
+      "ccds:CCDS35166",
+      "ccds:CCDS35165",
+      "uniprot:P00519",
+      "pubmed:1857987",
+      "pubmed:12626632",
+      "cosmic:ABL1",
+      "omim:189980",
+      "orphanet:117691",
+      "iuphar:1923",
+      "ena.embl:M14752",
+      "refseq:NM_007313"
+    ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ncbigene:25##other_id",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000097007##other_id",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
     "label_and_type": "ncbigene:8193##identity",
     "label": "double PHD fingers 1",
     "concept_id": "ncbigene:8193",
     "symbol": "DPF1",
-    "aliases": ["BAF45b", "NEUD4", "neuro-d4"],
-    "other_identifiers": [
-      "hgnc:20225", "ensembl:ENSG00000011332"
+    "aliases": [
+      "BAF45b",
+      "NEUD4",
+      "neuro-d4"
     ],
-    "xrefs": ["omim:601670"],
+    "other_identifiers": [
+      "hgnc:20225",
+      "ensembl:ENSG00000011332"
+    ],
+    "xrefs": [
+      "omim:601670"
+    ],
     "strand": "-",
     "locations": [
       {
@@ -869,9 +1164,9 @@
       {
         "_id": "ga4gh:VSL.5ddLPk8gIdQm3YA4r4p5NAsty9SPwXvJ",
         "interval": {
-            "end": 38229695,
-            "start": 38211006,
-            "type": "SimpleInterval"
+          "end": 38229695,
+          "start": 38211006,
+          "type": "SimpleInterval"
         },
         "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
         "type": "SequenceLocation"
@@ -888,33 +1183,40 @@
     "label_and_type": "baf45b##alias",
     "concept_id": "ncbigene:8193",
     "src_name": "NCBI"
-
   },
   {
     "label_and_type": "neud4##alias",
     "concept_id": "ncbigene:8193",
     "src_name": "NCBI"
-
   },
   {
     "label_and_type": "neuro-d4##alias",
     "concept_id": "ncbigene:8193",
     "src_name": "NCBI"
-
   },
   {
     "label_and_type": "ncbigene:54704##identity",
-    "label": "pyruvate dehyrogenase phosphatase catalytic subunit 1",
+    "label": "pyruvate dehydrogenase phosphatase catalytic subunit 1",
     "concept_id": "ncbigene:54704",
     "symbol": "PDP1",
-    "aliases": ["PDH", "PDP", "PDPC", "PPM2A", "PPM2C"],
+    "aliases": [
+      "PDH",
+      "PDP",
+      "PDPC",
+      "PPM2A",
+      "PPM2C"
+    ],
     "other_identifiers": [
-        "hgnc:9279", "ensembl:ENSG00000164951"
+      "hgnc:9279",
+      "ensembl:ENSG00000164951"
     ],
     "previous_symbols": [
-        "LOC157663", "PPM2C"
+      "LOC157663",
+      "PPM2C"
     ],
-    "xrefs": ["omim:605993"],
+    "xrefs": [
+      "omim:605993"
+    ],
     "strand": "+",
     "locations": [
       {
@@ -931,9 +1233,9 @@
       {
         "_id": "ga4gh:VSL.s8NNWWCxWeiOCUa90ge6x8wxFWpO34gV",
         "interval": {
-            "end": 93926068,
-            "start": 93916923,
-            "type": "SimpleInterval"
+          "end": 93926068,
+          "start": 93916923,
+          "type": "SimpleInterval"
         },
         "sequence_id": "ga4gh:SQ.209Z7zJ-mFypBEWLk4rNC6S_OxY5p7bs",
         "type": "SequenceLocation"
@@ -986,12 +1288,20 @@
     "label": "sprouty RTK signaling antagonist 3",
     "concept_id": "ncbigene:10251",
     "symbol": "SPRY3",
-    "aliases": ["spry-3"],
-    "other_identifiers": [
-        "hgnc:11271", "ensembl:ENSG00000168939"
+    "aliases": [
+      "spry-3"
     ],
-    "previous_symbols": ["LOC170187", "LOC253479"],
-    "xrefs": ["omim:300531"],
+    "other_identifiers": [
+      "hgnc:11271",
+      "ensembl:ENSG00000168939"
+    ],
+    "previous_symbols": [
+      "LOC170187",
+      "LOC253479"
+    ],
+    "xrefs": [
+      "omim:300531"
+    ],
     "strand": "+",
     "locations": [
       {
@@ -1019,9 +1329,9 @@
       {
         "_id": "ga4gh:VSL.ILQGzmwapQ5xuIBoFPDTKUOuN9gJNSqp",
         "interval": {
-            "end": 155782459,
-            "start": 155612586,
-            "type": "SimpleInterval"
+          "end": 155782459,
+          "start": 155612586,
+          "type": "SimpleInterval"
         },
         "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
         "type": "SequenceLocation"
@@ -1029,9 +1339,9 @@
       {
         "_id": "ga4gh:VSL.aVFuwMTMH7TcoS-A6qMnK8c9cBZCd3xp",
         "interval": {
-            "end": 56968979,
-            "start": 56954255,
-            "type": "SimpleInterval"
+          "end": 56968979,
+          "start": 56954255,
+          "type": "SimpleInterval"
         },
         "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
         "type": "SequenceLocation"
@@ -1055,9 +1365,11 @@
     "concept_id": "ncbigene:106",
     "symbol": "ADCP1",
     "other_identifiers": [
-        "hgnc:229"
+      "hgnc:229"
     ],
-    "location_annotations": ["6"],
+    "location_annotations": [
+      "6"
+    ],
     "src_name": "NCBI"
   },
   {
@@ -1070,7 +1382,9 @@
     "label": "ankyloblepharon filiforme adnatum",
     "concept_id": "ncbigene:170",
     "symbol": "AFA",
-    "xrefs": ["omim:106250"],
+    "xrefs": [
+      "omim:106250"
+    ],
     "src_name": "NCBI"
   },
   {
@@ -1083,13 +1397,22 @@
     "label": "zinc finger protein 84",
     "concept_id": "ncbigene:7637",
     "symbol": "ZNF84",
-    "aliases": ["HPF2"],
-    "other_identifiers": [
-        "hgnc:13159", "ensembl:ENSG00000198040"
+    "aliases": [
+      "HPF2"
     ],
-    "previous_symbols": ["LOC100287429"],
-    "xrefs": ["omim:618554"],
-    "location_annotations": ["map from Rosati ref via FISH [AFS]"],
+    "other_identifiers": [
+      "hgnc:13159",
+      "ensembl:ENSG00000198040"
+    ],
+    "previous_symbols": [
+      "LOC100287429"
+    ],
+    "xrefs": [
+      "omim:618554"
+    ],
+    "location_annotations": [
+      "map from Rosati ref via FISH [AFS]"
+    ],
     "strand": "+",
     "locations": [
       {
@@ -1106,9 +1429,9 @@
       {
         "_id": "ga4gh:VSL.xuSNWLM7M4vru2gbt2hOfmjL7GD_UYdA",
         "interval": {
-            "end": 133063299,
-            "start": 133037301,
-            "type": "SimpleInterval"
+          "end": 133063299,
+          "start": 133037301,
+          "type": "SimpleInterval"
         },
         "sequence_id": "ga4gh:SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl",
         "type": "SequenceLocation"
@@ -1126,35 +1449,51 @@
     "label": "solute carrier family 25 member 6",
     "concept_id": "ncbigene:293",
     "symbol": "SLC25A6",
-    "aliases": ["AAC3", "ANT", "ANT 2", "ANT 3", "ANT3", "ANT3Y"],
-    "other_identifiers": [
-        "hgnc:10992", "ensembl:ENSG00000169100"
+    "aliases": [
+      "AAC3",
+      "ANT",
+      "ANT 2",
+      "ANT 3",
+      "ANT3",
+      "ANT3Y"
     ],
-    "previous_symbols": ["ANT3Y"],
-    "xrefs": ["omim:403000", "omim:300151"],
-    "location_annotations": ["X", "Y"],
+    "other_identifiers": [
+      "hgnc:10992",
+      "ensembl:ENSG00000169100"
+    ],
+    "previous_symbols": [
+      "ANT3Y"
+    ],
+    "xrefs": [
+      "omim:403000",
+      "omim:300151"
+    ],
+    "location_annotations": [
+      "X",
+      "Y"
+    ],
     "strand": "-",
     "locations": [
-        {
-          "_id": "ga4gh:VSL.8LvkImsib1GaFH8UQrz9DwjdrgkWNmdD",
-          "interval": {
-              "end": 1392113,
-              "start": 1386152,
-              "type": "SimpleInterval"
-          },
-          "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
-          "type": "SequenceLocation"
+      {
+        "_id": "ga4gh:VSL.8LvkImsib1GaFH8UQrz9DwjdrgkWNmdD",
+        "interval": {
+          "end": 1392113,
+          "start": 1386152,
+          "type": "SimpleInterval"
         },
-        {
-          "_id": "ga4gh:VSL.QLShSFmwPqUKTzjNS-x3Y3DZtOV4SK4J",
-          "interval": {
-              "end": 1392113,
-              "start": 1386152,
-              "type": "SimpleInterval"
-          },
-          "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
-          "type": "SequenceLocation"
-        }
+        "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
+        "type": "SequenceLocation"
+      },
+      {
+        "_id": "ga4gh:VSL.QLShSFmwPqUKTzjNS-x3Y3DZtOV4SK4J",
+        "interval": {
+          "end": 1392113,
+          "start": 1386152,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
+        "type": "SequenceLocation"
+      }
     ],
     "src_name": "NCBI"
   },
@@ -1193,7 +1532,9 @@
     "label": "glaucoma 1, open angle, B (adult-onset)",
     "concept_id": "ncbigene:2722",
     "symbol": "GLC1B",
-    "xrefs": ["omim:606689"],
+    "xrefs": [
+      "omim:606689"
+    ],
     "locations": [
       {
         "_id": "ga4gh:VCL.HStPIl_6UkNQmbjZW1TeUmHFMptbIj6t",
@@ -1219,7 +1560,9 @@
     "label": "Hodgkin disease, susceptibility, pseudoautosomal",
     "concept_id": "ncbigene:50829",
     "symbol": "HDPA",
-    "xrefs": ["omim:300221"],
+    "xrefs": [
+      "omim:300221"
+    ],
     "locations": [
       {
         "_id": "ga4gh:VCL.faRHNO_VJMssbjYQ628mfdRgLqg9qK2b",
@@ -1246,10 +1589,14 @@
     "concept_id": "ncbigene:731716",
     "symbol": "PRKRAP1",
     "other_identifiers": [
-        "hgnc:33447"
+      "hgnc:33447"
     ],
-    "previous_symbols": ["LOC100289695"],
-    "location_annotations": [ "alternate reference locus"],
+    "previous_symbols": [
+      "LOC100289695"
+    ],
+    "location_annotations": [
+      "alternate reference locus"
+    ],
     "strand": "+",
     "locations": [
       {
@@ -1266,9 +1613,9 @@
       {
         "_id": "ga4gh:VSL.Sk6GHE3MekN_PaimBKBmsQR6pLqQ-SAN",
         "interval": {
-            "end": 3941874,
-            "start": 3940270,
-            "type": "SimpleInterval"
+          "end": 3941874,
+          "start": 3940270,
+          "type": "SimpleInterval"
         },
         "sequence_id": "ga4gh:SQ.MjujHSAsgNWRTX4w3ysM7b5OVhZpdXu1",
         "type": "SequenceLocation"
@@ -1276,9 +1623,9 @@
       {
         "_id": "ga4gh:VSL.WTVn8f6OmsdbiEniT8W4CHuHJdp78oBP",
         "interval": {
-            "end": 3932085,
-            "start": 3930481,
-            "type": "SimpleInterval"
+          "end": 3932085,
+          "start": 3930481,
+          "type": "SimpleInterval"
         },
         "sequence_id": "ga4gh:SQ.Q8IworEhpLeXwpz1CHM7C3luysh-ltx-",
         "type": "SequenceLocation"
@@ -1296,7 +1643,9 @@
     "label": "myopathy, hyaline body, autosomal recessive",
     "concept_id": "ncbigene:619511",
     "symbol": "MHB",
-    "xrefs": ["omim:255160"],
+    "xrefs": [
+      "omim:255160"
+    ],
     "locations": [
       {
         "_id": "ga4gh:VCL.2WDJu032Gc_9BN4qiNELb577XomiZv8z",
@@ -1322,7 +1671,9 @@
     "label": "spastic paraplegia 37 (autosomal dominant)",
     "concept_id": "ncbigene:100049159",
     "symbol": "SPG37",
-    "xrefs": ["omim:611945"],
+    "xrefs": [
+      "omim:611945"
+    ],
     "locations": [
       {
         "_id": "ga4gh:VCL.P5jAIluXneqHZMV9FBEQ2ZqOpO-8fqbP",
@@ -1341,6 +1692,186 @@
   {
     "label_and_type": "spg37##symbol",
     "concept_id": "ncbigene:100049159",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:43##identity",
+    "label": "acetylcholinesterase (Cartwright blood group)",
+    "concept_id": "ncbigene:43",
+    "symbol": "ACHE",
+    "aliases": [
+      "N-ACHE",
+      "YT",
+      "ARACHE",
+      "ACEE"
+    ],
+    "previous_symbols": [
+      "ACEE"
+    ],
+    "other_identifiers": [
+      "hgnc:108",
+      "ensembl:ENSG00000087085"
+    ],
+    "xrefs": [
+      "omim:100740"
+    ],
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
+        "type": "ChromosomeLocation",
+        "species_id": "taxonomy:9606",
+        "chr": "7",
+        "interval": {
+          "end": "q22.1",
+          "start": "q22.1",
+          "type": "CytobandInterval"
+        }
+      },
+      {
+        "_id": "ga4gh:VSL.jsbI0UoBvKoN6a_My1w9F4H1kd2kWVUb",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+        "interval": {
+          "end": 100896994,
+          "start": 100889994,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
+    "strand": "-",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ache##symbol",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "hgnc:108##other_id",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000087085##other_id",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:673##identity",
+    "concept_id": "ncbigene:673",
+    "symbol": "BRAF",
+    "label": "B-Raf proto-oncogene, serine/threonine kinase",
+    "strand": "-",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
+        "type": "ChromosomeLocation",
+        "species_id": "taxonomy:9606",
+        "chr": "7",
+        "interval": {
+          "end": "q34",
+          "start": "q34",
+          "type": "CytobandInterval"
+        }
+      },
+      {
+        "_id": "ga4gh:VSL.pmvErcgG96dcFyrZ4YiiSnFa5jJCCZmp",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+        "interval": {
+          "end": 140924929,
+          "start": 140713328,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
+    "aliases": [
+      "RAFB1",
+      "NS7",
+      "B-RAF1",
+      "BRAF1",
+      "B-raf"
+    ],
+    "other_identifiers": [
+      "hgnc:1097",
+      "ensembl:ENSG00000157764"
+    ],
+    "xrefs": [
+      "omim:164757"
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "hgnc:1097##other_id",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000157764##other_id",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ncbigene:25##identity",
+    "concept_id": "ncbigene:25",
+    "symbol": "ABL1",
+    "label": "ABL proto-oncogene 1, non-receptor tyrosine kinase",
+    "strand": "+",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.WvMfE67KxSDAV8JaK593TI74yyJWIsMQ",
+        "type": "ChromosomeLocation",
+        "species_id": "taxonomy:9606",
+        "chr": "9",
+        "interval": {
+          "end": "q34.12",
+          "start": "q34.12",
+          "type": "CytobandInterval"
+        }
+      },
+      {
+        "_id": "ga4gh:VSL.r8YW4n2xNqifnz-dmlnRjmbCYqUGqnDk",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
+        "interval": {
+          "end": 130887675,
+          "start": 130713881,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
+    "aliases": [
+      "CHDSKM",
+      "BCR-ABL",
+      "ABL",
+      "v-abl",
+      "JTK7",
+      "c-ABL",
+      "p150",
+      "c-ABL1",
+      "bcr/abl"
+    ],
+    "previous_symbols": [
+      "LOC116063",
+      "LOC112779"
+    ],
+    "other_identifiers": [
+      "hgnc:76",
+      "ensembl:ENSG00000097007"
+    ],
+    "xrefs": [
+      "omim:189980"
+    ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "hgnc:76##other_id",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000097007##other_id",
+    "concept_id": "ncbigene:25",
     "src_name": "NCBI"
   }
 ]

@@ -1,7 +1,7 @@
 """Test import of NCBI source data"""
 import pytest
-from gene.schemas import Gene
-from gene.query import Normalizer
+from gene.schemas import Gene, MatchType
+from gene.query import QueryHandler
 from datetime import datetime
 
 
@@ -10,10 +10,11 @@ def ncbi():
     """Build ncbi test fixture."""
     class QueryGetter:
         def __init__(self):
-            self.normalizer = Normalizer()
+            self.query_handler = QueryHandler()
 
-        def normalize(self, query_str, incl='ncbi'):
-            resp = self.normalizer.normalize(query_str, keyed=True, incl=incl)
+        def search(self, query_str, incl='ncbi'):
+            resp = self.query_handler.search_sources(query_str, keyed=True,
+                                                     incl=incl)
             return resp['source_matches']['NCBI']
 
     n = QueryGetter()
@@ -65,7 +66,7 @@ def dpf1():
 def pdp1():
     """Create gene fixture for PDP1."""
     params = {
-        'label': 'pyruvate dehyrogenase phosphatase catalytic subunit 1',
+        'label': 'pyruvate dehydrogenase phosphatase catalytic subunit 1',
         'concept_id': 'ncbigene:54704',
         'symbol': 'PDP1',
         'aliases': ['PDH', 'PDP', 'PDPC', 'PPM2A', 'PPM2C'],
@@ -502,717 +503,239 @@ def spg37():
     return Gene(**params)
 
 
-def test_concept_id(ncbi, dpf1, pdp1, spry3):
-    """Test query normalizing on gene concept ID."""
-    response = ncbi.normalize('ncbigene:8193')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == dpf1.label
-    assert record.concept_id == dpf1.concept_id
-    assert record.symbol == dpf1.symbol
-    assert len(record.aliases) == len(dpf1.aliases)
-    assert set(record.aliases) == set(dpf1.aliases)
-    assert set(record.previous_symbols) == set(dpf1.previous_symbols)
-    assert set(record.other_identifiers) == set(dpf1.other_identifiers)
-    assert record.symbol_status == dpf1.symbol_status
-    assert record.strand == dpf1.strand
-    assert record.locations == dpf1.locations
-    assert record.location_annotations == dpf1.location_annotations
-
-    response = ncbi.normalize('ncbigene:54704')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == pdp1.label
-    assert record.concept_id == pdp1.concept_id
-    assert record.symbol == pdp1.symbol
-    assert len(record.aliases) == len(pdp1.aliases)
-    assert set(record.aliases) == set(pdp1.aliases)
-    assert set(record.previous_symbols) == set(pdp1.previous_symbols)
-    assert set(record.xrefs) == set(pdp1.xrefs)
-    assert set(record.other_identifiers) == set(pdp1.other_identifiers)
-    assert record.symbol_status == pdp1.symbol_status
-    assert record.strand == pdp1.strand
-    assert record.locations == pdp1.locations
-    assert record.location_annotations == pdp1.location_annotations
-    assert record.location_annotations == pdp1.location_annotations
-
-    response = ncbi.normalize('NCBIGENE:54704')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == pdp1.label
-    assert record.concept_id == pdp1.concept_id
-    assert record.symbol == pdp1.symbol
-    assert len(record.aliases) == len(pdp1.aliases)
-    assert set(record.aliases) == set(pdp1.aliases)
-    assert set(record.previous_symbols) == set(pdp1.previous_symbols)
-    assert set(record.xrefs) == set(pdp1.xrefs)
-    assert set(record.other_identifiers) == set(pdp1.other_identifiers)
-    assert record.symbol_status == pdp1.symbol_status
-    assert record.strand == pdp1.strand
-    assert record.locations == pdp1.locations
-    assert record.location_annotations == pdp1.location_annotations
-    assert record.location_annotations == pdp1.location_annotations
-
-    response = ncbi.normalize('ncbIgene:8193')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == dpf1.label
-    assert record.concept_id == dpf1.concept_id
-    assert record.symbol == dpf1.symbol
-    assert set(record.aliases) == set(dpf1.aliases)
-    assert set(record.previous_symbols) == set(dpf1.previous_symbols)
-    assert set(record.xrefs) == set(dpf1.xrefs)
-    assert set(record.other_identifiers) == set(dpf1.other_identifiers)
-    assert record.symbol_status == dpf1.symbol_status
-    assert record.strand == dpf1.strand
-    assert record.locations == dpf1.locations
-    assert record.location_annotations == dpf1.location_annotations
-
-    response = ncbi.normalize('NCBIgene:10251')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == spry3.label
-    assert record.concept_id == spry3.concept_id
-    assert record.symbol == spry3.symbol
-    assert set(record.aliases) == set(spry3.aliases)
-    assert set(record.previous_symbols) == set(spry3.previous_symbols)
-    assert set(record.xrefs) == set(spry3.xrefs)
-    assert set(record.other_identifiers) == set(spry3.other_identifiers)
-    assert record.symbol_status == spry3.symbol_status
-    assert record.strand == spry3.strand
-    assert len(record.locations) == len(spry3.locations)
-    for loc in spry3.locations:
-        assert loc in record.locations
-    assert record.location_annotations == spry3.location_annotations
-
-    response = ncbi.normalize('ncblgene:8193')
-    assert response['match_type'] == 0
-
-    response = ncbi.normalize('NCBIGENE54704')
-    assert response['match_type'] == 0
-
-    response = ncbi.normalize('54704')
-    assert response['match_type'] == 0
-
-    response = ncbi.normalize('ncbigene;54704')
-    assert response['match_type'] == 0
+def assertion_checks(normalizer_response, test_gene, n_records, match_type):
+    """Check that normalizer_response and test_gene are the same."""
+    assert normalizer_response['match_type'] == match_type
+    assert len(normalizer_response['records']) == n_records
+    normalized_gene = normalizer_response['records'][0]
+    assert normalized_gene.label == test_gene.label
+    assert normalized_gene.concept_id == test_gene.concept_id
+    assert set(normalized_gene.aliases) == set(test_gene.aliases)
+    assert set(normalized_gene.other_identifiers) == \
+           set(test_gene.other_identifiers)
+    assert normalized_gene.symbol_status == test_gene.symbol_status
+    assert set(normalized_gene.previous_symbols) == \
+           set(test_gene.previous_symbols)
+    assert set(normalized_gene.xrefs) == set(test_gene.xrefs)
+    assert normalized_gene.symbol == test_gene.symbol
+    assert len(normalized_gene.locations) == len(test_gene.locations)
+    for loc in test_gene.locations:
+        assert loc in normalized_gene.locations
+    assert set(normalized_gene.location_annotations) == \
+           set(test_gene.location_annotations)
+    assert normalized_gene.strand == test_gene.strand
 
 
-def test_symbol(ncbi, dpf1, pdp1, spry3):
-    """Test query normalizing on gene symbol."""
-    response = ncbi.normalize('DPF1')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == dpf1.label
-    assert record.concept_id == dpf1.concept_id
-    assert record.symbol == dpf1.symbol
-    assert set(record.aliases) == set(dpf1.aliases)
-    assert set(record.previous_symbols) == set(dpf1.previous_symbols)
-    assert set(record.xrefs) == set(dpf1.xrefs)
-    assert set(record.other_identifiers) == set(dpf1.other_identifiers)
-    assert record.symbol_status == dpf1.symbol_status
-    assert record.strand == dpf1.strand
-    assert record.locations == dpf1.locations
-    assert record.location_annotations == dpf1.location_annotations
+def test_dpf1(ncbi, dpf1):
+    """Test that DPF1 normalizes to correct gene concept."""
+    # Concept ID
+    normalizer_response = ncbi.search('ncbigene:8193')
+    assertion_checks(normalizer_response, dpf1, 1, MatchType.CONCEPT_ID)
 
-    response = ncbi.normalize('PDP1')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == pdp1.label
-    assert record.concept_id == pdp1.concept_id
-    assert record.symbol == pdp1.symbol
-    assert set(record.aliases) == set(pdp1.aliases)
-    assert set(record.previous_symbols) == set(pdp1.previous_symbols)
-    assert set(record.xrefs) == set(pdp1.xrefs)
-    assert set(record.other_identifiers) == set(pdp1.other_identifiers)
-    assert record.symbol_status == pdp1.symbol_status
-    assert record.strand == pdp1.strand
-    assert record.locations == pdp1.locations
-    assert record.location_annotations == pdp1.location_annotations
+    normalizer_response = ncbi.search('ncbIgene:8193')
+    assertion_checks(normalizer_response, dpf1, 1, MatchType.CONCEPT_ID)
 
-    response = ncbi.normalize('pdp1')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == pdp1.label
-    assert record.concept_id == pdp1.concept_id
-    assert record.symbol == pdp1.symbol
-    assert set(record.aliases) == set(pdp1.aliases)
-    assert set(record.previous_symbols) == set(pdp1.previous_symbols)
-    assert set(record.xrefs) == set(pdp1.xrefs)
-    assert set(record.other_identifiers) == set(pdp1.other_identifiers)
-    assert record.symbol_status == pdp1.symbol_status
-    assert record.strand == pdp1.strand
-    assert record.locations == pdp1.locations
+    # Symbol
+    normalizer_response = ncbi.search('DPF1')
+    assertion_checks(normalizer_response, dpf1, 1, MatchType.SYMBOL)
 
-    response = ncbi.normalize('DpF1')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == dpf1.label
-    assert record.concept_id == dpf1.concept_id
-    assert record.symbol == dpf1.symbol
-    assert set(record.aliases) == set(dpf1.aliases)
-    assert set(record.previous_symbols) == set(dpf1.previous_symbols)
-    assert set(record.xrefs) == set(dpf1.xrefs)
-    assert set(record.other_identifiers) == set(dpf1.other_identifiers)
-    assert record.symbol_status == dpf1.symbol_status
-    assert record.strand == dpf1.strand
-    assert record.locations == dpf1.locations
-    assert record.location_annotations == dpf1.location_annotations
+    normalizer_response = ncbi.search('DpF1')
+    assertion_checks(normalizer_response, dpf1, 1, MatchType.SYMBOL)
 
-    response = ncbi.normalize('sprY3')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == spry3.label
-    assert record.concept_id == spry3.concept_id
-    assert record.symbol == spry3.symbol
-    assert set(record.aliases) == set(spry3.aliases)
-    assert set(record.previous_symbols) == set(spry3.previous_symbols)
-    assert set(record.xrefs) == set(spry3.xrefs)
-    assert set(record.other_identifiers) == set(spry3.other_identifiers)
-    assert record.symbol_status == spry3.symbol_status
-    assert record.strand == spry3.strand
-    assert len(record.locations) == len(spry3.locations)
-    for loc in spry3.locations:
-        assert loc in record.locations
-    assert record.location_annotations == spry3.location_annotations
+    # Alias
+    normalizer_response = ncbi.search('BAF45b')
+    assertion_checks(normalizer_response, dpf1, 1, MatchType.ALIAS)
 
-    response = ncbi.normalize('DPF 1')
-    assert response['match_type'] == 0
+    normalizer_response = ncbi.search('NEUD4')
+    assertion_checks(normalizer_response, dpf1, 1, MatchType.ALIAS)
 
-    response = ncbi.normalize('DPG1')
-    assert response['match_type'] == 0
+    normalizer_response = ncbi.search('neuro-d4')
+    assertion_checks(normalizer_response, dpf1, 1, MatchType.ALIAS)
 
-    response = ncbi.normalize(
-        'pyruvate dehyrogenase phosphatase catalytic subunit 1'
-    )
-    assert response['match_type'] != 100
+    # No Match
+    normalizer_response = ncbi.search('DPF 1')
+    assert normalizer_response['match_type'] == 0
 
-    response = ncbi.normalize('PDP')
-    assert response['match_type'] != 100
+    normalizer_response = ncbi.search('DPG1')
+    assert normalizer_response['match_type'] == 0
 
 
-def test_prev_symbol(ncbi, pdp1):
-    """Test that query term normalizes for gene aliases."""
-    response = ncbi.normalize('LOC157663')
-    assert response['match_type'] == 80
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == pdp1.label
-    assert record.concept_id == pdp1.concept_id
-    assert record.symbol == pdp1.symbol
-    assert set(record.aliases) == set(pdp1.aliases)
-    assert set(record.previous_symbols) == set(pdp1.previous_symbols)
-    assert set(record.xrefs) == set(pdp1.xrefs)
-    assert set(record.other_identifiers) == set(pdp1.other_identifiers)
-    assert record.symbol_status == pdp1.symbol_status
-    assert record.strand == pdp1.strand
-    assert record.locations == pdp1.locations
-    assert record.location_annotations == pdp1.location_annotations
+def test_pdp1(ncbi, pdp1):
+    """Test that PDP1 normalizes to correct gene concept."""
+    # Concept ID
+    normalizer_response = ncbi.search('ncbigene:54704')
+    assertion_checks(normalizer_response, pdp1, 1, MatchType.CONCEPT_ID)
 
-    response2 = ncbi.normalize('PPM2C')
-    assert response == response2
-    response3 = ncbi.normalize('loc157663')
-    assert response == response3
+    normalizer_response = ncbi.search('NCBIGENE:54704')
+    assertion_checks(normalizer_response, pdp1, 1, MatchType.CONCEPT_ID)
+
+    # Symbol
+    normalizer_response = ncbi.search('PDP1')
+    assertion_checks(normalizer_response, pdp1, 1, MatchType.SYMBOL)
+
+    normalizer_response = ncbi.search('pdp1')
+    assertion_checks(normalizer_response, pdp1, 1, MatchType.SYMBOL)
+
+    # Previous Symbol
+    normalizer_response = ncbi.search('LOC157663')
+    assertion_checks(normalizer_response, pdp1, 1, MatchType.PREV_SYMBOL)
+
+    normalizer_response = ncbi.search('PPM2C')
+    assertion_checks(normalizer_response, pdp1, 1, MatchType.PREV_SYMBOL)
+
+    normalizer_response = ncbi.search('loc157663')
+    assertion_checks(normalizer_response, pdp1, 1, MatchType.PREV_SYMBOL)
+
+    # Alias
+    normalizer_response = ncbi.search('pdh')
+    assertion_checks(normalizer_response, pdp1, 1, MatchType.ALIAS)
+
+    normalizer_response = ncbi.search('PDP')
+    assertion_checks(normalizer_response, pdp1, 1, MatchType.ALIAS)
+
+    normalizer_response = ncbi.search('PDPC')
+    assertion_checks(normalizer_response, pdp1, 1, MatchType.ALIAS)
+
+    normalizer_response = ncbi.search('PPM2A')
+    assertion_checks(normalizer_response, pdp1, 1, MatchType.ALIAS)
 
 
-def test_alias(ncbi, dpf1, pdp1, spry3):
-    """Test that query term normalizes for gene aliases."""
-    response = ncbi.normalize('BAF45b')
-    assert response['match_type'] == 60
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == dpf1.label
-    assert record.concept_id == dpf1.concept_id
-    assert record.symbol == dpf1.symbol
-    assert set(record.aliases) == set(dpf1.aliases)
-    assert set(record.previous_symbols) == set(dpf1.previous_symbols)
-    assert set(record.xrefs) == set(dpf1.xrefs)
-    assert set(record.other_identifiers) == set(dpf1.other_identifiers)
-    assert record.symbol_status == dpf1.symbol_status
-    assert record.strand == dpf1.strand
-    assert record.locations == dpf1.locations
-    assert record.location_annotations == dpf1.location_annotations
+def test_spry3(ncbi, spry3):
+    """Test that SPRY3 normalizes to correct gene concept."""
+    # Concept ID
+    normalizer_response = ncbi.search('NCBIgene:10251')
+    assertion_checks(normalizer_response, spry3, 1, MatchType.CONCEPT_ID)
 
-    # check that different aliases return equivalent object
-    response2 = ncbi.normalize('NEUD4')
-    assert response == response2
-    response2 = ncbi.normalize('neuro-d4')
-    assert response == response2
+    # Symbol
+    normalizer_response = ncbi.search('sprY3')
+    assertion_checks(normalizer_response, spry3, 1, MatchType.SYMBOL)
 
-    response = ncbi.normalize('PDH')
-    assert response['match_type'] == 60
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == pdp1.label
-    assert record.concept_id == pdp1.concept_id
-    assert record.symbol == pdp1.symbol
-    assert set(record.aliases) == set(pdp1.aliases)
-    assert set(record.previous_symbols) == set(pdp1.previous_symbols)
-    assert set(record.xrefs) == set(pdp1.xrefs)
-    assert set(record.other_identifiers) == set(pdp1.other_identifiers)
-    assert record.symbol_status == pdp1.symbol_status
-    assert record.strand == pdp1.strand
-    assert record.locations == pdp1.locations
-    assert record.location_annotations == pdp1.location_annotations
-
-    # check that different aliases return equivalent object
-    response2 = ncbi.normalize('PDP')
-    assert response == response2
-    response2 = ncbi.normalize('PDPC')
-    assert response == response2
-    response2 = ncbi.normalize('PPM2A')
-    assert response == response2
-    response2 = ncbi.normalize('PPM2C')
-    assert response2['match_type'] == 80  # should match as prev_symbol
-
-    # check correct case handling
-    response = ncbi.normalize('pdh')
-    assert response['match_type'] == 60
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == pdp1.label
-    assert record.concept_id == pdp1.concept_id
-    assert record.symbol == pdp1.symbol
-    assert set(record.aliases) == set(pdp1.aliases)
-    assert set(record.previous_symbols) == set(pdp1.previous_symbols)
-    assert set(record.xrefs) == set(pdp1.xrefs)
-    assert set(record.other_identifiers) == set(pdp1.other_identifiers)
-    assert record.symbol_status == pdp1.symbol_status
-    assert record.strand == pdp1.strand
-    assert record.locations == pdp1.locations
-    assert record.location_annotations == pdp1.location_annotations
-
-    response = ncbi.normalize('BAF45B')
-    assert response['match_type'] == 60
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == dpf1.label
-    assert record.concept_id == dpf1.concept_id
-    assert record.symbol == dpf1.symbol
-    assert set(record.aliases) == set(dpf1.aliases)
-    assert set(record.previous_symbols) == set(dpf1.previous_symbols)
-    assert set(record.xrefs) == set(dpf1.xrefs)
-    assert set(record.other_identifiers) == set(dpf1.other_identifiers)
-    assert record.symbol_status == dpf1.symbol_status
-    assert record.strand == dpf1.strand
-    assert record.locations == dpf1.locations
-    assert record.location_annotations == dpf1.location_annotations
-
-    response = ncbi.normalize('SPRY-3')
-    assert response['match_type'] == 60
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == spry3.label
-    assert record.concept_id == spry3.concept_id
-    assert record.symbol == spry3.symbol
-    assert set(record.aliases) == set(spry3.aliases)
-    assert set(record.previous_symbols) == set(spry3.previous_symbols)
-    assert set(record.xrefs) == set(spry3.xrefs)
-    assert set(record.other_identifiers) == set(spry3.other_identifiers)
-    assert record.symbol_status == spry3.symbol_status
-    assert record.strand == spry3.strand
-    assert len(record.locations) == len(spry3.locations)
-    for loc in spry3.locations:
-        assert loc in record.locations
-    assert record.location_annotations == spry3.location_annotations
+    # Alias
+    normalizer_response = ncbi.search('SPRY-3')
+    assertion_checks(normalizer_response, spry3, 1, MatchType.ALIAS)
 
 
 def test_adcp1(ncbi, adcp1):
-    """Test that ADCP1 matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:106')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == adcp1.label
-    assert record.concept_id == adcp1.concept_id
-    assert record.symbol == adcp1.symbol
-    assert set(record.aliases) == set(adcp1.aliases)
-    assert set(record.previous_symbols) == set(adcp1.previous_symbols)
-    assert set(record.xrefs) == set(adcp1.xrefs)
-    assert set(record.other_identifiers) == set(adcp1.other_identifiers)
-    assert record.symbol_status == adcp1.symbol_status
-    assert record.strand == adcp1.strand
-    assert len(record.locations) == len(adcp1.locations)
-    assert record.locations == adcp1.locations
-    assert record.location_annotations == adcp1.location_annotations
+    """Test that ADCP1 normalizes to correct gene concept."""
+    # Concept ID
+    normalizer_response = ncbi.search('NCBIgene:106')
+    assertion_checks(normalizer_response, adcp1, 1, MatchType.CONCEPT_ID)
 
-    response = ncbi.normalize('ADCP1')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == adcp1.label
-    assert record.concept_id == adcp1.concept_id
-    assert record.symbol == adcp1.symbol
-    assert set(record.aliases) == set(adcp1.aliases)
-    assert set(record.previous_symbols) == set(adcp1.previous_symbols)
-    assert set(record.xrefs) == set(adcp1.xrefs)
-    assert set(record.other_identifiers) == set(adcp1.other_identifiers)
-    assert record.symbol_status == adcp1.symbol_status
-    assert record.strand == adcp1.strand
-    assert len(record.locations) == len(adcp1.locations)
-    for loc in adcp1.locations:
-        assert loc in record.locations
-    assert record.location_annotations == adcp1.location_annotations
+    # Symbol
+    normalizer_response = ncbi.search('ADCP1')
+    assertion_checks(normalizer_response, adcp1, 1, MatchType.SYMBOL)
 
 
 def test_afa(ncbi, afa):
-    """Test that AFA matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:170')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == afa.label
-    assert record.concept_id == afa.concept_id
-    assert record.symbol == afa.symbol
-    assert set(record.aliases) == set(afa.aliases)
-    assert set(record.previous_symbols) == set(afa.previous_symbols)
-    assert set(record.xrefs) == set(afa.xrefs)
-    assert set(record.other_identifiers) == set(afa.other_identifiers)
-    assert record.symbol_status == afa.symbol_status
-    assert record.strand == afa.strand
-    assert record.locations == afa.locations
-    assert record.location_annotations == afa.location_annotations
+    """Test that AFA normalizes to correct gene concept."""
+    # Concept ID
+    normalizer_response = ncbi.search('NCBIgene:170')
+    assertion_checks(normalizer_response, afa, 1, MatchType.CONCEPT_ID)
 
-    response = ncbi.normalize('AFA')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == afa.label
-    assert record.concept_id == afa.concept_id
-    assert record.symbol == afa.symbol
-    assert set(record.aliases) == set(afa.aliases)
-    assert set(record.previous_symbols) == set(afa.previous_symbols)
-    assert set(record.xrefs) == set(afa.xrefs)
-    assert set(record.other_identifiers) == set(afa.other_identifiers)
-    assert record.symbol_status == afa.symbol_status
-    assert record.strand == afa.strand
-    assert record.locations == afa.locations
-    assert record.location_annotations == afa.location_annotations
+    # Symbol
+    normalizer_response = ncbi.search('AFA')
+    assertion_checks(normalizer_response, afa, 1, MatchType.SYMBOL)
 
 
 def test_znf84(ncbi, znf84):
-    """Test that ZNF84 matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:7637')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == znf84.label
-    assert record.concept_id == znf84.concept_id
-    assert record.symbol == znf84.symbol
-    assert set(record.aliases) == set(znf84.aliases)
-    assert set(record.previous_symbols) == set(znf84.previous_symbols)
-    assert set(record.xrefs) == set(znf84.xrefs)
-    assert set(record.other_identifiers) == set(znf84.other_identifiers)
-    assert record.symbol_status == znf84.symbol_status
-    assert record.strand == znf84.strand
-    assert len(record.locations) == len(znf84.locations)
-    for loc in znf84.locations:
-        assert loc in record.locations
-    assert record.location_annotations == znf84.location_annotations
+    """Test that ZNF84 normalizes to correct gene concept."""
+    # Concept ID
+    normalizer_response = ncbi.search('NCBIgene:7637')
+    assertion_checks(normalizer_response, znf84, 1, MatchType.CONCEPT_ID)
 
-    response = ncbi.normalize('ZNF84')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == znf84.label
-    assert record.concept_id == znf84.concept_id
-    assert record.symbol == znf84.symbol
-    assert set(record.aliases) == set(znf84.aliases)
-    assert set(record.previous_symbols) == set(znf84.previous_symbols)
-    assert set(record.xrefs) == set(znf84.xrefs)
-    assert set(record.other_identifiers) == set(znf84.other_identifiers)
-    assert record.symbol_status == znf84.symbol_status
-    assert record.strand == znf84.strand
-    assert len(record.locations) == len(znf84.locations)
-    for loc in znf84.locations:
-        assert loc in record.locations
-    assert record.location_annotations == znf84.location_annotations
+    # Symbol
+    normalizer_response = ncbi.search('ZNF84')
+    assertion_checks(normalizer_response, znf84, 1, MatchType.SYMBOL)
 
 
 def test_slc25a6(ncbi, slc25a6):
-    """Test that SLC25A6 matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:293')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == slc25a6.label
-    assert record.concept_id == slc25a6.concept_id
-    assert record.symbol == slc25a6.symbol
-    assert set(record.aliases) == set(slc25a6.aliases)
-    assert set(record.previous_symbols) == set(slc25a6.previous_symbols)
-    assert set(record.xrefs) == set(slc25a6.xrefs)
-    assert set(record.other_identifiers) == set(slc25a6.other_identifiers)
-    assert record.symbol_status == slc25a6.symbol_status
-    assert record.strand == slc25a6.strand
-    assert len(record.locations) == len(slc25a6.locations)
-    assert record.locations == slc25a6.locations
-    for loc in slc25a6.locations:
-        assert loc in record.locations
-    assert record.location_annotations == slc25a6.location_annotations
+    """Test that SLC25A6 normalizes to correct gene concept."""
+    # Concept ID
+    normalizer_response = ncbi.search('NCBIgene:293')
+    assertion_checks(normalizer_response, slc25a6, 1, MatchType.CONCEPT_ID)
 
-    response = ncbi.normalize('SLC25A6')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == slc25a6.label
-    assert record.concept_id == slc25a6.concept_id
-    assert record.symbol == slc25a6.symbol
-    assert set(record.aliases) == set(slc25a6.aliases)
-    assert set(record.previous_symbols) == set(slc25a6.previous_symbols)
-    assert set(record.xrefs) == set(slc25a6.xrefs)
-    assert set(record.other_identifiers) == set(slc25a6.other_identifiers)
-    assert record.symbol_status == slc25a6.symbol_status
-    assert record.strand == slc25a6.strand
-    assert len(record.locations) == len(slc25a6.locations)
-    for loc in slc25a6.locations:
-        assert loc in record.locations
-    assert record.location_annotations == slc25a6.location_annotations
+    # Symbol
+    normalizer_response = ncbi.search('SLC25A6')
+    assertion_checks(normalizer_response, slc25a6, 1, MatchType.SYMBOL)
 
 
 def test_loc106783576(ncbi, loc106783576):
-    """Test that LOC106783576 matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:106783576')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == loc106783576.label
-    assert record.concept_id == loc106783576.concept_id
-    assert record.symbol == loc106783576.symbol
-    assert set(record.aliases) == set(loc106783576.aliases)
-    assert set(record.previous_symbols) == set(loc106783576.previous_symbols)
-    assert set(record.xrefs) == set(loc106783576.xrefs)
-    assert set(record.other_identifiers) == set(loc106783576.other_identifiers)
-    assert record.symbol_status == loc106783576.symbol_status
-    assert record.strand == loc106783576.strand
-    assert len(record.locations) == len(loc106783576.locations)
-    assert record.locations == loc106783576.locations
-    assert record.location_annotations == loc106783576.location_annotations
+    """Test that LOC106783576 normalizes to correct gene concept."""
+    # Concept ID
+    normalizer_response = ncbi.search('NCBIgene:106783576')
+    assertion_checks(normalizer_response, loc106783576, 1,
+                     MatchType.CONCEPT_ID)
 
-    response = ncbi.normalize('LOC106783576')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == loc106783576.label
-    assert record.concept_id == loc106783576.concept_id
-    assert record.symbol == loc106783576.symbol
-    assert set(record.aliases) == set(loc106783576.aliases)
-    assert set(record.previous_symbols) == set(loc106783576.previous_symbols)
-    assert set(record.xrefs) == set(loc106783576.xrefs)
-    assert set(record.other_identifiers) == set(loc106783576.other_identifiers)
-    assert record.symbol_status == loc106783576.symbol_status
-    assert record.strand == loc106783576.strand
-    assert len(record.locations) == len(loc106783576.locations)
-    assert record.locations == loc106783576.locations
-    assert record.location_annotations == loc106783576.location_annotations
+    # Symbol
+    normalizer_response = ncbi.search('LOC106783576')
+    assertion_checks(normalizer_response, loc106783576, 1, MatchType.SYMBOL)
 
 
 def test_oms(ncbi):
     """Test that OMS matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:619538')
-    assert response['match_type'] == 0
-    assert len(response['records']) == 0
+    normalizer_response = ncbi.search('NCBIgene:619538')
+    assert normalizer_response['match_type'] == 0
+    assert len(normalizer_response['records']) == 0
 
 
 def test_glc1b(ncbi, glc1b):
-    """Test that GLC1B matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:2722')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == glc1b.label
-    assert record.concept_id == glc1b.concept_id
-    assert record.symbol == glc1b.symbol
-    assert set(record.aliases) == set(glc1b.aliases)
-    assert set(record.previous_symbols) == set(glc1b.previous_symbols)
-    assert set(record.xrefs) == set(glc1b.xrefs)
-    assert set(record.other_identifiers) == set(glc1b.other_identifiers)
-    assert record.symbol_status == glc1b.symbol_status
-    assert record.strand == glc1b.strand
-    assert len(record.locations) == len(glc1b.locations)
-    assert record.locations == glc1b.locations
-    assert record.location_annotations == glc1b.location_annotations
+    """Test that GLC1B normalizes to correct gene concept."""
+    # Concept ID
+    normalizer_response = ncbi.search('NCBIgene:2722')
+    assertion_checks(normalizer_response, glc1b, 1, MatchType.CONCEPT_ID)
 
-    response = ncbi.normalize('GLC1B')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == glc1b.label
-    assert record.concept_id == glc1b.concept_id
-    assert record.symbol == glc1b.symbol
-    assert set(record.aliases) == set(glc1b.aliases)
-    assert set(record.previous_symbols) == set(glc1b.previous_symbols)
-    assert set(record.xrefs) == set(glc1b.xrefs)
-    assert set(record.other_identifiers) == set(glc1b.other_identifiers)
-    assert record.symbol_status == glc1b.symbol_status
-    assert record.strand == glc1b.strand
-    assert len(record.locations) == len(glc1b.locations)
-    assert record.locations == glc1b.locations
-    assert record.location_annotations == glc1b.location_annotations
+    # Symbol
+    normalizer_response = ncbi.search('GLC1B')
+    assertion_checks(normalizer_response, glc1b, 1, MatchType.SYMBOL)
 
 
 def test_hdpa(ncbi, hdpa):
-    """Test that HDPA matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:50829')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == hdpa.label
-    assert record.concept_id == hdpa.concept_id
-    assert record.symbol == hdpa.symbol
-    assert set(record.aliases) == set(hdpa.aliases)
-    assert set(record.previous_symbols) == set(hdpa.previous_symbols)
-    assert set(record.xrefs) == set(hdpa.xrefs)
-    assert set(record.other_identifiers) == set(hdpa.other_identifiers)
-    assert record.symbol_status == hdpa.symbol_status
-    assert record.strand == hdpa.strand
-    assert len(record.locations) == len(hdpa.locations)
-    assert record.locations == hdpa.locations
-    assert record.location_annotations == hdpa.location_annotations
+    """Test that HDPA normalizes to correct gene concept."""
+    # Concept ID
+    normalizer_response = ncbi.search('NCBIgene:50829')
+    assertion_checks(normalizer_response, hdpa, 1, MatchType.CONCEPT_ID)
 
-    response = ncbi.normalize('HDPA')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == hdpa.label
-    assert record.concept_id == hdpa.concept_id
-    assert record.symbol == hdpa.symbol
-    assert set(record.aliases) == set(hdpa.aliases)
-    assert set(record.previous_symbols) == set(hdpa.previous_symbols)
-    assert set(record.xrefs) == set(hdpa.xrefs)
-    assert set(record.other_identifiers) == set(hdpa.other_identifiers)
-    assert record.symbol_status == hdpa.symbol_status
-    assert record.strand == hdpa.strand
-    assert len(record.locations) == len(hdpa.locations)
-    assert record.locations == hdpa.locations
-    assert record.location_annotations == hdpa.location_annotations
+    # Symbol
+    normalizer_response = ncbi.search('HDPA')
+    assertion_checks(normalizer_response, hdpa, 1, MatchType.SYMBOL)
 
 
 def test_prkrap1(ncbi, prkrap1):
-    """Test that PRKRAP1 matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:731716')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == prkrap1.label
-    assert record.concept_id == prkrap1.concept_id
-    assert record.symbol == prkrap1.symbol
-    assert set(record.aliases) == set(prkrap1.aliases)
-    assert set(record.previous_symbols) == set(prkrap1.previous_symbols)
-    assert set(record.xrefs) == set(prkrap1.xrefs)
-    assert set(record.other_identifiers) == set(prkrap1.other_identifiers)
-    assert record.symbol_status == prkrap1.symbol_status
-    assert record.strand == prkrap1.strand
-    assert len(record.locations) == len(prkrap1.locations)
-    for loc in prkrap1.locations:
-        assert loc in record.locations
-    assert record.location_annotations == prkrap1.location_annotations
+    """Test that PRKRAP1 normalizes to correct gene concept."""
+    # Concept ID
+    normalizer_response = ncbi.search('NCBIgene:731716')
+    assertion_checks(normalizer_response, prkrap1, 1, MatchType.CONCEPT_ID)
 
-    response = ncbi.normalize('PRKRAP1')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == prkrap1.label
-    assert record.concept_id == prkrap1.concept_id
-    assert record.symbol == prkrap1.symbol
-    assert set(record.aliases) == set(prkrap1.aliases)
-    assert set(record.previous_symbols) == set(prkrap1.previous_symbols)
-    assert set(record.xrefs) == set(prkrap1.xrefs)
-    assert set(record.other_identifiers) == set(prkrap1.other_identifiers)
-    assert record.symbol_status == prkrap1.symbol_status
-    assert record.strand == prkrap1.strand
-    assert len(record.locations) == len(prkrap1.locations)
-    for loc in prkrap1.locations:
-        assert loc in record.locations
-    assert record.location_annotations == prkrap1.location_annotations
+    # Symbol
+    normalizer_response = ncbi.search('PRKRAP1')
+    assertion_checks(normalizer_response, prkrap1, 1, MatchType.SYMBOL)
 
 
 def test_mhb(ncbi, mhb):
-    """Test that MHB matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:619511')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == mhb.label
-    assert record.concept_id == mhb.concept_id
-    assert record.symbol == mhb.symbol
-    assert set(record.aliases) == set(mhb.aliases)
-    assert set(record.previous_symbols) == set(mhb.previous_symbols)
-    assert set(record.xrefs) == set(mhb.xrefs)
-    assert set(record.other_identifiers) == set(mhb.other_identifiers)
-    assert record.symbol_status == mhb.symbol_status
-    assert record.strand == mhb.strand
-    assert len(record.locations) == len(mhb.locations)
-    assert record.locations == mhb.locations
-    assert record.location_annotations == mhb.location_annotations
+    """Test that MHB normalizes to correct gene concept."""
+    # Concept ID
+    normalizer_response = ncbi.search('NCBIgene:619511')
+    assertion_checks(normalizer_response, mhb, 1, MatchType.CONCEPT_ID)
 
-    response = ncbi.normalize('MHB')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == mhb.label
-    assert record.concept_id == mhb.concept_id
-    assert record.symbol == mhb.symbol
-    assert set(record.aliases) == set(mhb.aliases)
-    assert set(record.previous_symbols) == set(mhb.previous_symbols)
-    assert set(record.xrefs) == set(mhb.xrefs)
-    assert set(record.other_identifiers) == set(mhb.other_identifiers)
-    assert record.symbol_status == mhb.symbol_status
-    assert record.strand == mhb.strand
-    assert len(record.locations) == len(mhb.locations)
-    assert record.locations == mhb.locations
-    assert record.location_annotations == mhb.location_annotations
+    # Symbol
+    normalizer_response = ncbi.search('MHB')
+    assertion_checks(normalizer_response, mhb, 1, MatchType.SYMBOL)
 
 
 def test_spg37(ncbi, spg37):
-    """Test that SPG37 matches to correct gene concept."""
-    response = ncbi.normalize('NCBIgene:100049159')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == spg37.label
-    assert record.concept_id == spg37.concept_id
-    assert record.symbol == spg37.symbol
-    assert set(record.aliases) == set(spg37.aliases)
-    assert set(record.previous_symbols) == set(spg37.previous_symbols)
-    assert set(record.xrefs) == set(spg37.xrefs)
-    assert set(record.other_identifiers) == set(spg37.other_identifiers)
-    assert record.symbol_status == spg37.symbol_status
-    assert record.strand == spg37.strand
-    assert len(record.locations) == len(spg37.locations)
-    assert record.locations == spg37.locations
-    assert record.location_annotations == spg37.location_annotations
+    """Test that SPG37 normalizes to correct gene concept."""
+    # Concept ID
+    normalizer_response = ncbi.search('NCBIgene:100049159')
+    assertion_checks(normalizer_response, spg37, 1, MatchType.CONCEPT_ID)
 
-    response = ncbi.normalize('SPG37')
-    assert response['match_type'] == 100
-    assert len(response['records']) == 1
-    record = response['records'][0]
-    assert record.label == spg37.label
-    assert record.concept_id == spg37.concept_id
-    assert record.symbol == spg37.symbol
-    assert set(record.aliases) == set(spg37.aliases)
-    assert set(record.previous_symbols) == set(spg37.previous_symbols)
-    assert set(record.xrefs) == set(spg37.xrefs)
-    assert set(record.other_identifiers) == set(spg37.other_identifiers)
-    assert record.symbol_status == spg37.symbol_status
-    assert record.strand == spg37.strand
-    assert len(record.locations) == len(spg37.locations)
-    assert record.locations == spg37.locations
-    assert record.location_annotations == spg37.location_annotations
+    # Symbol
+    normalizer_response = ncbi.search('SPG37')
+    assertion_checks(normalizer_response, spg37, 1, MatchType.SYMBOL)
 
 
 def test_no_match(ncbi):
     """Test that nonexistent query doesn't normalize to a match."""
-    response = ncbi.normalize('cisplatin')
+    response = ncbi.search('cisplatin')
     assert response['match_type'] == 0
     assert len(response['records']) == 0
     # double-check that meta still populates
@@ -1229,26 +752,39 @@ def test_no_match(ncbi):
     assert not response['meta_'].data_license_attributes['attribution']
 
     # check blank
-    response = ncbi.normalize('')
+    response = ncbi.search('')
     assert response['match_type'] == 0
 
     # check some strange characters
-    response = ncbi.normalize('----')
+    response = ncbi.search('----')
     assert response['match_type'] == 0
 
-    response = ncbi.normalize('""')
+    response = ncbi.search('""')
     assert response['match_type'] == 0
 
-    response = ncbi.normalize('~~~')
+    response = ncbi.search('~~~')
     assert response['match_type'] == 0
 
-    response = ncbi.normalize(' ')
+    response = ncbi.search(' ')
+    assert response['match_type'] == 0
+
+    # Incorrect Concept IDs
+    response = ncbi.search('ncblgene:8193')
+    assert response['match_type'] == 0
+
+    response = ncbi.search('NCBIGENE54704')
+    assert response['match_type'] == 0
+
+    response = ncbi.search('54704')
+    assert response['match_type'] == 0
+
+    response = ncbi.search('ncbigene;54704')
     assert response['match_type'] == 0
 
 
 def test_meta(ncbi, pdp1):
     """Test NCBI source metadata."""
-    response = ncbi.normalize('PDP1')
+    response = ncbi.search('PDP1')
     assert response['meta_'].data_license == 'custom'
     assert response['meta_'].data_license_url == \
         'https://www.ncbi.nlm.nih.gov/home/about/policies/'

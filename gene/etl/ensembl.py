@@ -43,7 +43,7 @@ class Ensembl(Base):
         ens_dir.mkdir(exist_ok=True, parents=True)
         with FTP('ftp.ensembl.org') as ftp:
             ftp.login()
-            ftp.cwd('pub/current_gff3/homo_sapiens/')
+            ftp.cwd('pub/release-102/gff3/homo_sapiens/')
             fn = 'ensembl_102.gff3'
             gz_filepath = ens_dir / f'{fn}.gz'
             with open(gz_filepath, 'wb') as fp:
@@ -93,6 +93,7 @@ class Ensembl(Base):
                         if gene:
                             assert Gene(**gene)
                             self._load_symbol(gene, batch)
+                            self._load_other_ids(gene, batch)
                             batch.put_item(Item=gene)
 
     def _load_symbol(self, gene, batch):
@@ -107,6 +108,21 @@ class Ensembl(Base):
             'src_name': SourceName.ENSEMBL.value
         }
         batch.put_item(Item=symbol)
+
+    def _load_other_ids(self, gene, batch):
+        """Load other identifier records into database.
+
+        :param dict gene: A transformed gene record
+        :param BatchWriter batch: Object to write data to DynamoDB
+        """
+        if 'other_identifiers' in gene and gene['other_identifiers']:
+            for other_id in gene['other_identifiers']:
+                other_id = {
+                    'label_and_type': f"{other_id.lower()}##other_id",
+                    'concept_id': f"{gene['concept_id'].lower()}",
+                    'src_name': SourceName.ENSEMBL.value
+                }
+                batch.put_item(Item=other_id)
 
     def _add_gene(self, f, sr, accession_numbers):
         """Create a transformed gene record.

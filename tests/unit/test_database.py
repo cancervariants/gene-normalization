@@ -40,6 +40,6 @@ def db():
 
 def test_tables_created(db):
     """Check that gene_concepts and gene_metadata are created."""
-    existing_tables = db.ddb_client.list_tables()['TableNames']
+    existing_tables = db.dynamodb_client.list_tables()['TableNames']
     assert 'gene_concepts' in existing_tables
     assert 'gene_metadata' in existing_tables

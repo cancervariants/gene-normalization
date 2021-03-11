@@ -224,6 +224,7 @@ class MatchType(IntEnum):
     SYMBOL = 100
     PREV_SYMBOL = 80
     ALIAS = 60
+    OTHER_ID = 60
     FUZZY_MATCH = 20
     NO_MATCH = 0
 

@@ -32,13 +32,13 @@ class InvalidParameterException(Exception):
         super().__init__(message)
 
 
-class Normalizer:
+class QueryHandler:
     """Class for normalizer management. Stores reference to database instance
     and normalizes query input.
     """
 
     def __init__(self, db_url: str = '', db_region: str = 'us-east-2'):
-        """Initialize Normalizer instance.
+        """Initialize QueryHandler instance.
 
         :param str db_url: URL to database source.
         :param str db_region: AWS default region.
@@ -232,12 +232,12 @@ class Normalizer:
             print(e.response['Error']['Message'])
         return (resp, sources)
 
-    def response_keyed(self, query: str, sources: Set[str]) -> Dict:
+    def response_keyed(self, query: str, sources: List[str]) -> Dict:
         """Return response as dict where key is source name and value
         is a list of records. Corresponds to `keyed=true` API parameter.
 
         :param str query: string to match against
-        :param Set[str] sources: sources to match from
+        :param List[str] sources: sources to match from
         :return: completed response object to return to client
         """
         resp = {
@@ -257,7 +257,7 @@ class Normalizer:
         if len(sources) == 0:
             return resp
 
-        match_types = ['symbol', 'prev_symbol', 'alias']
+        match_types = ['symbol', 'prev_symbol', 'alias', 'other_id']
         for match in match_types:
             (resp, sources) = self.check_match_type(
                 query_l, resp, sources, match)
@@ -291,8 +291,8 @@ class Normalizer:
 
         return response_dict
 
-    def normalize(self, query_str: str, keyed: bool = False,
-                  incl: str = '', excl: str = '', **params):
+    def search_sources(self, query_str: str, keyed: bool = False,
+                       incl: str = '', excl: str = '', **params):
         """Fetch normalized gene objects.
 
         :param str query_str: query, a string, to search for

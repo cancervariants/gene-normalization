@@ -284,6 +284,15 @@ class NCBI(Base):
                     'src_name': SourceName.NCBI.value
                 })
 
+        if 'other_identifiers' in item and item['other_identifiers']:
+            for other_id in item['other_identifiers']:
+                pk = f"{other_id.lower()}##other_id"
+                batch.put_item(Item={
+                    'label_and_type': pk,
+                    'concept_id': concept_id_lower,
+                    'src_name': SourceName.NCBI.value
+                })
+
         filtered_item = {k: v for k, v in item.items() if v is not None}
         item.clear()
         item.update(filtered_item)
