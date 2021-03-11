@@ -11,14 +11,14 @@ for direction on installing pipenv in your compute environment.
  
 Once installed, from the project root dir, just run:
 
-```shell script
+```commandline
 pipenv sync
 ```
 
 Gene Normalization relies on [SeqRepo](https://github.com/biocommons/biocommons.seqrepo) data. 
 
 From the _gene_ directory of the repository:
-```
+```commandline
 pip install seqrepo
 mkdir -p data/seqrepo
 seqrepo -r data/seqrepo pull -i 2020-11-27
@@ -47,7 +47,7 @@ This ensures:
 
 Before first commit run:
 
-```
+```commandline
 pre-commit install
 ```
 
@@ -56,7 +56,7 @@ pre-commit install
 
 Running unit tests is as easy as pytest.
 
-```
+```commandline
 pipenv run pytest
 ```
 
@@ -77,7 +77,7 @@ To update one source, simply set `--normalizer` to the source you wish to update
 
 From the project root, run the following to update the HGNC source:
 
-```
+```commandline
 python3 -m gene.cli --normalizer="hgnc"
 ```
 
@@ -89,34 +89,28 @@ To update all sources, use the `--update_all` flag.
 
 From the project root, run the following to update all sources:
 
-```
+```commandline
 python3 -m gene.cli --update_all
 ```
 
 #### Specifying the database URL endpoint
+The default URL endpoint is `http://localhost:8000`.
+There are two different ways to specify the database URL endpoint. 
 
-To specify the database URL endpoint, simply set `--db_url` to the endpoint you want to use. You must also include `--normalizer` or `--update_all`.
-
-From the project root, run the following to update all sources from the database with URL endpoint `http://localhost:8001`:
-
-```
+The first way is to set the `--db_url` flag to the URL endpoint.
+```commandline
 python3 -m gene.cli --update_all --db_url="http://localhost:8001"
 ```
-
-From the project root, run the following to update all sources from the database with URL endpoint `http://localhost:8000`:
-```
-python3 -m gene.cli --update_all --dev
+ 
+The second way is to set the `GENE_NORM_DB_URL` to the URL endpoint.
+```commandline
+export GENE_NORM_DB_URL="http://localhost:8001"
+python3 -m gene.cli --update_all
 ```
 
 ### Starting the gene normalization service
-You must set the `GENE_NORM_DB_URL` enviornment variable to the database URL endpoint. 
-```shell script
- export GENE_NORM_DB_URL=http://localhost:8000
-```
-
-With the environment variable now set, you can start the application. From the project root, run the following:
-
-```shell script
+From the project root, run the following:
+```commandline
  uvicorn gene.main:app --reload
 ```
 
