@@ -15,11 +15,12 @@ class Database:
         :param str db_url: URL endpoint for DynamoDB source
         :param str region_name: default AWS region
         """
-        if 'GENE_NORM_PROD' in environ.keys():
+        env_keys = environ.keys()
+        if 'GENE_NORM_PROD' in env_keys or 'GENE_NORM_EB_PROD' in env_keys:
             boto_params = {
                 'region_name': region_name
             }
-            if 'GENE_NORM_EB_PROD' not in environ.keys():
+            if 'GENE_NORM_EB_PROD' not in env_keys:
                 # EB Instance should not have to confirm.
                 # This is used only for updating production via CLI
                 if click.confirm("Are you sure you want to use the "
@@ -31,7 +32,7 @@ class Database:
         else:
             if db_url:
                 endpoint_url = db_url
-            elif 'GENE_NORM_DB_URL' in environ.keys():
+            elif 'GENE_NORM_DB_URL' in env_keys:
                 endpoint_url = environ['GENE_NORM_DB_URL']
             else:
                 endpoint_url = 'http://localhost:8000'
@@ -45,7 +46,7 @@ class Database:
         self.dynamodb_client = boto3.client('dynamodb', **boto_params)
 
         # Create tables if nonexistent if not connecting to production database
-        if 'GENE_NORM_PROD' not in environ.keys():
+        if 'GENE_NORM_PROD' not in env_keys:
             existing_tables = self.dynamodb_client.list_tables()['TableNames']
             self.create_genes_table(existing_tables)
             self.create_meta_data_table(existing_tables)
