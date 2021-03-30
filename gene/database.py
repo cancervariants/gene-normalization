@@ -45,7 +45,7 @@ class Database:
         self.dynamodb_client = boto3.client('dynamodb', **boto_params)
 
         # Create tables if nonexistent if not connecting to production database
-        if 'GENE_NORM_PROD' not in environ or\
+        if 'GENE_NORM_PROD' not in environ and\
                 'GENE_NORM_EB_PROD' not in environ:
             existing_tables = self.dynamodb_client.list_tables()['TableNames']
             self.create_genes_table(existing_tables)
