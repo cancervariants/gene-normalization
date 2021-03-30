@@ -15,28 +15,27 @@ class Database:
         :param str db_url: URL endpoint for DynamoDB source
         :param str region_name: default AWS region
         """
-        env_keys = environ.keys()
-        if 'GENE_NORM_PROD' in env_keys or 'GENE_NORM_EB_PROD' in env_keys:
+        if 'GENE_NORM_PROD' in environ or 'GENE_NORM_EB_PROD' in environ:
             boto_params = {
                 'region_name': region_name
             }
-            if 'GENE_NORM_EB_PROD' not in env_keys:
+            if 'GENE_NORM_EB_PROD' not in environ:
                 # EB Instance should not have to confirm.
                 # This is used only for updating production via CLI
                 if click.confirm("Are you sure you want to use the "
                                  "production database?", default=False):
-                    click.echo("***PRODUCTION DATABASE IN USE***")
+                    click.echo("***GENE PRODUCTION DATABASE IN USE***")
                 else:
                     click.echo("Exiting.")
                     sys.exit()
         else:
             if db_url:
                 endpoint_url = db_url
-            elif 'GENE_NORM_DB_URL' in env_keys:
+            elif 'GENE_NORM_DB_URL' in environ:
                 endpoint_url = environ['GENE_NORM_DB_URL']
             else:
                 endpoint_url = 'http://localhost:8000'
-            click.echo(f"***Using Database Endpoint: {endpoint_url}***")
+            click.echo(f"***Using Gene Database Endpoint: {endpoint_url}***")
             boto_params = {
                 'region_name': region_name,
                 'endpoint_url': endpoint_url
@@ -46,7 +45,8 @@ class Database:
         self.dynamodb_client = boto3.client('dynamodb', **boto_params)
 
         # Create tables if nonexistent if not connecting to production database
-        if 'GENE_NORM_PROD' not in env_keys:
+        if 'GENE_NORM_PROD' not in environ or\
+                'GENE_NORM_EB_PROD' not in environ:
             existing_tables = self.dynamodb_client.list_tables()['TableNames']
             self.create_genes_table(existing_tables)
             self.create_meta_data_table(existing_tables)
