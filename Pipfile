@@ -5,11 +5,9 @@ name = "pypi"
 
 [packages]
 pydantic = "*"
-twine = "*"
 fastapi = "*"
 uvicorn = "*"
 click = "*"
-civicpy = "*"
 boto3 = "*"
 beautifulsoup4 = "*"
 gffutils = "*"
@@ -34,4 +32,4 @@ pytest-cov = "*"
 jupyterlab = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"
