@@ -308,8 +308,12 @@ class QueryHandler:
             provided, or if invalid source names are given.
         :return: dict containing all matches found in sources.
         """
-        sources = {name.value.lower(): name.value for name in
-                   SourceName.__members__.values()}
+        possible_sources = {name.value.lower(): name.value for name in
+                            SourceName.__members__.values()}
+        sources = dict()
+        for k, v in possible_sources.items():
+            if self.db.metadata.get_item(Key={'src_name': v}).get('Item'):
+                sources[k] = v
 
         if not incl and not excl:
             query_sources = set(sources.values())

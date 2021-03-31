@@ -10,7 +10,7 @@ logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
 
 
-__version__ = "0.1.4"
+__version__ = "0.1.5"
 
 
 class DownloadException(Exception):
