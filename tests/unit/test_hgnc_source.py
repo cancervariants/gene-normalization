@@ -932,15 +932,15 @@ def test_no_match(hgnc):
 def test_meta_info(a1bg_as1, hgnc):
     """Test that the meta field is correct."""
     normalizer_response = hgnc.search('HGNC:37133')
-    assert normalizer_response['meta_'].data_license == 'custom'
-    assert normalizer_response['meta_'].data_license_url == \
+    assert normalizer_response['source_meta_'].data_license == 'custom'
+    assert normalizer_response['source_meta_'].data_license_url == \
            'https://www.genenames.org/about/'
-    assert datetime.strptime(normalizer_response['meta_'].version, "%Y%m%d")
-    assert normalizer_response['meta_'].data_url == \
+    assert datetime.strptime(normalizer_response['source_meta_'].version, "%Y%m%d")  # noqa: E501
+    assert normalizer_response['source_meta_'].data_url == \
            'ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/'
-    assert normalizer_response['meta_'].rdp_url is None
-    assert normalizer_response['meta_'].genome_assemblies == []
-    assert normalizer_response['meta_'].data_license_attributes == {
+    assert normalizer_response['source_meta_'].rdp_url is None
+    assert normalizer_response['source_meta_'].genome_assemblies == []
+    assert normalizer_response['source_meta_'].data_license_attributes == {
         "non_commercial": False,
         "share_alike": False,
         "attribution": False
