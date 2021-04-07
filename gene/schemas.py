@@ -5,6 +5,7 @@ from typing import Type, List, Optional, Dict, Union, Any
 from pydantic import BaseModel, StrictBool
 from enum import Enum, IntEnum
 from pydantic.fields import Field
+from datetime import datetime
 
 
 class SymbolStatus(str, Enum):
@@ -286,7 +287,7 @@ class DataLicenseAttributes(BaseModel):
     attribution: StrictBool
 
 
-class Meta(BaseModel):
+class SourceMeta(BaseModel):
     """Metadata for a given source to return in response object."""
 
     data_license: str
@@ -302,7 +303,7 @@ class Meta(BaseModel):
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
-                         model: Type['Meta']) -> None:
+                         model: Type['SourceMeta']) -> None:
             """Configure OpenAPI schema"""
             if 'title' in schema.keys():
                 schema.pop('title', None)
@@ -330,7 +331,7 @@ class MatchesKeyed(BaseModel):
 
     match_type: MatchType
     records: List[Gene]
-    meta_: Meta
+    source_meta_: SourceMeta
 
     class Config:
         """Enables orm_mode"""
@@ -347,7 +348,7 @@ class MatchesKeyed(BaseModel):
                 "NCBI": {
                     "match_type": 0,
                     "records": [],
-                    "meta_": {
+                    "source_meta_": {
                         "data_license": "custom",
                         "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                         "version": "20201215",
@@ -372,7 +373,7 @@ class MatchesListed(BaseModel):
     source: SourceName
     match_type: MatchType
     records: List[Gene]
-    meta_: Meta
+    source_meta_: SourceMeta
 
     class Config:
         """Enables orm_mode"""
@@ -389,7 +390,7 @@ class MatchesListed(BaseModel):
                 "source": "NCBI",
                 "match_type": 0,
                 "records": [],
-                "meta_": {
+                "source_meta_": {
                     "data_license": "custom",
                     "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                     "version": "20201215",
@@ -402,6 +403,33 @@ class MatchesListed(BaseModel):
                     },
                     "genome_assemblies": None
                 }
+            }
+
+
+class ServiceMeta(BaseModel):
+    """Metadata regarding the gene-normalization service."""
+
+    name = "gene-normalizer"
+    version: str
+    response_datetime: datetime
+    url: str
+
+    class Config:
+        """Enables orm_mode"""
+
+        @staticmethod
+        def schema_extra(schema: Dict[str, Any],
+                         model: Type['ServiceMeta']) -> None:
+            """Configure OpenAPI schema"""
+            if 'title' in schema.keys():
+                schema.pop('title', None)
+            for prop in schema.get('properties', {}).values():
+                prop.pop('title', None)
+            schema['example'] = {
+                'name': 'gene-normalizer',
+                'version': '0.1.0',
+                'response_datetime': '2021-04-05T16:44:15.367831',
+                'url': 'https://github.com/cancervariants/gene-normalization'
             }
 
 
@@ -443,7 +471,7 @@ class Service(BaseModel):
                                 "locations": []
                             }
                         ],
-                        "meta_": {
+                        "source_meta_": {
                             "data_license": "custom",
                             "data_license_url": "https://uswest.ensembl.org/info/about/legal/index.html",  # noqa: E501
                             "version": "102",
@@ -457,5 +485,11 @@ class Service(BaseModel):
                             "genome_assemblies": "GRCh38"
                         }
                     }
-                ]
+                ],
+                "service_meta_": {
+                    'name': 'gene-normalizer',
+                    'version': '0.1.0',
+                    'response_datetime': '2021-04-05T16:44:15.367831',
+                    'url': 'https://github.com/cancervariants/gene-normalization'  # noqa: E501
+                }
             }

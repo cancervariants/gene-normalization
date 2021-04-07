@@ -2,6 +2,7 @@
 from gene.query import QueryHandler, InvalidParameterException
 from gene.schemas import SourceName, MatchType
 import pytest
+from datetime import datetime
 
 
 @pytest.fixture(scope='module')
@@ -145,3 +146,15 @@ def test_abl1_query(query_handler, num_sources):
     assert matches['HGNC']['match_type'] == MatchType.OTHER_ID
     assert matches['Ensembl']['match_type'] == MatchType.CONCEPT_ID
     assert matches['NCBI']['match_type'] == MatchType.OTHER_ID
+
+
+def test_service_meta(query_handler):
+    """Test service meta info in response."""
+    test_query = "pheno"
+
+    response = query_handler.search(test_query)
+    service_meta = response['service_meta_']
+    assert service_meta.name == "gene-normalizer"
+    assert service_meta.version >= "0.1.5"
+    assert isinstance(service_meta.response_datetime, datetime)
+    assert service_meta.url == 'https://github.com/cancervariants/gene-normalization'  # noqa: E501

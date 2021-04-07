@@ -2,11 +2,13 @@
 import re
 from typing import List, Dict, Set
 from uvicorn.config import logger
+from gene import __version__
 from gene.database import Database
-from gene.schemas import Gene, Meta, MatchType, SourceName, \
-    NamespacePrefix, SourceIDAfterNamespace
+from gene.schemas import Gene, SourceMeta, MatchType, SourceName, \
+    NamespacePrefix, SourceIDAfterNamespace, ServiceMeta
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
+from datetime import datetime
 
 # use to fetch source name from schema based on concept id namespace
 # e.g. {'hgnc': 'HGNC'}
@@ -60,11 +62,11 @@ class QueryHandler:
             )
         return warnings
 
-    def fetch_meta(self, src_name: str) -> Meta:
+    def fetch_meta(self, src_name: str) -> SourceMeta:
         """Fetch metadata for src_name.
 
         :param str src_name: name of source to get metadata for
-        :return: Meta object containing source metadata
+        :return: SourceMeta object containing source metadata
         """
         if src_name in self.db.cached_sources.keys():
             return self.db.cached_sources[src_name]
@@ -72,7 +74,7 @@ class QueryHandler:
             try:
                 db_response = self.db.metadata.get_item(Key={'src_name':
                                                              src_name})
-                response = Meta(**db_response['Item'])
+                response = SourceMeta(**db_response['Item'])
                 self.db.cached_sources[src_name] = response
                 return response
             except ClientError as e:
@@ -108,7 +110,7 @@ class QueryHandler:
             matches[src_name] = {
                 'match_type': match_type,
                 'records': [gene],
-                'meta_': self.fetch_meta(src_name)
+                'source_meta_': self.fetch_meta(src_name)
             }
         elif matches[src_name]['match_type'].value == match_type.value:
             matches[src_name]['records'].append(gene)
@@ -157,7 +159,7 @@ class QueryHandler:
                 resp['source_matches'][src_name] = {
                     'match_type': MatchType.NO_MATCH,
                     'records': [],
-                    'meta_': self.fetch_meta(src_name)
+                    'source_meta_': self.fetch_meta(src_name)
                 }
         return resp
 
@@ -353,5 +355,11 @@ class QueryHandler:
             resp = self.response_keyed(query_str, query_sources)
         else:
             resp = self.response_list(query_str, query_sources)
+
+        resp['service_meta_'] = ServiceMeta(
+            version=__version__,
+            response_datetime=datetime.now(),
+            url="https://github.com/cancervariants/gene-normalization"
+        )
 
         return resp

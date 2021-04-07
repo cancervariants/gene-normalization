@@ -1,7 +1,7 @@
 """This module defines the Ensembl ETL methods."""
 from .base import Base
 from gene import PROJECT_ROOT
-from gene.schemas import SourceName, NamespacePrefix, Strand, Gene, Meta
+from gene.schemas import SourceName, NamespacePrefix, Strand, Gene, ServiceMeta
 import logging
 from gene.database import Database
 import gffutils
@@ -238,7 +238,7 @@ class Ensembl(Base):
 
     def _add_meta(self, *args, **kwargs):
         """Add Ensembl metadata."""
-        metadata = Meta(
+        metadata = ServiceMeta(
             data_license='custom',
             data_license_url='https://useast.ensembl.org/info/about'
                              '/legal/disclaimer.html',

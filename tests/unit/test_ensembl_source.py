@@ -439,15 +439,15 @@ def test_no_match(ensembl):
 def test_meta_info(ddx11l1, ensembl):
     """Test that the meta field is correct."""
     normalizer_response = ensembl.search('chromosome:1')
-    assert normalizer_response['meta_'].data_license == 'custom'
-    assert normalizer_response['meta_'].data_license_url ==\
+    assert normalizer_response['source_meta_'].data_license == 'custom'
+    assert normalizer_response['source_meta_'].data_license_url ==\
            'https://useast.ensembl.org/info/about/legal/disclaimer.html'
-    assert normalizer_response['meta_'].version == '102'
-    assert normalizer_response['meta_'].data_url == \
+    assert normalizer_response['source_meta_'].version == '102'
+    assert normalizer_response['source_meta_'].data_url == \
            'ftp://ftp.ensembl.org/pub/'
-    assert normalizer_response['meta_'].rdp_url is None
-    assert normalizer_response['meta_'].genome_assemblies == ['GRCh38']
-    assert normalizer_response['meta_'].data_license_attributes == {
+    assert normalizer_response['source_meta_'].rdp_url is None
+    assert normalizer_response['source_meta_'].genome_assemblies == ['GRCh38']
+    assert normalizer_response['source_meta_'].data_license_attributes == {
         "non_commercial": False,
         "share_alike": False,
         "attribution": False
