@@ -409,10 +409,10 @@ class MatchesListed(BaseModel):
 class ServiceMeta(BaseModel):
     """Metadata regarding the gene-normalization service."""
 
-    name = "gene-normalizer"
+    name = 'gene-normalizer'
     version: str
     response_datetime: datetime
-    url: str
+    url = 'https://github.com/cancervariants/gene-normalization'
 
     class Config:
         """Enables orm_mode"""

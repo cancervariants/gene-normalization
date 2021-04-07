@@ -359,7 +359,6 @@ class QueryHandler:
         resp['service_meta_'] = ServiceMeta(
             version=__version__,
             response_datetime=datetime.now(),
-            url="https://github.com/cancervariants/gene-normalization"
         )
 
         return resp
