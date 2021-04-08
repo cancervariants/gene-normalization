@@ -94,6 +94,7 @@ class Ensembl(Base):
                             assert Gene(**gene)
                             self._load_symbol(gene, batch)
                             self._load_other_ids(gene, batch)
+                            self._load_xrefs(gene, batch)
                             batch.put_item(Item=gene)
 
     def _load_symbol(self, gene, batch):
@@ -123,6 +124,21 @@ class Ensembl(Base):
                     'src_name': SourceName.ENSEMBL.value
                 }
                 batch.put_item(Item=other_id)
+
+    def _load_xrefs(self, gene, batch):
+        """Load xref records into database.
+
+        :param dict gene: A transformed gene record
+        :param BatchWriter batch: Object to write data to DynamoDB
+        """
+        if 'xrefs' in gene and gene['xrefs']:
+            for xref in gene['xrefs']:
+                item = {
+                    'label_and_type': f"{xref.lower()}##xref",
+                    'concept_id': f"{gene['concept_id'].lower()}",
+                    'src_name': SourceName.ENSEMBL.value
+                }
+                batch.put_item(Item=item)
 
     def _add_gene(self, f, sr, accession_numbers):
         """Create a transformed gene record.
