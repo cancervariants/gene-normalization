@@ -2,7 +2,7 @@
 from .base import Base, NORMALIZER_SRC_PREFIXES
 from gene import PROJECT_ROOT
 from gene.database import Database
-from gene.schemas import ServiceMeta, Gene, SourceName, NamespacePrefix, \
+from gene.schemas import SourceMeta, Gene, SourceName, NamespacePrefix, \
     Annotation, Chromosome
 import logging
 from pathlib import Path
@@ -579,7 +579,7 @@ class NCBI(Base):
         if self._data_url.startswith("http"):
             self._data_url = f"ftp://{self._data_url.split('://')[-1]}"
 
-        metadata = ServiceMeta(
+        metadata = SourceMeta(
             data_license="custom",
             data_license_url="https://www.ncbi.nlm.nih.gov/home/"
                              "about/policies/",

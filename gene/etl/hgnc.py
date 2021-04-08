@@ -2,7 +2,7 @@
 from .base import Base, NORMALIZER_SRC_PREFIXES
 from gene import PROJECT_ROOT, DownloadException
 from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene, \
-    ServiceMeta, Annotation, Chromosome
+    SourceMeta, Annotation, Chromosome
 from gene.database import Database
 import logging
 import json
@@ -370,7 +370,7 @@ class HGNC(Base):
         if self._data_url.startswith("http"):
             self._data_url = f"ftp://{self._data_url.split('://')[-1]}"
 
-        metadata = ServiceMeta(
+        metadata = SourceMeta(
             data_license='custom',
             data_license_url='https://www.genenames.org/about/',
             version=self._version,
