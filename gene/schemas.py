@@ -439,6 +439,7 @@ class Service(BaseModel):
     query: str
     warnings: Optional[List]
     source_matches: Union[Dict[SourceName, MatchesKeyed], List[MatchesListed]]
+    service_meta_: ServiceMeta
 
     class Config:
         """Enables orm_mode"""
