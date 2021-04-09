@@ -168,7 +168,7 @@
     "src_name": "Ensembl"
   },
   {
-    "label_and_type": "mirbase:mi0006387",
+    "label_and_type": "mirbase:mi0006387##xref",
     "concept_id": "ensembl:ENSG00000272920",
     "src_name": "Ensembl"
   },
