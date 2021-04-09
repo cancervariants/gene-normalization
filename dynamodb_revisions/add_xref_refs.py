@@ -10,8 +10,8 @@ sys.path.append(f"{PROJECT_ROOT}")
 from gene.database import Database  # noqa: E402
 
 
-def add_other_id_refs():
-    """Add other_id reference for other_identifiers attribute."""
+def add_xref_refs():
+    """Add xref reference for other_identifiers attribute."""
     db = Database()
     batch = db.genes.batch_writer()
 
@@ -40,6 +40,6 @@ def add_other_id_refs():
 if __name__ == '__main__':
     click.echo("Adding xref references...")
     start = timer()
-    add_other_id_refs()
+    add_xref_refs()
     end = timer()
     click.echo(f"Finished adding xref references in {end - start:.5f}s.")
