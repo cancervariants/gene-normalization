@@ -407,10 +407,6 @@ def test_spry3(ensembl, spry3):
     normalizer_response = ensembl.search('spry3')
     assertion_checks(normalizer_response, spry3, 1, MatchType.SYMBOL)
 
-    # Xref
-    normalizer_response = ensembl.search('omim:300531')
-    assertion_checks(normalizer_response, spry3, 1, MatchType.XREF)
-
 
 def test_bx004987_1(ensembl, bx004987_1):
     """Test that tp53 normalizes to correct gene concept."""

@@ -201,11 +201,6 @@
     "src_name": "Ensembl"
   },
   {
-    "label_and_type": "omim:300531##xref",
-    "concept_id": "ensembl:ENSG00000168939",
-    "src_name": "Ensembl"
-  },
-  {
     "label_and_type": "spry3##symbol",
     "concept_id": "ensembl:ensg00000168939",
     "src_name": "Ensembl"
