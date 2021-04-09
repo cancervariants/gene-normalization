@@ -259,7 +259,7 @@ class QueryHandler:
         if len(sources) == 0:
             return resp
 
-        match_types = ['symbol', 'prev_symbol', 'alias', 'other_id']
+        match_types = ['symbol', 'prev_symbol', 'alias', 'other_id', 'xref']
         for match in match_types:
             (resp, sources) = self.check_match_type(
                 query_l, resp, sources, match)
