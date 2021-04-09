@@ -360,6 +360,10 @@ def test_AC091057_5(ensembl, AC091057_5):
     normalizer_response = ensembl.search('AC091057.5')
     assertion_checks(normalizer_response, AC091057_5, 1, MatchType.SYMBOL)
 
+    # Xref
+    normalizer_response = ensembl.search('uniprot:Q3KRB8')
+    assertion_checks(normalizer_response, AC091057_5, 1, MatchType.XREF)
+
 
 def test_hsa_mir_1253(ensembl, hsa_mir_1253):
     """Test that hsa-mir-1253 normalizes to correct gene concept."""
@@ -381,6 +385,11 @@ def test_hsa_mir_1253(ensembl, hsa_mir_1253):
     assertion_checks(normalizer_response, hsa_mir_1253, 1,
                      MatchType.SYMBOL)
 
+    # Xref
+    normalizer_response = ensembl.search('mirbase:MI0006387')
+    assertion_checks(normalizer_response, hsa_mir_1253, 1,
+                     MatchType.XREF)
+
 
 def test_spry3(ensembl, spry3):
     """Test that spry3 normalizes to correct gene concept."""
@@ -397,6 +406,10 @@ def test_spry3(ensembl, spry3):
     # Symbol
     normalizer_response = ensembl.search('spry3')
     assertion_checks(normalizer_response, spry3, 1, MatchType.SYMBOL)
+
+    # Xref
+    normalizer_response = ensembl.search('omim:300531')
+    assertion_checks(normalizer_response, spry3, 1, MatchType.XREF)
 
 
 def test_bx004987_1(ensembl, bx004987_1):

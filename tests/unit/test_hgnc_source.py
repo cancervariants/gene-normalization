@@ -897,6 +897,10 @@ def test_myo5b(myo5b, hgnc):
     normalizer_response = hgnc.search('MYO5B')
     assertion_checks(normalizer_response, myo5b, 1, MatchType.SYMBOL)
 
+    # Xref
+    normalizer_response = hgnc.search('refseq:NM_001080467')
+    assertion_checks(normalizer_response, myo5b, 1, MatchType.XREF)
+
 
 def test_gstt1(gstt1, hgnc):
     """Test that gstt1 normalizes to correct gene concept."""
@@ -907,6 +911,10 @@ def test_gstt1(gstt1, hgnc):
     # Symbol
     normalizer_response = hgnc.search('GSTT1')
     assertion_checks(normalizer_response, gstt1, 1, MatchType.SYMBOL)
+
+    # Xref
+    normalizer_response = hgnc.search('omim:600436')
+    assertion_checks(normalizer_response, gstt1, 1, MatchType.XREF)
 
 
 def test_no_match(hgnc):
