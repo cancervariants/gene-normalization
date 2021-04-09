@@ -13,4 +13,4 @@ RUN apt update ; apt install -y rsync
 HEALTHCHECK --interval=5m --timeout=3s \
     CMD curl -f http://localhost/gene || exit 1
 
-CMD pipenv run uvicorn gene.main:app --reload --port 80 --host 0.0.0.0
+CMD pipenv run uvicorn gene.main:app --port 80 --host 0.0.0.0
