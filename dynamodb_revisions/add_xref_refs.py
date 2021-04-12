@@ -11,7 +11,7 @@ from gene.database import Database  # noqa: E402
 
 
 def add_xref_refs():
-    """Add xref reference for other_identifiers attribute."""
+    """Add reference for xrefs attribute."""
     db = Database()
     batch = db.genes.batch_writer()
 
@@ -42,4 +42,4 @@ if __name__ == '__main__':
     start = timer()
     add_xref_refs()
     end = timer()
-    click.echo(f"Finished adding xref references in {end - start:.5f}s.")
+    click.echo(f"finished adding xref references in {end - start:.5f}s.")
