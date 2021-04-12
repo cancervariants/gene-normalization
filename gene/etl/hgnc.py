@@ -124,6 +124,7 @@ class HGNC(Base):
         self._load_aliases(gene, batch)
         self._load_previous_symbols(gene, batch)
         self._load_other_ids(gene, batch)
+        self._load_xrefs(gene, batch)
         batch.put_item(Item=gene)
 
     def _load_approved_symbol(self, gene, batch):
@@ -216,6 +217,21 @@ class HGNC(Base):
                     'src_name': SourceName.HGNC.value
                 }
                 batch.put_item(Item=other_id)
+
+    def _load_xrefs(self, gene, batch):
+        """Insert xref data into the database.
+
+        :param dict gene: A transformed gene record
+        :param BatchWriter batch: Object to write data to DynamoDB
+        """
+        if 'xrefs' in gene:
+            for xref in gene['xrefs']:
+                item = {
+                    'label_and_type': f"{xref.lower()}##xref",
+                    'concept_id': f"{gene['concept_id'].lower()}",
+                    'src_name': SourceName.HGNC.value
+                }
+                batch.put_item(Item=item)
 
     def _get_other_ids_xrefs(self, r, gene):
         """Store other identifiers and/or xrefs in a gene record.

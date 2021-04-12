@@ -552,6 +552,10 @@ def test_dpf1(ncbi, dpf1):
     normalizer_response = ncbi.search('neuro-d4')
     assertion_checks(normalizer_response, dpf1, 1, MatchType.ALIAS)
 
+    # Xref
+    normalizer_response = ncbi.search('omim:601670')
+    assertion_checks(normalizer_response, dpf1, 1, MatchType.XREF)
+
     # No Match
     normalizer_response = ncbi.search('DPF 1')
     assert normalizer_response['match_type'] == 0
@@ -688,6 +692,10 @@ def test_glc1b(ncbi, glc1b):
     normalizer_response = ncbi.search('GLC1B')
     assertion_checks(normalizer_response, glc1b, 1, MatchType.SYMBOL)
 
+    # Xref
+    normalizer_response = ncbi.search('omim:606689')
+    assertion_checks(normalizer_response, glc1b, 1, MatchType.XREF)
+
 
 def test_hdpa(ncbi, hdpa):
     """Test that HDPA normalizes to correct gene concept."""
@@ -710,6 +718,10 @@ def test_prkrap1(ncbi, prkrap1):
     normalizer_response = ncbi.search('PRKRAP1')
     assertion_checks(normalizer_response, prkrap1, 1, MatchType.SYMBOL)
 
+    # Other ID
+    normalizer_response = ncbi.search('hgnc:33447')
+    assertion_checks(normalizer_response, prkrap1, 1, MatchType.OTHER_ID)
+
 
 def test_mhb(ncbi, mhb):
     """Test that MHB normalizes to correct gene concept."""
@@ -721,6 +733,10 @@ def test_mhb(ncbi, mhb):
     normalizer_response = ncbi.search('MHB')
     assertion_checks(normalizer_response, mhb, 1, MatchType.SYMBOL)
 
+    # Xref
+    normalizer_response = ncbi.search('OMIM:255160')
+    assertion_checks(normalizer_response, mhb, 1, MatchType.XREF)
+
 
 def test_spg37(ncbi, spg37):
     """Test that SPG37 normalizes to correct gene concept."""
@@ -731,6 +747,10 @@ def test_spg37(ncbi, spg37):
     # Symbol
     normalizer_response = ncbi.search('SPG37')
     assertion_checks(normalizer_response, spg37, 1, MatchType.SYMBOL)
+
+    # Xref
+    normalizer_response = ncbi.search('omim:611945')
+    assertion_checks(normalizer_response, spg37, 1, MatchType.XREF)
 
 
 def test_no_match(ncbi):

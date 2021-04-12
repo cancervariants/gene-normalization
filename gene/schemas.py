@@ -226,6 +226,7 @@ class MatchType(IntEnum):
     PREV_SYMBOL = 80
     ALIAS = 60
     OTHER_ID = 60
+    XREF = 60
     FUZZY_MATCH = 20
     NO_MATCH = 0
 
@@ -439,6 +440,7 @@ class Service(BaseModel):
     query: str
     warnings: Optional[List]
     source_matches: Union[Dict[SourceName, MatchesKeyed], List[MatchesListed]]
+    service_meta_: ServiceMeta
 
     class Config:
         """Enables orm_mode"""

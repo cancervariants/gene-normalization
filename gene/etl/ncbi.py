@@ -293,6 +293,15 @@ class NCBI(Base):
                     'src_name': SourceName.NCBI.value
                 })
 
+        if 'xrefs' in item and item['xrefs']:
+            for xref in item['xrefs']:
+                pk = f"{xref.lower()}##xref"
+                batch.put_item(Item={
+                    'label_and_type': pk,
+                    'concept_id': concept_id_lower,
+                    'src_name': SourceName.NCBI.value
+                })
+
         filtered_item = {k: v for k, v in item.items() if v is not None}
         item.clear()
         item.update(filtered_item)
