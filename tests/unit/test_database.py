@@ -4,7 +4,7 @@ from gene.database import Database
 import json
 import os
 from pathlib import Path
-
+from boto3.dynamodb.conditions import Key
 
 TEST_ROOT = Path(__file__).resolve().parents[2]
 
@@ -43,3 +43,36 @@ def test_tables_created(db):
     existing_tables = db.dynamodb_client.list_tables()['TableNames']
     assert 'gene_concepts' in existing_tables
     assert 'gene_metadata' in existing_tables
+
+
+def test_item_type(db):
+    """Check that items are tagged with item_type attribute."""
+    filter_exp = Key('label_and_type').eq('ncbigene:43##identity')
+    item = db.therapies.query(KeyConditionExpression=filter_exp)['Items'][0]
+    assert 'item_type' in item
+    assert item['item_type'] == 'identity'
+
+    filter_exp = Key('label_and_type').eq('prkrap1##symbol')
+    item = db.therapies.query(KeyConditionExpression=filter_exp)['Items'][0]
+    assert 'item_type' in item
+    assert item['item_type'] == 'symbol'
+
+    filter_exp = Key('label_and_type').eq('a1bgas##prev_symbol')
+    item = db.therapies.query(KeyConditionExpression=filter_exp)['Items'][0]
+    assert 'item_type' in item
+    assert item['item_type'] == 'prev_symbol'
+
+    filter_exp = Key('label_and_type').eq('flj23569##alias')
+    item = db.therapies.query(KeyConditionExpression=filter_exp)['Items'][0]
+    assert 'item_type' in item
+    assert item['item_type'] == 'alias'
+
+    filter_exp = Key('label_and_type').eq('omim:606689##xref')
+    item = db.therapies.query(KeyConditionExpression=filter_exp)['Items'][0]
+    assert 'item_type' in item
+    assert item['item_type'] == 'xref'
+
+    filter_exp = Key('label_and_type').eq('ensembl:ensg00000097007##other_id')
+    item = db.therapies.query(KeyConditionExpression=filter_exp)['Items'][0]
+    assert 'item_type' in item
+    assert item['item_type'] == 'other_id'
