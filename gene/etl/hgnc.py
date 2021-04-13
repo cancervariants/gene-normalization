@@ -191,7 +191,6 @@ class HGNC(Base):
     def _load_previous_symbols(self, gene, batch):
         """Load previous symbols to a gene record.
 
-        :param dict r: A gene record in the HGNC data file
         :param dict gene: A transformed gene record
         :param BatchWriter batch: Object to write data to DynamoDB
         """
