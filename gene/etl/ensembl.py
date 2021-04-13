@@ -106,7 +106,8 @@ class Ensembl(Base):
         symbol = {
             'label_and_type': f"{gene['symbol'].lower()}##symbol",
             'concept_id': f"{gene['concept_id'].lower()}",
-            'src_name': SourceName.ENSEMBL.value
+            'src_name': SourceName.ENSEMBL.value,
+            'item_type': 'symbol',
         }
         batch.put_item(Item=symbol)
 
@@ -121,7 +122,8 @@ class Ensembl(Base):
                 other_id = {
                     'label_and_type': f"{other_id.lower()}##other_id",
                     'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.ENSEMBL.value
+                    'src_name': SourceName.ENSEMBL.value,
+                    'item_type': 'other_id',
                 }
                 batch.put_item(Item=other_id)
 
@@ -136,7 +138,8 @@ class Ensembl(Base):
                 item = {
                     'label_and_type': f"{xref.lower()}##xref",
                     'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.ENSEMBL.value
+                    'src_name': SourceName.ENSEMBL.value,
+                    'item_type': 'xref',
                 }
                 batch.put_item(Item=item)
 
@@ -164,6 +167,7 @@ class Ensembl(Base):
 
         gene['label_and_type'] = \
             f"{gene['concept_id'].lower()}##identity"
+        gene['item_type'] = 'identity'
 
         return gene
 

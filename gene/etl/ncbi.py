@@ -259,7 +259,8 @@ class NCBI(Base):
         batch.put_item(Item={
             'label_and_type': pk,
             'concept_id': concept_id_lower,
-            'src_name': SourceName.NCBI.value
+            'src_name': SourceName.NCBI.value,
+            'item_type': 'symbol',
         })
 
         if 'aliases' in item and item['aliases']:
@@ -270,7 +271,8 @@ class NCBI(Base):
                 batch.put_item(Item={
                     'label_and_type': pk,
                     'concept_id': concept_id_lower,
-                    'src_name': SourceName.NCBI.value
+                    'src_name': SourceName.NCBI.value,
+                    'item_type': 'alias',
                 })
 
         if 'previous_symbols' in item and item['previous_symbols']:
@@ -281,7 +283,8 @@ class NCBI(Base):
                 batch.put_item(Item={
                     'label_and_type': pk,
                     'concept_id': concept_id_lower,
-                    'src_name': SourceName.NCBI.value
+                    'src_name': SourceName.NCBI.value,
+                    'item_type': 'prev_symbol'
                 })
 
         if 'other_identifiers' in item and item['other_identifiers']:
@@ -290,7 +293,8 @@ class NCBI(Base):
                 batch.put_item(Item={
                     'label_and_type': pk,
                     'concept_id': concept_id_lower,
-                    'src_name': SourceName.NCBI.value
+                    'src_name': SourceName.NCBI.value,
+                    'item_type': 'other_id',
                 })
 
         if 'xrefs' in item and item['xrefs']:
@@ -299,7 +303,8 @@ class NCBI(Base):
                 batch.put_item(Item={
                     'label_and_type': pk,
                     'concept_id': concept_id_lower,
-                    'src_name': SourceName.NCBI.value
+                    'src_name': SourceName.NCBI.value,
+                    'item_type': 'xref',
                 })
 
         filtered_item = {k: v for k, v in item.items() if v is not None}
@@ -308,6 +313,7 @@ class NCBI(Base):
 
         item['label_and_type'] = f"{concept_id_lower}##identity"
         item['src_name'] = SourceName.NCBI.value
+        item['item_type'] = 'identity'
         batch.put_item(Item=item)
 
     def _add_gff_gene(self, db, f, sr, f_id):
