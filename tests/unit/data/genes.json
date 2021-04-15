@@ -1151,7 +1151,8 @@
   {
     "label_and_type": "ensembl:ensg00000097007##other_id",
     "concept_id": "hgnc:76",
-    "src_name": "HGNC"
+    "src_name": "HGNC",
+    "item_type": "other_id"
   },
   {
     "label_and_type": "ncbigene:8193##identity",
