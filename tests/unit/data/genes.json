@@ -372,7 +372,8 @@
   {
     "label_and_type": "a1bgas##prev_symbol",
     "concept_id": "hgnc:37133",
-    "src_name": "HGNC"
+    "src_name": "HGNC",
+    "item_type": "prev_symbol"
   },
   {
     "label_and_type": "a1bg-as##prev_symbol",
@@ -382,7 +383,8 @@
   {
     "label_and_type": "flj23569##alias",
     "concept_id": "hgnc:37133",
-    "src_name": "HGNC"
+    "src_name": "HGNC",
+    "item_type": "alias"
   },
   {
     "label_and_type": "hgnc:11998##identity",
@@ -1149,7 +1151,8 @@
   {
     "label_and_type": "ensembl:ensg00000097007##other_id",
     "concept_id": "hgnc:76",
-    "src_name": "HGNC"
+    "src_name": "HGNC",
+    "item_type": "other_id"
   },
   {
     "label_and_type": "ncbigene:8193##identity",
@@ -1578,7 +1581,8 @@
   {
     "label_and_type": "omim:606689##xref",
     "concept_id": "ncbigene:2722",
-    "src_name": "NCBI"
+    "src_name": "NCBI",
+    "item_type": "xref"
   },
   {
     "label_and_type": "glc1b##symbol",
@@ -1671,7 +1675,8 @@
   {
     "label_and_type": "prkrap1##symbol",
     "concept_id": "ncbigene:731716",
-    "src_name": "NCBI"
+    "src_name": "NCBI",
+    "item_type": "symbol"
   },
   {
     "label_and_type": "ncbigene:619511##identity",
@@ -1741,6 +1746,7 @@
   },
   {
     "label_and_type": "ncbigene:43##identity",
+    "item_type": "identity",
     "label": "acetylcholinesterase (Cartwright blood group)",
     "concept_id": "ncbigene:43",
     "symbol": "ACHE",
@@ -1917,6 +1923,7 @@
   {
     "label_and_type": "ensembl:ensg00000097007##other_id",
     "concept_id": "ncbigene:25",
-    "src_name": "NCBI"
+    "src_name": "NCBI",
+    "item_type": "other_id"
   }
 ]

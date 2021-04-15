@@ -86,6 +86,10 @@ class Database:
                     {
                         'AttributeName': 'src_name',
                         'AttributeType': 'S'
+                    },
+                    {
+                        'AttributeName': 'item_type',
+                        'AttributeType': 'S'
                     }
 
                 ],
@@ -95,6 +99,22 @@ class Database:
                         'KeySchema': [
                             {
                                 'AttributeName': 'src_name',
+                                'KeyType': 'HASH'
+                            }
+                        ],
+                        'Projection': {
+                            'ProjectionType': 'KEYS_ONLY'
+                        },
+                        'ProvisionedThroughput': {
+                            'ReadCapacityUnits': 10,
+                            'WriteCapacityUnits': 10
+                        }
+                    },
+                    {
+                        'IndexName': 'item_type_index',
+                        'KeySchema': [
+                            {
+                                'AttributeName': 'item_type',
                                 'KeyType': 'HASH'
                             }
                         ],

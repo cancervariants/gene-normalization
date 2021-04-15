@@ -90,6 +90,7 @@ class HGNC(Base):
                 gene['concept_id'] = r['hgnc_id'].lower()
                 gene['label_and_type'] = \
                     f"{gene['concept_id']}##identity"
+                gene['item_type'] = 'identity'
                 gene['symbol'] = r['symbol']
                 gene['label'] = r['name']
                 gene['src_name'] = SourceName.HGNC.value
@@ -137,7 +138,8 @@ class HGNC(Base):
             'label_and_type':
                 f"{gene['symbol'].lower()}##symbol",
             'concept_id': f"{gene['concept_id'].lower()}",
-            'src_name': SourceName.HGNC.value
+            'src_name': SourceName.HGNC.value,
+            'item_type': 'symbol',
         }
         batch.put_item(Item=symbol)
 
@@ -171,7 +173,8 @@ class HGNC(Base):
                 alias = {
                     'label_and_type': f"{alias}##alias",
                     'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.HGNC.value
+                    'src_name': SourceName.HGNC.value,
+                    'item_type': 'alias',
                 }
                 batch.put_item(Item=alias)
 
@@ -188,7 +191,6 @@ class HGNC(Base):
     def _load_previous_symbols(self, gene, batch):
         """Load previous symbols to a gene record.
 
-        :param dict r: A gene record in the HGNC data file
         :param dict gene: A transformed gene record
         :param BatchWriter batch: Object to write data to DynamoDB
         """
@@ -199,7 +201,8 @@ class HGNC(Base):
                 prev_symbol = {
                     'label_and_type': f"{prev_symbol}##prev_symbol",
                     'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.HGNC.value
+                    'src_name': SourceName.HGNC.value,
+                    'item_type': 'prev_symbol'
                 }
                 batch.put_item(Item=prev_symbol)
 
@@ -214,7 +217,8 @@ class HGNC(Base):
                 other_id = {
                     'label_and_type': f"{other_id.lower()}##other_id",
                     'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.HGNC.value
+                    'src_name': SourceName.HGNC.value,
+                    'item_type': 'other_id'
                 }
                 batch.put_item(Item=other_id)
 
@@ -229,7 +233,8 @@ class HGNC(Base):
                 item = {
                     'label_and_type': f"{xref.lower()}##xref",
                     'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.HGNC.value
+                    'src_name': SourceName.HGNC.value,
+                    'item_type': 'xref',
                 }
                 batch.put_item(Item=item)
 
