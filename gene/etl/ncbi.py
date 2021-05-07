@@ -144,14 +144,14 @@ class NCBI(Base):
         history_file.close()
         return prev_symbols
 
-    def _add_other_ids_xrefs(self, val, params):
-        """Add other identifiers and xrefs to a transformed gene.
+    def _add_xrefs_associated_with(self, val, params):
+        """Add xrefs and associated_with refs to a transformed gene.
 
         :param list val: A list of source ids for a given gene
         :param dict params: A transformed gene record
         """
         params['xrefs'] = []
-        params['other_identifiers'] = []
+        params['associated_with'] = []
         for src in val:
             src_name = src.split(':')[0].upper()
             src_id = src.split(':')[-1]
@@ -159,7 +159,7 @@ class NCBI(Base):
                 params['concept_id'] = f"{NamespacePrefix.NCBI.value}:{src_id}"
             elif src_name in NamespacePrefix.__members__ and \
                     NamespacePrefix[src_name].value in NORMALIZER_SRC_PREFIXES:
-                params['other_identifiers'].append(
+                params['xrefs'].append(
                     f"{NamespacePrefix[src_name].value}"
                     f":{src_id}")
             else:
@@ -172,13 +172,13 @@ class NCBI(Base):
                 else:
                     prefix = None
                 if prefix:
-                    params['xrefs'].append(f"{prefix}:{src_id}")
+                    params['associated_with'].append(f"{prefix}:{src_id}")
                 else:
                     logger.info(f"{src_name} is not in NameSpacePrefix.")
         if not params['xrefs']:
             del params['xrefs']
-        if not params['other_identifiers']:
-            del params['other_identifiers']
+        if not params['associated_with']:
+            del params['associated_with']
 
     def _get_gene_info(self, prev_symbols):
         """Store genes from NCBI info file.
@@ -202,10 +202,10 @@ class NCBI(Base):
                 params['aliases'] = row[4].split('|')
             else:
                 params['aliases'] = []
-            # get other identifiers
+            # get associated_with
             if row[5] != '-':
-                xrefs = row[5].split('|')
-                self._add_other_ids_xrefs(xrefs, params)
+                associated_with = row[5].split('|')
+                self._add_xrefs_associated_with(associated_with, params)
             # get chromosome location
             vrs_chr_location = self._get_vrs_chr_location(row, params)
             if 'exclude' in vrs_chr_location:
@@ -287,16 +287,6 @@ class NCBI(Base):
                     'item_type': 'prev_symbol'
                 })
 
-        if 'other_identifiers' in item and item['other_identifiers']:
-            for other_id in item['other_identifiers']:
-                pk = f"{other_id.lower()}##other_id"
-                batch.put_item(Item={
-                    'label_and_type': pk,
-                    'concept_id': concept_id_lower,
-                    'src_name': SourceName.NCBI.value,
-                    'item_type': 'other_id',
-                })
-
         if 'xrefs' in item and item['xrefs']:
             for xref in item['xrefs']:
                 pk = f"{xref.lower()}##xref"
@@ -305,6 +295,16 @@ class NCBI(Base):
                     'concept_id': concept_id_lower,
                     'src_name': SourceName.NCBI.value,
                     'item_type': 'xref',
+                })
+
+        if 'associated_with' in item and item['associated_with']:
+            for associated_with in item['associated_with']:
+                pk = f"{associated_with.lower()}##associated_with"
+                batch.put_item(Item={
+                    'label_and_type': pk,
+                    'concept_id': concept_id_lower,
+                    'src_name': SourceName.NCBI.value,
+                    'item_type': 'associated_with',
                 })
 
         filtered_item = {k: v for k, v in item.items() if v is not None}
@@ -339,7 +339,7 @@ class NCBI(Base):
         return params
 
     def _add_attributes(self, f, gene):
-        """Add concept_id, symbol, and other_identifiers to a gene record.
+        """Add concept_id, symbol, and xrefs/associated_with to a gene record.
 
         :param gffutils.feature.Feature f: A gene from the data
         :param gene: A transformed gene record
@@ -355,7 +355,7 @@ class NCBI(Base):
                     val = val[0]
 
                 if key == 'Dbxref':
-                    self._add_other_ids_xrefs(val, gene)
+                    self._add_xrefs_associated_with(val, gene)
                 elif key == 'Name':
                     gene['symbol'] = val
 
@@ -374,26 +374,26 @@ class NCBI(Base):
         return self._sequence_location.add_location(gene.seqid, gene,
                                                     params, sr)
 
-    def _get_other_id_xref(self, src_name, src_id):
-        """Get other identifier or xref.
+    def _get_xref_associated_with(self, src_name, src_id):
+        """Get xref or associated_with ref.
 
         :param str src_name: Source name
         :param src_id: The source's accession number
-        :return: A dict containing an other identifier or xref
+        :return: A dict containing an xref or associated_with ref
         """
         source = dict()
         if src_name.startswith('HGNC'):
-            source['other_identifiers'] = \
+            source['xrefs'] = \
                 [f"{NamespacePrefix.HGNC.value}:{src_id}"]
         elif src_name.startswith('NCBI'):
-            source['other_identifiers'] = \
+            source['xrefs'] = \
                 [f"{NamespacePrefix.NCBI.value}:{src_id}"]
         elif src_name.startswith('UniProt'):
-            source['xrefs'] = [f"{NamespacePrefix.UNIPROT.value}:{src_id}"]
+            source['associated_with'] = [f"{NamespacePrefix.UNIPROT.value}:{src_id}"]  # noqa E501
         elif src_name.startswith('miRBase'):
-            source['xrefs'] = [f"{NamespacePrefix.MIRBASE.value}:{src_id}"]
+            source['associated_with'] = [f"{NamespacePrefix.MIRBASE.value}:{src_id}"]  # noqa E501
         elif src_name.startswith('RFAM'):
-            source['xrefs'] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]
+            source['associated_with'] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]  # noqa E501
         return source
 
     def _get_vrs_chr_location(self, row, params):
