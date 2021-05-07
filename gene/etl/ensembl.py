@@ -93,8 +93,8 @@ class Ensembl(Base):
                         if gene:
                             assert Gene(**gene)
                             self._load_symbol(gene, batch)
-                            self._load_other_ids(gene, batch)
                             self._load_xrefs(gene, batch)
+                            self._load_associated_with(gene, batch)
                             batch.put_item(Item=gene)
 
     def _load_symbol(self, gene, batch):
@@ -111,35 +111,35 @@ class Ensembl(Base):
         }
         batch.put_item(Item=symbol)
 
-    def _load_other_ids(self, gene, batch):
-        """Load other identifier records into database.
-
-        :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
-        """
-        if 'other_identifiers' in gene and gene['other_identifiers']:
-            for other_id in gene['other_identifiers']:
-                other_id = {
-                    'label_and_type': f"{other_id.lower()}##other_id",
-                    'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.ENSEMBL.value,
-                    'item_type': 'other_id',
-                }
-                batch.put_item(Item=other_id)
-
     def _load_xrefs(self, gene, batch):
-        """Load xref records into database.
+        """Load other identifier records into database.
 
         :param dict gene: A transformed gene record
         :param BatchWriter batch: Object to write data to DynamoDB
         """
         if 'xrefs' in gene and gene['xrefs']:
             for xref in gene['xrefs']:
-                item = {
+                xref = {
                     'label_and_type': f"{xref.lower()}##xref",
                     'concept_id': f"{gene['concept_id'].lower()}",
                     'src_name': SourceName.ENSEMBL.value,
                     'item_type': 'xref',
+                }
+                batch.put_item(Item=xref)
+
+    def _load_associated_with(self, gene, batch):
+        """Load associated_with records into database.
+
+        :param dict gene: A transformed gene record
+        :param BatchWriter batch: Object to write data to DynamoDB
+        """
+        if 'associated_with' in gene and gene['associated_with']:
+            for associated_with in gene['associated_with']:
+                item = {
+                    'label_and_type': f"{associated_with.lower()}##associated_with",  # noqa: E501
+                    'concept_id': f"{gene['concept_id'].lower()}",
+                    'src_name': SourceName.ENSEMBL.value,
+                    'item_type': 'associated_with',
                 }
                 batch.put_item(Item=item)
 
@@ -172,7 +172,7 @@ class Ensembl(Base):
         return gene
 
     def _add_attributes(self, f, gene):
-        """Add concept_id, symbol, and other_identifiers to a gene record.
+        """Add concept_id, symbol, xrefs, and associated_with to a gene record.
 
         :param gffutils.feature.Feature f: A gene from the data
         :param gene: A transformed gene record
@@ -180,7 +180,7 @@ class Ensembl(Base):
         attributes = {
             'ID': 'concept_id',
             'Name': 'symbol',
-            'description': 'other_identifiers'
+            'description': 'xrefs'
         }
 
         for attribute in f.attributes.items():
@@ -204,12 +204,11 @@ class Ensembl(Base):
                         src_id = val.split('Acc:')[-1].split(']')[0]
                         if ':' in src_id:
                             src_id = src_id.split(':')[-1]
-                        source = self._get_other_id_xref(src_name, src_id)
-                        if 'other_identifiers' in source:
-                            gene['other_identifiers'] = \
-                                source['other_identifiers']
-                        elif 'xrefs' in source:
+                        source = self._get_xref_associated_with(src_name, src_id)  # noqa: E501
+                        if 'xrefs' in source:
                             gene['xrefs'] = source['xrefs']
+                        elif 'associated_with' in source:
+                            gene['associated_with'] = source['associated_with']
                     continue
 
                 gene[attributes[key]] = val
@@ -236,17 +235,17 @@ class Ensembl(Base):
         """
         source = dict()
         if src_name.startswith('HGNC'):
-            source['other_identifiers'] = \
+            source['xrefs'] = \
                 [f"{NamespacePrefix.HGNC.value}:{src_id}"]
         elif src_name.startswith('NCBI'):
-            source['other_identifiers'] = \
+            source['xrefs'] = \
                 [f"{NamespacePrefix.NCBI.value}:{src_id}"]
         elif src_name.startswith('UniProt'):
-            source['xrefs'] = [f"{NamespacePrefix.UNIPROT.value}:{src_id}"]
+            source['associated_with'] = [f"{NamespacePrefix.UNIPROT.value}:{src_id}"]  # noqa: E501
         elif src_name.startswith('miRBase'):
-            source['xrefs'] = [f"{NamespacePrefix.MIRBASE.value}:{src_id}"]
+            source['associated_with'] = [f"{NamespacePrefix.MIRBASE.value}:{src_id}"]  # noqa: E501
         elif src_name.startswith('RFAM'):
-            source['xrefs'] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]
+            source['associated_with'] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]  # noqa: E501
         return source
 
     def _load_data(self, *args, **kwargs):

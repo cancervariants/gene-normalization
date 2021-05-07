@@ -181,8 +181,8 @@ class Gene(BaseModel):
     locations: Optional[List[Union[ChromosomeLocation, SequenceLocation]]]
     aliases: Optional[List[str]]
     previous_symbols: Optional[List[str]]
-    other_identifiers: Optional[List[str]]
     xrefs: Optional[List[str]]
+    associated_with: Optional[List[str]]
 
     class Config:
         """Configure model"""
@@ -203,7 +203,7 @@ class Gene(BaseModel):
                 "symbol": "BRAF",
                 "previous_symbols": [],
                 "aliases": [],
-                "other_identifiers": [],
+                "xrefs": [],
                 "symbol_status": None,
                 "strand": "-",
                 "location": []
@@ -225,8 +225,8 @@ class MatchType(IntEnum):
     SYMBOL = 100
     PREV_SYMBOL = 80
     ALIAS = 60
-    OTHER_ID = 60
     XREF = 60
+    ASSOCIATED_WITH = 60
     FUZZY_MATCH = 20
     NO_MATCH = 0
 
@@ -467,7 +467,7 @@ class Service(BaseModel):
                                 "symbol": "BRAF",
                                 "previous_symbols": [],
                                 "aliases": [],
-                                "other_identifiers": [],
+                                "xrefs": [],
                                 "symbol_status": None,
                                 "strand": "-",
                                 "locations": []
