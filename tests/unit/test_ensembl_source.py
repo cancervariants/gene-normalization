@@ -29,7 +29,7 @@ def ddx11l1():
         'label': 'DEAD/H-box helicase 11 like 1 (pseudogene)',
         'previous_symbols': [],
         'aliases': [],
-        'other_identifiers': ['hgnc:37102'],
+        'xrefs': ['hgnc:37102'],
         'symbol_status': None,
         'location_annotations': [],
         'locations': [
@@ -45,7 +45,7 @@ def ddx11l1():
             }
         ],
         'strand': '+',
-        'xrefs': []
+        'associated_with': []
     }
     return Gene(**params)
 
@@ -59,7 +59,7 @@ def tp53():
         'label': 'tumor protein p53',
         'previous_symbols': [],
         'aliases': [],
-        'other_identifiers': ['hgnc:11998'],
+        'xrefs': ['hgnc:11998'],
         'symbol_status': None,
         'location_annotations': [],
         'locations': [
@@ -75,7 +75,7 @@ def tp53():
             }
         ],
         'strand': '-',
-        'xrefs': []
+        'associated_with': []
     }
     return Gene(**params)
 
@@ -89,7 +89,7 @@ def u6():
         'label': 'U6 spliceosomal RNA',
         'previous_symbols': [],
         'aliases': [],
-        'other_identifiers': [],
+        'xrefs': [],
         'symbol_status': None,
         'location_annotations': [],
         'locations': [
@@ -105,7 +105,7 @@ def u6():
             }
         ],
         'strand': '-',
-        'xrefs': ['rfam:RF00026']
+        'associated_with': ['rfam:RF00026']
     }
     return Gene(**params)
 
@@ -119,7 +119,7 @@ def CH17_340M24_3():
         'label': 'uncharacterized protein BC009467',
         'previous_symbols': [],
         'aliases': [],
-        'other_identifiers': ['ncbigene:158960'],
+        'xrefs': ['ncbigene:158960'],
         'symbol_status': None,
         'location_annotations': [],
         'locations': [
@@ -135,7 +135,7 @@ def CH17_340M24_3():
             }
         ],
         'strand': '-',
-        'xrefs': []
+        'associated_with': []
     }
     return Gene(**params)
 
@@ -149,7 +149,7 @@ def AC091057_5():
         'label': 'Rho GTPase-activating protein 11B',
         'previous_symbols': [],
         'aliases': [],
-        'other_identifiers': [],
+        'xrefs': [],
         'symbol_status': None,
         'location_annotations': [],
         'locations': [
@@ -165,7 +165,7 @@ def AC091057_5():
             }
         ],
         'strand': '+',
-        'xrefs': ['uniprot:Q3KRB8']
+        'associated_with': ['uniprot:Q3KRB8']
     }
     return Gene(**params)
 
@@ -179,7 +179,7 @@ def hsa_mir_1253():
         'label': 'hsa-mir-1253',
         'previous_symbols': [],
         'aliases': [],
-        'other_identifiers': [],
+        'xrefs': [],
         'symbol_status': None,
         'location_annotations': [],
         'locations': [
@@ -195,7 +195,7 @@ def hsa_mir_1253():
             }
         ],
         'strand': '+',
-        'xrefs': ['mirbase:MI0006387']
+        'associated_with': ['mirbase:MI0006387']
     }
     return Gene(**params)
 
@@ -209,7 +209,7 @@ def spry3():
         'label': 'sprouty RTK signaling antagonist 3',
         'previous_symbols': [],
         'aliases': [],
-        'other_identifiers': ['hgnc:11271'],
+        'xrefs': ['hgnc:11271'],
         'symbol_status': None,
         'location_annotations': [],
         'locations': [
@@ -225,7 +225,7 @@ def spry3():
             }
         ],
         'strand': '+',
-        'xrefs': []
+        'associated_with': []
     }
     return Gene(**params)
 
@@ -239,7 +239,7 @@ def bx004987_1():
         'label': None,
         'previous_symbols': [],
         'aliases': [],
-        'other_identifiers': [],
+        'xrefs': [],
         'symbol_status': None,
         'location_annotations': [],
         'locations': [
@@ -255,7 +255,7 @@ def bx004987_1():
             }
         ],
         'strand': '-',
-        'xrefs': []
+        'associated_with': []
     }
     return Gene(**params)
 
@@ -268,12 +268,13 @@ def assertion_checks(normalizer_response, test_gene, n_records, match_type):
     assert normalized_gene.label == test_gene.label
     assert normalized_gene.concept_id == test_gene.concept_id
     assert set(normalized_gene.aliases) == set(test_gene.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(test_gene.other_identifiers)
+    assert set(normalized_gene.xrefs) == \
+           set(test_gene.xrefs)
     assert normalized_gene.symbol_status == test_gene.symbol_status
     assert set(normalized_gene.previous_symbols) == \
            set(test_gene.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(test_gene.xrefs)
+    assert set(normalized_gene.associated_with) == \
+           set(test_gene.associated_with)
     assert normalized_gene.symbol == test_gene.symbol
     assert len(normalized_gene.locations) == len(test_gene.locations)
     for loc in test_gene.locations:
@@ -360,9 +361,9 @@ def test_AC091057_5(ensembl, AC091057_5):
     normalizer_response = ensembl.search('AC091057.5')
     assertion_checks(normalizer_response, AC091057_5, 1, MatchType.SYMBOL)
 
-    # Xref
+    # associated_with
     normalizer_response = ensembl.search('uniprot:Q3KRB8')
-    assertion_checks(normalizer_response, AC091057_5, 1, MatchType.XREF)
+    assertion_checks(normalizer_response, AC091057_5, 1, MatchType.ASSOCIATED_WITH)  # noqa: E501
 
 
 def test_hsa_mir_1253(ensembl, hsa_mir_1253):
@@ -385,10 +386,10 @@ def test_hsa_mir_1253(ensembl, hsa_mir_1253):
     assertion_checks(normalizer_response, hsa_mir_1253, 1,
                      MatchType.SYMBOL)
 
-    # Xref
+    # associated_with
     normalizer_response = ensembl.search('mirbase:MI0006387')
     assertion_checks(normalizer_response, hsa_mir_1253, 1,
-                     MatchType.XREF)
+                     MatchType.ASSOCIATED_WITH)
 
 
 def test_spry3(ensembl, spry3):
