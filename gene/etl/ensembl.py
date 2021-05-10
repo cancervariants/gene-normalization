@@ -112,7 +112,7 @@ class Ensembl(Base):
         batch.put_item(Item=symbol)
 
     def _load_xrefs(self, gene, batch):
-        """Load other identifier records into database.
+        """Load xref records into database.
 
         :param dict gene: A transformed gene record
         :param BatchWriter batch: Object to write data to DynamoDB
