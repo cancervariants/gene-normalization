@@ -222,7 +222,7 @@ class HGNC(Base):
                 batch.put_item(Item=xref)
 
     def _load_associated_with(self, gene, batch):
-        """Insert xref data into the database.
+        """Insert associated_with data into the database.
 
         :param dict gene: A transformed gene record
         :param BatchWriter batch: Object to write data to DynamoDB
