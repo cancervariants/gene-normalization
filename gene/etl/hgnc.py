@@ -103,10 +103,9 @@ class HGNC(Base):
                             SymbolStatus.WITHDRAWN.value
                 gene['src_name'] = SourceName.HGNC.value
 
-                # Store alias, other_identifier,
-                # prev_symbols, and location in gene record
+                # store alias, xref, associated_with, prev_symbols, location
                 self._get_aliases(r, gene)
-                self._get_other_ids_xrefs(r, gene)
+                self._get_xrefs_associated_with(r, gene)
                 if 'prev_symbol' in r:
                     self._get_previous_symbols(r, gene)
                 if 'location' in r:
@@ -124,8 +123,8 @@ class HGNC(Base):
         self._load_approved_symbol(gene, batch)
         self._load_aliases(gene, batch)
         self._load_previous_symbols(gene, batch)
-        self._load_other_ids(gene, batch)
         self._load_xrefs(gene, batch)
+        self._load_associated_with(gene, batch)
         batch.put_item(Item=gene)
 
     def _load_approved_symbol(self, gene, batch):
@@ -206,22 +205,6 @@ class HGNC(Base):
                 }
                 batch.put_item(Item=prev_symbol)
 
-    def _load_other_ids(self, gene, batch):
-        """Insert other_id data into the database.
-
-        :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
-        """
-        if 'other_identifiers' in gene:
-            for other_id in gene['other_identifiers']:
-                other_id = {
-                    'label_and_type': f"{other_id.lower()}##other_id",
-                    'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.HGNC.value,
-                    'item_type': 'other_id'
-                }
-                batch.put_item(Item=other_id)
-
     def _load_xrefs(self, gene, batch):
         """Insert xref data into the database.
 
@@ -230,22 +213,38 @@ class HGNC(Base):
         """
         if 'xrefs' in gene:
             for xref in gene['xrefs']:
-                item = {
+                xref = {
                     'label_and_type': f"{xref.lower()}##xref",
                     'concept_id': f"{gene['concept_id'].lower()}",
                     'src_name': SourceName.HGNC.value,
-                    'item_type': 'xref',
+                    'item_type': 'xref'
+                }
+                batch.put_item(Item=xref)
+
+    def _load_associated_with(self, gene, batch):
+        """Insert associated_with data into the database.
+
+        :param dict gene: A transformed gene record
+        :param BatchWriter batch: Object to write data to DynamoDB
+        """
+        if 'associated_with' in gene:
+            for associated_with in gene['associated_with']:
+                item = {
+                    'label_and_type': f"{associated_with.lower()}##associated_with",  # noqa: E501
+                    'concept_id': f"{gene['concept_id'].lower()}",
+                    'src_name': SourceName.HGNC.value,
+                    'item_type': 'associated_with',
                 }
                 batch.put_item(Item=item)
 
-    def _get_other_ids_xrefs(self, r, gene):
-        """Store other identifiers and/or xrefs in a gene record.
+    def _get_xrefs_associated_with(self, r, gene):
+        """Store xrefs and/or associated_with refs in a gene record.
 
         :param dict r: A gene record in the HGNC data file
         :param dict gene: A transformed gene record
         """
-        other_ids = list()
         xrefs = list()
+        associated_with = list()
         sources = [
             'entrez_id', 'ensembl_gene_id', 'vega_id', 'ucsc_id', 'ccds_id',
             'uniprot_ids', 'pubmed_id', 'cosmic', 'omim_id', 'mirbase',
@@ -267,29 +266,29 @@ class HGNC(Base):
                 if key.upper() in NamespacePrefix.__members__:
                     if NamespacePrefix[key.upper()]\
                             .value in NORMALIZER_SRC_PREFIXES:
-                        self._get_other_id_xref(key, src, r, other_ids)
+                        self._get_xref_associated_with(key, src, r, xrefs)
                     else:
-                        self._get_other_id_xref(key, src, r, xrefs)
+                        self._get_xref_associated_with(key, src, r, associated_with)  # noqa: E501
                 else:
                     logger.warning(f"{key} not in schemas.py")
 
-        if other_ids:
-            gene['other_identifiers'] = other_ids
         if xrefs:
             gene['xrefs'] = xrefs
+        if associated_with:
+            gene['associated_with'] = associated_with
 
-    def _get_other_id_xref(self, key, src, r, src_type):
-        """Add an other identifier or xref to a gene record.
+    def _get_xref_associated_with(self, key, src, r, src_type):
+        """Add an xref or associated_with ref to a gene record.
 
         :param str key: The source's name
         :param str src: HGNC's source field
         :param dict r: A gene record in the HGNC data file
-        :param list src_type: Either other identifiers list or xrefs list
+        :param list src_type: Either xrefs or associated_with list
         """
         if type(r[src]) == list:
-            for other_id in r[src]:
+            for xref in r[src]:
                 src_type.append(
-                    f"{NamespacePrefix[key.upper()].value}:{other_id}")
+                    f"{NamespacePrefix[key.upper()].value}:{xref}")
         else:
             if isinstance(r[src], str) and ':' in r[src]:
                 r[src] = r[src].split(':')[-1].strip()

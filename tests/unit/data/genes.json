@@ -17,7 +17,7 @@
       }
     ],
     "strand": "+",
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:37102"
     ],
     "src_name": "Ensembl"
@@ -45,7 +45,7 @@
       }
     ],
     "strand": "-",
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:11998"
     ],
     "src_name": "Ensembl"
@@ -73,7 +73,7 @@
       }
     ],
     "strand": "-",
-    "xrefs": [
+    "associated_with": [
       "rfam:RF00026"
     ],
     "src_name": "Ensembl"
@@ -101,7 +101,7 @@
       }
     ],
     "strand": "-",
-    "other_identifiers": [
+    "xrefs": [
       "ncbigene:158960"
     ],
     "src_name": "Ensembl"
@@ -129,13 +129,13 @@
       }
     ],
     "strand": "+",
-    "xrefs": [
+    "associated_with": [
       "uniprot:Q3KRB8"
     ],
     "src_name": "Ensembl"
   },
   {
-    "label_and_type": "uniprot:q3krb8##xref",
+    "label_and_type": "uniprot:q3krb8##associated_with",
     "concept_id": "ensembl:ensg00000284906",
     "src_name": "Ensembl"
   },
@@ -162,13 +162,13 @@
       }
     ],
     "strand": "+",
-    "xrefs": [
+    "associated_with": [
       "mirbase:MI0006387"
     ],
     "src_name": "Ensembl"
   },
   {
-    "label_and_type": "mirbase:mi0006387##xref",
+    "label_and_type": "mirbase:mi0006387##associated_with",
     "concept_id": "ensembl:ENSG00000272920",
     "src_name": "Ensembl"
   },
@@ -195,7 +195,7 @@
       }
     ],
     "strand": "+",
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:11271"
     ],
     "src_name": "Ensembl"
@@ -247,7 +247,7 @@
       }
     ],
     "strand": "-",
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:108"
     ],
     "src_name": "Ensembl"
@@ -258,7 +258,7 @@
     "src_name": "Ensembl"
   },
   {
-    "label_and_type": "hgnc:108##other_id",
+    "label_and_type": "hgnc:108##xref",
     "concept_id": "ensembl:ensg00000087085",
     "src_name": "Ensembl"
   },
@@ -280,13 +280,13 @@
         }
       }
     ],
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:76"
     ],
     "src_name": "Ensembl"
   },
   {
-    "label_and_type": "hgnc:76##other_id",
+    "label_and_type": "hgnc:76##xref",
     "concept_id": "ensembl:ensg00000097007",
     "src_name": "Ensembl"
   },
@@ -308,13 +308,13 @@
         }
       }
     ],
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:1097"
     ],
     "src_name": "Ensembl"
   },
   {
-    "label_and_type": "hgnc:1097##other_id",
+    "label_and_type": "hgnc:1097##xref",
     "concept_id": "ensembl:ensg00000157764",
     "src_name": "Ensembl"
   },
@@ -345,11 +345,11 @@
       "FLJ23569"
     ],
     "symbol_status": "approved",
-    "other_identifiers": [
+    "xrefs": [
       "ensembl:ENSG00000268895",
       "ncbigene:503538"
     ],
-    "xrefs": [
+    "associated_with": [
       "vega:OTTHUMG00000183508",
       "ucsc:uc002qse.3",
       "refseq:NR_015380",
@@ -409,11 +409,11 @@
       "LFS1"
     ],
     "symbol_status": "approved",
-    "other_identifiers": [
+    "xrefs": [
       "ensembl:ENSG00000141510",
       "ncbigene:7157"
     ],
-    "xrefs": [
+    "associated_with": [
       "vega:OTTHUMG00000162125",
       "refseq:NM_000546",
       "cosmic:TP53",
@@ -481,11 +481,11 @@
       "IGB3S"
     ],
     "symbol_status": "approved",
-    "other_identifiers": [
+    "xrefs": [
       "ensembl:ENSG00000184389",
       "ncbigene:127550"
     ],
-    "xrefs": [
+    "associated_with": [
       "vega:OTTHUMG00000004125",
       "ucsc:uc031plq.1",
       "uniprot:U3KPV4",
@@ -540,11 +540,11 @@
       "CHTF4"
     ],
     "symbol_status": "approved",
-    "other_identifiers": [
+    "xrefs": [
       "ensembl:ENSG00000198554",
       "ncbigene:11169"
     ],
-    "xrefs": [
+    "associated_with": [
       "vega:OTTHUMG00000140304",
       "refseq:NM_007086",
       "omim:608126",
@@ -575,10 +575,10 @@
       "GSD1aSP"
     ],
     "symbol_status": "approved",
-    "other_identifiers": [
+    "xrefs": [
       "ncbigene:2541"
     ],
-    "xrefs": [
+    "associated_with": [
       "pubmed:2172641",
       "pubmed:7814621",
       "pubmed:2996501"
@@ -599,10 +599,10 @@
       "6"
     ],
     "symbol_status": "approved",
-    "other_identifiers": [
+    "xrefs": [
       "ncbigene:100313810"
     ],
-    "xrefs": [
+    "associated_with": [
       "pubmed:17881367"
     ],
     "src_name": "HGNC"
@@ -637,10 +637,10 @@
     "aliases": [
       "CT4.4"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "ncbigene:2576"
     ],
-    "xrefs": [
+    "associated_with": [
       "refseq:NM_001474",
       "omim:300597",
       "uniprot:P0DSO3",
@@ -672,11 +672,11 @@
       "pp5644",
       "TEKT4P4"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "ensembl:ENSG00000274847",
       "ncbigene:727764"
     ],
-    "xrefs": [
+    "associated_with": [
       "vega:OTTHUMG00000188065",
       "refseq:NR_046439",
       "uniprot:Q8WZ33",
@@ -704,7 +704,7 @@
       "MT7SDNA"
     ],
     "symbol_status": "approved",
-    "xrefs": [
+    "associated_with": [
       "pubmed:24709344",
       "pubmed:273237"
     ],
@@ -734,7 +734,7 @@
       }
     ],
     "symbol_status": "approved",
-    "other_identifiers": [
+    "xrefs": [
       "ncbigene:1055"
     ],
     "src_name": "HGNC"
@@ -781,11 +781,11 @@
     "previous_symbols": [
       "CSF2R"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "ensembl:ENSG00000198223",
       "ncbigene:1438"
     ],
-    "xrefs": [
+    "associated_with": [
       "vega:OTTHUMG00000012533",
       "refseq:NM_001161529",
       "orphanet:209477",
@@ -831,10 +831,10 @@
       }
     ],
     "symbol_status": "approved",
-    "other_identifiers": [
+    "xrefs": [
       "ncbigene:100271094"
     ],
-    "xrefs": [
+    "associated_with": [
       "refseq:NG_011274",
       "pubmed:19123937"
     ],
@@ -870,10 +870,10 @@
     "previous_symbols": [
       "TRNAL13"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "ncbigene:100189130"
     ],
-    "xrefs": [
+    "associated_with": [
       "ena.embl:HG983896"
     ],
     "src_name": "HGNC"
@@ -905,11 +905,11 @@
     "aliases": [
       "KIAA1119"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "ncbigene:4645",
       "ensembl:ENSG00000167306"
     ],
-    "xrefs": [
+    "associated_with": [
       "vega:OTTHUMG00000179843",
       "refseq:NM_001080467",
       "omim:606540",
@@ -924,7 +924,7 @@
     "src_name": "HGNC"
   },
   {
-    "label_and_type": "refseq:nm_001080467##xref",
+    "label_and_type": "refseq:nm_001080467##associated_with",
     "concept_id": "hgnc:7603",
     "src_name": "HGNC"
   },
@@ -958,11 +958,11 @@
     "aliases": [
       "2.5.1.18"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "ncbigene:2952",
       "ensembl:ENSG00000277656"
     ],
-    "xrefs": [
+    "associated_with": [
       "refseq:NM_000853",
       "omim:600436",
       "ucsc:uc002zze.4",
@@ -974,7 +974,7 @@
     "src_name": "HGNC"
   },
   {
-    "label_and_type": "omim:600436##xref",
+    "label_and_type": "omim:600436##associated_with",
     "concept_id": "hgnc:4641",
     "src_name": "HGNC"
   },
@@ -1008,11 +1008,11 @@
     "previous_symbols": [
       "YT"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "ncbigene:43",
       "ensembl:ENSG00000087085"
     ],
-    "xrefs": [
+    "associated_with": [
       "vega:OTTHUMG00000157033",
       "ucsc:uc003uxi.4",
       "ccds:CCDS5710",
@@ -1033,12 +1033,12 @@
     "src_name": "HGNC"
   },
   {
-    "label_and_type": "ncbigene:43##other_id",
+    "label_and_type": "ncbigene:43##xref",
     "concept_id": "hgnc:108",
     "src_name": "HGNC"
   },
   {
-    "label_and_type": "ensembl:ensg00000087085##other_id",
+    "label_and_type": "ensembl:ensg00000087085##xref",
     "concept_id": "hgnc:108",
     "src_name": "HGNC"
   },
@@ -1064,11 +1064,11 @@
     "aliases": [
       "BRAF1"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "ensembl:ENSG00000157764",
       "ncbigene:673"
     ],
-    "xrefs": [
+    "associated_with": [
       "vega:OTTHUMG00000157457",
       "ucsc:uc003vwc.5",
       "ccds:CCDS5863",
@@ -1086,12 +1086,12 @@
     "src_name": "HGNC"
   },
   {
-    "label_and_type": "ncbigene:673##other_id",
+    "label_and_type": "ncbigene:673##xref",
     "concept_id": "hgnc:1097",
     "src_name": "HGNC"
   },
   {
-    "label_and_type": "ensembl:ensg00000157764##other_id",
+    "label_and_type": "ensembl:ensg00000157764##xref",
     "concept_id": "hgnc:1097",
     "src_name": "HGNC"
   },
@@ -1122,11 +1122,11 @@
     "previous_symbols": [
       "ABL"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "ensembl:ENSG00000097007",
       "ncbigene:25"
     ],
-    "xrefs": [
+    "associated_with": [
       "vega:OTTHUMG00000020813",
       "ucsc:uc004bzv.4",
       "ccds:CCDS35166",
@@ -1144,15 +1144,15 @@
     "src_name": "HGNC"
   },
   {
-    "label_and_type": "ncbigene:25##other_id",
+    "label_and_type": "ncbigene:25##xref",
     "concept_id": "hgnc:76",
     "src_name": "HGNC"
   },
   {
-    "label_and_type": "ensembl:ensg00000097007##other_id",
+    "label_and_type": "ensembl:ensg00000097007##xref",
     "concept_id": "hgnc:76",
     "src_name": "HGNC",
-    "item_type": "other_id"
+    "item_type": "xref"
   },
   {
     "label_and_type": "ncbigene:8193##identity",
@@ -1164,11 +1164,11 @@
       "NEUD4",
       "neuro-d4"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:20225",
       "ensembl:ENSG00000011332"
     ],
-    "xrefs": [
+    "associated_with": [
       "omim:601670"
     ],
     "strand": "-",
@@ -1198,7 +1198,7 @@
     "src_name": "NCBI"
   },
 {
-    "label_and_type": "omim:601670##xref",
+    "label_and_type": "omim:601670##associated_with",
     "concept_id": "ncbigene:8193",
     "src_name": "NCBI"
   },
@@ -1234,7 +1234,7 @@
       "PPM2A",
       "PPM2C"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:9279",
       "ensembl:ENSG00000164951"
     ],
@@ -1242,7 +1242,7 @@
       "LOC157663",
       "PPM2C"
     ],
-    "xrefs": [
+    "associated_with": [
       "omim:605993"
     ],
     "strand": "+",
@@ -1319,7 +1319,7 @@
     "aliases": [
       "spry-3"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:11271",
       "ensembl:ENSG00000168939"
     ],
@@ -1327,7 +1327,7 @@
       "LOC170187",
       "LOC253479"
     ],
-    "xrefs": [
+    "associated_with": [
       "omim:300531"
     ],
     "strand": "+",
@@ -1392,7 +1392,7 @@
     "label": "adenosine deaminase complexing protein 1",
     "concept_id": "ncbigene:106",
     "symbol": "ADCP1",
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:229"
     ],
     "location_annotations": [
@@ -1410,7 +1410,7 @@
     "label": "ankyloblepharon filiforme adnatum",
     "concept_id": "ncbigene:170",
     "symbol": "AFA",
-    "xrefs": [
+    "associated_with": [
       "omim:106250"
     ],
     "src_name": "NCBI"
@@ -1428,14 +1428,14 @@
     "aliases": [
       "HPF2"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:13159",
       "ensembl:ENSG00000198040"
     ],
     "previous_symbols": [
       "LOC100287429"
     ],
-    "xrefs": [
+    "associated_with": [
       "omim:618554"
     ],
     "location_annotations": [
@@ -1485,14 +1485,14 @@
       "ANT3",
       "ANT3Y"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:10992",
       "ensembl:ENSG00000169100"
     ],
     "previous_symbols": [
       "ANT3Y"
     ],
-    "xrefs": [
+    "associated_with": [
       "omim:403000",
       "omim:300151"
     ],
@@ -1560,7 +1560,7 @@
     "label": "glaucoma 1, open angle, B (adult-onset)",
     "concept_id": "ncbigene:2722",
     "symbol": "GLC1B",
-    "xrefs": [
+    "associated_with": [
       "omim:606689"
     ],
     "locations": [
@@ -1579,10 +1579,10 @@
     "src_name": "NCBI"
   },
   {
-    "label_and_type": "omim:606689##xref",
+    "label_and_type": "omim:606689##associated_with",
     "concept_id": "ncbigene:2722",
     "src_name": "NCBI",
-    "item_type": "xref"
+    "item_type": "associated_with"
   },
   {
     "label_and_type": "glc1b##symbol",
@@ -1594,7 +1594,7 @@
     "label": "Hodgkin disease, susceptibility, pseudoautosomal",
     "concept_id": "ncbigene:50829",
     "symbol": "HDPA",
-    "xrefs": [
+    "associated_with": [
       "omim:300221"
     ],
     "locations": [
@@ -1622,7 +1622,7 @@
     "label": "protein activator of interferon induced protein kinase EIF2AK2 pseudogene 1",
     "concept_id": "ncbigene:731716",
     "symbol": "PRKRAP1",
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:33447"
     ],
     "previous_symbols": [
@@ -1668,7 +1668,7 @@
     "src_name": "NCBI"
   },
   {
-    "label_and_type": "hgnc:33447##other_id",
+    "label_and_type": "hgnc:33447##xref",
     "concept_id": "ncbigene:731716",
     "src_name": "NCBI"
   },
@@ -1683,7 +1683,7 @@
     "label": "myopathy, hyaline body, autosomal recessive",
     "concept_id": "ncbigene:619511",
     "symbol": "MHB",
-    "xrefs": [
+    "associated_with": [
       "omim:255160"
     ],
     "locations": [
@@ -1702,7 +1702,7 @@
     "src_name": "NCBI"
   },
   {
-    "label_and_type": "omim:255160##xref",
+    "label_and_type": "omim:255160##associated_with",
     "concept_id": "ncbigene:619511",
     "src_name": "NCBI"
   },
@@ -1716,7 +1716,7 @@
     "label": "spastic paraplegia 37 (autosomal dominant)",
     "concept_id": "ncbigene:100049159",
     "symbol": "SPG37",
-    "xrefs": [
+    "associated_with": [
       "omim:611945"
     ],
     "locations": [
@@ -1735,7 +1735,7 @@
     "src_name": "NCBI"
   },
   {
-    "label_and_type": "omim:611945##xref",
+    "label_and_type": "omim:611945##associated_with",
     "concept_id": "ncbigene:100049159",
     "src_name": "NCBI"
   },
@@ -1759,11 +1759,11 @@
     "previous_symbols": [
       "ACEE"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:108",
       "ensembl:ENSG00000087085"
     ],
-    "xrefs": [
+    "associated_with": [
       "omim:100740"
     ],
     "locations": [
@@ -1798,12 +1798,12 @@
     "src_name": "NCBI"
   },
   {
-    "label_and_type": "hgnc:108##other_id",
+    "label_and_type": "hgnc:108##xref",
     "concept_id": "ncbigene:43",
     "src_name": "NCBI"
   },
   {
-    "label_and_type": "ensembl:ensg00000087085##other_id",
+    "label_and_type": "ensembl:ensg00000087085##xref",
     "concept_id": "ncbigene:43",
     "src_name": "NCBI"
   },
@@ -1843,22 +1843,22 @@
       "BRAF1",
       "B-raf"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:1097",
       "ensembl:ENSG00000157764"
     ],
-    "xrefs": [
+    "associated_with": [
       "omim:164757"
     ],
     "src_name": "NCBI"
   },
   {
-    "label_and_type": "hgnc:1097##other_id",
+    "label_and_type": "hgnc:1097##xref",
     "concept_id": "ncbigene:673",
     "src_name": "NCBI"
   },
   {
-    "label_and_type": "ensembl:ensg00000157764##other_id",
+    "label_and_type": "ensembl:ensg00000157764##xref",
     "concept_id": "ncbigene:673",
     "src_name": "NCBI"
   },
@@ -1906,24 +1906,24 @@
       "LOC116063",
       "LOC112779"
     ],
-    "other_identifiers": [
+    "xrefs": [
       "hgnc:76",
       "ensembl:ENSG00000097007"
     ],
-    "xrefs": [
+    "associated_with": [
       "omim:189980"
     ],
     "src_name": "NCBI"
   },
   {
-    "label_and_type": "hgnc:76##other_id",
+    "label_and_type": "hgnc:76##xref",
     "concept_id": "ncbigene:25",
     "src_name": "NCBI"
   },
   {
-    "label_and_type": "ensembl:ensg00000097007##other_id",
+    "label_and_type": "ensembl:ensg00000097007##xref",
     "concept_id": "ncbigene:25",
     "src_name": "NCBI",
-    "item_type": "other_id"
+    "item_type": "xref"
   }
 ]

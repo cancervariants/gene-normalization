@@ -3,6 +3,7 @@ import pytest
 from gene.schemas import Gene, MatchType
 from gene.query import QueryHandler
 from datetime import datetime
+from tests.conftest import assertion_checks
 
 
 @pytest.fixture(scope='module')
@@ -53,7 +54,7 @@ def a1bg_as1():
         ],
         'aliases': ['FLJ23569'],
         'symbol_status': 'approved',
-        'xrefs': [
+        'associated_with': [
             'vega:OTTHUMG00000183508',
             'ucsc:uc002qse.3',
             'refseq:NR_015380',
@@ -61,7 +62,7 @@ def a1bg_as1():
             'refseq:NR_015380',
             'ena.embl:BC040926'
         ],
-        'other_identifiers': [
+        'xrefs': [
             'ensembl:ENSG00000268895',
             'ncbigene:503538'
         ]
@@ -97,7 +98,7 @@ def tp53():
             'LFS1'
         ],
         'symbol_status': 'approved',
-        'xrefs': [
+        'associated_with': [
             'vega:OTTHUMG00000162125',
             'refseq:NM_000546',
             'cosmic:TP53',
@@ -122,7 +123,7 @@ def tp53():
             'pubmed:3456488',
             'pubmed:2047879'
         ],
-        'other_identifiers': [
+        'xrefs': [
             'ensembl:ENSG00000141510',
             'ncbigene:7157'
         ]
@@ -160,11 +161,11 @@ def a3galt2():
             'IGB3S'
         ],
         'symbol_status': 'approved',
-        'other_identifiers': [
+        'xrefs': [
             'ensembl:ENSG00000184389',
             'ncbigene:127550'
         ],
-        'xrefs': [
+        'associated_with': [
             'vega:OTTHUMG00000004125',
             'vega:OTTHUMG00000004125',
             'ucsc:uc031plq.1',
@@ -207,11 +208,11 @@ def wdhd1():
             'CHTF4'
         ],
         'symbol_status': 'approved',
-        'other_identifiers': [
+        'xrefs': [
             'ensembl:ENSG00000198554',
             'ncbigene:11169'
         ],
-        'xrefs': [
+        'associated_with': [
             'vega:OTTHUMG00000140304',
             'refseq:NM_007086',
             'omim:608126',
@@ -244,10 +245,10 @@ def g6pr():
             'GSD1aSP'
         ],
         'symbol_status': 'approved',
-        'other_identifiers': [
+        'xrefs': [
             'ncbigene:2541'
         ],
-        'xrefs': [
+        'associated_with': [
             'pubmed:2172641',
             'pubmed:7814621',
             'pubmed:2996501'
@@ -272,10 +273,10 @@ def pirc24():
         'aliases': [
         ],
         'symbol_status': 'approved',
-        'other_identifiers': [
+        'xrefs': [
             'ncbigene:100313810'
         ],
-        'xrefs': [
+        'associated_with': [
             'pubmed:17881367'
         ]
     }
@@ -311,10 +312,10 @@ def gage4():
             'CT4.4'
         ],
         'symbol_status': 'approved',
-        'other_identifiers': [
+        'xrefs': [
             'ncbigene:2576'
         ],
-        'xrefs': [
+        'associated_with': [
             'refseq:NM_001474',
             'omim:300597',
             'uniprot:P0DSO3',
@@ -345,11 +346,11 @@ def mafip():
             'TEKT4P4'
         ],
         'symbol_status': 'approved',
-        'other_identifiers': [
+        'xrefs': [
             'ensembl:ENSG00000274847',
             'ncbigene:727764'
         ],
-        'xrefs': [
+        'associated_with': [
             'vega:OTTHUMG00000188065',
             'refseq:NR_046439',
             'uniprot:Q8WZ33',
@@ -377,8 +378,8 @@ def mt_7sdna():
         ],
         'aliases': [],
         'symbol_status': 'approved',
-        'other_identifiers': [],
-        'xrefs': [
+        'xrefs': [],
+        'associated_with': [
             'pubmed:24709344',
             'pubmed:273237'
         ]
@@ -412,10 +413,10 @@ def cecr():
         'aliases': [
         ],
         'symbol_status': 'approved',
-        'other_identifiers': [
+        'xrefs': [
             'ncbigene:1055'
         ],
-        'xrefs': []
+        'associated_with': []
     }
     return Gene(**params)
 
@@ -461,11 +462,11 @@ def csf2ra():
             'alphaGMR'
         ],
         'symbol_status': 'approved',
-        'other_identifiers': [
+        'xrefs': [
             'ensembl:ENSG00000198223',
             'ncbigene:1438'
         ],
-        'xrefs': [
+        'associated_with': [
             'vega:OTTHUMG00000012533',
             'refseq:NM_001161529',
             'orphanet:209477',
@@ -516,10 +517,10 @@ def rps24p5():
         'aliases': [
         ],
         'symbol_status': 'approved',
-        'other_identifiers': [
+        'xrefs': [
             'ncbigene:100271094'
         ],
-        'xrefs': [
+        'associated_with': [
             'refseq:NG_011274',
             'pubmed:19123937'
         ]
@@ -556,10 +557,10 @@ def trl_cag2_1():
             'tRNA-Leu-CAG-2-1'
         ],
         'symbol_status': 'approved',
-        'other_identifiers': [
+        'xrefs': [
             'ncbigene:100189130'
         ],
-        'xrefs': [
+        'associated_with': [
             'ena.embl:HG983896'
         ]
     }
@@ -593,11 +594,11 @@ def myo5b():
             'KIAA1119'
         ],
         'symbol_status': 'approved',
-        'other_identifiers': [
+        'xrefs': [
             'ensembl:ENSG00000167306',
             'ncbigene:4645'
         ],
-        'xrefs': [
+        'associated_with': [
             'vega:OTTHUMG00000179843',
             'refseq:NM_001080467',
             'omim:606540',
@@ -641,7 +642,7 @@ def gstt1():
         'previous_symbols': [],
         'aliases': ['2.5.1.18'],
         'symbol_status': 'approved',
-        'xrefs': [
+        'associated_with': [
             'refseq:NM_000853',
             'omim:600436',
             'ucsc:uc002zze.4',
@@ -650,33 +651,12 @@ def gstt1():
             'ena.embl:KI270879',
             'pubmed:8617495'
         ],
-        'other_identifiers': [
+        'xrefs': [
             'ensembl:ENSG00000277656',
             'ncbigene:2952'
         ]
     }
     return Gene(**params)
-
-
-def assertion_checks(normalizer_response, test_gene, n_records, match_type):
-    """Check that normalizer_response and test_gene are the same."""
-    assert normalizer_response['match_type'] == match_type
-    assert len(normalizer_response['records']) == n_records
-    normalized_gene = normalizer_response['records'][0]
-    assert normalized_gene.label == test_gene.label
-    assert normalized_gene.concept_id == test_gene.concept_id
-    assert set(normalized_gene.aliases) == set(test_gene.aliases)
-    assert set(normalized_gene.other_identifiers) == \
-           set(test_gene.other_identifiers)
-    assert normalized_gene.symbol_status == test_gene.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(test_gene.previous_symbols)
-    assert set(normalized_gene.xrefs) == set(test_gene.xrefs)
-    assert normalized_gene.symbol == test_gene.symbol
-    assert normalized_gene.locations == test_gene.locations
-    assert set(normalized_gene.location_annotations) == \
-           set(test_gene.location_annotations)
-    assert normalized_gene.strand == test_gene.strand
 
 
 def test_a1bg_as1(a1bg_as1, hgnc):
@@ -897,9 +877,9 @@ def test_myo5b(myo5b, hgnc):
     normalizer_response = hgnc.search('MYO5B')
     assertion_checks(normalizer_response, myo5b, 1, MatchType.SYMBOL)
 
-    # Xref
+    # associated_with
     normalizer_response = hgnc.search('refseq:NM_001080467')
-    assertion_checks(normalizer_response, myo5b, 1, MatchType.XREF)
+    assertion_checks(normalizer_response, myo5b, 1, MatchType.ASSOCIATED_WITH)
 
 
 def test_gstt1(gstt1, hgnc):
@@ -912,9 +892,9 @@ def test_gstt1(gstt1, hgnc):
     normalizer_response = hgnc.search('GSTT1')
     assertion_checks(normalizer_response, gstt1, 1, MatchType.SYMBOL)
 
-    # Xref
+    # associated_with
     normalizer_response = hgnc.search('omim:600436')
-    assertion_checks(normalizer_response, gstt1, 1, MatchType.XREF)
+    assertion_checks(normalizer_response, gstt1, 1, MatchType.ASSOCIATED_WITH)
 
 
 def test_no_match(hgnc):

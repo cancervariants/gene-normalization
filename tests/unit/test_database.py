@@ -67,12 +67,12 @@ def test_item_type(db):
     assert 'item_type' in item
     assert item['item_type'] == 'alias'
 
-    filter_exp = Key('label_and_type').eq('omim:606689##xref')
+    filter_exp = Key('label_and_type').eq('omim:606689##associated_with')
+    item = db.genes.query(KeyConditionExpression=filter_exp)['Items'][0]
+    assert 'item_type' in item
+    assert item['item_type'] == 'associated_with'
+
+    filter_exp = Key('label_and_type').eq('ensembl:ensg00000097007##xref')
     item = db.genes.query(KeyConditionExpression=filter_exp)['Items'][0]
     assert 'item_type' in item
     assert item['item_type'] == 'xref'
-
-    filter_exp = Key('label_and_type').eq('ensembl:ensg00000097007##other_id')
-    item = db.genes.query(KeyConditionExpression=filter_exp)['Items'][0]
-    assert 'item_type' in item
-    assert item['item_type'] == 'other_id'

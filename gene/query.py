@@ -94,8 +94,8 @@ class QueryHandler:
             containing name of the source of the match
         """
         del item['label_and_type']
-        attr_types = ['aliases', 'other_identifiers', 'previous_symbols',
-                      'xrefs', 'locations', 'location_annotations']
+        attr_types = ['aliases', 'xrefs', 'previous_symbols',
+                      'associated_with', 'locations', 'location_annotations']
         for attr_type in attr_types:
             if attr_type not in item.keys():
                 item[attr_type] = []
@@ -259,7 +259,8 @@ class QueryHandler:
         if len(sources) == 0:
             return resp
 
-        match_types = ['symbol', 'prev_symbol', 'alias', 'other_id', 'xref']
+        match_types = ['symbol', 'prev_symbol', 'alias', 'xref',
+                       'associated_with']
         for match in match_types:
             (resp, sources) = self.check_match_type(
                 query_l, resp, sources, match)
