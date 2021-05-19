@@ -8,14 +8,11 @@ import logging
 from pathlib import Path
 import csv
 from datetime import datetime
-import gzip
-import shutil
-from os import remove
 import re
 import gffutils
 from biocommons.seqrepo import SeqRepo
 from gene.vrs_locations import SequenceLocation, ChromosomeLocation
-from ftplib import FTP
+
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -26,18 +23,22 @@ class NCBI(Base):
 
     def __init__(self,
                  database: Database,
-                 data_url: str = 'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/',
+                 host='ftp.ncbi.nlm.nih.gov',
+                 data_dir='gene/DATA/',
                  assembly: str = 'GRCh38.p13'):
         """Construct the NCBI ETL instance.
 
         :param Database database: gene database for adding new data
-        :param str data_url: NCBI's FTP site containing gene source material
+        :param str host: FTP host name
+        :param str data_dir: FTP data directory to use
         :param str assembly: The genome assembly
         """
         self._database = database
         self._sequence_location = SequenceLocation()
         self._chromosome_location = ChromosomeLocation()
-        self._data_url = data_url
+        self._data_url = f"ftp://{host}/{data_dir}"
+        self._host = host
+        self._data_dir = data_dir
         self._assembly = assembly
         self._extract_data()
         self._transform_data()
@@ -47,40 +48,31 @@ class NCBI(Base):
 
         :param str ncbi_dir: The NCBI data directory
         """
-        host = 'ftp.ncbi.nlm.nih.gov'
         version = datetime.today().strftime('%Y%m%d')
 
         # Download info
-        data_dir = 'gene/DATA/GENE_INFO/Mammalia/'
+        data_dir = f'{self._data_dir}GENE_INFO/Mammalia/'
         fn = f'ncbi_info_{version}.tsv'
         data_fn = 'Homo_sapiens.gene_info.gz'
-        self._ftp_download(host, data_dir, fn, ncbi_dir, data_fn)
+        logger.info('Downloading NCBI gene_info....')
+        self._ftp_download(self._host, data_dir, fn, ncbi_dir, data_fn)
+        logger.info('Successfully downloaded NCBI gene_info.')
 
         # Download history
-        data_dir = 'gene/DATA/'
         fn = f'ncbi_history_{version}.tsv'
         data_fn = 'gene_history.gz'
-        self._ftp_download(host, data_dir, fn, ncbi_dir, data_fn)
+        logger.info('Downloading NCBI gene_history...')
+        self._ftp_download(self._host, self._data_dir, fn, ncbi_dir, data_fn)
+        logger.info('Successfully downloaded NCBI gene_history.')
 
         # Download gff
         data_dir = 'genomes/refseq/vertebrate_mammalian/Homo_sapiens/' \
                    'latest_assembly_versions/GCF_000001405.39_GRCh38.p13/'
         fn = f'ncbi_{self._assembly}.gff'
         data_fn = 'GCF_000001405.39_GRCh38.p13_genomic.gff.gz'
-        self._ftp_download(host, data_dir, fn, ncbi_dir, data_fn)
-
-    def _ftp_download(self, host: str, data_dir: str, fn: str, ncbi_dir: Path,
-                      data_fn: str):
-        with FTP(host) as ftp:
-            ftp.login()
-            ftp.cwd(data_dir)
-            gz_filepath = ncbi_dir / f'{fn}.gz'
-            with open(gz_filepath, 'wb') as fp:
-                ftp.retrbinary(f'RETR {data_fn}', fp.write)
-            with gzip.open(gz_filepath, 'rb') as f_in:
-                with open(ncbi_dir / fn, 'wb') as f_out:
-                    shutil.copyfileobj(f_in, f_out)
-            remove(gz_filepath)
+        logger.info('Downloading NCBI gff data file...')
+        self._ftp_download(self._host, data_dir, fn, ncbi_dir, data_fn)
+        logger.info('Successfully downloaded NCBI gff data file.')
 
     def _files_downloaded(self, data_dir: Path) -> bool:
         """Check whether needed source files exist.
@@ -516,7 +508,7 @@ class NCBI(Base):
         prev_symbols = self._get_prev_symbols()
         info_genes = self._get_gene_info(prev_symbols)
 
-        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / '2020-11-27'
+        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / 'latest'
         sr = SeqRepo(seqrepo_dir)
 
         # create db for gff file

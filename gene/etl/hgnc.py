@@ -1,14 +1,12 @@
 """This module defines the HGNC ETL methods."""
 from .base import Base
-from gene import PROJECT_ROOT, DownloadException, PREFIX_LOOKUP
+from gene import PROJECT_ROOT, PREFIX_LOOKUP
 from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene, \
     SourceMeta, Annotation, Chromosome
 from gene.database import Database
 import logging
 import json
-import requests
-from bs4 import BeautifulSoup
-import datetime
+import shutil
 import re
 from gene.vrs_locations import ChromosomeLocation
 
@@ -21,53 +19,38 @@ class HGNC(Base):
 
     def __init__(self,
                  database: Database,
-                 data_url='http://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/',
-                 data_file_ext='json/hgnc_complete_set.json',
+                 host='ftp.ebi.ac.uk',
+                 data_dir='pub/databases/genenames/hgnc/json/',
+                 fn='hgnc_complete_set.json'
                  ):
         """Initialize HGNC ETL class.
 
         :param Database database: DynamoDB database
-        :param str data_url: URL to HGNC's FTP site
-        :param str data_file_ext: Extension to HGNC's current JSON data file
-                                  for the complete data set
+        :param str host: FTP host name
+        :param str data_dir: FTP data directory to use
+        :param str fn: Data file to download
         """
         self._database = database
         self._chromosome_location = ChromosomeLocation()
-        self._data_url = data_url
-        self._data_file_url = data_url + data_file_ext
+        self._data_url = f"ftp://{host}/{data_dir}{fn}"
+        self._host = host
+        self._data_dir = data_dir
+        self._fn = fn
         self._version = None
         self._load_data()
 
     def _download_data(self, *args, **kwargs):
         """Download HGNC JSON data file."""
-        logger.info('Downloading HGNC...')
-        response = requests.get(self._data_file_url, stream=True)
-        if response.status_code == 200:
-            r = requests.get(f"{self._data_url}/json/")
-        else:
-            logger.error(f"HGNC data file download failed with status code: "
-                         f"{response.status_code}")
-            raise DownloadException("HGNC data file download failed.")
-        if r.status_code == 200:
-            soup = BeautifulSoup(r.text, 'html.parser')
-            v_date = soup.find(
-                'a', text='hgnc_complete_set.json').next_sibling.split()[0]
-            self._version =\
-                datetime.datetime.strptime(v_date,
-                                           '%d-%b-%Y').strftime('%Y%m%d')
-
-            data_dir = PROJECT_ROOT / 'data' / 'hgnc'
-            data_dir.mkdir(exist_ok=True, parents=True)
-
-            with open(f"{PROJECT_ROOT}/data/hgnc/"
-                      f"hgnc_{self._version}.json", 'w+') as f:
-                f.write(json.dumps(response.json()))
-
-            logger.info('Finished downloading HGNC.')
-        else:
-            logger.error(f"HGNC download failed with status code: "
-                         f"{r.status_code}")
-            raise DownloadException("HGNC download failed.")
+        logger.info('Downloading HGNC data file...')
+        hgnc_data_dir = PROJECT_ROOT / 'data' / 'hgnc'
+        hgnc_data_dir.mkdir(exist_ok=True, parents=True)
+        tmp_fn = 'hgnc_version.json'
+        self._version = \
+            self._ftp_download(self._host, self._data_dir, tmp_fn,
+                               hgnc_data_dir, self._fn)
+        shutil.move(f"{hgnc_data_dir}/{tmp_fn}",
+                    f"{hgnc_data_dir}/hgnc_{self._version}.json")
+        logger.info('Successfully downloaded HGNC data file.')
 
     def _extract_data(self, *args, **kwargs):
         """Extract data from the HGNC source."""
@@ -293,9 +276,6 @@ class HGNC(Base):
 
     def _add_meta(self, *args, **kwargs):
         """Add HGNC metadata to the gene_metadata table."""
-        if self._data_url.startswith("http"):
-            self._data_url = f"ftp://{self._data_url.split('://')[-1]}"
-
         metadata = SourceMeta(
             data_license='custom',
             data_license_url='https://www.genenames.org/about/',

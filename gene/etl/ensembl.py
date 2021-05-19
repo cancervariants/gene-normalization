@@ -5,12 +5,9 @@ from gene.schemas import SourceName, NamespacePrefix, Strand, Gene, SourceMeta
 import logging
 from gene.database import Database
 import gffutils
-import gzip
 from biocommons.seqrepo import SeqRepo
 from gene.vrs_locations import SequenceLocation
-from ftplib import FTP
-import shutil
-from os import remove
+
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -21,16 +18,23 @@ class Ensembl(Base):
 
     def __init__(self,
                  database: Database,
-                 data_url='ftp://ftp.ensembl.org/pub/',
+                 host='ftp.ensembl.org',
+                 data_dir='pub/',
+                 fn='Homo_sapiens.GRCh38.102.gff3.gz'
                  ):
         """Initialize Ensembl ETL class.
 
         :param Database database: DynamoDB database
-        :param str data_url: URL to Ensembl's FTP site
+        :param str host: FTP host name
+        :param str data_dir: FTP data directory to use
+        :param str fn: Data file to download
         """
         self._database = database
         self._sequence_location = SequenceLocation()
-        self._data_url = data_url
+        self._data_url = f"ftp://{host}/{data_dir}{fn}"
+        self._host = host
+        self._data_dir = data_dir
+        self._fn = fn
         self._data_file_url = None
         self._version = '102'
         self._assembly = 'GRCh38'
@@ -38,21 +42,15 @@ class Ensembl(Base):
 
     def _download_data(self):
         """Download Ensembl GFF3 data file."""
-        logger.info('Downloading Ensembl...')
+        logger.info('Downloading Ensembl data file...')
         ens_dir = PROJECT_ROOT / 'data' / 'ensembl'
         ens_dir.mkdir(exist_ok=True, parents=True)
-        with FTP('ftp.ensembl.org') as ftp:
-            ftp.login()
-            ftp.cwd('pub/release-102/gff3/homo_sapiens/')
-            fn = 'ensembl_102.gff3'
-            gz_filepath = ens_dir / f'{fn}.gz'
-            with open(gz_filepath, 'wb') as fp:
-                ftp.retrbinary('RETR Homo_sapiens.GRCh38.102.gff3.gz',
-                               fp.write)
-        with gzip.open(gz_filepath, 'rb') as f_in:
-            with open(ens_dir / fn, 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
-        remove(gz_filepath)
+        self._ftp_download(self._host,
+                           f'{self._data_dir}release-102/gff3/homo_sapiens/',
+                           'ensembl_102.gff3',
+                           ens_dir,
+                           self._fn)
+        logger.info('Successfully downloaded Ensembl data file.')
 
     def _extract_data(self, *args, **kwargs):
         """Extract data from the Ensembl source."""
@@ -70,9 +68,9 @@ class Ensembl(Base):
                                 merge_strategy="create_unique",
                                 keep_order=True)
 
-        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / '2020-11-27'
+        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / 'latest'
         if not seqrepo_dir.exists():
-            logger.error("Could not find seqrepo 2020-11-27 directory.")
+            logger.error("Could not find gene/data/seqrepo/latest directory.")
             raise NotADirectoryError("Could not find seqrepo "
                                      "2020-11-27 directory.")
         sr = SeqRepo(seqrepo_dir)

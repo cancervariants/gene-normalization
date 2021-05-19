@@ -1,7 +1,16 @@
 """A base class for extraction, transformation, and loading of data."""
 from abc import ABC, abstractmethod
+from typing import Optional
+
 from gene.database import Database
 from gene import PREFIX_LOOKUP
+from pathlib import Path
+from ftplib import FTP
+import gzip
+import shutil
+from os import remove
+from dateutil import parser
+import datetime
 
 
 class Base(ABC):
@@ -77,3 +86,35 @@ class Base(ABC):
                 else:
                     del gene[attr_type]
         batch.put_item(Item=gene)
+
+    def _ftp_download(self, host: str, data_dir: str, fn: str,
+                      source_dir: Path,
+                      data_fn: str) -> Optional[str]:
+        """Download data file from FTP site.
+
+        :param str host: Source's FTP host name
+        :param str data_dir: Data directory located on FTP site
+        :param str fn: Filename for downloaded file
+        :param Path source_dir: Source's data directory
+        :param str data_fn: Filename on FTP site to be downloaded
+        :return: Time file was last updated
+        """
+        with FTP(host) as ftp:
+            ftp.login()
+            timestamp = ftp.voidcmd(f'MDTM {data_dir}{data_fn}')[4:].strip()
+            date = str(parser.parse(timestamp)).split()[0]
+            version = \
+                datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%Y%m%d')
+            ftp.cwd(data_dir)
+            if data_fn.endswith('.gz'):
+                filepath = source_dir / f'{fn}.gz'
+            else:
+                filepath = source_dir / fn
+            with open(filepath, 'wb') as fp:
+                ftp.retrbinary(f'RETR {data_fn}', fp.write)
+            if data_fn.endswith('.gz'):
+                with gzip.open(filepath, 'rb') as f_in:
+                    with open(source_dir / fn, 'wb') as f_out:
+                        shutil.copyfileobj(f_in, f_out)
+                remove(filepath)
+        return version
