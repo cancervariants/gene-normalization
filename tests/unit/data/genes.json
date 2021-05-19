@@ -1925,5 +1925,33 @@
     "concept_id": "ncbigene:25",
     "src_name": "NCBI",
     "item_type": "xref"
+  },
+  {
+    "label_and_type": "ncbigene:103344718##identity",
+    "concept_id": "ncbigene:103344718",
+    "symbol": "HOTS",
+    "symbol_status": "discontinued",
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "hots##symbol",
+    "concept_id": "ncbigene:103344718",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ncbigene:544580##identity",
+    "concept_id": "ncbigene:544580",
+    "symbol": "AASTH23",
+    "symbol_status": "discontinued",
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "aasth23##symbol",
+    "concept_id": "ncbigene:544580",
+    "src_name": "NCBI",
+    "item_type": "symbol"
   }
 ]
