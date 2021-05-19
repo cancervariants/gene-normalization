@@ -3,7 +3,7 @@ import pytest
 from gene.schemas import Gene, MatchType
 from gene.query import QueryHandler
 from datetime import datetime
-from tests.conftest import assertion_checks
+from tests.conftest import assertion_checks, check_ncbi_discontinued_gene
 
 
 @pytest.fixture(scope='module')
@@ -729,6 +729,35 @@ def test_spg37(ncbi, spg37):
     # associated_with
     normalizer_response = ncbi.search('omim:611945')
     assertion_checks(normalizer_response, spg37, 1, MatchType.ASSOCIATED_WITH)
+
+
+def test_discontinued_genes(ncbi):
+    """Test searches for discontinued genes."""
+    # HOTS
+    normalizer_response = ncbi.search("ncbigene:103344718")
+    check_ncbi_discontinued_gene(normalizer_response, 'ncbigene:103344718',
+                                 'HOTS', 1, MatchType.CONCEPT_ID)
+
+    normalizer_response = ncbi.search("HOTS")
+    check_ncbi_discontinued_gene(normalizer_response, 'ncbigene:103344718',
+                                 'HOTS', 1, MatchType.CONCEPT_ID)
+
+    normalizer_response = ncbi.search("hots")
+    check_ncbi_discontinued_gene(normalizer_response, 'ncbigene:103344718',
+                                 'HOTS', 1, MatchType.CONCEPT_ID)
+
+    # AASTH23
+    normalizer_response = ncbi.search("ncbigene:544580")
+    check_ncbi_discontinued_gene(normalizer_response, 'ncbigene:544580',
+                                 'AASTH23', 1, MatchType.CONCEPT_ID)
+
+    normalizer_response = ncbi.search("AASTH23")
+    check_ncbi_discontinued_gene(normalizer_response, 'ncbigene:544580',
+                                 'AASTH23', 1, MatchType.CONCEPT_ID)
+
+    normalizer_response = ncbi.search("aastH23")
+    check_ncbi_discontinued_gene(normalizer_response, 'ncbigene:544580',
+                                 'AASTH23', 1, MatchType.CONCEPT_ID)
 
 
 def test_no_match(ncbi):

@@ -14,7 +14,7 @@ def db():
     """Create a DynamoDB test fixture."""
     class DB:
         def __init__(self):
-            self.db = Database(db_url=os.environ['GENE_NORM_DB_URL'])
+            self.db = Database()
             if os.environ.get('TEST') is not None:
                 self.load_test_data()
 

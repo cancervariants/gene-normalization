@@ -92,56 +92,7 @@ class Ensembl(Base):
                         gene = self._add_gene(f, sr, accession_numbers)
                         if gene:
                             assert Gene(**gene)
-                            self._load_symbol(gene, batch)
-                            self._load_xrefs(gene, batch)
-                            self._load_associated_with(gene, batch)
-                            batch.put_item(Item=gene)
-
-    def _load_symbol(self, gene, batch):
-        """Load symbol records into database.
-
-        :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
-        """
-        symbol = {
-            'label_and_type': f"{gene['symbol'].lower()}##symbol",
-            'concept_id': f"{gene['concept_id'].lower()}",
-            'src_name': SourceName.ENSEMBL.value,
-            'item_type': 'symbol',
-        }
-        batch.put_item(Item=symbol)
-
-    def _load_xrefs(self, gene, batch):
-        """Load xref records into database.
-
-        :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
-        """
-        if 'xrefs' in gene and gene['xrefs']:
-            for xref in gene['xrefs']:
-                xref = {
-                    'label_and_type': f"{xref.lower()}##xref",
-                    'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.ENSEMBL.value,
-                    'item_type': 'xref',
-                }
-                batch.put_item(Item=xref)
-
-    def _load_associated_with(self, gene, batch):
-        """Load associated_with records into database.
-
-        :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
-        """
-        if 'associated_with' in gene and gene['associated_with']:
-            for associated_with in gene['associated_with']:
-                item = {
-                    'label_and_type': f"{associated_with.lower()}##associated_with",  # noqa: E501
-                    'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.ENSEMBL.value,
-                    'item_type': 'associated_with',
-                }
-                batch.put_item(Item=item)
+                            self._load_gene(gene, batch)
 
     def _add_gene(self, f, sr, accession_numbers):
         """Create a transformed gene record.
@@ -284,3 +235,5 @@ class Ensembl(Base):
                 'genome_assemblies': metadata.genome_assemblies
             }
         )
+
+        self._load_meta(self._database, metadata, SourceName.ENSEMBL.value)

@@ -1,6 +1,6 @@
 """This module defines the HGNC ETL methods."""
-from .base import Base, NORMALIZER_SRC_PREFIXES
-from gene import PROJECT_ROOT, DownloadException
+from .base import Base
+from gene import PROJECT_ROOT, DownloadException, PREFIX_LOOKUP
 from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene, \
     SourceMeta, Annotation, Chromosome
 from gene.database import Database
@@ -112,35 +112,7 @@ class HGNC(Base):
                     self._get_location(r, gene)
 
                 assert Gene(**gene)
-                self._load_dynamodb(gene, batch)
-
-    def _load_dynamodb(self, gene, batch):
-        """Insert gene records into DynamoDB gene_concepts table
-
-        :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
-        """
-        self._load_approved_symbol(gene, batch)
-        self._load_aliases(gene, batch)
-        self._load_previous_symbols(gene, batch)
-        self._load_xrefs(gene, batch)
-        self._load_associated_with(gene, batch)
-        batch.put_item(Item=gene)
-
-    def _load_approved_symbol(self, gene, batch):
-        """Insert approved symbol data into the database.
-
-        :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
-        """
-        symbol = {
-            'label_and_type':
-                f"{gene['symbol'].lower()}##symbol",
-            'concept_id': f"{gene['concept_id'].lower()}",
-            'src_name': SourceName.HGNC.value,
-            'item_type': 'symbol',
-        }
-        batch.put_item(Item=symbol)
+                self._load_gene(gene, batch)
 
     def _get_aliases(self, r, gene):
         """Store aliases in a gene record.
@@ -159,24 +131,6 @@ class HGNC(Base):
         if alias_symbol or enzyme_id:
             gene['aliases'] = list(set(alias_symbol + enzyme_id))
 
-    def _load_aliases(self, gene, batch):
-        """Insert alias data into the database.
-
-        :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
-        """
-        if 'aliases' in gene:
-            aliases = {t.casefold(): t for t in gene['aliases']}
-
-            for alias in aliases:
-                alias = {
-                    'label_and_type': f"{alias}##alias",
-                    'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.HGNC.value,
-                    'item_type': 'alias',
-                }
-                batch.put_item(Item=alias)
-
     def _get_previous_symbols(self, r, gene):
         """Store previous symbols in a gene record.
 
@@ -186,56 +140,6 @@ class HGNC(Base):
         prev_symbols = r['prev_symbol']
         if prev_symbols:
             gene['previous_symbols'] = list(set(prev_symbols))
-
-    def _load_previous_symbols(self, gene, batch):
-        """Load previous symbols to a gene record.
-
-        :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
-        """
-        if 'previous_symbols' in gene:
-            prev_symbols = {t.casefold(): t for t in gene['previous_symbols']}
-
-            for prev_symbol in prev_symbols:
-                prev_symbol = {
-                    'label_and_type': f"{prev_symbol}##prev_symbol",
-                    'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.HGNC.value,
-                    'item_type': 'prev_symbol'
-                }
-                batch.put_item(Item=prev_symbol)
-
-    def _load_xrefs(self, gene, batch):
-        """Insert xref data into the database.
-
-        :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
-        """
-        if 'xrefs' in gene:
-            for xref in gene['xrefs']:
-                xref = {
-                    'label_and_type': f"{xref.lower()}##xref",
-                    'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.HGNC.value,
-                    'item_type': 'xref'
-                }
-                batch.put_item(Item=xref)
-
-    def _load_associated_with(self, gene, batch):
-        """Insert associated_with data into the database.
-
-        :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
-        """
-        if 'associated_with' in gene:
-            for associated_with in gene['associated_with']:
-                item = {
-                    'label_and_type': f"{associated_with.lower()}##associated_with",  # noqa: E501
-                    'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.HGNC.value,
-                    'item_type': 'associated_with',
-                }
-                batch.put_item(Item=item)
 
     def _get_xrefs_associated_with(self, r, gene):
         """Store xrefs and/or associated_with refs in a gene record.
@@ -263,12 +167,14 @@ class HGNC(Base):
                     key = src.split("_")[0]
                 else:
                     key = src
+
                 if key.upper() in NamespacePrefix.__members__:
-                    if NamespacePrefix[key.upper()]\
-                            .value in NORMALIZER_SRC_PREFIXES:
+                    if NamespacePrefix[key.upper()].value \
+                            in PREFIX_LOOKUP.keys():
                         self._get_xref_associated_with(key, src, r, xrefs)
                     else:
-                        self._get_xref_associated_with(key, src, r, associated_with)  # noqa: E501
+                        self._get_xref_associated_with(key, src, r,
+                                                       associated_with)
                 else:
                     logger.warning(f"{key} not in schemas.py")
 
@@ -404,15 +310,4 @@ class HGNC(Base):
             genome_assemblies=[]
         )
 
-        self._database.metadata.put_item(
-            Item={
-                'src_name': SourceName.HGNC.value,
-                'data_license': metadata.data_license,
-                'data_license_url': metadata.data_license_url,
-                'version': metadata.version,
-                'data_url': metadata.data_url,
-                'rdp_url': metadata.rdp_url,
-                'data_license_attributes': metadata.data_license_attributes,
-                'genome_assemblies': metadata.genome_assemblies
-            }
-        )
+        self._load_meta(self._database, metadata, SourceName.HGNC.value)

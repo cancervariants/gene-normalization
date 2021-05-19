@@ -1,9 +1,9 @@
 """This module defines ETL methods for the NCBI data source."""
-from .base import Base, NORMALIZER_SRC_PREFIXES
-from gene import PROJECT_ROOT
+from .base import Base
+from gene import PROJECT_ROOT, PREFIX_LOOKUP
 from gene.database import Database
 from gene.schemas import SourceMeta, Gene, SourceName, NamespacePrefix, \
-    Annotation, Chromosome
+    Annotation, Chromosome, SymbolStatus
 import logging
 from pathlib import Path
 import csv
@@ -133,14 +133,27 @@ class NCBI(Base):
         history = csv.reader(history_file, delimiter='\t')
         next(history)
         prev_symbols = {}
-        for row in history:
-            # Only interested in rows that have homo sapiens tax id
-            if row[0] == '9606' and row[1] != '-':
-                gene_id = row[1]
-                if gene_id in prev_symbols.keys():
-                    prev_symbols[gene_id].append(row[3])
-                else:
-                    prev_symbols[gene_id] = [row[3]]
+        with self._database.genes.batch_writer() as batch:
+            for row in history:
+                # Only interested in rows that have homo sapiens tax id
+                if row[0] == '9606':
+                    if row[1] != '-':
+                        gene_id = row[1]
+                        if gene_id in prev_symbols.keys():
+                            prev_symbols[gene_id].append(row[3])
+                        else:
+                            prev_symbols[gene_id] = [row[3]]
+                    else:
+                        # Load discontinued genes
+                        params = {
+                            'concept_id':
+                                f'{NamespacePrefix.NCBI.value.lower()}:'
+                                f'{row[2]}',
+                            'symbol': row[3],
+                            'symbol_status': SymbolStatus.DISCONTINUED.value
+                        }
+                        assert Gene(**params)
+                        self._load_gene(params, batch)
         history_file.close()
         return prev_symbols
 
@@ -158,7 +171,7 @@ class NCBI(Base):
             if src_name == "GENEID":
                 params['concept_id'] = f"{NamespacePrefix.NCBI.value}:{src_id}"
             elif src_name in NamespacePrefix.__members__ and \
-                    NamespacePrefix[src_name].value in NORMALIZER_SRC_PREFIXES:
+                    NamespacePrefix[src_name].value in PREFIX_LOOKUP:
                 params['xrefs'].append(
                     f"{NamespacePrefix[src_name].value}"
                     f":{src_id}")
@@ -246,75 +259,6 @@ class NCBI(Base):
                         # Need to add entire gene
                         gene = self._add_gff_gene(db, f, sr, f_id)
                         info_genes[gene['symbol']] = gene
-
-    def _load_data(self, item, batch):
-        """Load individual Gene item.
-
-        :param dict item: A transformed gene record
-        :param batch: boto3 batch writer
-        """
-        concept_id_lower = item['concept_id'].lower()
-
-        pk = f"{item['symbol'].lower()}##symbol"
-        batch.put_item(Item={
-            'label_and_type': pk,
-            'concept_id': concept_id_lower,
-            'src_name': SourceName.NCBI.value,
-            'item_type': 'symbol',
-        })
-
-        if 'aliases' in item and item['aliases']:
-            item['aliases'] = list(set(item['aliases']))
-            aliases = {alias.lower() for alias in item['aliases']}
-            for alias in aliases:
-                pk = f"{alias}##alias"
-                batch.put_item(Item={
-                    'label_and_type': pk,
-                    'concept_id': concept_id_lower,
-                    'src_name': SourceName.NCBI.value,
-                    'item_type': 'alias',
-                })
-
-        if 'previous_symbols' in item and item['previous_symbols']:
-            item['previous_symbols'] = list(set(item['previous_symbols']))
-            item_prev_symbols = {s.lower() for s in item['previous_symbols']}
-            for symbol in item_prev_symbols:
-                pk = f"{symbol}##prev_symbol"
-                batch.put_item(Item={
-                    'label_and_type': pk,
-                    'concept_id': concept_id_lower,
-                    'src_name': SourceName.NCBI.value,
-                    'item_type': 'prev_symbol'
-                })
-
-        if 'xrefs' in item and item['xrefs']:
-            for xref in item['xrefs']:
-                pk = f"{xref.lower()}##xref"
-                batch.put_item(Item={
-                    'label_and_type': pk,
-                    'concept_id': concept_id_lower,
-                    'src_name': SourceName.NCBI.value,
-                    'item_type': 'xref',
-                })
-
-        if 'associated_with' in item and item['associated_with']:
-            for associated_with in item['associated_with']:
-                pk = f"{associated_with.lower()}##associated_with"
-                batch.put_item(Item={
-                    'label_and_type': pk,
-                    'concept_id': concept_id_lower,
-                    'src_name': SourceName.NCBI.value,
-                    'item_type': 'associated_with',
-                })
-
-        filtered_item = {k: v for k, v in item.items() if v is not None}
-        item.clear()
-        item.update(filtered_item)
-
-        item['label_and_type'] = f"{concept_id_lower}##identity"
-        item['src_name'] = SourceName.NCBI.value
-        item['item_type'] = 'identity'
-        batch.put_item(Item=item)
 
     def _add_gff_gene(self, db, f, sr, f_id):
         """Create a transformed gene recor from NCBI gff file.
@@ -587,13 +531,10 @@ class NCBI(Base):
         with self._database.genes.batch_writer() as batch:
             for gene in info_genes.keys():
                 assert Gene(**info_genes[gene])
-                self._load_data(info_genes[gene], batch)
+                self._load_gene(info_genes[gene], batch)
 
     def _add_meta(self):
         """Load metadata"""
-        if self._data_url.startswith("http"):
-            self._data_url = f"ftp://{self._data_url.split('://')[-1]}"
-
         metadata = SourceMeta(
             data_license="custom",
             data_license_url="https://www.ncbi.nlm.nih.gov/home/"
@@ -609,13 +550,4 @@ class NCBI(Base):
             genome_assemblies=[self._assembly]
         )
 
-        self._database.metadata.put_item(Item={
-            'src_name': SourceName.NCBI.value,
-            'data_license': metadata.data_license,
-            'data_license_url': metadata.data_license_url,
-            'version': metadata.version,
-            'data_url': metadata.data_url,
-            'rdp_url': metadata.rdp_url,
-            'data_license_attributes': metadata.data_license_attributes,
-            'genome_assemblies': metadata.genome_assemblies
-        })
+        self._load_meta(self._database, metadata, SourceName.NCBI.value)

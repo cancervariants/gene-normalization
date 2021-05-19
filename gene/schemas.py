@@ -13,6 +13,7 @@ class SymbolStatus(str, Enum):
 
     WITHDRAWN = "withdrawn"
     APPROVED = "approved"
+    DISCONTINUED = "discontinued"
 
 
 class Strand(str, Enum):
