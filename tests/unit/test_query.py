@@ -155,6 +155,6 @@ def test_service_meta(query_handler):
     response = query_handler.search(test_query)
     service_meta = response['service_meta_']
     assert service_meta.name == "gene-normalizer"
-    assert service_meta.version >= "0.1.5"
+    assert service_meta.version >= "0.1.0"
     assert isinstance(service_meta.response_datetime, datetime)
     assert service_meta.url == 'https://github.com/cancervariants/gene-normalization'  # noqa: E501
