@@ -226,8 +226,8 @@ class Ensembl(Base):
         return self._sequence_location.add_location(accession_numbers[f.seqid],
                                                     f, gene, sr)
 
-    def _get_other_id_xref(self, src_name, src_id):
-        """Get other identifier or xref.
+    def _get_xref_associated_with(self, src_name, src_id):
+        """Get xref or associated_with concept.
 
         :param str src_name: Source name
         :param src_id: The source's accession number
