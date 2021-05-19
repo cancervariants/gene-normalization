@@ -925,7 +925,7 @@ def test_meta_info(a1bg_as1, hgnc):
            'https://www.genenames.org/about/'
     assert datetime.strptime(normalizer_response['source_meta_'].version, "%Y%m%d")  # noqa: E501
     assert normalizer_response['source_meta_'].data_url == \
-           'ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/'
+           'ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json'  # noqa: E501
     assert normalizer_response['source_meta_'].rdp_url is None
     assert normalizer_response['source_meta_'].genome_assemblies == []
     assert normalizer_response['source_meta_'].data_license_attributes == {

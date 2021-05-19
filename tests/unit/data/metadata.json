@@ -15,7 +15,7 @@
   {
     "src_name": "HGNC",
     "version": "20201208",
-    "data_url": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/",
+    "data_url": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json",
     "data_license_attributes": {
       "non_commercial": false,
       "share_alike": false,
