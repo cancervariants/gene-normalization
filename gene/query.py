@@ -2,25 +2,12 @@
 import re
 from typing import List, Dict, Set
 from uvicorn.config import logger
-from gene import __version__
+from gene import __version__, NAMESPACE_LOOKUP, PREFIX_LOOKUP
 from gene.database import Database
-from gene.schemas import Gene, SourceMeta, MatchType, SourceName, \
-    NamespacePrefix, SourceIDAfterNamespace, ServiceMeta
+from gene.schemas import Gene, SourceMeta, MatchType, SourceName, ServiceMeta
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 from datetime import datetime
-
-# use to fetch source name from schema based on concept id namespace
-# e.g. {'hgnc': 'HGNC'}
-PREFIX_LOOKUP = {v.value: SourceName[k].value
-                 for k, v in NamespacePrefix.__members__.items()
-                 if k in SourceName.__members__.keys()}
-
-# use to generate namespace prefix from source ID value
-# e.g. {'ENSG': 'ensembl'}
-NAMESPACE_LOOKUP = {v.value.lower(): NamespacePrefix[k].value
-                    for k, v in SourceIDAfterNamespace.__members__.items()
-                    if v.value != ''}
 
 
 class InvalidParameterException(Exception):
@@ -47,11 +34,11 @@ class QueryHandler:
         """
         self.db = Database(db_url=db_url, region_name=db_region)
 
-    def emit_warnings(self, query_str: str) -> Dict[str, str]:
+    def emit_warnings(self, query_str: str) -> List[str]:
         """Emit warnings if query contains non breaking space characters.
 
         :param str query_str: query string
-        :return: dict keying warning type to warning description
+        :return: List of warnings
         """
         warnings = []
         nbsp = re.search('\xa0|&nbsp;', query_str)
@@ -78,7 +65,7 @@ class QueryHandler:
                 self.db.cached_sources[src_name] = response
                 return response
             except ClientError as e:
-                print(e.response['Error']['Message'])
+                logger.error(e.response['Error']['Message'])
 
     def add_record(self,
                    response: Dict[str, Dict],
@@ -89,7 +76,7 @@ class QueryHandler:
         :param Dict[str, Dict] response: in-progress response object to return
             to client
         :param Dict item: Item retrieved from DynamoDB
-        :param MatchType match_type: type of query match
+        :param MatchTy pe match_type: type of query match
         :return: Tuple containing updated response object, and string
             containing name of the source of the match
         """
@@ -143,7 +130,7 @@ class QueryHandler:
                 (response, src) = self.add_record(response, match, match_type)
                 matched_sources.add(src)
             except ClientError as e:
-                print(e.response['Error']['Message'])
+                logger.error(e.response['Error']['Message'])
 
         return (response, matched_sources)
 
@@ -185,7 +172,7 @@ class QueryHandler:
                 if len(result['Items']) > 0:
                     concept_id_items += result['Items']
             except ClientError as e:
-                print(e.response['Error']['Message'])
+                logger.error(e.response['Error']['Message'])
         for prefix in [p for p in NAMESPACE_LOOKUP.keys() if
                        query.startswith(p)]:
             pk = f'{NAMESPACE_LOOKUP[prefix].lower()}:{query}##identity'
@@ -197,7 +184,7 @@ class QueryHandler:
                 if len(result['Items']) > 0:  # TODO remove check?
                     concept_id_items += result['Items']
             except ClientError as e:
-                print(e.response['Error']['Message'])
+                logger.error(e.response['Error']['Message'])
 
         for item in concept_id_items:
             (resp, src_name) = self.add_record(resp, item,
@@ -231,7 +218,7 @@ class QueryHandler:
                 )
                 sources = sources - matched_srcs
         except ClientError as e:
-            print(e.response['Error']['Message'])
+            logger.error(e.response['Error']['Message'])
         return (resp, sources)
 
     def response_keyed(self, query: str, sources: List[str]) -> Dict:
