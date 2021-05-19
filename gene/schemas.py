@@ -178,12 +178,12 @@ class Gene(BaseModel):
     symbol_status: Optional[SymbolStatus]
     label: Optional[str]
     strand: Optional[Strand]
-    location_annotations: Optional[List[str]]
-    locations: Optional[List[Union[ChromosomeLocation, SequenceLocation]]]
-    aliases: Optional[List[str]]
-    previous_symbols: Optional[List[str]]
-    xrefs: Optional[List[str]]
-    associated_with: Optional[List[str]]
+    location_annotations: Optional[List[str]] = []
+    locations: Optional[List[Union[ChromosomeLocation, SequenceLocation]]] = []
+    aliases: Optional[List[str]] = []
+    previous_symbols: Optional[List[str]] = []
+    xrefs: Optional[List[str]] = []
+    associated_with: Optional[List[str]] = []
 
     class Config:
         """Configure model"""
@@ -287,6 +287,16 @@ class DataLicenseAttributes(BaseModel):
     non_commercial: StrictBool
     share_alike: StrictBool
     attribution: StrictBool
+
+
+class ItemTypes(str, Enum):
+    """Item types used in DynamoDB."""
+
+    SYMBOL = 'symbol'
+    ALIASES = 'alias'
+    PREVIOUS_SYMBOLS = 'prev_symbol'
+    XREFS = 'xref'
+    ASSOCIATED_WITH = 'associated_with'
 
 
 class SourceMeta(BaseModel):

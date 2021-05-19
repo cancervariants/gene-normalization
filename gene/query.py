@@ -2,7 +2,7 @@
 import re
 from typing import List, Dict, Set
 from uvicorn.config import logger
-from gene import __version__, NAMESPACE_LOOKUP, PREFIX_LOOKUP
+from gene import __version__, NAMESPACE_LOOKUP, PREFIX_LOOKUP, ITEM_TYPES
 from gene.database import Database
 from gene.schemas import Gene, SourceMeta, MatchType, SourceName, ServiceMeta
 from botocore.exceptions import ClientError
@@ -81,12 +81,6 @@ class QueryHandler:
             containing name of the source of the match
         """
         del item['label_and_type']
-        attr_types = ['aliases', 'xrefs', 'previous_symbols',
-                      'associated_with', 'locations', 'location_annotations']
-        for attr_type in attr_types:
-            if attr_type not in item.keys():
-                item[attr_type] = []
-
         gene = Gene(**item)
         src_name = item['src_name']
 
@@ -246,9 +240,7 @@ class QueryHandler:
         if len(sources) == 0:
             return resp
 
-        match_types = ['symbol', 'prev_symbol', 'alias', 'xref',
-                       'associated_with']
-        for match in match_types:
+        for match in ITEM_TYPES.values():
             (resp, sources) = self.check_match_type(
                 query_l, resp, sources, match)
             if len(sources) == 0:

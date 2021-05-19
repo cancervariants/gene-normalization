@@ -1,9 +1,8 @@
 """A base class for extraction, transformation, and loading of data."""
 from abc import ABC, abstractmethod
 from typing import Optional
-
 from gene.database import Database
-from gene import PREFIX_LOOKUP
+from gene import PREFIX_LOOKUP, ITEM_TYPES
 from pathlib import Path
 from ftplib import FTP
 import gzip
@@ -62,13 +61,7 @@ class Base(ABC):
             PREFIX_LOOKUP[gene['concept_id'].split(':')[0].lower()]
         gene['item_type'] = 'identity'
 
-        attrs = [
-            ('symbol', 'symbol'), ('aliases', 'alias'),
-            ('previous_symbols', 'prev_symbol'), ('xrefs', 'xref'),
-            ('associated_with', 'associated_with')
-        ]
-
-        for attr_type, item_type in attrs:
+        for attr_type, item_type in ITEM_TYPES.items():
             if attr_type in gene:
                 if gene[attr_type] is not None and gene[attr_type] != []:
                     if isinstance(gene[attr_type], str):
