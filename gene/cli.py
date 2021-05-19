@@ -1,12 +1,16 @@
 """This module provides a CLI util to make updates to normalizer database."""
 import click
 from botocore.exceptions import ClientError
-from gene.etl import HGNC, Ensembl, NCBI
+from gene import SOURCES_CLASS, SOURCES
 from gene.schemas import SourceName
 from timeit import default_timer as timer
 from gene.database import Database
 from boto3.dynamodb.conditions import Key
 from os import environ
+import logging
+
+logger = logging.getLogger('gene')
+logger.setLevel(logging.DEBUG)
 
 
 class CLI:
@@ -34,11 +38,6 @@ class CLI:
     )
     def update_normalizer_db(normalizer, prod, db_url, update_all):
         """Update selected normalizer source(s) in the gene database."""
-        sources = {
-            'hgnc': HGNC,
-            'ensembl': Ensembl,
-            'ncbi': NCBI
-        }
         if prod:
             environ['GENE_NORM_PROD'] = "TRUE"
             db: Database = Database()
@@ -52,8 +51,8 @@ class CLI:
             db: Database = Database(db_url=endpoint_url)
 
         if update_all:
-            normalizers = [src for src in sources]
-            CLI()._update_normalizers(normalizers, sources, db)
+            normalizers = [src for src in SOURCES]
+            CLI()._update_normalizers(normalizers, db)
         elif not normalizer:
             CLI()._help_msg()
         else:
@@ -62,44 +61,64 @@ class CLI:
             if len(normalizers) == 0:
                 raise Exception("Must enter a normalizer")
 
-            non_sources = set(normalizers) - {src for src in sources}
+            non_sources = set(normalizers) - {src for src in SOURCES}
 
             if len(non_sources) != 0:
                 raise Exception(f"Not valid source(s): {non_sources}")
 
-            CLI()._update_normalizers(normalizers, sources, db)
+            CLI()._update_normalizers(normalizers, db)
 
     @staticmethod
     def _help_msg():
         """Display help message."""
         ctx = click.get_current_context()
-        click.echo(
-            "Must either enter 1 or more sources, or use `--update_all` parameter")  # noqa: E501
+        click.echo("Must either enter 1 or more sources, or use `--update_all` parameter")  # noqa: E501
         click.echo(ctx.get_help())
         ctx.exit()
 
     @staticmethod
-    def _update_normalizers(normalizers, sources, db):
+    def _update_normalizers(normalizers, db):
         """Update selected normalizer sources."""
         for n in normalizers:
-            click.echo(f"\nDeleting {n}...")
-            start_delete = timer()
-            CLI()._delete_data(n, db)
-            end_delete = timer()
-            delete_time = end_delete - start_delete
-            click.echo(f"Deleted {n} in "
-                       f"{delete_time:.5f} seconds.\n")
-            click.echo(f"Loading {n}...")
-            start_load = timer()
-            sources[n](database=db)
-            end_load = timer()
-            load_time = end_load - start_load
-            click.echo(f"Loaded {n} in {load_time:.5f} seconds.")
-            click.echo(f"Total time for {n}: "
-                       f"{(delete_time + load_time):.5f} seconds.")
+            delete_time = CLI()._delete_source(n, db)
+            CLI()._load_source(n, db, delete_time)
+
+    @staticmethod
+    def _delete_source(n, db):
+        """Delete individual source data."""
+        msg = f"\nDeleting {n}..."
+        click.echo(msg)
+        logger.info(msg)
+        start_delete = timer()
+        CLI()._delete_data(n, db)
+        end_delete = timer()
+        delete_time = end_delete - start_delete
+        msg = f"Deleted {n} in {delete_time:.5f} seconds.\n"
+        click.echo(msg)
+        logger.info(msg)
+        return delete_time
+
+    @staticmethod
+    def _load_source(n, db, delete_time):
+        """Load individual source data."""
+        msg = f"Loading {n}..."
+        click.echo(msg)
+        logger.info(msg)
+        start_load = timer()
+        SOURCES_CLASS[n](database=db)
+        end_load = timer()
+        load_time = end_load - start_load
+        msg = f"Loaded {n} in {load_time:.5f} seconds."
+        click.echo(msg)
+        logger.info(msg)
+        msg = f"Total time for {n}: {(delete_time + load_time):.5f} " \
+              f"seconds."
+        click.echo(msg)
+        logger.info(msg)
 
     @staticmethod
     def _delete_data(source, database):
+        """Delete a source's data from dynamodb table."""
         # Delete source's metadata
         try:
             metadata = database.metadata.query(
