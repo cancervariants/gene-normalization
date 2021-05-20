@@ -504,6 +504,7 @@ class NCBI(Base):
 
     def _transform_data(self):
         """Modify data and pass to loading functions."""
+        logger.info('Transforming NCBI...')
         self._add_meta()
         prev_symbols = self._get_prev_symbols()
         info_genes = self._get_gene_info(prev_symbols)
@@ -524,6 +525,7 @@ class NCBI(Base):
             for gene in info_genes.keys():
                 assert Gene(**info_genes[gene])
                 self._load_gene(info_genes[gene], batch)
+        logger.info('Successfully transformed NCBI.')
 
     def _add_meta(self):
         """Load metadata"""

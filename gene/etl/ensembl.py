@@ -62,6 +62,7 @@ class Ensembl(Base):
 
     def _transform_data(self, *args, **kwargs):
         """Transform the Ensembl source."""
+        logger.info('Transforming Ensembl...')
         db = gffutils.create_db(str(self._data_src),
                                 dbfn=":memory:",
                                 force=True,
@@ -91,6 +92,7 @@ class Ensembl(Base):
                         if gene:
                             assert Gene(**gene)
                             self._load_gene(gene, batch)
+        logger.info('Successfully transformed Ensembl.')
 
     def _add_gene(self, f, sr, accession_numbers):
         """Create a transformed gene record.

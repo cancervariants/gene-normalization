@@ -62,6 +62,7 @@ class HGNC(Base):
 
     def _transform_data(self, *args, **kwargs):
         """Transform the HGNC source."""
+        logger.info('Transforming HGNC...')
         with open(self._data_src, 'r') as f:
             data = json.load(f)
 
@@ -96,6 +97,7 @@ class HGNC(Base):
 
                 assert Gene(**gene)
                 self._load_gene(gene, batch)
+        logger.info('Successfully transformed HGNC.')
 
     def _get_aliases(self, r, gene):
         """Store aliases in a gene record.
