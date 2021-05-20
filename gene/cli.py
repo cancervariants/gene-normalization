@@ -94,7 +94,7 @@ class CLI:
         end_delete = timer()
         delete_time = end_delete - start_delete
         msg = f"Deleted {n} in {delete_time:.5f} seconds."
-        click.echo(click.echo(f"{msg}\n"))
+        click.echo(f"{msg}\n")
         logger.info(msg)
         return delete_time
 
