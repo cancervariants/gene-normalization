@@ -1,4 +1,5 @@
 """The VICC library for normalizing genes."""
+from .version import __version__  # noqa: F401
 from pathlib import Path
 import logging
 
@@ -8,9 +9,6 @@ logging.basicConfig(
     format='[%(asctime)s] - %(name)s - %(levelname)s : %(message)s')
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
-
-
-__version__ = "0.1.10"
 
 
 class DownloadException(Exception):

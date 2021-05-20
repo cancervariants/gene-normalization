@@ -2,7 +2,8 @@
 import re
 from typing import List, Dict, Set
 from uvicorn.config import logger
-from gene import __version__, NAMESPACE_LOOKUP, PREFIX_LOOKUP, ITEM_TYPES
+from .version import __version__
+from gene import NAMESPACE_LOOKUP, PREFIX_LOOKUP, ITEM_TYPES
 from gene.database import Database
 from gene.schemas import Gene, SourceMeta, MatchType, SourceName, ServiceMeta
 from botocore.exceptions import ClientError
