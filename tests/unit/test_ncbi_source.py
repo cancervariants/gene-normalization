@@ -154,10 +154,10 @@ def spry3():
                 'type': 'SequenceLocation'
             },
             {
-                '_id': 'ga4gh:VSL.aVFuwMTMH7TcoS-A6qMnK8c9cBZCd3xp',
+                '_id': 'ga4gh:VSL.R8x4-hQzGNmp654J83nUT2RJlIXOucno',
                 'interval': {
                     'end': 56968979,
-                    'start': 56954255,
+                    'start': 56923423,
                     'type': 'SimpleInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5',
