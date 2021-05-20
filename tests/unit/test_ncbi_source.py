@@ -771,7 +771,7 @@ def test_no_match(ncbi):
            'https://www.ncbi.nlm.nih.gov/home/about/policies/'
     assert datetime.strptime(response['source_meta_'].version, "%Y%m%d")
     assert response['source_meta_'].data_url == \
-        'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/'
+        'ftp://ftp.ncbi.nlm.nih.gov'
     assert response['source_meta_'].rdp_url == \
         'https://reusabledata.org/ncbi-gene.html'
     assert not response['source_meta_'].data_license_attributes['non_commercial']  # noqa: E501
@@ -817,7 +817,7 @@ def test_meta(ncbi, pdp1):
         'https://www.ncbi.nlm.nih.gov/home/about/policies/'
     assert datetime.strptime(response['source_meta_'].version, "%Y%m%d")
     assert response['source_meta_'].data_url == \
-        'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/'
+        'ftp://ftp.ncbi.nlm.nih.gov'
     assert response['source_meta_'].rdp_url == \
         'https://reusabledata.org/ncbi-gene.html'
     assert response['source_meta_'].genome_assemblies == ['GRCh38.p13']

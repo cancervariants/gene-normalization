@@ -36,7 +36,7 @@ class NCBI(Base):
         self._database = database
         self._sequence_location = SequenceLocation()
         self._chromosome_location = ChromosomeLocation()
-        self._data_url = f"ftp://{host}/{data_dir}"
+        self._data_url = f"ftp://{host}"
         self._host = host
         self._data_dir = data_dir
         self._assembly = assembly
