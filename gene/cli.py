@@ -86,15 +86,15 @@ class CLI:
     @staticmethod
     def _delete_source(n, db):
         """Delete individual source data."""
-        msg = f"\nDeleting {n}..."
-        click.echo(msg)
+        msg = f"Deleting {n}..."
+        click.echo(f"\n{msg}")
         logger.info(msg)
         start_delete = timer()
         CLI()._delete_data(n, db)
         end_delete = timer()
         delete_time = end_delete - start_delete
-        msg = f"Deleted {n} in {delete_time:.5f} seconds.\n"
-        click.echo(msg)
+        msg = f"Deleted {n} in {delete_time:.5f} seconds."
+        click.echo(click.echo(f"{msg}\n"))
         logger.info(msg)
         return delete_time
 
@@ -111,8 +111,7 @@ class CLI:
         msg = f"Loaded {n} in {load_time:.5f} seconds."
         click.echo(msg)
         logger.info(msg)
-        msg = f"Total time for {n}: {(delete_time + load_time):.5f} " \
-              f"seconds."
+        msg = f"Total time for {n}: {(delete_time + load_time):.5f} seconds."
         click.echo(msg)
         logger.info(msg)
 
