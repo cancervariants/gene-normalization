@@ -63,12 +63,13 @@ class Base(ABC):
 
         for attr_type, item_type in ITEM_TYPES.items():
             if attr_type in gene:
-                if gene[attr_type] is not None and gene[attr_type] != []:
-                    if isinstance(gene[attr_type], str):
-                        items = [gene[attr_type].lower()]
+                value = gene[attr_type]
+                if value is not None and value != []:
+                    if isinstance(value, str):
+                        items = [value.lower()]
                     else:
-                        gene[attr_type] = list(set(gene[attr_type]))
-                        items = {item.lower() for item in gene[attr_type]}
+                        gene[attr_type] = list(set(value))
+                        items = {item.lower() for item in value}
                     for item in items:
                         batch.put_item(Item={
                             'label_and_type': f"{item}##{item_type}",
