@@ -292,9 +292,10 @@ class DataLicenseAttributes(BaseModel):
 class ItemTypes(str, Enum):
     """Item types used in DynamoDB."""
 
+    # Must be in descending MatchType order.
     SYMBOL = 'symbol'
-    ALIASES = 'alias'
     PREVIOUS_SYMBOLS = 'prev_symbol'
+    ALIASES = 'alias'
     XREFS = 'xref'
     ASSOCIATED_WITH = 'associated_with'
 
