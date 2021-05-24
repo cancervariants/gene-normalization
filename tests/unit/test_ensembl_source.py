@@ -431,7 +431,7 @@ def test_meta_info(ddx11l1, ensembl):
            'https://useast.ensembl.org/info/about/legal/disclaimer.html'
     assert normalizer_response['source_meta_'].version == '102'
     assert normalizer_response['source_meta_'].data_url == \
-           'ftp://ftp.ensembl.org/pub/'
+           'ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.102.gff3.gz'
     assert normalizer_response['source_meta_'].rdp_url is None
     assert normalizer_response['source_meta_'].genome_assemblies == ['GRCh38']
     assert normalizer_response['source_meta_'].data_license_attributes == {

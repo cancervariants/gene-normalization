@@ -1365,10 +1365,10 @@
         "type": "SequenceLocation"
       },
       {
-        "_id": "ga4gh:VSL.aVFuwMTMH7TcoS-A6qMnK8c9cBZCd3xp",
+        "_id": "ga4gh:VSL.R8x4-hQzGNmp654J83nUT2RJlIXOucno",
         "interval": {
           "end": 56968979,
-          "start": 56954255,
+          "start": 56923423,
           "type": "SimpleInterval"
         },
         "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
@@ -1925,5 +1925,33 @@
     "concept_id": "ncbigene:25",
     "src_name": "NCBI",
     "item_type": "xref"
+  },
+  {
+    "label_and_type": "ncbigene:103344718##identity",
+    "concept_id": "ncbigene:103344718",
+    "symbol": "HOTS",
+    "symbol_status": "discontinued",
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "hots##symbol",
+    "concept_id": "ncbigene:103344718",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ncbigene:544580##identity",
+    "concept_id": "ncbigene:544580",
+    "symbol": "AASTH23",
+    "symbol_status": "discontinued",
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "aasth23##symbol",
+    "concept_id": "ncbigene:544580",
+    "src_name": "NCBI",
+    "item_type": "symbol"
   }
 ]

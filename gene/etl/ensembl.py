@@ -5,12 +5,9 @@ from gene.schemas import SourceName, NamespacePrefix, Strand, Gene, SourceMeta
 import logging
 from gene.database import Database
 import gffutils
-import gzip
 from biocommons.seqrepo import SeqRepo
 from gene.vrs_locations import SequenceLocation
-from ftplib import FTP
-import shutil
-from os import remove
+
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -21,16 +18,23 @@ class Ensembl(Base):
 
     def __init__(self,
                  database: Database,
-                 data_url='ftp://ftp.ensembl.org/pub/',
+                 host='ftp.ensembl.org',
+                 data_dir='pub/',
+                 fn='Homo_sapiens.GRCh38.102.gff3.gz'
                  ):
         """Initialize Ensembl ETL class.
 
         :param Database database: DynamoDB database
-        :param str data_url: URL to Ensembl's FTP site
+        :param str host: FTP host name
+        :param str data_dir: FTP data directory to use
+        :param str fn: Data file to download
         """
         self._database = database
         self._sequence_location = SequenceLocation()
-        self._data_url = data_url
+        self._data_url = f"ftp://{host}/{data_dir}{fn}"
+        self._host = host
+        self._data_dir = data_dir
+        self._fn = fn
         self._data_file_url = None
         self._version = '102'
         self._assembly = 'GRCh38'
@@ -38,21 +42,15 @@ class Ensembl(Base):
 
     def _download_data(self):
         """Download Ensembl GFF3 data file."""
-        logger.info('Downloading Ensembl...')
+        logger.info('Downloading Ensembl data file...')
         ens_dir = PROJECT_ROOT / 'data' / 'ensembl'
         ens_dir.mkdir(exist_ok=True, parents=True)
-        with FTP('ftp.ensembl.org') as ftp:
-            ftp.login()
-            ftp.cwd('pub/release-102/gff3/homo_sapiens/')
-            fn = 'ensembl_102.gff3'
-            gz_filepath = ens_dir / f'{fn}.gz'
-            with open(gz_filepath, 'wb') as fp:
-                ftp.retrbinary('RETR Homo_sapiens.GRCh38.102.gff3.gz',
-                               fp.write)
-        with gzip.open(gz_filepath, 'rb') as f_in:
-            with open(ens_dir / fn, 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
-        remove(gz_filepath)
+        self._ftp_download(self._host,
+                           f'{self._data_dir}release-102/gff3/homo_sapiens/',
+                           'ensembl_102.gff3',
+                           ens_dir,
+                           self._fn)
+        logger.info('Successfully downloaded Ensembl data file.')
 
     def _extract_data(self, *args, **kwargs):
         """Extract data from the Ensembl source."""
@@ -64,15 +62,16 @@ class Ensembl(Base):
 
     def _transform_data(self, *args, **kwargs):
         """Transform the Ensembl source."""
+        logger.info('Transforming Ensembl...')
         db = gffutils.create_db(str(self._data_src),
                                 dbfn=":memory:",
                                 force=True,
                                 merge_strategy="create_unique",
                                 keep_order=True)
 
-        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / '2020-11-27'
+        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / 'latest'
         if not seqrepo_dir.exists():
-            logger.error("Could not find seqrepo 2020-11-27 directory.")
+            logger.error("Could not find gene/data/seqrepo/latest directory.")
             raise NotADirectoryError("Could not find seqrepo "
                                      "2020-11-27 directory.")
         sr = SeqRepo(seqrepo_dir)
@@ -92,56 +91,8 @@ class Ensembl(Base):
                         gene = self._add_gene(f, sr, accession_numbers)
                         if gene:
                             assert Gene(**gene)
-                            self._load_symbol(gene, batch)
-                            self._load_xrefs(gene, batch)
-                            self._load_associated_with(gene, batch)
-                            batch.put_item(Item=gene)
-
-    def _load_symbol(self, gene, batch):
-        """Load symbol records into database.
-
-        :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
-        """
-        symbol = {
-            'label_and_type': f"{gene['symbol'].lower()}##symbol",
-            'concept_id': f"{gene['concept_id'].lower()}",
-            'src_name': SourceName.ENSEMBL.value,
-            'item_type': 'symbol',
-        }
-        batch.put_item(Item=symbol)
-
-    def _load_xrefs(self, gene, batch):
-        """Load xref records into database.
-
-        :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
-        """
-        if 'xrefs' in gene and gene['xrefs']:
-            for xref in gene['xrefs']:
-                xref = {
-                    'label_and_type': f"{xref.lower()}##xref",
-                    'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.ENSEMBL.value,
-                    'item_type': 'xref',
-                }
-                batch.put_item(Item=xref)
-
-    def _load_associated_with(self, gene, batch):
-        """Load associated_with records into database.
-
-        :param dict gene: A transformed gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
-        """
-        if 'associated_with' in gene and gene['associated_with']:
-            for associated_with in gene['associated_with']:
-                item = {
-                    'label_and_type': f"{associated_with.lower()}##associated_with",  # noqa: E501
-                    'concept_id': f"{gene['concept_id'].lower()}",
-                    'src_name': SourceName.ENSEMBL.value,
-                    'item_type': 'associated_with',
-                }
-                batch.put_item(Item=item)
+                            self._load_gene(gene, batch)
+        logger.info('Successfully transformed Ensembl.')
 
     def _add_gene(self, f, sr, accession_numbers):
         """Create a transformed gene record.
@@ -226,8 +177,8 @@ class Ensembl(Base):
         return self._sequence_location.add_location(accession_numbers[f.seqid],
                                                     f, gene, sr)
 
-    def _get_other_id_xref(self, src_name, src_id):
-        """Get other identifier or xref.
+    def _get_xref_associated_with(self, src_name, src_id):
+        """Get xref or associated_with concept.
 
         :param str src_name: Source name
         :param src_id: The source's accession number
@@ -284,3 +235,5 @@ class Ensembl(Base):
                 'genome_assemblies': metadata.genome_assemblies
             }
         )
+
+        self._load_meta(self._database, metadata, SourceName.ENSEMBL.value)

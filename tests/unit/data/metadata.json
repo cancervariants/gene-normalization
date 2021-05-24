@@ -2,7 +2,7 @@
   {
     "src_name": "Ensembl",
     "version": "102",
-    "data_url": "ftp://ftp.ensembl.org/pub/",
+    "data_url": "ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.102.gff3.gz",
     "data_license_attributes": {
       "non_commercial": false,
       "share_alike": false,
@@ -15,7 +15,7 @@
   {
     "src_name": "HGNC",
     "version": "20201208",
-    "data_url": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/",
+    "data_url": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json",
     "data_license_attributes": {
       "non_commercial": false,
       "share_alike": false,
@@ -28,7 +28,7 @@
   {
     "src_name": "NCBI",
     "version": "20201215",
-    "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+    "data_url": "ftp://ftp.ncbi.nlm.nih.gov",
     "data_license_attributes": {
       "non_commercial": false,
       "share_alike": false,

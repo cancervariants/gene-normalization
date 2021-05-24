@@ -21,11 +21,11 @@ From the _gene_ directory of the repository:
 ```commandline
 pip install seqrepo
 mkdir -p data/seqrepo
-seqrepo -r data/seqrepo pull -i 2020-11-27
-chmod -R u+w data/seqrepo
+seqrepo -r data/seqrepo pull -i 2021-01-29
+sudo chmod -R u+w data/seqrepo
 cd data/seqrepo
 seqrepo_date_dir=$(ls -d */)
-mv $seqrepo_date_dir 2020-11-27
+mv $seqrepo_date_dir latest
 ```
 
 ### Deploying DynamoDB Locally

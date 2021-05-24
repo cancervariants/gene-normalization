@@ -13,6 +13,7 @@ class SymbolStatus(str, Enum):
 
     WITHDRAWN = "withdrawn"
     APPROVED = "approved"
+    DISCONTINUED = "discontinued"
 
 
 class Strand(str, Enum):
@@ -177,12 +178,12 @@ class Gene(BaseModel):
     symbol_status: Optional[SymbolStatus]
     label: Optional[str]
     strand: Optional[Strand]
-    location_annotations: Optional[List[str]]
-    locations: Optional[List[Union[ChromosomeLocation, SequenceLocation]]]
-    aliases: Optional[List[str]]
-    previous_symbols: Optional[List[str]]
-    xrefs: Optional[List[str]]
-    associated_with: Optional[List[str]]
+    location_annotations: Optional[List[str]] = []
+    locations: Optional[List[Union[ChromosomeLocation, SequenceLocation]]] = []
+    aliases: Optional[List[str]] = []
+    previous_symbols: Optional[List[str]] = []
+    xrefs: Optional[List[str]] = []
+    associated_with: Optional[List[str]] = []
 
     class Config:
         """Configure model"""
@@ -286,6 +287,17 @@ class DataLicenseAttributes(BaseModel):
     non_commercial: StrictBool
     share_alike: StrictBool
     attribution: StrictBool
+
+
+class ItemTypes(str, Enum):
+    """Item types used in DynamoDB."""
+
+    # Must be in descending MatchType order.
+    SYMBOL = 'symbol'
+    PREVIOUS_SYMBOLS = 'prev_symbol'
+    ALIASES = 'alias'
+    XREFS = 'xref'
+    ASSOCIATED_WITH = 'associated_with'
 
 
 class SourceMeta(BaseModel):

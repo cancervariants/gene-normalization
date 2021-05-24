@@ -1,21 +1,18 @@
 """This module defines ETL methods for the NCBI data source."""
-from .base import Base, NORMALIZER_SRC_PREFIXES
-from gene import PROJECT_ROOT
+from .base import Base
+from gene import PROJECT_ROOT, PREFIX_LOOKUP
 from gene.database import Database
 from gene.schemas import SourceMeta, Gene, SourceName, NamespacePrefix, \
-    Annotation, Chromosome
+    Annotation, Chromosome, SymbolStatus
 import logging
 from pathlib import Path
 import csv
 from datetime import datetime
-import gzip
-import shutil
-from os import remove
 import re
 import gffutils
 from biocommons.seqrepo import SeqRepo
 from gene.vrs_locations import SequenceLocation, ChromosomeLocation
-from ftplib import FTP
+
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -26,18 +23,22 @@ class NCBI(Base):
 
     def __init__(self,
                  database: Database,
-                 data_url: str = 'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/',
+                 host='ftp.ncbi.nlm.nih.gov',
+                 data_dir='gene/DATA/',
                  assembly: str = 'GRCh38.p13'):
         """Construct the NCBI ETL instance.
 
         :param Database database: gene database for adding new data
-        :param str data_url: NCBI's FTP site containing gene source material
+        :param str host: FTP host name
+        :param str data_dir: FTP data directory to use
         :param str assembly: The genome assembly
         """
         self._database = database
         self._sequence_location = SequenceLocation()
         self._chromosome_location = ChromosomeLocation()
-        self._data_url = data_url
+        self._data_url = f"ftp://{host}"
+        self._host = host
+        self._data_dir = data_dir
         self._assembly = assembly
         self._extract_data()
         self._transform_data()
@@ -47,40 +48,31 @@ class NCBI(Base):
 
         :param str ncbi_dir: The NCBI data directory
         """
-        host = 'ftp.ncbi.nlm.nih.gov'
         version = datetime.today().strftime('%Y%m%d')
 
         # Download info
-        data_dir = 'gene/DATA/GENE_INFO/Mammalia/'
+        data_dir = f'{self._data_dir}GENE_INFO/Mammalia/'
         fn = f'ncbi_info_{version}.tsv'
         data_fn = 'Homo_sapiens.gene_info.gz'
-        self._ftp_download(host, data_dir, fn, ncbi_dir, data_fn)
+        logger.info('Downloading NCBI gene_info....')
+        self._ftp_download(self._host, data_dir, fn, ncbi_dir, data_fn)
+        logger.info('Successfully downloaded NCBI gene_info.')
 
         # Download history
-        data_dir = 'gene/DATA/'
         fn = f'ncbi_history_{version}.tsv'
         data_fn = 'gene_history.gz'
-        self._ftp_download(host, data_dir, fn, ncbi_dir, data_fn)
+        logger.info('Downloading NCBI gene_history...')
+        self._ftp_download(self._host, self._data_dir, fn, ncbi_dir, data_fn)
+        logger.info('Successfully downloaded NCBI gene_history.')
 
         # Download gff
         data_dir = 'genomes/refseq/vertebrate_mammalian/Homo_sapiens/' \
                    'latest_assembly_versions/GCF_000001405.39_GRCh38.p13/'
         fn = f'ncbi_{self._assembly}.gff'
         data_fn = 'GCF_000001405.39_GRCh38.p13_genomic.gff.gz'
-        self._ftp_download(host, data_dir, fn, ncbi_dir, data_fn)
-
-    def _ftp_download(self, host: str, data_dir: str, fn: str, ncbi_dir: Path,
-                      data_fn: str):
-        with FTP(host) as ftp:
-            ftp.login()
-            ftp.cwd(data_dir)
-            gz_filepath = ncbi_dir / f'{fn}.gz'
-            with open(gz_filepath, 'wb') as fp:
-                ftp.retrbinary(f'RETR {data_fn}', fp.write)
-            with gzip.open(gz_filepath, 'rb') as f_in:
-                with open(ncbi_dir / fn, 'wb') as f_out:
-                    shutil.copyfileobj(f_in, f_out)
-            remove(gz_filepath)
+        logger.info('Downloading NCBI gff data file...')
+        self._ftp_download(self._host, data_dir, fn, ncbi_dir, data_fn)
+        logger.info('Successfully downloaded NCBI gff data file.')
 
     def _files_downloaded(self, data_dir: Path) -> bool:
         """Check whether needed source files exist.
@@ -133,14 +125,27 @@ class NCBI(Base):
         history = csv.reader(history_file, delimiter='\t')
         next(history)
         prev_symbols = {}
-        for row in history:
-            # Only interested in rows that have homo sapiens tax id
-            if row[0] == '9606' and row[1] != '-':
-                gene_id = row[1]
-                if gene_id in prev_symbols.keys():
-                    prev_symbols[gene_id].append(row[3])
-                else:
-                    prev_symbols[gene_id] = [row[3]]
+        with self._database.genes.batch_writer() as batch:
+            for row in history:
+                # Only interested in rows that have homo sapiens tax id
+                if row[0] == '9606':
+                    if row[1] != '-':
+                        gene_id = row[1]
+                        if gene_id in prev_symbols.keys():
+                            prev_symbols[gene_id].append(row[3])
+                        else:
+                            prev_symbols[gene_id] = [row[3]]
+                    else:
+                        # Load discontinued genes
+                        params = {
+                            'concept_id':
+                                f'{NamespacePrefix.NCBI.value.lower()}:'
+                                f'{row[2]}',
+                            'symbol': row[3],
+                            'symbol_status': SymbolStatus.DISCONTINUED.value
+                        }
+                        assert Gene(**params)
+                        self._load_gene(params, batch)
         history_file.close()
         return prev_symbols
 
@@ -158,7 +163,7 @@ class NCBI(Base):
             if src_name == "GENEID":
                 params['concept_id'] = f"{NamespacePrefix.NCBI.value}:{src_id}"
             elif src_name in NamespacePrefix.__members__ and \
-                    NamespacePrefix[src_name].value in NORMALIZER_SRC_PREFIXES:
+                    NamespacePrefix[src_name].value in PREFIX_LOOKUP:
                 params['xrefs'].append(
                     f"{NamespacePrefix[src_name].value}"
                     f":{src_id}")
@@ -246,75 +251,6 @@ class NCBI(Base):
                         # Need to add entire gene
                         gene = self._add_gff_gene(db, f, sr, f_id)
                         info_genes[gene['symbol']] = gene
-
-    def _load_data(self, item, batch):
-        """Load individual Gene item.
-
-        :param dict item: A transformed gene record
-        :param batch: boto3 batch writer
-        """
-        concept_id_lower = item['concept_id'].lower()
-
-        pk = f"{item['symbol'].lower()}##symbol"
-        batch.put_item(Item={
-            'label_and_type': pk,
-            'concept_id': concept_id_lower,
-            'src_name': SourceName.NCBI.value,
-            'item_type': 'symbol',
-        })
-
-        if 'aliases' in item and item['aliases']:
-            item['aliases'] = list(set(item['aliases']))
-            aliases = {alias.lower() for alias in item['aliases']}
-            for alias in aliases:
-                pk = f"{alias}##alias"
-                batch.put_item(Item={
-                    'label_and_type': pk,
-                    'concept_id': concept_id_lower,
-                    'src_name': SourceName.NCBI.value,
-                    'item_type': 'alias',
-                })
-
-        if 'previous_symbols' in item and item['previous_symbols']:
-            item['previous_symbols'] = list(set(item['previous_symbols']))
-            item_prev_symbols = {s.lower() for s in item['previous_symbols']}
-            for symbol in item_prev_symbols:
-                pk = f"{symbol}##prev_symbol"
-                batch.put_item(Item={
-                    'label_and_type': pk,
-                    'concept_id': concept_id_lower,
-                    'src_name': SourceName.NCBI.value,
-                    'item_type': 'prev_symbol'
-                })
-
-        if 'xrefs' in item and item['xrefs']:
-            for xref in item['xrefs']:
-                pk = f"{xref.lower()}##xref"
-                batch.put_item(Item={
-                    'label_and_type': pk,
-                    'concept_id': concept_id_lower,
-                    'src_name': SourceName.NCBI.value,
-                    'item_type': 'xref',
-                })
-
-        if 'associated_with' in item and item['associated_with']:
-            for associated_with in item['associated_with']:
-                pk = f"{associated_with.lower()}##associated_with"
-                batch.put_item(Item={
-                    'label_and_type': pk,
-                    'concept_id': concept_id_lower,
-                    'src_name': SourceName.NCBI.value,
-                    'item_type': 'associated_with',
-                })
-
-        filtered_item = {k: v for k, v in item.items() if v is not None}
-        item.clear()
-        item.update(filtered_item)
-
-        item['label_and_type'] = f"{concept_id_lower}##identity"
-        item['src_name'] = SourceName.NCBI.value
-        item['item_type'] = 'identity'
-        batch.put_item(Item=item)
 
     def _add_gff_gene(self, db, f, sr, f_id):
         """Create a transformed gene recor from NCBI gff file.
@@ -568,11 +504,12 @@ class NCBI(Base):
 
     def _transform_data(self):
         """Modify data and pass to loading functions."""
+        logger.info('Transforming NCBI...')
         self._add_meta()
         prev_symbols = self._get_prev_symbols()
         info_genes = self._get_gene_info(prev_symbols)
 
-        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / '2020-11-27'
+        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / 'latest'
         sr = SeqRepo(seqrepo_dir)
 
         # create db for gff file
@@ -587,13 +524,11 @@ class NCBI(Base):
         with self._database.genes.batch_writer() as batch:
             for gene in info_genes.keys():
                 assert Gene(**info_genes[gene])
-                self._load_data(info_genes[gene], batch)
+                self._load_gene(info_genes[gene], batch)
+        logger.info('Successfully transformed NCBI.')
 
     def _add_meta(self):
         """Load metadata"""
-        if self._data_url.startswith("http"):
-            self._data_url = f"ftp://{self._data_url.split('://')[-1]}"
-
         metadata = SourceMeta(
             data_license="custom",
             data_license_url="https://www.ncbi.nlm.nih.gov/home/"
@@ -609,13 +544,4 @@ class NCBI(Base):
             genome_assemblies=[self._assembly]
         )
 
-        self._database.metadata.put_item(Item={
-            'src_name': SourceName.NCBI.value,
-            'data_license': metadata.data_license,
-            'data_license_url': metadata.data_license_url,
-            'version': metadata.version,
-            'data_url': metadata.data_url,
-            'rdp_url': metadata.rdp_url,
-            'data_license_attributes': metadata.data_license_attributes,
-            'genome_assemblies': metadata.genome_assemblies
-        })
+        self._load_meta(self._database, metadata, SourceName.NCBI.value)

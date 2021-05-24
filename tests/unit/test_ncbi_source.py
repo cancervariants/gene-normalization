@@ -3,7 +3,7 @@ import pytest
 from gene.schemas import Gene, MatchType
 from gene.query import QueryHandler
 from datetime import datetime
-from tests.conftest import assertion_checks
+from tests.conftest import assertion_checks, check_ncbi_discontinued_gene
 
 
 @pytest.fixture(scope='module')
@@ -154,10 +154,10 @@ def spry3():
                 'type': 'SequenceLocation'
             },
             {
-                '_id': 'ga4gh:VSL.aVFuwMTMH7TcoS-A6qMnK8c9cBZCd3xp',
+                '_id': 'ga4gh:VSL.R8x4-hQzGNmp654J83nUT2RJlIXOucno',
                 'interval': {
                     'end': 56968979,
-                    'start': 56954255,
+                    'start': 56923423,
                     'type': 'SimpleInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5',
@@ -731,6 +731,35 @@ def test_spg37(ncbi, spg37):
     assertion_checks(normalizer_response, spg37, 1, MatchType.ASSOCIATED_WITH)
 
 
+def test_discontinued_genes(ncbi):
+    """Test searches for discontinued genes."""
+    # HOTS
+    normalizer_response = ncbi.search("ncbigene:103344718")
+    check_ncbi_discontinued_gene(normalizer_response, 'ncbigene:103344718',
+                                 'HOTS', 1, MatchType.CONCEPT_ID)
+
+    normalizer_response = ncbi.search("HOTS")
+    check_ncbi_discontinued_gene(normalizer_response, 'ncbigene:103344718',
+                                 'HOTS', 1, MatchType.CONCEPT_ID)
+
+    normalizer_response = ncbi.search("hots")
+    check_ncbi_discontinued_gene(normalizer_response, 'ncbigene:103344718',
+                                 'HOTS', 1, MatchType.CONCEPT_ID)
+
+    # AASTH23
+    normalizer_response = ncbi.search("ncbigene:544580")
+    check_ncbi_discontinued_gene(normalizer_response, 'ncbigene:544580',
+                                 'AASTH23', 1, MatchType.CONCEPT_ID)
+
+    normalizer_response = ncbi.search("AASTH23")
+    check_ncbi_discontinued_gene(normalizer_response, 'ncbigene:544580',
+                                 'AASTH23', 1, MatchType.CONCEPT_ID)
+
+    normalizer_response = ncbi.search("aastH23")
+    check_ncbi_discontinued_gene(normalizer_response, 'ncbigene:544580',
+                                 'AASTH23', 1, MatchType.CONCEPT_ID)
+
+
 def test_no_match(ncbi):
     """Test that nonexistent query doesn't normalize to a match."""
     response = ncbi.search('cisplatin')
@@ -742,7 +771,7 @@ def test_no_match(ncbi):
            'https://www.ncbi.nlm.nih.gov/home/about/policies/'
     assert datetime.strptime(response['source_meta_'].version, "%Y%m%d")
     assert response['source_meta_'].data_url == \
-        'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/'
+        'ftp://ftp.ncbi.nlm.nih.gov'
     assert response['source_meta_'].rdp_url == \
         'https://reusabledata.org/ncbi-gene.html'
     assert not response['source_meta_'].data_license_attributes['non_commercial']  # noqa: E501
@@ -788,7 +817,7 @@ def test_meta(ncbi, pdp1):
         'https://www.ncbi.nlm.nih.gov/home/about/policies/'
     assert datetime.strptime(response['source_meta_'].version, "%Y%m%d")
     assert response['source_meta_'].data_url == \
-        'ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/'
+        'ftp://ftp.ncbi.nlm.nih.gov'
     assert response['source_meta_'].rdp_url == \
         'https://reusabledata.org/ncbi-gene.html'
     assert response['source_meta_'].genome_assemblies == ['GRCh38.p13']
