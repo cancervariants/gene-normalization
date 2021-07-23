@@ -30,14 +30,11 @@ class HGNC(Base):
         :param str data_dir: FTP data directory to use
         :param str fn: Data file to download
         """
-        self._database = database
+        super().__init__(database, host, data_dir)
         self._chromosome_location = ChromosomeLocation()
         self._data_url = f"ftp://{host}/{data_dir}{fn}"
-        self._host = host
-        self._data_dir = data_dir
         self._fn = fn
         self._version = None
-        self._load_data()
 
     def _download_data(self, *args, **kwargs):
         """Download HGNC JSON data file."""
@@ -269,12 +266,17 @@ class HGNC(Base):
             # Only gives chromosome
             gene['location_annotations'].append(loc)
 
-    def _load_data(self, *args, **kwargs):
-        """Load the HGNC source into normalized database."""
+    def perform_etl(self, *args, **kwargs):
+        """Extract, Transform, and Load data into DynamoDB database.
+
+        :return: Concept IDs of concepts successfully loaded
+        """
         self._download_data()
         self._extract_data()
         self._add_meta()
         self._transform_data()
+        self._database.flush_batch()
+        return self._processed_ids
 
     def _add_meta(self, *args, **kwargs):
         """Add HGNC metadata to the gene_metadata table."""

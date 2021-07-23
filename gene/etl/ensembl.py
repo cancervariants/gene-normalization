@@ -29,16 +29,13 @@ class Ensembl(Base):
         :param str data_dir: FTP data directory to use
         :param str fn: Data file to download
         """
-        self._database = database
+        super().__init__(database, host, data_dir)
         self._sequence_location = SequenceLocation()
         self._data_url = f"ftp://{host}/{data_dir}{fn}"
-        self._host = host
-        self._data_dir = data_dir
         self._fn = fn
         self._data_file_url = None
         self._version = '102'
         self._assembly = 'GRCh38'
-        self._load_data()
 
     def _download_data(self):
         """Download Ensembl GFF3 data file."""
@@ -199,12 +196,17 @@ class Ensembl(Base):
             source['associated_with'] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]  # noqa: E501
         return source
 
-    def _load_data(self, *args, **kwargs):
-        """Load the Ensembl source into normalized database."""
+    def perform_etl(self, *args, **kwargs):
+        """Extract, Transform, and Load data into DynamoDB database.
+
+        :return: Concept IDs of concepts successfully loaded
+        """
         self._download_data()
         self._extract_data()
         self._add_meta()
         self._transform_data()
+        self._database.flush_batch()
+        return self._processed_ids
 
     def _add_meta(self, *args, **kwargs):
         """Add Ensembl metadata."""

@@ -33,15 +33,21 @@ class NCBI(Base):
         :param str data_dir: FTP data directory to use
         :param str assembly: The genome assembly
         """
-        self._database = database
+        super().__init__(database, host, data_dir)
         self._sequence_location = SequenceLocation()
         self._chromosome_location = ChromosomeLocation()
         self._data_url = f"ftp://{host}"
-        self._host = host
-        self._data_dir = data_dir
         self._assembly = assembly
+
+    def perform_etl(self):
+        """Perform ETL methods.
+
+        :return: Concept IDs of concepts successfully loaded
+        """
         self._extract_data()
         self._transform_data()
+        self._database.flush_batch()
+        return self._processed_ids
 
     def _download_data(self, ncbi_dir: Path):
         """Download NCBI info, history, and GRCh38 files.
