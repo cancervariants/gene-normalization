@@ -6,6 +6,7 @@ from pydantic import BaseModel, StrictBool
 from enum import Enum, IntEnum
 from pydantic.fields import Field
 from datetime import datetime
+from pydantic.types import StrictStr
 
 
 class SymbolStatus(str, Enum):
@@ -31,9 +32,7 @@ class CytobandInterval(BaseModel):
     type = "CytobandInterval"
 
     class Config:
-        """Configure model"""
-
-        orm_mode = True
+        """Configure model example"""
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
@@ -58,9 +57,7 @@ class SimpleInterval(BaseModel):
     type = "SimpleInterval"
 
     class Config:
-        """Configure model"""
-
-        orm_mode = True
+        """Configure model example"""
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
@@ -116,9 +113,7 @@ class ChromosomeLocation(Location):
     interval: CytobandInterval
 
     class Config:
-        """Configure model"""
-
-        orm_mode = True
+        """Configure model example"""
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
@@ -147,9 +142,7 @@ class SequenceLocation(Location):
     interval: SimpleInterval
 
     class Config:
-        """Configure model"""
-
-        orm_mode = True
+        """Configure model example"""
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
@@ -186,9 +179,7 @@ class Gene(BaseModel):
     associated_with: Optional[List[str]] = []
 
     class Config:
-        """Configure model"""
-
-        orm_mode = True
+        """Configure model example"""
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
@@ -208,6 +199,136 @@ class Gene(BaseModel):
                 "symbol_status": None,
                 "strand": "-",
                 "location": []
+            }
+
+
+class Extension(BaseModel):
+    """Define model for VRSATILE Extension."""
+
+    type = "Extension"
+    name: str
+    value: Union[StrictStr, List[Dict], List[StrictStr]]
+
+    class Config:
+        """Configure model example"""
+
+        @staticmethod
+        def schema_extra(schema: Dict[str, Any],
+                         model: Type['Extension']) -> None:
+            """Configure OpenAPI schema"""
+            if 'title' in schema.keys():
+                schema.pop('title', None)
+            for p in schema.get('properties', {}).values():
+                p.pop('title', None)
+            schema['example'] = {
+                "type": "Extension",
+                "name": "strand",
+                "value": "-"
+            }
+
+
+class GeneValueObject(BaseModel):
+    """Define model for VRS Gene Value Object."""
+
+    id: str
+    type = "Gene"
+
+    class Config:
+        """Configure model example"""
+
+        @staticmethod
+        def schema_extra(schema: Dict[str, Any],
+                         model: Type['Gene']) -> None:
+            """Configure OpenAPI schema"""
+            if 'title' in schema.keys():
+                schema.pop('title', None)
+            for p in schema.get('properties', {}).values():
+                p.pop('title', None)
+            schema['example'] = {
+                "type": "Gene",
+                "id": "hgnc:5"
+            }
+
+
+class GeneDescriptor(BaseModel):
+    """Define model for VRSATILE Gene Descriptor."""
+
+    id: str
+    type = "GeneDescriptor"
+    value: GeneValueObject
+    label: str
+    xrefs: Optional[List[str]]
+    alternate_labels: Optional[List[str]]
+    extensions: Optional[List[Extension]]
+
+    class Config:
+        """Configure model example"""
+
+        @staticmethod
+        def schema_extra(schema: Dict[str, Any],
+                         model: Type['Extension']) -> None:
+            """Configure OpenAPI schema"""
+            if 'title' in schema.keys():
+                schema.pop('title', None)
+            for p in schema.get('properties', {}).values():
+                p.pop('title', None)
+            schema['example'] = {
+                "id": "normalize.gene:BRAF",
+                "name": "GeneDescriptor",
+                "value": {
+                    "id": "hgnc:1097",
+                    "type": "Gene"
+                },
+                "label": "BRAF",
+                "xrefs": [
+                    "ncbigene:673",
+                    "ensembl:ENSG00000157764"
+                ],
+                "alternate_labels": [
+                    "B-Raf proto-oncogene, serine/threonine kinase",
+                    "BRAF1"
+                ],
+                "extensions": [
+                    {
+                        "name": "symbol_status",
+                        "value": "approved",
+                        "type": "Extension"
+                    },
+                    {
+                        "name": "associated_with",
+                        "value": [
+                            "vega:OTTHUMG00000157457",
+                            "ucsc:uc003vwc.5",
+                            "ccds:CCDS5863",
+                            "ccds:CCDS87555",
+                            "uniprot:P15056",
+                            "pubmed:2284096",
+                            "pubmed:1565476",
+                            "cosmic:BRAF",
+                            "omim:164757",
+                            "orphanet:119066",
+                            "iuphar:1943",
+                            "ena.embl:M95712",
+                            "refseq:NM_004333"
+                        ],
+                        "type": "Extension"
+                    },
+                    {
+                        "name": "chromosome_location",
+                        "value": {
+                            "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",  # noqa: E501
+                            "type": "ChromosomeLocation",
+                            "species_id": "taxonomy:9606",
+                            "chr": "7",
+                            "interval": {
+                                "end": "q34",
+                                "start": "q34",
+                                "type": "CytobandInterval"
+                            }
+                        },
+                        "type": "Extension"
+                    }
+                ]
             }
 
 
@@ -238,6 +359,14 @@ class SourceName(Enum):
     HGNC = "HGNC"
     ENSEMBL = "Ensembl"
     NCBI = "NCBI"
+
+
+class SourcePriority(IntEnum):
+    """Define priorities for sources when building merged concepts."""
+
+    HGNC = 1
+    ENSEMBL = 2
+    NCBI = 3
 
 
 class SourceIDAfterNamespace(Enum):
@@ -312,7 +441,7 @@ class SourceMeta(BaseModel):
     genome_assemblies: Optional[List[str]]
 
     class Config:
-        """Enables orm_mode"""
+        """Configure model example"""
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
@@ -347,7 +476,7 @@ class MatchesKeyed(BaseModel):
     source_meta_: SourceMeta
 
     class Config:
-        """Enables orm_mode"""
+        """Configure model example"""
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
@@ -389,7 +518,7 @@ class MatchesListed(BaseModel):
     source_meta_: SourceMeta
 
     class Config:
-        """Enables orm_mode"""
+        """Configure model example"""
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
@@ -428,7 +557,7 @@ class ServiceMeta(BaseModel):
     url = 'https://github.com/cancervariants/gene-normalization'
 
     class Config:
-        """Enables orm_mode"""
+        """Configure model example"""
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
@@ -446,8 +575,8 @@ class ServiceMeta(BaseModel):
             }
 
 
-class Service(BaseModel):
-    """Core response schema containing matches for each source"""
+class SearchService(BaseModel):
+    """Define model for returning highest match typed concepts from sources."""
 
     query: str
     warnings: Optional[List]
@@ -455,11 +584,11 @@ class Service(BaseModel):
     service_meta_: ServiceMeta
 
     class Config:
-        """Enables orm_mode"""
+        """Configure model example"""
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
-                         model: Type['Service']) -> None:
+                         model: Type['SearchService']) -> None:
             """Configure OpenAPI schema"""
             if 'title' in schema.keys():
                 schema.pop('title', None)
@@ -468,6 +597,130 @@ class Service(BaseModel):
             schema['example'] = {
                 "query": "BRAF",
                 "warnings": [],
+                "source_matches": [
+                    {
+                        "source": "Ensembl",
+                        "match_type": 100,
+                        "records": [
+                            {
+                                "label": None,
+                                "concept_id": "ensembl:ENSG00000157764",
+                                "symbol": "BRAF",
+                                "previous_symbols": [],
+                                "aliases": [],
+                                "xrefs": [],
+                                "symbol_status": None,
+                                "strand": "-",
+                                "locations": []
+                            }
+                        ],
+                        "source_meta_": {
+                            "data_license": "custom",
+                            "data_license_url": "https://uswest.ensembl.org/info/about/legal/index.html",  # noqa: E501
+                            "version": "102",
+                            "data_url": "http://ftp.ensembl.org/pub/",
+                            "rdp_url": None,
+                            "data_license_attributes": {
+                                "non_commercial": False,
+                                "share_alike": False,
+                                "attribution": False
+                            },
+                            "genome_assemblies": "GRCh38"
+                        }
+                    }
+                ],
+                "service_meta_": {
+                    'name': 'gene-normalizer',
+                    'version': '0.1.0',
+                    'response_datetime': '2021-04-05T16:44:15.367831',
+                    'url': 'https://github.com/cancervariants/gene-normalization'  # noqa: E501
+                }
+            }
+
+
+class NormalizeService(BaseModel):
+    """Define model for returning normalized concept."""
+
+    query: str
+    warnings: Optional[Dict]
+    match_type: MatchType
+    gene_descriptor: Optional[GeneDescriptor]
+    source_meta_: Optional[Dict[SourceName, SourceMeta]]
+    service_meta_: ServiceMeta
+
+    class Config:
+        """Configure model example"""
+
+        @staticmethod
+        def schema_extra(schema: Dict[str, Any],
+                         model: Type['NormalizeService']) -> None:
+            """Configure OpenAPI schema"""
+            if 'title' in schema.keys():
+                schema.pop('title', None)
+            for prop in schema.get('properties', {}).values():
+                prop.pop('title', None)
+            schema['example'] = {
+                "query": "BRAF",
+                "warnings": [],
+                "match_type": 100,
+                "gene_descriptor": {
+                    "id": "normalize.gene:BRAF",
+                    "name": "GeneDescriptor",
+                    "value": {
+                        "id": "hgnc:1097",
+                        "type": "Gene"
+                    },
+                    "label": "BRAF",
+                    "xrefs": [
+                        "ncbigene:673",
+                        "ensembl:ENSG00000157764"
+                    ],
+                    "alternate_labels": [
+                        "B-Raf proto-oncogene, serine/threonine kinase",
+                        "BRAF1"
+                    ],
+                    "extensions": [
+                        {
+                            "name": "symbol_status",
+                            "value": "approved",
+                            "type": "Extension"
+                        },
+                        {
+                            "name": "associated_with",
+                            "value": [
+                                "vega:OTTHUMG00000157457",
+                                "ucsc:uc003vwc.5",
+                                "ccds:CCDS5863",
+                                "ccds:CCDS87555",
+                                "uniprot:P15056",
+                                "pubmed:2284096",
+                                "pubmed:1565476",
+                                "cosmic:BRAF",
+                                "omim:164757",
+                                "orphanet:119066",
+                                "iuphar:1943",
+                                "ena.embl:M95712",
+                                "refseq:NM_004333"
+                            ],
+                            "type": "Extension"
+                        },
+                        {
+                            "name": "chromosome_location",
+                            "value": {
+                                "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",  # noqa: E501
+                                "type": "ChromosomeLocation",
+                                "species_id": "taxonomy:9606",
+                                "chr": "7",
+                                "interval": {
+                                    "end": "q34",
+                                    "start": "q34",
+                                    "type": "CytobandInterval"
+                                }
+                            },
+                            "type": "Extension"
+                        }
+                    ]
+                },
                 "source_matches": [
                     {
                         "source": "Ensembl",
