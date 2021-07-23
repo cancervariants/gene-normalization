@@ -4,7 +4,7 @@ from fastapi.openapi.utils import get_openapi
 from typing import Optional
 from gene import __version__
 from gene.query import QueryHandler, InvalidParameterException
-from gene.schemas import Service
+from gene.schemas import SearchService
 import html
 
 
@@ -60,7 +60,7 @@ search_description = ("For each source, return strongest-match concepts "
          summary=read_query_summary,
          operation_id="getQueryResponse",
          response_description=response_description,
-         response_model=Service,
+         response_model=SearchService,
          description=search_description
          )
 def search(q: str = Query(..., description=q_descr),  # noqa: D103
@@ -81,8 +81,8 @@ def search(q: str = Query(..., description=q_descr),  # noqa: D103
     :return: JSON response with matched records and source metadata
     """
     try:
-        resp = query_handler.search_sources(html.unescape(q), keyed=keyed,
-                                            incl=incl, excl=excl)
+        resp = query_handler.search(html.unescape(q), keyed=keyed,
+                                    incl=incl, excl=excl)
     except InvalidParameterException as e:
         raise HTTPException(status_code=422, detail=str(e))
 
