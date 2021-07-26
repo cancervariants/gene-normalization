@@ -3,6 +3,7 @@ import click
 from botocore.exceptions import ClientError
 from gene import SOURCES_CLASS, SOURCES
 from gene.schemas import SourceName
+from gene.etl.merge import Merge
 from timeit import default_timer as timer
 from gene.database import Database
 from boto3.dynamodb.conditions import Key
@@ -36,7 +37,13 @@ class CLI:
         is_flag=True,
         help='Update all normalizer sources.'
     )
-    def update_normalizer_db(normalizer, prod, db_url, update_all):
+    @click.option(
+        '--update_merged',
+        is_flag=True,
+        help='Update concepts for normalize endpoint from accepted sources.'
+    )
+    def update_normalizer_db(normalizer, prod, db_url, update_all,
+                             update_merged):
         """Update selected normalizer source(s) in the gene database."""
         if prod:
             environ['GENE_NORM_PROD'] = "TRUE"
@@ -52,7 +59,7 @@ class CLI:
 
         if update_all:
             normalizers = [src for src in SOURCES]
-            CLI()._update_normalizers(normalizers, db)
+            CLI()._update_normalizers(normalizers, db, update_merged)
         elif not normalizer:
             CLI()._help_msg()
         else:
@@ -66,7 +73,7 @@ class CLI:
             if len(non_sources) != 0:
                 raise Exception(f"Not valid source(s): {non_sources}")
 
-            CLI()._update_normalizers(normalizers, db)
+            CLI()._update_normalizers(normalizers, db, update_merged)
 
     @staticmethod
     def _help_msg():
@@ -77,11 +84,15 @@ class CLI:
         ctx.exit()
 
     @staticmethod
-    def _update_normalizers(normalizers, db):
+    def _update_normalizers(normalizers, db, update_merged):
         """Update selected normalizer sources."""
+        processed_ids = list()
         for n in normalizers:
             delete_time = CLI()._delete_source(n, db)
-            CLI()._load_source(n, db, delete_time)
+            CLI()._load_source(n, db, delete_time, processed_ids)
+
+        if update_merged:
+            CLI()._load_merge(db, processed_ids)
 
     @staticmethod
     def _delete_source(n, db):
@@ -99,13 +110,14 @@ class CLI:
         return delete_time
 
     @staticmethod
-    def _load_source(n, db, delete_time):
+    def _load_source(n, db, delete_time, processed_ids):
         """Load individual source data."""
         msg = f"Loading {n}..."
         click.echo(msg)
         logger.info(msg)
         start_load = timer()
-        SOURCES_CLASS[n](database=db)
+        source = SOURCES_CLASS[n](database=db)
+        processed_ids += source.perform_etl()
         end_load = timer()
         load_time = end_load - start_load
         msg = f"Loaded {n} in {load_time:.5f} seconds."
@@ -114,6 +126,46 @@ class CLI:
         msg = f"Total time for {n}: {(delete_time + load_time):.5f} seconds."
         click.echo(msg)
         logger.info(msg)
+
+    @staticmethod
+    def _load_merge(db, processed_ids):
+        start = timer()
+        if not processed_ids:
+            CLI()._delete_normalized_data(db)
+            processed_ids = db.get_ids_for_merge()
+        merge = Merge(database=db)
+        click.echo("Constructing normalized records...")
+        merge.create_merged_concepts(processed_ids)
+        end = timer()
+        click.echo(f"Merged concept generation completed in "
+                   f"{(end - start):.5f} seconds")
+
+    @staticmethod
+    def _delete_normalized_data(database):
+        click.echo("\nDeleting normalized records...")
+        start_delete = timer()
+        try:
+            while True:
+                with database.genes.batch_writer(
+                        overwrite_by_pkeys=['label_and_type', 'concept_id']) \
+                        as batch:
+                    response = database.genes.query(
+                        IndexName='item_type_index',
+                        KeyConditionExpression=Key('item_type').eq('merger'),
+                    )
+                    records = response['Items']
+                    if not records:
+                        break
+                    for record in records:
+                        batch.delete_item(Key={
+                            'label_and_type': record['label_and_type'],
+                            'concept_id': record['concept_id']
+                        })
+        except ClientError as e:
+            click.echo(e.response['Error']['Message'])
+        end_delete = timer()
+        delete_time = end_delete - start_delete
+        click.echo(f"Deleted normalized records in {delete_time:.5f} seconds.")
 
     @staticmethod
     def _delete_data(source, database):
