@@ -54,15 +54,32 @@ class Database:
 
         # Create tables if nonexistent if not connecting to production database
         if 'GENE_NORM_PROD' not in environ and\
-                'GENE_NORM_EB_PROD' not in environ:
-            existing_tables = self.dynamodb_client.list_tables()['TableNames']
-            self.create_genes_table(existing_tables)
-            self.create_meta_data_table(existing_tables)
+                'GENE_NORM_EB_PROD' not in environ and 'TEST' not in environ:
+            self.create_db_tables()
 
         self.genes = self.dynamodb.Table('gene_concepts')
         self.metadata = self.dynamodb.Table('gene_metadata')
         self.batch = self.genes.batch_writer()
         self.cached_sources = {}
+
+    def _get_table_names(self) -> List[str]:
+        """Return names of tables in database.
+
+        :return: Table names in DynamoDB
+        """
+        return self.dynamodb_client.list_tables()['TableNames']
+
+    def delete_all_db_tables(self) -> None:
+        """Delete all tables from database."""
+        existing_tables = self._get_table_names()
+        for table_name in existing_tables:
+            self.dynamodb.Table(table_name).delete()
+
+    def create_db_tables(self) -> None:
+        """Create gene_concepts and gene_metadata tables."""
+        existing_tables = self._get_table_names()
+        self.create_genes_table(existing_tables)
+        self.create_meta_data_table(existing_tables)
 
     def create_genes_table(self, existing_tables: List[str]):
         """Create Genes table if non-existent.

@@ -18,6 +18,8 @@ def db():
             self.db = Database()
             self.merge = Merge(database=self.db)
             if os.environ.get('TEST') is not None:
+                self.db.delete_all_db_tables()
+                self.db.create_db_tables()
                 processed_ids = self.load_test_data()
                 self.merge.create_merged_concepts(processed_ids)
 
