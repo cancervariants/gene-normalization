@@ -258,6 +258,11 @@
     "src_name": "Ensembl"
   },
   {
+    "label_and_type": "acetylcholinesterase (cartwright blood group)##label",
+    "concept_id": "ensembl:ensg00000087085",
+    "src_name": "Ensembl"
+  },
+  {
     "label_and_type": "hgnc:108##xref",
     "concept_id": "ensembl:ensg00000087085",
     "src_name": "Ensembl"
@@ -286,6 +291,16 @@
     "src_name": "Ensembl"
   },
   {
+    "label_and_type": "abl1##symbol",
+    "concept_id": "ensembl:ensg00000097007",
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "abl proto-oncogene 1, non-receptor tyrosine kinase##label",
+    "concept_id": "ensembl:ensg00000097007",
+    "src_name": "Ensembl"
+  },
+  {
     "label_and_type": "hgnc:76##xref",
     "concept_id": "ensembl:ensg00000097007",
     "src_name": "Ensembl"
@@ -311,6 +326,16 @@
     "xrefs": [
       "hgnc:1097"
     ],
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "braf##symbol",
+    "concept_id": "ensembl:ensg00000157764",
+    "src_name": "Ensembl"
+  },
+  {
+    "label_and_type": "b-raf proto-oncogene, serine/threonine kinase##label",
+    "concept_id": "ensembl:ensg00000157764",
     "src_name": "Ensembl"
   },
   {
@@ -1033,6 +1058,11 @@
     "src_name": "HGNC"
   },
   {
+    "label_and_type": "acetylcholinesterase (cartwright blood group)##label",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
     "label_and_type": "ncbigene:43##xref",
     "concept_id": "hgnc:108",
     "src_name": "HGNC"
@@ -1083,6 +1113,16 @@
       "ena.embl:M95712",
       "refseq:NM_004333"
     ],
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "braf##symbol",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "b-raf proto-oncogene, serine/threonine kinase##label",
+    "concept_id": "hgnc:1097",
     "src_name": "HGNC"
   },
   {
@@ -1142,6 +1182,17 @@
       "refseq:NM_007313"
     ],
     "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "abl1##symbol",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "abl proto-oncogene 1, non-receptor tyrosine kinase##label",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC",
+    "item_type": "xref"
   },
   {
     "label_and_type": "ncbigene:25##xref",
@@ -1798,6 +1849,11 @@
     "src_name": "NCBI"
   },
   {
+    "label_and_type": "acetylcholinesterase (cartwright blood group)##label",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI"
+  },
+  {
     "label_and_type": "hgnc:108##xref",
     "concept_id": "ncbigene:43",
     "src_name": "NCBI"
@@ -1850,6 +1906,16 @@
     "associated_with": [
       "omim:164757"
     ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "braf##symbol",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "b-raf proto-oncogene, serine/threonine kinase##label",
+    "concept_id": "ncbigene:673",
     "src_name": "NCBI"
   },
   {
@@ -1913,6 +1979,16 @@
     "associated_with": [
       "omim:189980"
     ],
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "abl1##symbol",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "abl proto-oncogene 1, non-receptor tyrosine kinase##label",
+    "concept_id": "ncbigene:25",
     "src_name": "NCBI"
   },
   {
