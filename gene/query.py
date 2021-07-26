@@ -371,17 +371,16 @@ class QueryHandler:
         response['source_meta_'] = sources_meta
         return response
 
-    def add_gene_descriptor(self, response, record, query, match_type):
+    def add_gene_descriptor(self, response, record, match_type):
         """Add gene descriptor to response.
 
         :param Dict response: Response object
         :param Dict record: Gene record
-        :param str query: Input query string
         :param MatchType match_type: query's match type
         :return: Response with gene descriptor
         """
         params = {
-            "id": f"normalize.gene:{quote(query)}",
+            "id": f"normalize.gene:{quote(response['query'])}",
             "label": record["symbol"],
             "value": GeneValueObject(id=record["concept_id"])
         }
@@ -468,14 +467,14 @@ class QueryHandler:
                                           merge=True)
         if record:
             return self.add_gene_descriptor(response, record,
-                                            query, MatchType.CONCEPT_ID)
+                                            MatchType.CONCEPT_ID)
 
         # check concept ID match
         record = self.db.get_record_by_id(query_str, case_sensitive=False)
         if record:
             merge_ref = record.get('merge_ref')
             if not merge_ref:
-                return self.add_gene_descriptor(response, record, query,
+                return self.add_gene_descriptor(response, record,
                                                 MatchType.CONCEPT_ID)
             merge = self.db.get_record_by_id(merge_ref,
                                              case_sensitive=False,
@@ -484,7 +483,7 @@ class QueryHandler:
                 return self._handle_failed_merge_ref(record, response,
                                                      query_str)
             else:
-                return self.add_gene_descriptor(response, merge, query,
+                return self.add_gene_descriptor(response, merge,
                                                 MatchType.CONCEPT_ID)
 
         # check other match types
@@ -504,7 +503,7 @@ class QueryHandler:
                     merge_ref = record.get('merge_ref')
                     if not merge_ref:
                         return self.add_gene_descriptor(
-                            response, record, query,
+                            response, record,
                             MatchType[match_type.upper()]
                         )
                     merge = self.db.get_record_by_id(record['merge_ref'],
@@ -515,7 +514,7 @@ class QueryHandler:
                                                              query_str)
                     else:
                         return self.add_gene_descriptor(
-                            response, merge, query,
+                            response, merge,
                             MatchType[match_type.upper()]
                         )
 
