@@ -4,7 +4,7 @@ from fastapi.openapi.utils import get_openapi
 from typing import Optional
 from gene import __version__
 from gene.query import QueryHandler, InvalidParameterException
-from gene.schemas import SearchService
+from gene.schemas import SearchService, NormalizeService
 import html
 
 
@@ -86,4 +86,29 @@ def search(q: str = Query(..., description=q_descr),  # noqa: D103
     except InvalidParameterException as e:
         raise HTTPException(status_code=422, detail=str(e))
 
+    return resp
+
+
+normalize_summary = "Given query, provide merged normalized record."
+normalize_response_descr = "A response to a validly-formed query."
+normalize_descr = "Return merged highest-match concept for query."
+normalize_q_desecr = "Gene to normalize."
+
+
+@app.get("/gene/normalize",
+         summary=normalize_summary,
+         operation_id="getQueryResponse",
+         response_description=normalize_response_descr,
+         response_model=NormalizeService,
+         description=normalize_descr)
+def normalize(q: str = Query(..., description=normalize_q_desecr)):
+    """Return strongest match concepts to query string provided by user.
+
+    :param str q: gene search term
+    :return: JSON response with normalized gene concept
+    """
+    try:
+        resp = query_handler.normalize(html.unescape(q))
+    except InvalidParameterException as e:
+        raise HTTPException(status_code=422, detail=str(e))
     return resp
