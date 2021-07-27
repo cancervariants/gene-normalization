@@ -242,6 +242,73 @@ def normalized_abl1():
 
 
 @pytest.fixture(scope='module')
+def normalized_p150():
+    """Return normalized Gene Descriptor for p150."""
+    return {
+        "id": "normalize.gene:P150",
+        "type": "GeneDescriptor",
+        "value": {
+            "id": "hgnc:1910",
+            "type": "Gene"
+        },
+        "label": "CHAF1A",
+        "xrefs": {
+            "ensembl:ENSG00000167670",
+            "ncbigene:10036"
+        },
+        "alternate_labels": [
+            "CAF1P150",
+            "MGC71229",
+            "CAF-1",
+            "P150",
+            "CAF1B",
+            "CAF1"
+        ],
+        "extensions": [
+            {
+                "name": "approved_name",
+                "value": "chromatin assembly factor 1 subunit A",
+                "type": "Extension"
+            },
+            {
+                "name": "symbol_status",
+                "value": "approved",
+                "type": "Extension"
+            },
+            {
+                "name": "associated_with",
+                "value": [
+                    "omim:601246",
+                    "ccds:CCDS32875",
+                    "pubmed:7600578",
+                    "vega:OTTHUMG00000181922",
+                    "uniprot:Q13111",
+                    "refseq:NM_005483",
+                    "ena.embl:U20979",
+                    "ucsc:uc002mal.4"
+                ],
+                "type": "Extension"
+            },
+            {
+                "name": "chromosome_location",
+                "value": {
+                    "_id": "ga4gh:VCL.yF2TzeunqY92v3yhDsCR_t5X997mWriF",
+                    "type": "ChromosomeLocation",
+                    "species_id": "taxonomy:9606",
+                    "chr": "19",
+                    "interval": {
+                        "end": "p13.3",
+                        "start": "p13.3",
+                        "type": "CytobandInterval"
+                    }
+                },
+                "type": "Extension"
+            }
+        ]
+    }
+
+
+@pytest.fixture(scope='module')
 def num_sources():
     """Get the number of sources."""
     return len({s for s in SourceName})
@@ -253,7 +320,16 @@ def compare_normalize_resp(resp, expected_query, expected_match_type,
     """Check that normalize response is correct"""
     assert resp["query"] == expected_query
     if expected_warnings:
-        assert resp["warnings"] == expected_warnings
+        assert len(resp["warnings"]) == len(expected_warnings)
+        for e_warnings in expected_warnings:
+            for r_warnings in resp["warnings"]:
+                for e_key, e_val in e_warnings.items():
+                    for r_key, r_val in r_warnings.items():
+                        if e_key == r_val:
+                            if isinstance(e_val, list):
+                                assert set(r_val) == set(e_val)
+                            else:
+                                assert r_val == e_val
     else:
         assert resp["warnings"] == [], "warnings != []"
     assert resp["match_type"] == expected_match_type
@@ -566,12 +642,6 @@ def test_abl1_query(query_handler, num_sources, normalized_abl1):
     compare_normalize_resp(resp, q, MatchType.ALIAS, cpy_normalized_abl1,
                            expected_source_meta=expected_source_meta)
 
-    q = "p150"
-    resp = query_handler.normalize(q)
-    cpy_normalized_abl1["id"] = "normalize.gene:p150"
-    compare_normalize_resp(resp, q, MatchType.ALIAS, cpy_normalized_abl1,
-                           expected_source_meta=expected_source_meta)
-
     q = "LOC116063"
     resp = query_handler.normalize(q)
     cpy_normalized_abl1["id"] = "normalize.gene:LOC116063"
@@ -590,6 +660,20 @@ def test_abl1_query(query_handler, num_sources, normalized_abl1):
     compare_normalize_resp(resp, q, MatchType.ASSOCIATED_WITH,
                            cpy_normalized_abl1,
                            expected_source_meta=expected_source_meta)
+
+
+def test_multiple_norm_concepts(query_handler, normalized_p150):
+    """Tests where more than one normalized concept is found."""
+    q = "P150"
+    expected_source_meta = ["HGNC", "Ensembl", "NCBI"]
+    resp = query_handler.normalize(q)
+    expected_warnings = [{
+        "multiple_normalized_concepts_found":
+            ['hgnc:16850', 'hgnc:76', 'hgnc:17168', 'hgnc:500', 'hgnc:8982']
+    }]
+    compare_normalize_resp(resp, q, MatchType.ALIAS, normalized_p150,
+                           expected_source_meta=expected_source_meta,
+                           expected_warnings=expected_warnings)
 
 
 def test_service_meta(query_handler):

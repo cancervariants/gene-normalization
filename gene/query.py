@@ -38,7 +38,7 @@ class QueryHandler:
         """
         self.db = Database(db_url=db_url, region_name=db_region)
 
-    def emit_warnings(self, query_str: str) -> List[str]:
+    def emit_warnings(self, query_str: str) -> List:
         """Emit warnings if query contains non breaking space characters.
 
         :param str query_str: query string
@@ -47,7 +47,12 @@ class QueryHandler:
         warnings = []
         nbsp = re.search('\xa0|&nbsp;', query_str)
         if nbsp:
-            warnings = ['Query contains non-breaking space characters.']
+            warnings = [
+                {
+                    "non_breaking_space_characters":
+                        "Query contains non-breaking space characters"
+                }
+            ]
             logger.warning(
                 f'Query ({query_str}) contains non-breaking space characters.'
             )
@@ -371,12 +376,15 @@ class QueryHandler:
         response['source_meta_'] = sources_meta
         return response
 
-    def add_gene_descriptor(self, response, record, match_type):
+    def add_gene_descriptor(self, response, record, match_type,
+                            possible_concepts=[]):
         """Add gene descriptor to response.
 
         :param Dict response: Response object
         :param Dict record: Gene record
         :param MatchType match_type: query's match type
+        :param list possible_concepts: List of other normalized concepts
+            found
         :return: Response with gene descriptor
         """
         params = {
@@ -416,6 +424,24 @@ class QueryHandler:
                 ))
         if extensions:
             params["extensions"] = extensions
+
+        # add warnings
+        if possible_concepts:
+            norm_concepts = set()
+            for concept_id in possible_concepts:
+                r = self.db.get_record_by_id(concept_id, True)
+                if r:
+                    merge_ref = r.get("merge_ref")
+                    if merge_ref:
+                        norm_concepts.add(merge_ref)
+            norm_concepts = norm_concepts - {record["concept_id"]}
+            if norm_concepts:
+                response["warnings"].append(
+                    {
+                        "multiple_normalized_concepts_found":
+                            list(norm_concepts)
+                    }
+                )
 
         response["gene_descriptor"] = \
             GeneDescriptor(**params).dict(exclude_none=True)
@@ -497,6 +523,12 @@ class QueryHandler:
                  for m in matching_refs]
             matching_records.sort(key=self._record_order)
 
+            if len(matching_refs) > 1:
+                possible_concepts = \
+                    [ref["concept_id"] for ref in matching_refs]
+            else:
+                possible_concepts = []
+
             # attempt merge ref resolution until successful
             for match in matching_records:
                 record = self.db.get_record_by_id(match['concept_id'], False)
@@ -505,7 +537,8 @@ class QueryHandler:
                     if not merge_ref:
                         return self.add_gene_descriptor(
                             response, record,
-                            MatchType[match_type.upper()]
+                            MatchType[match_type.upper()],
+                            possible_concepts
                         )
                     merge = self.db.get_record_by_id(record['merge_ref'],
                                                      case_sensitive=False,
@@ -516,7 +549,8 @@ class QueryHandler:
                     else:
                         return self.add_gene_descriptor(
                             response, merge,
-                            MatchType[match_type.upper()]
+                            MatchType[match_type.upper()],
+                            possible_concepts
                         )
 
         if not matching_records:
