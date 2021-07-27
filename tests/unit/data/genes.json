@@ -1073,6 +1073,71 @@
     "src_name": "HGNC"
   },
   {
+    "label_and_type": "vega:otthumg00000157033##associated_with",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ucsc:uc003uxi.4##associated_with",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ccds:ccds5710##associated_with",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ccds:ccds64736##associated_with",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ccds:ccds5709##associated_with",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "uniprot:p22303##associated_with",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "pubmed:1380483##associated_with",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "omim:100740##associated_with",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "merops:s09.979##associated_with",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "iuphar:2465##associated_with",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "refseq:nm_015831##associated_with",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "3.1.1.7##alias",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "yt##prev_symbol",
+    "concept_id": "hgnc:108",
+    "src_name": "HGNC"
+  },
+  {
     "label_and_type": "hgnc:1097##identity",
     "concept_id": "hgnc:1097",
     "symbol": "BRAF",
@@ -1132,6 +1197,76 @@
   },
   {
     "label_and_type": "ensembl:ensg00000157764##xref",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "vega:otthumg00000157457##associated_with",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ucsc:uc003vwc.5##associated_with",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ccds:ccds5863##associated_with",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ccds:ccds87555##associated_with",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "uniprot:p15056##associated_with",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "pubmed:2284096##associated_with",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "pubmed:1565476##associated_with",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "cosmic:braf##associated_with",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "omim:164757##associated_with",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "orphanet:119066##associated_with",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "iuphar:1943##associated_with",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ena.embl:m95712##associated_with",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "refseq:nm_004333##associated_with",
+    "concept_id": "hgnc:1097",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "braf1##alias",
     "concept_id": "hgnc:1097",
     "src_name": "HGNC"
   },
@@ -1204,6 +1339,91 @@
     "concept_id": "hgnc:76",
     "src_name": "HGNC",
     "item_type": "xref"
+  },
+{
+    "label_and_type": "vega:otthumg00000020813##associated_with",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ucsc:uc004bzv.4##associated_with",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ccds:ccds35166##associated_with",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ccds:ccds35165##associated_with",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "uniprot:p00519##associated_with",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "pubmed:1857987##associated_with",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "pubmed:12626632##associated_with",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "cosmic:abl1##associated_with",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "omim:189980##associated_with",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "orphanet:117691##associated_with",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "iuphar:1923##associated_with",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "ena.embl:m14752##associated_with",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "refseq:nm_007313##associated_with",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "c-abl1##alias",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "jtk7##alias",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "p150##alias",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
+  },
+  {
+    "label_and_type": "abl##prev_symbol",
+    "concept_id": "hgnc:76",
+    "src_name": "HGNC"
   },
   {
     "label_and_type": "ncbigene:8193##identity",
@@ -1864,6 +2084,36 @@
     "src_name": "NCBI"
   },
   {
+    "label_and_type": "omim:100740##associated_with",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "n-ache##alias",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "yt##alias",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "arache##alias",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "acee##alias",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "acee##prev_symbol",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI"
+  },
+  {
     "label_and_type": "ncbigene:673##identity",
     "concept_id": "ncbigene:673",
     "symbol": "BRAF",
@@ -1925,6 +2175,36 @@
   },
   {
     "label_and_type": "ensembl:ensg00000157764##xref",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "omim:164757##associated_with",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "rafb1##alias",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ns7##alias",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "b-raf1##alias",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "braf1##alias",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "b-raf##alias",
     "concept_id": "ncbigene:673",
     "src_name": "NCBI"
   },
@@ -1998,6 +2278,78 @@
   },
   {
     "label_and_type": "ensembl:ensg00000097007##xref",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "omim:189980##associated_with",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "chdskm##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "bcr-abl##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "abl##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "v-abl##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "jtk7##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "c-abl##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "p150##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "c-abl1##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "bcr/abl##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "loc116063##prev_symbol",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "loc112779##prev_symbol",
     "concept_id": "ncbigene:25",
     "src_name": "NCBI",
     "item_type": "xref"
