@@ -391,7 +391,7 @@ class QueryHandler:
 
         # alternate labels
         alt_labels = set()
-        for key in ["previous_symbols", "aliases", "label"]:
+        for key in ["previous_symbols", "aliases"]:
             if key in record and record[key]:
                 val = record[key]
                 if isinstance(val, str):
@@ -403,9 +403,10 @@ class QueryHandler:
         # extensions
         extensions = list()
         extension_and_record_labels = [
-            ("associated_with", "associated_with"),
             ("symbol_status", "symbol_status"),
-            ("chromsome_location", "locations")
+            ("approved_name", "label"),
+            ("chromsome_location", "locations"),
+            ("associated_with", "associated_with")
         ]
         for ext_label, record_label in extension_and_record_labels:
             if record_label in record and record[record_label]:

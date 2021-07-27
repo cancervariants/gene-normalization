@@ -642,7 +642,7 @@ class NormalizeService(BaseModel):
     """Define model for returning normalized concept."""
 
     query: str
-    warnings: Optional[Dict]
+    warnings: Optional[List]
     match_type: MatchType
     gene_descriptor: Optional[GeneDescriptor]
     source_meta_: Optional[Dict[SourceName, SourceMeta]]
@@ -676,10 +676,14 @@ class NormalizeService(BaseModel):
                         "ensembl:ENSG00000157764"
                     ],
                     "alternate_labels": [
-                        "B-Raf proto-oncogene, serine/threonine kinase",
                         "BRAF1"
                     ],
                     "extensions": [
+                        {
+                            "name": "approved_name",
+                            "value": "B-Raf proto-oncogene, serine/threonine kinase",  # noqa: E501
+                            "type": "Extension"
+                        },
                         {
                             "name": "symbol_status",
                             "value": "approved",
