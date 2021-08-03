@@ -1,8 +1,8 @@
 [
   {
     "src_name": "Ensembl",
-    "version": "102",
-    "data_url": "ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.102.gff3.gz",
+    "version": "104",
+    "data_url": "ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.104.gff3.gz",
     "data_license_attributes": {
       "non_commercial": false,
       "share_alike": false,
