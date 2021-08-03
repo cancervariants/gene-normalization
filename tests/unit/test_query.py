@@ -320,16 +320,16 @@ def compare_normalize_resp(resp, expected_query, expected_match_type,
     """Check that normalize response is correct"""
     assert resp["query"] == expected_query
     if expected_warnings:
-        assert len(resp["warnings"]) == len(expected_warnings)
+        assert len(resp["warnings"]) == len(expected_warnings), "warnings len"
         for e_warnings in expected_warnings:
             for r_warnings in resp["warnings"]:
                 for e_key, e_val in e_warnings.items():
                     for r_key, r_val in r_warnings.items():
                         if e_key == r_val:
                             if isinstance(e_val, list):
-                                assert set(r_val) == set(e_val)
+                                assert set(r_val) == set(e_val), "warnings val"
                             else:
-                                assert r_val == e_val
+                                assert r_val == e_val, "warnings val"
     else:
         assert resp["warnings"] == [], "warnings != []"
     assert resp["match_type"] == expected_match_type
@@ -360,8 +360,9 @@ def compare_gene_descriptor(test, actual):
     assert actual["type"] == test["type"]
     assert actual["value"] == test["value"]
     assert actual["label"] == test["label"]
-    assert set(actual["xrefs"]) == set(test["xrefs"])
-    assert set(actual["alternate_labels"]) == set(test["alternate_labels"])
+    assert set(actual["xrefs"]) == set(test["xrefs"]), "xrefs"
+    assert set(actual["alternate_labels"]) == set(test["alternate_labels"]), \
+        "alt labels"
     extensions_present = "extensions" in test.keys()
     assert ("extensions" in actual.keys()) == extensions_present
     if extensions_present:

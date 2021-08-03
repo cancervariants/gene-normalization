@@ -1,0 +1,1224 @@
+[
+  {
+    "label_and_type": "ncbigene:8193##identity",
+    "label": "double PHD fingers 1",
+    "concept_id": "ncbigene:8193",
+    "symbol": "DPF1",
+    "aliases": [
+      "BAF45b",
+      "NEUD4",
+      "neuro-d4"
+    ],
+    "xrefs": [
+      "hgnc:20225",
+      "ensembl:ENSG00000011332"
+    ],
+    "associated_with": [
+      "omim:601670"
+    ],
+    "strand": "-",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.nEPKXzyfglrOMMFySOTQ8Om_f6xmr-pP",
+        "chr": "19",
+        "interval": {
+          "end": "q13.2",
+          "start": "q13.2",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      },
+      {
+        "_id": "ga4gh:VSL.5ddLPk8gIdQm3YA4r4p5NAsty9SPwXvJ",
+        "interval": {
+          "end": 38229695,
+          "start": 38211006,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
+        "type": "SequenceLocation"
+      }
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+{
+    "label_and_type": "omim:601670##associated_with",
+    "concept_id": "ncbigene:8193",
+    "src_name": "NCBI",
+    "item_type": "associated_with"
+  },
+  {
+    "label_and_type": "dpf1##symbol",
+    "concept_id": "ncbigene:8193",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "baf45b##alias",
+    "concept_id": "ncbigene:8193",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "neud4##alias",
+    "concept_id": "ncbigene:8193",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "neuro-d4##alias",
+    "concept_id": "ncbigene:8193",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "ncbigene:54704##identity",
+    "label": "pyruvate dehydrogenase phosphatase catalytic subunit 1",
+    "concept_id": "ncbigene:54704",
+    "symbol": "PDP1",
+    "aliases": [
+      "PDH",
+      "PDP",
+      "PDPC",
+      "PPM2A",
+      "PPM2C"
+    ],
+    "xrefs": [
+      "hgnc:9279",
+      "ensembl:ENSG00000164951"
+    ],
+    "previous_symbols": [
+      "LOC157663",
+      "PPM2C"
+    ],
+    "associated_with": [
+      "omim:605993"
+    ],
+    "strand": "+",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.n9W_wjDCStQf29yPcjhkMnFmESG8wN9A",
+        "chr": "8",
+        "interval": {
+          "end": "q22.1",
+          "start": "q22.1",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      },
+      {
+        "_id": "ga4gh:VSL.s8NNWWCxWeiOCUa90ge6x8wxFWpO34gV",
+        "interval": {
+          "end": 93926068,
+          "start": 93916923,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.209Z7zJ-mFypBEWLk4rNC6S_OxY5p7bs",
+        "type": "SequenceLocation"
+      }
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "pdp1##symbol",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "loc157663##prev_symbol",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI",
+    "item_type": "prev_symbol"
+  },
+  {
+    "label_and_type": "ppm2c##prev_symbol",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI",
+    "item_type": "prev_symbol"
+  },
+  {
+    "label_and_type": "pdh##alias",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "pdp##alias",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "pdpc##alias",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "ppm2a##alias",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "ppm2c##alias",
+    "concept_id": "ncbigene:54704",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "ncbigene:10251##identity",
+    "label": "sprouty RTK signaling antagonist 3",
+    "concept_id": "ncbigene:10251",
+    "symbol": "SPRY3",
+    "aliases": [
+      "spry-3"
+    ],
+    "xrefs": [
+      "hgnc:11271",
+      "ensembl:ENSG00000168939"
+    ],
+    "previous_symbols": [
+      "LOC170187",
+      "LOC253479"
+    ],
+    "associated_with": [
+      "omim:300531"
+    ],
+    "strand": "+",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.A1s9hZY1tgmRi1WuXM1ETZOqJcpo4Ftx",
+        "chr": "Y",
+        "interval": {
+          "end": "q12",
+          "start": "q12",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      },
+      {
+        "_id": "ga4gh:VCL.fEBeCyej0jVKsvjw4vxyW6j1h8UVLb5S",
+        "chr": "X",
+        "interval": {
+          "end": "q28",
+          "start": "q28",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      },
+      {
+        "_id": "ga4gh:VSL.ILQGzmwapQ5xuIBoFPDTKUOuN9gJNSqp",
+        "interval": {
+          "end": 155782459,
+          "start": 155612586,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
+        "type": "SequenceLocation"
+      },
+      {
+        "_id": "ga4gh:VSL.R8x4-hQzGNmp654J83nUT2RJlIXOucno",
+        "interval": {
+          "end": 56968979,
+          "start": 56923423,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
+        "type": "SequenceLocation"
+      }
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "spry3##symbol",
+    "concept_id": "ncbigene:10251",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "spry-3##alias",
+    "concept_id": "ncbigene:10251",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "ncbigene:106##identity",
+    "label": "adenosine deaminase complexing protein 1",
+    "concept_id": "ncbigene:106",
+    "symbol": "ADCP1",
+    "xrefs": [
+      "hgnc:229"
+    ],
+    "location_annotations": [
+      "6"
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "adcp1##symbol",
+    "concept_id": "ncbigene:106",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ncbigene:170##identity",
+    "label": "ankyloblepharon filiforme adnatum",
+    "concept_id": "ncbigene:170",
+    "symbol": "AFA",
+    "associated_with": [
+      "omim:106250"
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "afa##symbol",
+    "concept_id": "ncbigene:170",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ncbigene:7637##identity",
+    "label": "zinc finger protein 84",
+    "concept_id": "ncbigene:7637",
+    "symbol": "ZNF84",
+    "aliases": [
+      "HPF2"
+    ],
+    "xrefs": [
+      "hgnc:13159",
+      "ensembl:ENSG00000198040"
+    ],
+    "previous_symbols": [
+      "LOC100287429"
+    ],
+    "associated_with": [
+      "omim:618554"
+    ],
+    "location_annotations": [
+      "map from Rosati ref via FISH [AFS]"
+    ],
+    "strand": "+",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.CusjBE-q66vf4v8VSHRhMxjR_4G688Ve",
+        "chr": "12",
+        "interval": {
+          "end": "q24.33",
+          "start": "q24.33",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      },
+      {
+        "_id": "ga4gh:VSL.xuSNWLM7M4vru2gbt2hOfmjL7GD_UYdA",
+        "interval": {
+          "end": 133063299,
+          "start": 133037301,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl",
+        "type": "SequenceLocation"
+      }
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "znf84##symbol",
+    "concept_id": "ncbigene:7637",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ncbigene:293##identity",
+    "label": "solute carrier family 25 member 6",
+    "concept_id": "ncbigene:293",
+    "symbol": "SLC25A6",
+    "aliases": [
+      "AAC3",
+      "ANT",
+      "ANT 2",
+      "ANT 3",
+      "ANT3",
+      "ANT3Y"
+    ],
+    "xrefs": [
+      "hgnc:10992",
+      "ensembl:ENSG00000169100"
+    ],
+    "previous_symbols": [
+      "ANT3Y"
+    ],
+    "associated_with": [
+      "omim:403000",
+      "omim:300151"
+    ],
+    "location_annotations": [
+      "X",
+      "Y"
+    ],
+    "strand": "-",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.8LvkImsib1GaFH8UQrz9DwjdrgkWNmdD",
+        "interval": {
+          "end": 1392113,
+          "start": 1386152,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
+        "type": "SequenceLocation"
+      },
+      {
+        "_id": "ga4gh:VSL.QLShSFmwPqUKTzjNS-x3Y3DZtOV4SK4J",
+        "interval": {
+          "end": 1392113,
+          "start": 1386152,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
+        "type": "SequenceLocation"
+      }
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "slc25a6##symbol",
+    "concept_id": "ncbigene:293",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ncbigene:106783576##identity",
+    "label": "nonconserved acetylation island sequence 68 enhancer",
+    "concept_id": "ncbigene:106783576",
+    "symbol": "LOC106783576",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.RFN35KQMhqzhmo4QP7AxKAzlPtnh7slL",
+        "chr": "10",
+        "interval": {
+          "end": "cen",
+          "start": "pter",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "loc106783576##symbol",
+    "concept_id": "ncbigene:106783576",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ncbigene:2722##identity",
+    "label": "glaucoma 1, open angle, B (adult-onset)",
+    "concept_id": "ncbigene:2722",
+    "symbol": "GLC1B",
+    "associated_with": [
+      "omim:606689"
+    ],
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.HStPIl_6UkNQmbjZW1TeUmHFMptbIj6t",
+        "chr": "2",
+        "interval": {
+          "end": "q13",
+          "start": "cen",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "omim:606689##associated_with",
+    "concept_id": "ncbigene:2722",
+    "src_name": "NCBI",
+    "item_type": "associated_with"
+  },
+  {
+    "label_and_type": "glc1b##symbol",
+    "concept_id": "ncbigene:2722",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ncbigene:50829##identity",
+    "label": "Hodgkin disease, susceptibility, pseudoautosomal",
+    "concept_id": "ncbigene:50829",
+    "symbol": "HDPA",
+    "associated_with": [
+      "omim:300221"
+    ],
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.faRHNO_VJMssbjYQ628mfdRgLqg9qK2b",
+        "chr": "X",
+        "interval": {
+          "end": "p22.32",
+          "start": "pter",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "hdpa##symbol",
+    "concept_id": "ncbigene:50829",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ncbigene:731716##identity",
+    "label": "protein activator of interferon induced protein kinase EIF2AK2 pseudogene 1",
+    "concept_id": "ncbigene:731716",
+    "symbol": "PRKRAP1",
+    "xrefs": [
+      "hgnc:33447"
+    ],
+    "previous_symbols": [
+      "LOC100289695"
+    ],
+    "location_annotations": [
+      "alternate reference locus"
+    ],
+    "strand": "+",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.HeTd-jABCr22v4rUfVWJbkz2NkPyGScK",
+        "chr": "6",
+        "interval": {
+          "end": "p21.3",
+          "start": "p21.3",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      },
+      {
+        "_id": "ga4gh:VSL.Sk6GHE3MekN_PaimBKBmsQR6pLqQ-SAN",
+        "interval": {
+          "end": 3941874,
+          "start": 3940270,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.MjujHSAsgNWRTX4w3ysM7b5OVhZpdXu1",
+        "type": "SequenceLocation"
+      },
+      {
+        "_id": "ga4gh:VSL.WTVn8f6OmsdbiEniT8W4CHuHJdp78oBP",
+        "interval": {
+          "end": 3932085,
+          "start": 3930481,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.Q8IworEhpLeXwpz1CHM7C3luysh-ltx-",
+        "type": "SequenceLocation"
+      }
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "hgnc:33447##xref",
+    "concept_id": "ncbigene:731716",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "prkrap1##symbol",
+    "concept_id": "ncbigene:731716",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ncbigene:619511##identity",
+    "label": "myopathy, hyaline body, autosomal recessive",
+    "concept_id": "ncbigene:619511",
+    "symbol": "MHB",
+    "associated_with": [
+      "omim:255160"
+    ],
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.2WDJu032Gc_9BN4qiNELb577XomiZv8z",
+        "chr": "3",
+        "interval": {
+          "end": "p21.32",
+          "start": "p22.2",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "omim:255160##associated_with",
+    "concept_id": "ncbigene:619511",
+    "src_name": "NCBI",
+    "item_type": "associated_with"
+  },
+  {
+    "label_and_type": "mhb##symbol",
+    "concept_id": "ncbigene:619511",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ncbigene:100049159##identity",
+    "label": "spastic paraplegia 37 (autosomal dominant)",
+    "concept_id": "ncbigene:100049159",
+    "symbol": "SPG37",
+    "associated_with": [
+      "omim:611945"
+    ],
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.P5jAIluXneqHZMV9FBEQ2ZqOpO-8fqbP",
+        "chr": "8",
+        "interval": {
+          "end": "q13.3",
+          "start": "p21.2",
+          "type": "CytobandInterval"
+        },
+        "species_id": "taxonomy:9606",
+        "type": "ChromosomeLocation"
+      }
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "omim:611945##associated_with",
+    "concept_id": "ncbigene:100049159",
+    "src_name": "NCBI",
+    "item_type": "associated_with"
+  },
+  {
+    "label_and_type": "spg37##symbol",
+    "concept_id": "ncbigene:100049159",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ncbigene:43##identity",
+    "item_type": "identity",
+    "label": "acetylcholinesterase (Cartwright blood group)",
+    "concept_id": "ncbigene:43",
+    "symbol": "ACHE",
+    "aliases": [
+      "N-ACHE",
+      "YT",
+      "ARACHE",
+      "ACEE"
+    ],
+    "previous_symbols": [
+      "ACEE"
+    ],
+    "xrefs": [
+      "hgnc:108",
+      "ensembl:ENSG00000087085"
+    ],
+    "associated_with": [
+      "omim:100740"
+    ],
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
+        "type": "ChromosomeLocation",
+        "species_id": "taxonomy:9606",
+        "chr": "7",
+        "interval": {
+          "end": "q22.1",
+          "start": "q22.1",
+          "type": "CytobandInterval"
+        }
+      },
+      {
+        "_id": "ga4gh:VSL.jsbI0UoBvKoN6a_My1w9F4H1kd2kWVUb",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+        "interval": {
+          "end": 100896994,
+          "start": 100889994,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
+    "strand": "-",
+    "src_name": "NCBI"
+  },
+  {
+    "label_and_type": "ache##symbol",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "acetylcholinesterase (cartwright blood group)##label",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI",
+    "item_type": "label"
+  },
+  {
+    "label_and_type": "hgnc:108##xref",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000087085##xref",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "omim:100740##associated_with",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI",
+    "item_type": "associated_with"
+  },
+  {
+    "label_and_type": "n-ache##alias",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "yt##alias",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "arache##alias",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "acee##alias",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "acee##prev_symbol",
+    "concept_id": "ncbigene:43",
+    "src_name": "NCBI",
+    "item_type": "prev_symbol"
+  },
+  {
+    "label_and_type": "ncbigene:673##identity",
+    "concept_id": "ncbigene:673",
+    "symbol": "BRAF",
+    "label": "B-Raf proto-oncogene, serine/threonine kinase",
+    "strand": "-",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
+        "type": "ChromosomeLocation",
+        "species_id": "taxonomy:9606",
+        "chr": "7",
+        "interval": {
+          "end": "q34",
+          "start": "q34",
+          "type": "CytobandInterval"
+        }
+      },
+      {
+        "_id": "ga4gh:VSL.pmvErcgG96dcFyrZ4YiiSnFa5jJCCZmp",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+        "interval": {
+          "end": 140924929,
+          "start": 140713328,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
+    "aliases": [
+      "RAFB1",
+      "NS7",
+      "B-RAF1",
+      "BRAF1",
+      "B-raf"
+    ],
+    "xrefs": [
+      "hgnc:1097",
+      "ensembl:ENSG00000157764"
+    ],
+    "associated_with": [
+      "omim:164757"
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "braf##symbol",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "b-raf proto-oncogene, serine/threonine kinase##label",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI",
+    "item_type": "label"
+  },
+  {
+    "label_and_type": "hgnc:1097##xref",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000157764##xref",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "omim:164757##associated_with",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI",
+    "item_type": "associated_with"
+  },
+  {
+    "label_and_type": "rafb1##alias",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "ns7##alias",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "b-raf1##alias",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "braf1##alias",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "b-raf##alias",
+    "concept_id": "ncbigene:673",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "ncbigene:25##identity",
+    "concept_id": "ncbigene:25",
+    "symbol": "ABL1",
+    "label": "ABL proto-oncogene 1, non-receptor tyrosine kinase",
+    "strand": "+",
+    "locations": [
+      {
+        "_id": "ga4gh:VCL.WvMfE67KxSDAV8JaK593TI74yyJWIsMQ",
+        "type": "ChromosomeLocation",
+        "species_id": "taxonomy:9606",
+        "chr": "9",
+        "interval": {
+          "end": "q34.12",
+          "start": "q34.12",
+          "type": "CytobandInterval"
+        }
+      },
+      {
+        "_id": "ga4gh:VSL.r8YW4n2xNqifnz-dmlnRjmbCYqUGqnDk",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
+        "interval": {
+          "end": 130887675,
+          "start": 130713881,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
+    "aliases": [
+      "CHDSKM",
+      "BCR-ABL",
+      "ABL",
+      "v-abl",
+      "JTK7",
+      "c-ABL",
+      "p150",
+      "c-ABL1",
+      "bcr/abl"
+    ],
+    "previous_symbols": [
+      "LOC116063",
+      "LOC112779"
+    ],
+    "xrefs": [
+      "hgnc:76",
+      "ensembl:ENSG00000097007"
+    ],
+    "associated_with": [
+      "omim:189980"
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "abl1##symbol",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "abl proto-oncogene 1, non-receptor tyrosine kinase##label",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "label"
+  },
+  {
+    "label_and_type": "hgnc:76##xref",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000097007##xref",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "omim:189980##associated_with",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "chdskm##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "bcr-abl##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "abl##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "v-abl##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "jtk7##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "c-abl##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "p150##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "c-abl1##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "bcr/abl##alias",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "loc116063##prev_symbol",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "loc112779##prev_symbol",
+    "concept_id": "ncbigene:25",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ncbigene:103344718##identity",
+    "concept_id": "ncbigene:103344718",
+    "symbol": "HOTS",
+    "symbol_status": "discontinued",
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "hots##symbol",
+    "concept_id": "ncbigene:103344718",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ncbigene:544580##identity",
+    "concept_id": "ncbigene:544580",
+    "symbol": "AASTH23",
+    "symbol_status": "discontinued",
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "aasth23##symbol",
+    "concept_id": "ncbigene:544580",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ncbigene:9646##identity",
+    "concept_id": "ncbigene:9646",
+    "symbol": "CTR9",
+    "label": "CTR9 homolog, Paf1/RNA polymerase II complex component",
+    "aliases": [
+      "p150",
+      "SH2BP1",
+      "p150TSP",
+      "TSBP"
+    ],
+    "xrefs": [
+      "hgnc:16850",
+      "ensembl:ENSG00000198730"
+    ],
+    "associated_with": [
+      "omim:609366"
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "p150##alias",
+    "concept_id": "ncbigene:9646",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "hgnc:16850##xref",
+    "concept_id": "ncbigene:9646",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000198730##xref",
+    "concept_id": "ncbigene:9646",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ncbigene:290##identity",
+    "concept_id": "ncbigene:290",
+    "symbol": "ANPEP",
+    "label": "alanyl aminopeptidase, membrane",
+    "aliases": [
+      "GP150",
+      "LAP1",
+      "APN",
+      "CD13",
+      "PEPN",
+      "P150"
+    ],
+    "xrefs": [
+      "hgnc:500",
+      "ensembl:ENSG00000166825"
+    ],
+    "associated_with": [
+      "omim:151530"
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "p150##alias",
+    "concept_id": "ncbigene:290",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "hgnc:500##xref",
+    "concept_id": "ncbigene:290",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000166825##xref",
+    "concept_id": "ncbigene:290",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ncbigene:10036##identity",
+    "concept_id": "ncbigene:10036",
+    "symbol": "CHAF1A",
+    "label": "chromatin assembly factor 1 subunit A",
+    "aliases": [
+      "CAF1B",
+      "CAF1",
+      "CAF-1",
+      "CAF1P150",
+      "P150"
+    ],
+    "xrefs": [
+      "hgnc:1910",
+      "ensembl:ENSG00000167670"
+    ],
+    "associated_with": [
+      "omim:601246"
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "p150##alias",
+    "concept_id": "ncbigene:10036",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "hgnc:1910##xref",
+    "concept_id": "ncbigene:10036",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000167670##xref",
+    "concept_id": "ncbigene:10036",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ncbigene:30849##identity",
+    "concept_id": "ncbigene:30849",
+    "symbol": "PIK3R4",
+    "label": "phosphoinositide-3-kinase regulatory subunit 4",
+    "aliases": [
+      "p150",
+      "VPS15"
+    ],
+    "xrefs": [
+      "hgnc:8982",
+      "ensembl:ENSG00000196455"
+    ],
+    "associated_with": [
+      "omim:602610"
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "p150##alias",
+    "concept_id": "ncbigene:30849",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "hgnc:8982##xref",
+    "concept_id": "ncbigene:30849",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000196455##xref",
+    "concept_id": "ensembl:ENSG00000196455",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ncbigene:25782##identity",
+    "concept_id": "ncbigene:25782",
+    "symbol": "RAB3GAP2",
+    "label": "RAB3 GTPase activating non-catalytic protein subunit 2",
+    "aliases": [
+      "RAB3GAP150",
+      "RAB3-GAP150",
+      "SPG69",
+      "WARBM2",
+      "p150"
+    ],
+    "previous_symbols": [
+      "DKFZP434D245"
+    ],
+    "xrefs": [
+      "hgnc:17168",
+      "ensembl:ENSG00000118873"
+    ],
+    "associated_with": [
+      "omim:609275"
+    ],
+    "src_name": "NCBI",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "p150##alias",
+    "concept_id": "ncbigene:25782",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "hgnc:17168##xref",
+    "concept_id": "ncbigene:25782",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ensembl:ENSG00000118873##xref",
+    "concept_id": "ENSG00000118873",
+    "src_name": "NCBI",
+    "item_type": "xref"
+  }
+]
