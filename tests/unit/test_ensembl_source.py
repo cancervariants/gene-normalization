@@ -231,36 +231,6 @@ def spry3():
     return Gene(**params)
 
 
-@pytest.fixture(scope='module')
-def bx004987_1():
-    """Create a BX004987.1 test fixture."""
-    params = {
-        'concept_id': 'ensembl:ENSG00000278704',
-        'symbol': 'BX004987.1',
-        'label': None,
-        'previous_symbols': [],
-        'aliases': [],
-        'xrefs': [],
-        'symbol_status': None,
-        'location_annotations': [],
-        'locations': [
-            {
-                '_id': 'ga4gh:VSL.0JJsYiFwwNH2-7rYKj1ZitEcFRxIGwdQ',
-                'interval': {
-                    'end': 58376,
-                    'start': 56140,
-                    'type': 'SimpleInterval'
-                },
-                'sequence_id': 'ga4gh:SQ.K_ieIfNIy1Ktulg8QSlhvJvm_1uQOtjD',
-                'type': 'SequenceLocation'
-            }
-        ],
-        'strand': '-',
-        'associated_with': []
-    }
-    return Gene(**params)
-
-
 def test_ddx11l1(ensembl, ddx11l1):
     """Test that DDX11L1 normalizes to correct gene concept."""
     # Concept ID
@@ -322,27 +292,6 @@ def test_CH17_340M24_3(ensembl, CH17_340M24_3):
                      MatchType.SYMBOL)
 
 
-def test_AC091057_5(ensembl, AC091057_5):
-    """Test that AC091057.5 normalizes to correct gene concept."""
-    # Concept ID
-    normalizer_response = ensembl.search('ensembl:ENSG00000284906')
-    assertion_checks(normalizer_response, AC091057_5, 1, MatchType.CONCEPT_ID)
-
-    normalizer_response = ensembl.search('ENSEMBL:ENSG00000284906')
-    assertion_checks(normalizer_response, AC091057_5, 1, MatchType.CONCEPT_ID)
-
-    normalizer_response = ensembl.search('ENSG00000284906')
-    assertion_checks(normalizer_response, AC091057_5, 1, MatchType.CONCEPT_ID)
-
-    # Symbol
-    normalizer_response = ensembl.search('AC091057.5')
-    assertion_checks(normalizer_response, AC091057_5, 1, MatchType.SYMBOL)
-
-    # associated_with
-    normalizer_response = ensembl.search('uniprot:Q3KRB8')
-    assertion_checks(normalizer_response, AC091057_5, 1, MatchType.ASSOCIATED_WITH)  # noqa: E501
-
-
 def test_hsa_mir_1253(ensembl, hsa_mir_1253):
     """Test that hsa-mir-1253 normalizes to correct gene concept."""
     # Concept ID
@@ -386,23 +335,6 @@ def test_spry3(ensembl, spry3):
     assertion_checks(normalizer_response, spry3, 1, MatchType.SYMBOL)
 
 
-def test_bx004987_1(ensembl, bx004987_1):
-    """Test that tp53 normalizes to correct gene concept."""
-    # Concept ID
-    normalizer_response = ensembl.search('ensembl:ENSG00000278704')
-    assertion_checks(normalizer_response, bx004987_1, 1, MatchType.CONCEPT_ID)
-
-    normalizer_response = ensembl.search('ENSEMBL:ENSG00000278704')
-    assertion_checks(normalizer_response, bx004987_1, 1, MatchType.CONCEPT_ID)
-
-    normalizer_response = ensembl.search('ENSG00000278704')
-    assertion_checks(normalizer_response, bx004987_1, 1, MatchType.CONCEPT_ID)
-
-    # Symbol
-    normalizer_response = ensembl.search('BX004987.1')
-    assertion_checks(normalizer_response, bx004987_1, 1, MatchType.SYMBOL)
-
-
 def test_no_match(ensembl):
     """Test that a term normalizes to correct gene concept as a NO match."""
     normalizer_response = ensembl.search('A1BG - AS1')
@@ -422,6 +354,14 @@ def test_no_match(ensembl):
     assert normalizer_response['match_type'] == MatchType.NO_MATCH
     assert len(normalizer_response['records']) == 0
 
+    normalizer_response = ensembl.search('ensembl:ENSG00000278704')
+    assert normalizer_response['match_type'] == MatchType.NO_MATCH
+    assert len(normalizer_response['records']) == 0
+
+    normalizer_response = ensembl.search('ensembl:ENSG00000284906')
+    assert normalizer_response['match_type'] == MatchType.NO_MATCH
+    assert len(normalizer_response['records']) == 0.
+
 
 def test_meta_info(ddx11l1, ensembl):
     """Test that the meta field is correct."""
@@ -429,9 +369,9 @@ def test_meta_info(ddx11l1, ensembl):
     assert normalizer_response['source_meta_'].data_license == 'custom'
     assert normalizer_response['source_meta_'].data_license_url ==\
            'https://useast.ensembl.org/info/about/legal/disclaimer.html'
-    assert normalizer_response['source_meta_'].version == '102'
+    assert normalizer_response['source_meta_'].version == '104'
     assert normalizer_response['source_meta_'].data_url == \
-           'ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.102.gff3.gz'
+           'ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.104.gff3.gz'
     assert normalizer_response['source_meta_'].rdp_url is None
     assert normalizer_response['source_meta_'].genome_assemblies == ['GRCh38']
     assert normalizer_response['source_meta_'].data_license_attributes == {

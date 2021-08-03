@@ -112,39 +112,6 @@
     "src_name": "Ensembl"
   },
   {
-    "label_and_type": "ensembl:ensg00000284906##identity",
-    "concept_id": "ensembl:ENSG00000284906",
-    "symbol": "AC091057.5",
-    "label": "Rho GTPase-activating protein 11B",
-    "locations": [
-      {
-        "_id": "ga4gh:VSL.UJx3xHRkDuoALaGxyic-cPQNQnXYiAM8",
-        "interval": {
-          "end": 30685606,
-          "start": 30624548,
-          "type": "SimpleInterval"
-        },
-        "sequence_id": "ga4gh:SQ.AsXvWL1-2i5U_buw6_niVIxD6zTbAuS6",
-        "type": "SequenceLocation"
-      }
-    ],
-    "strand": "+",
-    "associated_with": [
-      "uniprot:Q3KRB8"
-    ],
-    "src_name": "Ensembl"
-  },
-  {
-    "label_and_type": "uniprot:q3krb8##associated_with",
-    "concept_id": "ensembl:ensg00000284906",
-    "src_name": "Ensembl"
-  },
-  {
-    "label_and_type": "ac091057.5##symbol",
-    "concept_id": "ensembl:ensg00000284906",
-    "src_name": "Ensembl"
-  },
-  {
     "label_and_type": "ensembl:ensg00000272920##identity",
     "concept_id": "ensembl:ENSG00000272920",
     "symbol": "hsa-mir-1253",
@@ -203,30 +170,6 @@
   {
     "label_and_type": "spry3##symbol",
     "concept_id": "ensembl:ensg00000168939",
-    "src_name": "Ensembl"
-  },
-  {
-    "label_and_type": "ensembl:ensg00000278704##identity",
-    "concept_id": "ensembl:ENSG00000278704",
-    "symbol": "BX004987.1",
-    "locations": [
-      {
-        "_id": "ga4gh:VSL.0JJsYiFwwNH2-7rYKj1ZitEcFRxIGwdQ",
-        "interval": {
-          "end": 58376,
-          "start": 56140,
-          "type": "SimpleInterval"
-        },
-        "sequence_id": "ga4gh:SQ.K_ieIfNIy1Ktulg8QSlhvJvm_1uQOtjD",
-        "type": "SequenceLocation"
-      }
-    ],
-    "strand": "-",
-    "src_name": "Ensembl"
-  },
-  {
-    "label_and_type": "bx004987.1##symbol",
-    "concept_id": "ensembl:ensg00000278704",
     "src_name": "Ensembl"
   },
   {
@@ -1162,7 +1105,8 @@
     "aliases": [
       "BAF45b",
       "NEUD4",
-      "neuro-d4"
+      "neuro-d4",
+      "SMARCG1"
     ],
     "xrefs": [
       "hgnc:20225",
