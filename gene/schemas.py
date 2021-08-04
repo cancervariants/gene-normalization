@@ -579,7 +579,7 @@ class SearchService(BaseModel):
     """Define model for returning highest match typed concepts from sources."""
 
     query: str
-    warnings: Optional[List]
+    warnings: Optional[List[Dict]]
     source_matches: Union[Dict[SourceName, MatchesKeyed], List[MatchesListed]]
     service_meta_: ServiceMeta
 
@@ -642,7 +642,7 @@ class NormalizeService(BaseModel):
     """Define model for returning normalized concept."""
 
     query: str
-    warnings: Optional[List]
+    warnings: Optional[List[Dict]]
     match_type: MatchType
     gene_descriptor: Optional[GeneDescriptor]
     source_meta_: Optional[Dict[SourceName, SourceMeta]]
