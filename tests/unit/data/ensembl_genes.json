@@ -7,7 +7,7 @@
     "locations": [
       {
         "_id": "ga4gh:VSL.iTXYEeSmSj73q-lpxtKLlnp_1OlX658F",
-        "intervval": {
+        "interval": {
           "end": 14409,
           "start": 11869,
           "type": "SimpleInterval"

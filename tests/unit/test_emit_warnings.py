@@ -4,10 +4,12 @@ from gene.query import QueryHandler
 
 def test_emit_warnings():
     """Test that emit_warnings works correctly."""
-    expected_warnings = {
-        "non_breaking_space_characters":
-            "Query contains non-breaking space characters."
-    }
+    expected_warnings = [
+        {
+            "non_breaking_space_characters":
+                "Query contains non-breaking space characters"
+        }
+    ]
     query_handler = QueryHandler()
 
     # Test emit no warnings
