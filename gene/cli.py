@@ -129,6 +129,7 @@ class CLI:
 
     @staticmethod
     def _load_merge(db, processed_ids):
+        """Load merged concepts"""
         start = timer()
         if not processed_ids:
             CLI()._delete_normalized_data(db)
@@ -142,6 +143,7 @@ class CLI:
 
     @staticmethod
     def _delete_normalized_data(database):
+        """Delete normalized concepts"""
         click.echo("\nDeleting normalized records...")
         start_delete = timer()
         try:
