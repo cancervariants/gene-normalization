@@ -226,8 +226,8 @@ class Database:
         """Retrieve records for given query and match type.
         :param query: string to match against
         :param str match_type: type of match to look for. Should be one
-            of {"label", "alias", "xref", "associated_with"} (use
-            `get_record_by_id` for concept ID lookup)
+            of {"symbol", "prev_symbol", "alias", "xref", "associated_with"}
+            (use `get_record_by_id` for concept ID lookup)
         :return: list of matching records. Empty if lookup fails.
         """
         pk = f'{query}##{match_type.lower()}'
