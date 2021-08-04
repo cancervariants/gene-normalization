@@ -1124,7 +1124,43 @@
     "item_type": "identity"
   },
   {
+    "label_and_type": "chaf1a##symbol",
+    "concept_id": "ncbigene:10036",
+    "src_name": "NCBI",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "chromatin assembly factor 1 subunit a##label",
+    "concept_id": "ncbigene:10036",
+    "src_name": "NCBI",
+    "item_type": "label"
+  },
+  {
     "label_and_type": "p150##alias",
+    "concept_id": "ncbigene:10036",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "caf1b##alias",
+    "concept_id": "ncbigene:10036",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "caf1##alias",
+    "concept_id": "ncbigene:10036",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "caf-1##alias",
+    "concept_id": "ncbigene:10036",
+    "src_name": "NCBI",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "caf1p150##alias",
     "concept_id": "ncbigene:10036",
     "src_name": "NCBI",
     "item_type": "alias"

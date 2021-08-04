@@ -1235,6 +1235,7 @@
     "label_and_type": "hgnc:1910##identity",
     "concept_id": "hgnc:1910",
     "symbol": "CHAF1A",
+    "symbol_status": "approved",
     "label": "chromatin assembly factor 1 subunit A",
     "aliases": [
       "CAF-1",
@@ -1247,6 +1248,23 @@
     "xrefs": [
       "ncbigene:10036",
       "ensembl:ENSG00000167670"
+    ],
+    "locations": [
+      {
+        "name": "chromosome_location",
+        "value": {
+            "_id": "ga4gh:VCL.yF2TzeunqY92v3yhDsCR_t5X997mWriF",
+            "type": "ChromosomeLocation",
+            "species_id": "taxonomy:9606",
+            "chr": "19",
+            "interval": {
+                "end": "p13.3",
+                "start": "p13.3",
+                "type": "CytobandInterval"
+            }
+        },
+        "type": "Extension"
+      }
     ],
     "associated_with": [
       "vega:OTTHUMG00000181922",
@@ -1307,7 +1325,25 @@
     "item_type": "identity"
   },
   {
+    "label_and_type": "pik3r4##symbol",
+    "concept_id": "hgnc:8982",
+    "src_name": "HGNC",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "phosphoinositide-3-kinase regulatory subunit 4##label",
+    "concept_id": "hgnc:8982",
+    "src_name": "HGNC",
+    "item_type": "label"
+  },
+  {
     "label_and_type": "p150##alias",
+    "concept_id": "hgnc:8982",
+    "src_name": "HGNC",
+    "item_type": "alias"
+  },
+  {
+    "label_and_type": "vps15##alias",
     "concept_id": "hgnc:8982",
     "src_name": "HGNC",
     "item_type": "alias"

@@ -376,13 +376,25 @@
   {
     "label_and_type": "ensembl:ensg00000167670##identity",
     "concept_id": "ensembl:ENSG00000167670",
-    "symbol": "PIK3R4",
+    "symbol": "CHAF1A",
     "label": "chromatin assembly factor 1 subunit A",
     "xrefs": [
       "hgnc:1910"
     ],
     "src_name": "Ensembl",
     "item_type": "identity"
+  },
+  {
+    "label_and_type": "chaf1a##symbol",
+    "concept_id": "ensembl:ENSG00000167670",
+    "src_name": "Ensembl",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "chromatin assembly factor 1 subunit a##label",
+    "concept_id": "ensembl:ENSG00000167670",
+    "src_name": "Ensembl",
+    "item_type": "label"
   },
   {
     "label_and_type": "hgnc:1910##xref",
@@ -430,13 +442,25 @@
     "symbol": "PIK3R4",
     "label": "chromatin assembly factor 1 subunit A",
     "xrefs": [
-      "hgnc:1910"
+      "hgnc:8982"
     ],
     "src_name": "Ensembl",
     "item_type": "identity"
   },
   {
-    "label_and_type": "hgnc:1910##xref",
+    "label_and_type": "pik3r4##symbol",
+    "concept_id": "ensembl:ENSG00000196455",
+    "src_name": "Ensembl",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "chromatin assembly factor 1 subunit a##label",
+    "concept_id": "ensembl:ENSG00000196455",
+    "src_name": "Ensembl",
+    "item_type": "label"
+  },
+  {
+    "label_and_type": "hgnc:8982##xref",
     "concept_id": "ensembl:ENSG00000196455",
     "src_name": "Ensembl",
     "item_type": "xref"

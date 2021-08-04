@@ -366,7 +366,8 @@ def compare_gene_descriptor(test, actual):
     extensions_present = "extensions" in test.keys()
     assert ("extensions" in actual.keys()) == extensions_present
     if extensions_present:
-        assert len(actual["extensions"]) == len(test["extensions"])
+        assert len(actual["extensions"]) == len(test["extensions"]), \
+            "len of extensions"
         for test_ext in test["extensions"]:
             for actual_ext in actual["extensions"]:
                 if actual_ext["name"] == test_ext["name"]:
@@ -374,7 +375,7 @@ def compare_gene_descriptor(test, actual):
                                       type(test_ext["value"]))
                     if isinstance(test_ext["value"], list):
                         assert set(actual_ext["value"]) == \
-                               set(test_ext["value"])
+                               set(test_ext["value"]), f"{test_ext['value']} value"  # noqa: E501
                     else:
                         assert actual_ext["value"] == test_ext["value"]
                     assert actual_ext["type"] == test_ext["type"]
