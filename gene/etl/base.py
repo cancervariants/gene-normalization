@@ -1,8 +1,9 @@
 """A base class for extraction, transformation, and loading of data."""
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import Optional, List
 from gene.database import Database
-from gene import PREFIX_LOOKUP, ITEM_TYPES
+from gene import PREFIX_LOOKUP, ITEM_TYPES, PROJECT_ROOT
+from biocommons.seqrepo import SeqRepo
 from pathlib import Path
 from ftplib import FTP
 import gzip
@@ -15,20 +16,40 @@ import datetime
 class Base(ABC):
     """The ETL base class."""
 
-    def __init__(self, database: Database, *args, **kwargs) -> None:
-        """Extract from sources."""
-        self.database = database
+    def __init__(self, database: Database, host: str, data_dir: str, *args,
+                 **kwargs) -> None:
+        """Instantiate Base class.
+
+        :param Database database: DynamoDB database
+        :param str host: Hostname of FTP site
+        :param str data_dir: Data directory of FTP site to look at
+        """
+        self._database = database
+        self._host = host
+        self._data_dir = data_dir
+        self._processed_ids = list()
+
+    @abstractmethod
+    def perform_etl(self) -> List[str]:
+        """Extract, Transform, and Load data into DynamoDB database.
+
+        :return: Concept IDs of concepts successfully loaded
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def _extract_data(self, *args, **kwargs) -> None:
+        """Extract data from FTP site or local data directory."""
         raise NotImplementedError
 
     @abstractmethod
     def _transform_data(self, *args, **kwargs) -> None:
+        """Transform data to model."""
         raise NotImplementedError
 
     @abstractmethod
     def _add_meta(self, *args, **kwargs) -> None:
+        """Add source meta to DynamoDB table."""
         raise NotImplementedError
 
     def _load_meta(self, db, metadata, source_name) -> None:
@@ -80,6 +101,7 @@ class Base(ABC):
                 else:
                     del gene[attr_type]
         batch.put_item(Item=gene)
+        self._processed_ids.append(concept_id)
 
     def _ftp_download(self, host: str, data_dir: str, fn: str,
                       source_dir: Path,
@@ -112,3 +134,10 @@ class Base(ABC):
                         shutil.copyfileobj(f_in, f_out)
                 remove(filepath)
         return version
+
+    def get_seqrepo(self) -> SeqRepo:
+        """Return SeqRepo instance."""
+        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / 'latest'
+        if not seqrepo_dir.exists():
+            raise NotADirectoryError("Could not find gene/data/seqrepo/latest")
+        return SeqRepo(seqrepo_dir)

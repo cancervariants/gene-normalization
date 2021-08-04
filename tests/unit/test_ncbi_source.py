@@ -14,8 +14,7 @@ def ncbi():
             self.query_handler = QueryHandler()
 
         def search(self, query_str, incl='ncbi'):
-            resp = self.query_handler.search_sources(query_str, keyed=True,
-                                                     incl=incl)
+            resp = self.query_handler.search(query_str, keyed=True, incl=incl)
             return resp['source_matches']['NCBI']
 
     n = QueryGetter()

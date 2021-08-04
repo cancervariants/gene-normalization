@@ -1,6 +1,8 @@
 """Test DynamoDB"""
 import pytest
+from gene import PREFIX_LOOKUP
 from gene.database import Database
+from gene.etl.merge import Merge
 import json
 import os
 from pathlib import Path
@@ -15,17 +17,25 @@ def db():
     class DB:
         def __init__(self):
             self.db = Database()
+            self.merge = Merge(database=self.db)
             if os.environ.get('TEST') is not None:
-                self.load_test_data()
+                self.db.delete_all_db_tables()
+                self.db.create_db_tables()
+                processed_ids = self.load_test_data()
+                self.merge.create_merged_concepts(processed_ids)
 
         def load_test_data(self):
-            with open(f'{TEST_ROOT}/tests/unit/'
-                      f'data/genes.json', 'r') as f:
-                genes = json.load(f)
-                with self.db.genes.batch_writer() as batch:
-                    for gene in genes:
-                        batch.put_item(Item=gene)
-                f.close()
+            processed_ids = set()
+            for src in PREFIX_LOOKUP.values():
+                with open(f'{TEST_ROOT}/tests/unit/'
+                          f'data/{src.lower()}_genes.json', 'r') as f:
+                    genes = json.load(f)
+                    with self.db.genes.batch_writer() as batch:
+                        for gene in genes:
+                            if gene["label_and_type"].endswith("##identity"):
+                                processed_ids.add(gene["concept_id"])
+                            batch.put_item(Item=gene)
+                    f.close()
 
             with open(f'{TEST_ROOT}/tests/unit/'
                       f'data/metadata.json', 'r') as f:
@@ -34,6 +44,7 @@ def db():
                     for m in metadata:
                         batch.put_item(Item=m)
                 f.close()
+            return processed_ids
 
     return DB().db
 

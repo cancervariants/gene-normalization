@@ -1,0 +1,485 @@
+[
+  {
+    "label_and_type": "ensembl:ensg00000223972##identity",
+    "concept_id": "ensembl:ENSG00000223972",
+    "symbol": "DDX11L1",
+    "label": "DEAD/H-box helicase 11 like 1 (pseudogene)",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.iTXYEeSmSj73q-lpxtKLlnp_1OlX658F",
+        "interval": {
+          "end": 14409,
+          "start": 11869,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
+        "type": "SequenceLocation"
+      }
+    ],
+    "strand": "+",
+    "xrefs": [
+      "hgnc:37102"
+    ],
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "ddx11l1##symbol",
+    "concept_id": "ensembl:ensg00000223972",
+    "src_name": "Ensembl",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000141510##identity",
+    "concept_id": "ensembl:ENSG00000141510",
+    "symbol": "TP53",
+    "label": "tumor protein p53",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.FfERYK71L10OLwk6QGoG8OPLgl7PItgK",
+        "interval": {
+          "end": 7687538,
+          "start": 7661779,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7",
+        "type": "SequenceLocation"
+      }
+    ],
+    "strand": "-",
+    "xrefs": [
+      "hgnc:11998"
+    ],
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "tp53##symbol",
+    "concept_id": "ensembl:ensg00000141510",
+    "src_name": "Ensembl",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000278757##identity",
+    "concept_id": "ensembl:ENSG00000278757",
+    "symbol": "U6",
+    "label": "U6 spliceosomal RNA",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.7Gh2fIORi69Fm1UMai49Ek-6HQNzuyqv",
+        "interval": {
+          "end": 516479,
+          "start": 516376,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
+        "type": "SequenceLocation"
+      }
+    ],
+    "strand": "-",
+    "associated_with": [
+      "rfam:RF00026"
+    ],
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "u6##symbol",
+    "concept_id": "ensembl:ensg00000278757",
+    "src_name": "Ensembl",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000197180##identity",
+    "concept_id": "ensembl:ENSG00000197180",
+    "symbol": "CH17-340M24.3",
+    "label": "uncharacterized protein BC009467",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.L5PJ5tioPr5ozAj1Ad0VIG-qHrGXnMUh",
+        "interval": {
+          "end": 154428479,
+          "start": 154424380,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
+        "type": "SequenceLocation"
+      }
+    ],
+    "strand": "-",
+    "xrefs": [
+      "ncbigene:158960"
+    ],
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "ch17-340m24.3##symbol",
+    "concept_id": "ensembl:ensg00000197180",
+    "src_name": "Ensembl",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000284906##identity",
+    "concept_id": "ensembl:ENSG00000284906",
+    "symbol": "AC091057.5",
+    "label": "Rho GTPase-activating protein 11B",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.UJx3xHRkDuoALaGxyic-cPQNQnXYiAM8",
+        "interval": {
+          "end": 30685606,
+          "start": 30624548,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.AsXvWL1-2i5U_buw6_niVIxD6zTbAuS6",
+        "type": "SequenceLocation"
+      }
+    ],
+    "strand": "+",
+    "associated_with": [
+      "uniprot:Q3KRB8"
+    ],
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "uniprot:q3krb8##associated_with",
+    "concept_id": "ensembl:ensg00000284906",
+    "src_name": "Ensembl",
+    "item_type": "associated_with"
+  },
+  {
+    "label_and_type": "ac091057.5##symbol",
+    "concept_id": "ensembl:ensg00000284906",
+    "src_name": "Ensembl",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000272920##identity",
+    "concept_id": "ensembl:ENSG00000272920",
+    "symbol": "hsa-mir-1253",
+    "label": "hsa-mir-1253",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.hS8fW7o0qqy15qOnQOKv1VqOZQDBswNI",
+        "interval": {
+          "end": 2748182,
+          "start": 2748078,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7",
+        "type": "SequenceLocation"
+      }
+    ],
+    "strand": "+",
+    "associated_with": [
+      "mirbase:MI0006387"
+    ],
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "mirbase:mi0006387##associated_with",
+    "concept_id": "ensembl:ENSG00000272920",
+    "src_name": "Ensembl",
+    "item_type": "associated_with"
+  },
+  {
+    "label_and_type": "hsa-mir-1253##symbol",
+    "concept_id": "ensembl:ENSG00000272920",
+    "src_name": "Ensembl",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000168939##identity",
+    "concept_id": "ensembl:ENSG00000168939",
+    "symbol": "SPRY3",
+    "label": "sprouty RTK signaling antagonist 3",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.h8YcFZq0v-Vwj6aGarOvh1R3LFNGD0YU",
+        "interval": {
+          "end": 155782459,
+          "start": 155612572,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
+        "type": "SequenceLocation"
+      }
+    ],
+    "strand": "+",
+    "xrefs": [
+      "hgnc:11271"
+    ],
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "spry3##symbol",
+    "concept_id": "ensembl:ensg00000168939",
+    "src_name": "Ensembl",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000278704##identity",
+    "concept_id": "ensembl:ENSG00000278704",
+    "symbol": "BX004987.1",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.0JJsYiFwwNH2-7rYKj1ZitEcFRxIGwdQ",
+        "interval": {
+          "end": 58376,
+          "start": 56140,
+          "type": "SimpleInterval"
+        },
+        "sequence_id": "ga4gh:SQ.K_ieIfNIy1Ktulg8QSlhvJvm_1uQOtjD",
+        "type": "SequenceLocation"
+      }
+    ],
+    "strand": "-",
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "bx004987.1##symbol",
+    "concept_id": "ensembl:ensg00000278704",
+    "src_name": "Ensembl",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000087085##identity",
+    "concept_id": "ensembl:ENSG00000087085",
+    "symbol": "ACHE",
+    "label": "acetylcholinesterase (Cartwright blood group)",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.SWENJPb__SVgxImg-Ybyr2jzqXUahRDf",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+        "interval": {
+          "end": 100896974,
+          "start": 100889994,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
+    "strand": "-",
+    "xrefs": [
+      "hgnc:108"
+    ],
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "ache##symbol",
+    "concept_id": "ensembl:ensg00000087085",
+    "src_name": "Ensembl",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "acetylcholinesterase (cartwright blood group)##label",
+    "concept_id": "ensembl:ensg00000087085",
+    "src_name": "Ensembl",
+    "item_type": "label"
+  },
+  {
+    "label_and_type": "hgnc:108##xref",
+    "concept_id": "ensembl:ensg00000087085",
+    "src_name": "Ensembl",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000097007##identity",
+    "concept_id": "ensembl:ENSG00000097007",
+    "symbol": "ABL1",
+    "label": "ABL proto-oncogene 1, non-receptor tyrosine kinase",
+    "strand": "+",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.HqNwGZwH-66U56AkU0ia4QWN2ASpDRS3",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
+        "interval": {
+          "end": 130887675,
+          "start": 130713016,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
+    "xrefs": [
+      "hgnc:76"
+    ],
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "abl1##symbol",
+    "concept_id": "ensembl:ensg00000097007",
+    "src_name": "Ensembl",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "abl proto-oncogene 1, non-receptor tyrosine kinase##label",
+    "concept_id": "ensembl:ensg00000097007",
+    "src_name": "Ensembl",
+    "item_type": "label"
+  },
+  {
+    "label_and_type": "hgnc:76##xref",
+    "concept_id": "ensembl:ensg00000097007",
+    "src_name": "Ensembl",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000157764##identity",
+    "concept_id": "ensembl:ENSG00000157764",
+    "symbol": "BRAF",
+    "label": "B-Raf proto-oncogene, serine/threonine kinase",
+    "strand": "-",
+    "locations": [
+      {
+        "_id": "ga4gh:VSL.yVv8OqIODws5WLrSMcydC7roEuhujq0w",
+        "type": "SequenceLocation",
+        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+        "interval": {
+          "end": 140924929,
+          "start": 140719327,
+          "type": "SimpleInterval"
+        }
+      }
+    ],
+    "xrefs": [
+      "hgnc:1097"
+    ],
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "braf##symbol",
+    "concept_id": "ensembl:ensg00000157764",
+    "src_name": "Ensembl",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "b-raf proto-oncogene, serine/threonine kinase##label",
+    "concept_id": "ensembl:ensg00000157764",
+    "src_name": "Ensembl",
+    "item_type": "label"
+  },
+  {
+    "label_and_type": "hgnc:1097##xref",
+    "concept_id": "ensembl:ensg00000157764",
+    "src_name": "Ensembl",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000167670##identity",
+    "concept_id": "ensembl:ENSG00000167670",
+    "symbol": "CHAF1A",
+    "label": "chromatin assembly factor 1 subunit A",
+    "xrefs": [
+      "hgnc:1910"
+    ],
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "chaf1a##symbol",
+    "concept_id": "ensembl:ENSG00000167670",
+    "src_name": "Ensembl",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "chromatin assembly factor 1 subunit a##label",
+    "concept_id": "ensembl:ENSG00000167670",
+    "src_name": "Ensembl",
+    "item_type": "label"
+  },
+  {
+    "label_and_type": "hgnc:1910##xref",
+    "concept_id": "ensembl:ENSG00000167670",
+    "src_name": "Ensembl",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000198730##identity",
+    "concept_id": "ensembl:ENSG00000198730",
+    "symbol": "CTR9",
+    "label": "CTR9 homolog, Paf1/RNA polymerase II complex component",
+    "xrefs": [
+      "hgnc:16850"
+    ],
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "hgnc:16850##xref",
+    "concept_id": "ensembl:ENSG00000198730",
+    "src_name": "Ensembl",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000166825##identity",
+    "concept_id": "ensembl:ENSG00000166825",
+    "symbol": "ANPEP",
+    "label": "alanyl aminopeptidase, membrane",
+    "xrefs": [
+      "hgnc:500"
+    ],
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "hgnc:500##xref",
+    "concept_id": "ensembl:ENSG00000166825",
+    "src_name": "Ensembl",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000196455##identity",
+    "concept_id": "ensembl:ENSG00000196455",
+    "symbol": "PIK3R4",
+    "label": "chromatin assembly factor 1 subunit A",
+    "xrefs": [
+      "hgnc:8982"
+    ],
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "pik3r4##symbol",
+    "concept_id": "ensembl:ENSG00000196455",
+    "src_name": "Ensembl",
+    "item_type": "symbol"
+  },
+  {
+    "label_and_type": "chromatin assembly factor 1 subunit a##label",
+    "concept_id": "ensembl:ENSG00000196455",
+    "src_name": "Ensembl",
+    "item_type": "label"
+  },
+  {
+    "label_and_type": "hgnc:8982##xref",
+    "concept_id": "ensembl:ENSG00000196455",
+    "src_name": "Ensembl",
+    "item_type": "xref"
+  },
+  {
+    "label_and_type": "ensembl:ensg00000118873##identity",
+    "concept_id": "ensembl:ENSG00000118873",
+    "symbol": "RAB3GAP2",
+    "label": "RAB3 GTPase activating non-catalytic protein subunit 2",
+    "xrefs": [
+      "hgnc:17168"
+    ],
+    "src_name": "Ensembl",
+    "item_type": "identity"
+  },
+  {
+    "label_and_type": "hgnc:17168##xref",
+    "concept_id": "ensembl:ENSG00000118873",
+    "src_name": "Ensembl",
+    "item_type": "xref"
+  }
+]
