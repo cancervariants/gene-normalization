@@ -28,7 +28,7 @@ def dpf1():
         'label': 'double PHD fingers 1',
         'concept_id': 'ncbigene:8193',
         'symbol': 'DPF1',
-        'aliases': ['BAF45b', 'NEUD4', 'neuro-d4'],
+        'aliases': ['BAF45b', 'NEUD4', 'neuro-d4', 'SMARCG1'],
         'xrefs': ['hgnc:20225', 'ensembl:ENSG00000011332'],
         'previous_symbols': [],
         'associated_with': ['omim:601670'],

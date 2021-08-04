@@ -1,4 +1,6 @@
 """This module defines the Ensembl ETL methods."""
+import pydantic
+
 from .base import Base
 from gene import PROJECT_ROOT
 from gene.schemas import SourceName, NamespacePrefix, Strand, Gene, SourceMeta
@@ -19,21 +21,23 @@ class Ensembl(Base):
                  database: Database,
                  host='ftp.ensembl.org',
                  data_dir='pub/',
-                 fn='Homo_sapiens.GRCh38.102.gff3.gz'
+                 version=104
                  ):
         """Initialize Ensembl ETL class.
 
         :param Database database: DynamoDB database
         :param str host: FTP host name
         :param str data_dir: FTP data directory to use
-        :param str fn: Data file to download
+        :param int version: Version for fn
         """
         super().__init__(database, host, data_dir)
         self._sequence_location = SequenceLocation()
-        self._data_url = f"ftp://{host}/{data_dir}{fn}"
-        self._fn = fn
+        self._host = host
+        self._data_dir = data_dir
+        self._version = version
+        self._fn = f'Homo_sapiens.GRCh38.{self._version}.gff3.gz'
+        self._data_url = f"ftp://{self._host}/{self._data_dir}{self._fn}"
         self._data_file_url = None
-        self._version = '102'
         self._assembly = 'GRCh38'
 
     def _download_data(self):
@@ -42,8 +46,9 @@ class Ensembl(Base):
         ens_dir = PROJECT_ROOT / 'data' / 'ensembl'
         ens_dir.mkdir(exist_ok=True, parents=True)
         self._ftp_download(self._host,
-                           f'{self._data_dir}release-102/gff3/homo_sapiens/',
-                           'ensembl_102.gff3',
+                           f'{self._data_dir}release-{self._version}'
+                           f'/gff3/homo_sapiens/',
+                           f'ensembl_{self._version}.gff3',
                            ens_dir,
                            self._fn)
         logger.info('Successfully downloaded Ensembl data file.')
@@ -81,8 +86,13 @@ class Ensembl(Base):
                     if f_id == 'gene':
                         gene = self._add_gene(f, sr, accession_numbers)
                         if gene:
-                            assert Gene(**gene)
-                            self._load_gene(gene, batch)
+                            try:
+                                assert Gene(**gene)
+                            except pydantic.error_wrappers.ValidationError:
+                                logger.warning(f"Unable to load gene due to "
+                                               f"validation error: {gene}")
+                            else:
+                                self._load_gene(gene, batch)
         logger.info('Successfully transformed Ensembl.')
 
     def _add_gene(self, f, sr, accession_numbers):

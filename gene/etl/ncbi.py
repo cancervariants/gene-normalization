@@ -37,6 +37,7 @@ class NCBI(Base):
         self._chromosome_location = ChromosomeLocation()
         self._data_url = f"ftp://{host}"
         self._assembly = assembly
+        self._date_today = datetime.today().strftime('%Y%m%d')
 
     def perform_etl(self):
         """Perform ETL methods.
@@ -53,28 +54,27 @@ class NCBI(Base):
 
         :param str ncbi_dir: The NCBI data directory
         """
-        version = datetime.today().strftime('%Y%m%d')
-
         # Download info
         data_dir = f'{self._data_dir}GENE_INFO/Mammalia/'
-        fn = f'ncbi_info_{version}.tsv'
+        fn = f'ncbi_info_{self._date_today}.tsv'
         data_fn = 'Homo_sapiens.gene_info.gz'
         logger.info('Downloading NCBI gene_info....')
         self._ftp_download(self._host, data_dir, fn, ncbi_dir, data_fn)
         logger.info('Successfully downloaded NCBI gene_info.')
 
         # Download history
-        fn = f'ncbi_history_{version}.tsv'
+        fn = f'ncbi_history_{self._date_today}.tsv'
         data_fn = 'gene_history.gz'
         logger.info('Downloading NCBI gene_history...')
         self._ftp_download(self._host, self._data_dir, fn, ncbi_dir, data_fn)
         logger.info('Successfully downloaded NCBI gene_history.')
 
         # Download gff
+        og_fn = 'GCF_000001405.39_GRCh38.p13'
         data_dir = 'genomes/refseq/vertebrate_mammalian/Homo_sapiens/' \
-                   'latest_assembly_versions/GCF_000001405.39_GRCh38.p13/'
+                   f'latest_assembly_versions/{og_fn}/'
         fn = f'ncbi_{self._assembly}.gff'
-        data_fn = 'GCF_000001405.39_GRCh38.p13_genomic.gff.gz'
+        data_fn = f'{og_fn}_genomic.gff.gz'
         logger.info('Downloading NCBI gff data file...')
         self._ftp_download(self._host, data_dir, fn, ncbi_dir, data_fn)
         logger.info('Successfully downloaded NCBI gff data file.')
@@ -92,11 +92,11 @@ class NCBI(Base):
         gff_downloaded: bool = False
 
         for f in files:
-            if f.name.startswith('ncbi_info'):
+            if f.name.startswith(f'ncbi_info_{self._date_today}'):
                 info_downloaded = True
-            elif f.name.startswith('ncbi_history'):
+            elif f.name.startswith(f'ncbi_history_{self._date_today}'):
                 history_downloaded = True
-            elif f.name.startswith('ncbi_GRCh38'):
+            elif f.name.startswith('ncbi_GRCh38.p13'):
                 gff_downloaded = True
         return info_downloaded and history_downloaded and gff_downloaded
 
