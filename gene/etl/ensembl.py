@@ -7,7 +7,6 @@ from gene.schemas import SourceName, NamespacePrefix, Strand, Gene, SourceMeta
 import logging
 from gene.database import Database
 import gffutils
-from biocommons.seqrepo import SeqRepo
 from gene.vrs_locations import SequenceLocation
 
 
@@ -31,7 +30,7 @@ class Ensembl(Base):
         :param str data_dir: FTP data directory to use
         :param int version: Version for fn
         """
-        self._database = database
+        super().__init__(database, host, data_dir)
         self._sequence_location = SequenceLocation()
         self._host = host
         self._data_dir = data_dir
@@ -40,7 +39,6 @@ class Ensembl(Base):
         self._data_url = f"ftp://{self._host}/{self._data_dir}{self._fn}"
         self._data_file_url = None
         self._assembly = 'GRCh38'
-        self._load_data()
 
     def _download_data(self):
         """Download Ensembl GFF3 data file."""
@@ -72,12 +70,7 @@ class Ensembl(Base):
                                 merge_strategy="create_unique",
                                 keep_order=True)
 
-        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / 'latest'
-        if not seqrepo_dir.exists():
-            logger.error("Could not find gene/data/seqrepo/latest directory.")
-            raise NotADirectoryError("Could not find seqrepo "
-                                     "2020-11-27 directory.")
-        sr = SeqRepo(seqrepo_dir)
+        sr = self.get_seqrepo()
 
         # Get accession numbers
         accession_numbers = dict()
@@ -207,12 +200,17 @@ class Ensembl(Base):
             source['associated_with'] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]  # noqa: E501
         return source
 
-    def _load_data(self, *args, **kwargs):
-        """Load the Ensembl source into normalized database."""
+    def perform_etl(self, *args, **kwargs):
+        """Extract, Transform, and Load data into DynamoDB database.
+
+        :return: Concept IDs of concepts successfully loaded
+        """
         self._download_data()
         self._extract_data()
         self._add_meta()
         self._transform_data()
+        self._database.flush_batch()
+        return self._processed_ids
 
     def _add_meta(self, *args, **kwargs):
         """Add Ensembl metadata."""

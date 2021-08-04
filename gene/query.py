@@ -1,11 +1,14 @@
 """This module provides methods for handling queries."""
 import re
 from typing import List, Dict, Set
+from urllib.parse import quote
 from uvicorn.config import logger
 from .version import __version__
 from gene import NAMESPACE_LOOKUP, PREFIX_LOOKUP, ITEM_TYPES
 from gene.database import Database
-from gene.schemas import Gene, SourceMeta, MatchType, SourceName, ServiceMeta
+from gene.schemas import Gene, SourceMeta, MatchType, SourceName, \
+    ServiceMeta, GeneDescriptor, GeneValueObject, Extension, SourcePriority, \
+    NormalizeService, SearchService
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 from datetime import datetime
@@ -35,7 +38,7 @@ class QueryHandler:
         """
         self.db = Database(db_url=db_url, region_name=db_region)
 
-    def emit_warnings(self, query_str: str) -> List[str]:
+    def emit_warnings(self, query_str: str) -> List:
         """Emit warnings if query contains non breaking space characters.
 
         :param str query_str: query string
@@ -44,7 +47,12 @@ class QueryHandler:
         warnings = []
         nbsp = re.search('\xa0|&nbsp;', query_str)
         if nbsp:
-            warnings = ['Query contains non-breaking space characters.']
+            warnings = [
+                {
+                    "non_breaking_space_characters":
+                        "Query contains non-breaking space characters"
+                }
+            ]
             logger.warning(
                 f'Query ({query_str}) contains non-breaking space characters.'
             )
@@ -274,9 +282,19 @@ class QueryHandler:
 
         return response_dict
 
-    def search_sources(self, query_str: str, keyed: bool = False,
-                       incl: str = '', excl: str = '', **params):
-        """Fetch normalized gene objects.
+    def _get_service_meta(self) -> ServiceMeta:
+        """Return metadata about gene-normalizer service.
+
+        :return: Service Meta
+        """
+        return ServiceMeta(
+            version=__version__,
+            response_datetime=datetime.now()
+        )
+
+    def search(self, query_str: str, keyed: bool = False,
+               incl: str = '', excl: str = '', **params):
+        """Return highest match for each source.
 
         :param str query_str: query, a string, to search for
         :param bool keyed: if true, return response as dict keying source names
@@ -337,9 +355,205 @@ class QueryHandler:
         else:
             resp = self.response_list(query_str, query_sources)
 
-        resp['service_meta_'] = ServiceMeta(
-            version=__version__,
-            response_datetime=datetime.now(),
-        )
-
+        resp['service_meta_'] = self._get_service_meta()
+        assert SearchService(**resp)
         return resp
+
+    def _add_merged_meta(self, response: Dict) -> Dict:
+        """Add source metadata to response object.
+
+        :param Dict response: in-progress response object
+        :return: completed response object.
+        """
+        sources_meta = {}
+        gene_descr = response['gene_descriptor']
+        ids = [gene_descr['value']['id']] + gene_descr.get('xrefs', [])
+        for concept_id in ids:
+            prefix = concept_id.split(':')[0]
+            src_name = PREFIX_LOOKUP[prefix.lower()]
+            if src_name not in sources_meta:
+                sources_meta[src_name] = self.fetch_meta(src_name)
+        response['source_meta_'] = sources_meta
+        return response
+
+    def add_gene_descriptor(self, response, record, match_type,
+                            possible_concepts=[]):
+        """Add gene descriptor to response.
+
+        :param Dict response: Response object
+        :param Dict record: Gene record
+        :param MatchType match_type: query's match type
+        :param list possible_concepts: List of other normalized concepts
+            found
+        :return: Response with gene descriptor
+        """
+        params = {
+            "id": f"normalize.gene:{quote(response['query'])}",
+            "label": record["symbol"],
+            "value": GeneValueObject(id=record["concept_id"])
+        }
+
+        # xrefs
+        if "xrefs" in record and record["xrefs"]:
+            params["xrefs"] = record["xrefs"]
+
+        # alternate labels
+        alt_labels = set()
+        for key in ["previous_symbols", "aliases"]:
+            if key in record and record[key]:
+                val = record[key]
+                if isinstance(val, str):
+                    val = [val]
+                alt_labels.update(val)
+        if alt_labels:
+            params["alternate_labels"] = list(alt_labels)
+
+        # extensions
+        extensions = list()
+        extension_and_record_labels = [
+            ("symbol_status", "symbol_status"),
+            ("approved_name", "label"),
+            ("chromsome_location", "locations"),
+            ("associated_with", "associated_with")
+        ]
+        for ext_label, record_label in extension_and_record_labels:
+            if record_label in record and record[record_label]:
+                extensions.append(Extension(
+                    name=ext_label,
+                    value=record[record_label]
+                ))
+        if extensions:
+            params["extensions"] = extensions
+
+        # add warnings
+        if possible_concepts:
+            norm_concepts = set()
+            for concept_id in possible_concepts:
+                r = self.db.get_record_by_id(concept_id, True)
+                if r:
+                    merge_ref = r.get("merge_ref")
+                    if merge_ref:
+                        norm_concepts.add(merge_ref)
+            norm_concepts = norm_concepts - {record["concept_id"]}
+            if norm_concepts:
+                response["warnings"].append(
+                    {
+                        "multiple_normalized_concepts_found":
+                            list(norm_concepts)
+                    }
+                )
+
+        response["gene_descriptor"] = \
+            GeneDescriptor(**params).dict(exclude_none=True)
+        response = self._add_merged_meta(response)
+        response["match_type"] = match_type
+        return response
+
+    def _record_order(self, record: Dict) -> (int, str):
+        """Construct priority order for matching. Only called by sort().
+
+        :param Dict record: individual record item in iterable to sort
+        :return: tuple with rank value and concept ID
+        """
+        src = record['src_name'].upper()
+        source_rank = SourcePriority[src]
+        return source_rank, record['concept_id']
+
+    def _handle_failed_merge_ref(self, record, response, query) -> Dict:
+        """Log + fill out response for a failed merge reference lookup.
+
+        :param Dict record: record containing failed merge_ref
+        :param Dict response: in-progress response object
+        :param str query: original query value
+        :return: response with no match
+        """
+        logger.error(f"Merge ref lookup failed for ref {record['merge_ref']} "
+                     f"in record {record['concept_id']} from query {query}")
+        response['match_type'] = MatchType.NO_MATCH
+        return response
+
+    def normalize(self, query: str) -> Dict:
+        """Return normalized concept for query.
+
+        :param str query: String to find normalized concept for
+        :return: Normalized gene concept
+        """
+        response = {
+            "query": query,
+            "warnings": self.emit_warnings(query),
+            "service_meta_": self._get_service_meta()
+        }
+
+        if query == '':
+            response['match_type'] = MatchType.NO_MATCH
+            return response
+        query_str = query.lower().strip()
+
+        # check merged concept ID match
+        record = self.db.get_record_by_id(query_str, case_sensitive=False,
+                                          merge=True)
+        if record:
+            return self.add_gene_descriptor(response, record,
+                                            MatchType.CONCEPT_ID)
+
+        # check concept ID match
+        record = self.db.get_record_by_id(query_str, case_sensitive=False)
+        if record:
+            merge_ref = record.get('merge_ref')
+            if not merge_ref:
+                return self.add_gene_descriptor(response, record,
+                                                MatchType.CONCEPT_ID)
+            merge = self.db.get_record_by_id(merge_ref,
+                                             case_sensitive=False,
+                                             merge=True)
+            if merge is None:
+                return self._handle_failed_merge_ref(record, response,
+                                                     query_str)
+            else:
+                return self.add_gene_descriptor(response, merge,
+                                                MatchType.CONCEPT_ID)
+
+        # check other match types
+        matching_records = None
+        for match_type in ITEM_TYPES.values():
+            # get matches list for match tier
+            matching_refs = self.db.get_records_by_type(query_str, match_type)
+            matching_records = \
+                [self.db.get_record_by_id(m['concept_id'], False)
+                 for m in matching_refs]
+            matching_records.sort(key=self._record_order)
+
+            if len(matching_refs) > 1:
+                possible_concepts = \
+                    [ref["concept_id"] for ref in matching_refs]
+            else:
+                possible_concepts = []
+
+            # attempt merge ref resolution until successful
+            for match in matching_records:
+                record = self.db.get_record_by_id(match['concept_id'], False)
+                if record:
+                    merge_ref = record.get('merge_ref')
+                    if not merge_ref:
+                        return self.add_gene_descriptor(
+                            response, record,
+                            MatchType[match_type.upper()],
+                            possible_concepts
+                        )
+                    merge = self.db.get_record_by_id(record['merge_ref'],
+                                                     case_sensitive=False,
+                                                     merge=True)
+                    if merge is None:
+                        return self._handle_failed_merge_ref(record, response,
+                                                             query_str)
+                    else:
+                        return self.add_gene_descriptor(
+                            response, merge,
+                            MatchType[match_type.upper()],
+                            possible_concepts
+                        )
+
+        if not matching_records:
+            response['match_type'] = MatchType.NO_MATCH
+        assert NormalizeService(**response)
+        return response

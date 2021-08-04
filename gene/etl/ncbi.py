@@ -10,7 +10,6 @@ import csv
 from datetime import datetime
 import re
 import gffutils
-from biocommons.seqrepo import SeqRepo
 from gene.vrs_locations import SequenceLocation, ChromosomeLocation
 
 
@@ -33,16 +32,22 @@ class NCBI(Base):
         :param str data_dir: FTP data directory to use
         :param str assembly: The genome assembly
         """
-        self._database = database
+        super().__init__(database, host, data_dir)
         self._sequence_location = SequenceLocation()
         self._chromosome_location = ChromosomeLocation()
         self._data_url = f"ftp://{host}"
-        self._host = host
-        self._data_dir = data_dir
         self._assembly = assembly
         self._date_today = datetime.today().strftime('%Y%m%d')
+
+    def perform_etl(self):
+        """Perform ETL methods.
+
+        :return: Concept IDs of concepts successfully loaded
+        """
         self._extract_data()
         self._transform_data()
+        self._database.flush_batch()
+        return self._processed_ids
 
     def _download_data(self, ncbi_dir: Path):
         """Download NCBI info, history, and GRCh38 files.
@@ -509,8 +514,7 @@ class NCBI(Base):
         prev_symbols = self._get_prev_symbols()
         info_genes = self._get_gene_info(prev_symbols)
 
-        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / 'latest'
-        sr = SeqRepo(seqrepo_dir)
+        sr = self.get_seqrepo()
 
         # create db for gff file
         db = gffutils.create_db(str(self._gff_src),

@@ -13,8 +13,7 @@ def ensembl():
             self.query_handler = QueryHandler()
 
         def search(self, query_str, incl='ensembl'):
-            resp = self.query_handler.search_sources(query_str, keyed=True,
-                                                     incl=incl)
+            resp = self.query_handler.search(query_str, keyed=True, incl=incl)
             return resp['source_matches']['Ensembl']
 
     e = QueryGetter()
