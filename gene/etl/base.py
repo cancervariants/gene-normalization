@@ -2,7 +2,8 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
 from gene.database import Database
-from gene import PREFIX_LOOKUP, ITEM_TYPES
+from gene import PREFIX_LOOKUP, ITEM_TYPES, PROJECT_ROOT
+from biocommons.seqrepo import SeqRepo
 from pathlib import Path
 from ftplib import FTP
 import gzip
@@ -133,3 +134,10 @@ class Base(ABC):
                         shutil.copyfileobj(f_in, f_out)
                 remove(filepath)
         return version
+
+    def get_seqrepo(self) -> SeqRepo:
+        """Return SeqRepo instance."""
+        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / 'latest'
+        if not seqrepo_dir.exists():
+            raise NotADirectoryError("Could not find gene/data/seqrepo/latest")
+        return SeqRepo(seqrepo_dir)

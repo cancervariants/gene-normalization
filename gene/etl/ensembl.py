@@ -5,7 +5,6 @@ from gene.schemas import SourceName, NamespacePrefix, Strand, Gene, SourceMeta
 import logging
 from gene.database import Database
 import gffutils
-from biocommons.seqrepo import SeqRepo
 from gene.vrs_locations import SequenceLocation
 
 
@@ -66,12 +65,7 @@ class Ensembl(Base):
                                 merge_strategy="create_unique",
                                 keep_order=True)
 
-        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / 'latest'
-        if not seqrepo_dir.exists():
-            logger.error("Could not find gene/data/seqrepo/latest directory.")
-            raise NotADirectoryError("Could not find seqrepo "
-                                     "2020-11-27 directory.")
-        sr = SeqRepo(seqrepo_dir)
+        sr = self.get_seqrepo()
 
         # Get accession numbers
         accession_numbers = dict()

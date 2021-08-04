@@ -10,7 +10,6 @@ import csv
 from datetime import datetime
 import re
 import gffutils
-from biocommons.seqrepo import SeqRepo
 from gene.vrs_locations import SequenceLocation, ChromosomeLocation
 
 
@@ -515,8 +514,7 @@ class NCBI(Base):
         prev_symbols = self._get_prev_symbols()
         info_genes = self._get_gene_info(prev_symbols)
 
-        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / 'latest'
-        sr = SeqRepo(seqrepo_dir)
+        sr = self.get_seqrepo()
 
         # create db for gff file
         db = gffutils.create_db(str(self._gff_src),
