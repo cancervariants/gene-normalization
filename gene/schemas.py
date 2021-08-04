@@ -256,7 +256,7 @@ class GeneDescriptor(BaseModel):
     id: str
     type = "GeneDescriptor"
     value: GeneValueObject
-    label: str
+    label: Optional[str]
     xrefs: Optional[List[str]]
     alternate_labels: Optional[List[str]]
     extensions: Optional[List[Extension]]
