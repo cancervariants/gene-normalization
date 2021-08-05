@@ -32,6 +32,15 @@ class CytobandInterval(BaseModel):
     start: str
     type = "CytobandInterval"
 
+    @validator('start', 'end')
+    def valid_loc(cls, v):
+        """Validate start, end"""
+        assert bool(re.match(r"^cen|[pq](ter|([1-9][0-9]*(\.[1-9][0-9]*)?))$",
+                             v)), r'start/end positions must match the ' \
+                                  r'regular expression ^cen|[pq](ter|([1-9]' \
+                                  r'[0-9]*(\.[1-9][0-9]*)?))$'
+        return v
+
     class Config:
         """Configure model example"""
 
@@ -113,9 +122,9 @@ class ChromosomeLocation(Location):
     chr: str
     interval: CytobandInterval
 
-    @validator('species')
+    @validator('species_id')
     def is_curie(cls, v):
-        """Validate species"""
+        """Validate species_id"""
         assert v.count(':') == 1 and v.find(' ') == -1, 'chr must be a CURIE'
         return v
 
@@ -123,15 +132,6 @@ class ChromosomeLocation(Location):
     def valid_chr(cls, v):
         """Validate chr"""
         assert v.isalnum(), 'chr must have only alphanumeric characters'
-        return v
-
-    @validator('start', 'end')
-    def valid_loc(cls, v):
-        """Validate start, end"""
-        assert bool(re.match(r"^cen|[pq](ter|([1-9][0-9]*(\.[1-9][0-9]*)?))$",
-                             v)), r'start/end positions must match the ' \
-                                  r'regular expression ^cen|[pq](ter|([1-9]' \
-                                  r'[0-9]*(\.[1-9][0-9]*)?))$'
         return v
 
     class Config:
