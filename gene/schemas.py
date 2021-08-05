@@ -2,7 +2,7 @@
 gene records.
 """
 from typing import Type, List, Optional, Dict, Union, Any
-from pydantic import BaseModel, StrictBool, validator
+from pydantic import BaseModel, StrictInt, StrictBool, validator
 from enum import Enum, IntEnum
 from pydantic.fields import Field
 from datetime import datetime
@@ -62,8 +62,8 @@ class CytobandInterval(BaseModel):
 class SimpleInterval(BaseModel):
     """GA4GH simple interval definition."""
 
-    end: int
-    start: int
+    end: StrictInt
+    start: StrictInt
     type = "SimpleInterval"
 
     class Config:
