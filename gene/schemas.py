@@ -2,7 +2,7 @@
 gene records.
 """
 from typing import Type, List, Optional, Dict, Union, Any
-from pydantic import BaseModel, StrictBool
+from pydantic import BaseModel, StrictBool, validator
 from enum import Enum, IntEnum
 from pydantic.fields import Field
 from datetime import datetime
@@ -112,6 +112,12 @@ class ChromosomeLocation(Location):
     chr: str
     interval: CytobandInterval
 
+    @validator('sequence_id')
+    def is_curie(cls, v):
+        """Validate sequence_id"""
+        assert v.count(':') == 1 and v.find(' ') == -1, 'chr must be a CURIE'
+        return v
+
     class Config:
         """Configure model example"""
 
@@ -140,6 +146,12 @@ class SequenceLocation(Location):
 
     sequence_id: str
     interval: SimpleInterval
+
+    @validator('sequence_id')
+    def is_curie(cls, v):
+        """Validate sequence_id"""
+        assert v.count(':') == 1 and v.find(' ') == -1, 'chr must be a CURIE'
+        return v
 
     class Config:
         """Configure model example"""
@@ -260,6 +272,12 @@ class GeneDescriptor(BaseModel):
     xrefs: Optional[List[str]]
     alternate_labels: Optional[List[str]]
     extensions: Optional[List[Extension]]
+
+    @validator('value_id')
+    def is_valid(cls, v):
+        """Validate value_id"""
+        assert v.count(':') == 1 and v.find(' ') == -1, 'id must be a CURIE'
+        return v
 
     class Config:
         """Configure model example"""
