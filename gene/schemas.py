@@ -261,6 +261,12 @@ class GeneValueObject(BaseModel):
     id: str
     type = "Gene"
 
+    @validator('id')
+    def is_curie(cls, v):
+        """Validate that `id` is a CURIE"""
+        assert v.count(':') == 1 and v.find(' ') == -1, 'id must be a CURIE'
+        return v
+
     class Config:
         """Configure model example"""
 
@@ -281,18 +287,28 @@ class GeneValueObject(BaseModel):
 class GeneDescriptor(BaseModel):
     """Define model for VRSATILE Gene Descriptor."""
 
-    id: str
     type = "GeneDescriptor"
-    value: GeneValueObject
+    value: Optional[GeneValueObject]
+    value_id: Optional[str]
+    id: str
     label: Optional[str]
     xrefs: Optional[List[str]]
     alternate_labels: Optional[List[str]]
     extensions: Optional[List[Extension]]
 
-    @validator('value_id')
-    def is_valid(cls, v):
-        """Validate value_id"""
-        assert v.count(':') == 1 and v.find(' ') == -1, 'id must be a CURIE'
+    @validator('value_id', 'id')
+    def is_curie(cls, v, values, field):
+        """Validate that `id` and `value_id`, if populated, are CURIES."""
+        msg = f'{field["name"]} must be a CURIE'
+        if v is not None:
+            assert v.count(':') == 1 and v.find(' ') == -1, msg
+        return v
+
+    @validator('id')
+    def check_value_or_value_id(cls, v, values):
+        """Check that at least one of {`value`, `value_id`} is provided."""
+        msg = 'Must give values for either `value`, `value_id`, or both'
+        assert any((values['value'], values['value_id'])), msg
         return v
 
     class Config:
