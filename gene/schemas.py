@@ -200,7 +200,7 @@ class Gene(BaseModel):
     label: Optional[str]
     strand: Optional[Strand]
     location_annotations: Optional[List[str]] = []
-    locations: Optional[List[Union[ChromosomeLocation, SequenceLocation]]] = []
+    locations: Optional[List[Union[SequenceLocation, ChromosomeLocation]]] = []
     aliases: Optional[List[str]] = []
     previous_symbols: Optional[List[str]] = []
     xrefs: Optional[List[str]] = []
