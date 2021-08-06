@@ -1251,19 +1251,15 @@
     ],
     "locations": [
       {
-        "name": "chromosome_location",
-        "value": {
-            "_id": "ga4gh:VCL.yF2TzeunqY92v3yhDsCR_t5X997mWriF",
-            "type": "ChromosomeLocation",
-            "species_id": "taxonomy:9606",
-            "chr": "19",
-            "interval": {
-                "end": "p13.3",
-                "start": "p13.3",
-                "type": "CytobandInterval"
-            }
-        },
-        "type": "Extension"
+        "_id": "ga4gh:VCL.yF2TzeunqY92v3yhDsCR_t5X997mWriF",
+        "type": "ChromosomeLocation",
+        "species_id": "taxonomy:9606",
+        "chr": "19",
+        "interval": {
+            "end": "p13.3",
+            "start": "p13.3",
+            "type": "CytobandInterval"
+        }
       }
     ],
     "associated_with": [
