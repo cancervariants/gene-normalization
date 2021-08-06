@@ -126,7 +126,7 @@ class ChromosomeLocation(Location):
     @validator('species_id')
     def is_curie(cls, v):
         """Validate species_id"""
-        assert v.count(':') == 1 and v.find(' ') == -1, 'species_id must be a CURIE'
+        assert v.count(':') == 1 and v.find(' ') == -1, 'species_id must be a CURIE'  # noqa: E501
         return v
 
     @validator('chr')
@@ -167,7 +167,7 @@ class SequenceLocation(Location):
     @validator('sequence_id')
     def is_curie(cls, v):
         """Validate sequence_id"""
-        assert v.count(':') == 1 and v.find(' ') == -1, 'sequence_id must be a CURIE'
+        assert v.count(':') == 1 and v.find(' ') == -1, 'sequence_id must be a CURIE'  # noqa: E501
         return v
 
     class Config:
