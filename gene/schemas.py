@@ -2,11 +2,13 @@
 gene records.
 """
 from typing import Type, List, Optional, Dict, Union, Any
-from pydantic import BaseModel, StrictBool
+from pydantic import BaseModel, StrictInt, StrictBool, validator, \
+    root_validator
 from enum import Enum, IntEnum
 from pydantic.fields import Field
 from datetime import datetime
 from pydantic.types import StrictStr
+import re
 
 
 class SymbolStatus(str, Enum):
@@ -31,6 +33,15 @@ class CytobandInterval(BaseModel):
     start: str
     type = "CytobandInterval"
 
+    @validator('start', 'end')
+    def valid_loc(cls, v):
+        """Validate start, end"""
+        assert bool(re.match(r"^cen|[pq](ter|([1-9][0-9]*(\.[1-9][0-9]*)?))$",
+                             v)), r'start/end positions must match the ' \
+                                  r'regular expression ^cen|[pq](ter|([1-9]' \
+                                  r'[0-9]*(\.[1-9][0-9]*)?))$'
+        return v
+
     class Config:
         """Configure model example"""
 
@@ -52,8 +63,8 @@ class CytobandInterval(BaseModel):
 class SimpleInterval(BaseModel):
     """GA4GH simple interval definition."""
 
-    end: int
-    start: int
+    end: StrictInt
+    start: StrictInt
     type = "SimpleInterval"
 
     class Config:
@@ -112,6 +123,18 @@ class ChromosomeLocation(Location):
     chr: str
     interval: CytobandInterval
 
+    @validator('species_id')
+    def is_curie(cls, v):
+        """Validate species_id"""
+        assert v.count(':') == 1 and v.find(' ') == -1, 'species_id must be a CURIE'  # noqa: E501
+        return v
+
+    @validator('chr')
+    def valid_chr(cls, v):
+        """Validate chr"""
+        assert v.isalnum(), 'chr must have only alphanumeric characters'
+        return v
+
     class Config:
         """Configure model example"""
 
@@ -140,6 +163,12 @@ class SequenceLocation(Location):
 
     sequence_id: str
     interval: SimpleInterval
+
+    @validator('sequence_id')
+    def is_curie(cls, v):
+        """Validate sequence_id"""
+        assert v.count(':') == 1 and v.find(' ') == -1, 'sequence_id must be a CURIE'  # noqa: E501
+        return v
 
     class Config:
         """Configure model example"""
@@ -172,7 +201,7 @@ class Gene(BaseModel):
     label: Optional[str]
     strand: Optional[Strand]
     location_annotations: Optional[List[str]] = []
-    locations: Optional[List[Union[ChromosomeLocation, SequenceLocation]]] = []
+    locations: Optional[List[Union[SequenceLocation, ChromosomeLocation]]] = []
     aliases: Optional[List[str]] = []
     previous_symbols: Optional[List[str]] = []
     xrefs: Optional[List[str]] = []
@@ -233,6 +262,12 @@ class GeneValueObject(BaseModel):
     id: str
     type = "Gene"
 
+    @validator('id')
+    def is_curie(cls, v):
+        """Validate that `id` is a CURIE"""
+        assert v.count(':') == 1 and v.find(' ') == -1, 'id must be a CURIE'
+        return v
+
     class Config:
         """Configure model example"""
 
@@ -255,11 +290,28 @@ class GeneDescriptor(BaseModel):
 
     id: str
     type = "GeneDescriptor"
-    value: GeneValueObject
+    value: Optional[GeneValueObject]
+    value_id: Optional[str]
     label: Optional[str]
     xrefs: Optional[List[str]]
     alternate_labels: Optional[List[str]]
     extensions: Optional[List[Extension]]
+
+    @validator('value_id', 'id')
+    def is_curie(cls, v, field):
+        """Validate that `id` and `value_id`, if populated, are CURIES."""
+        msg = f'{field.name} must be a CURIE'
+        if v is not None:
+            assert v.count(':') == 1 and v.find(' ') == -1, msg
+        return v
+
+    @root_validator(pre=True)
+    def check_value_or_value_id_present(cls, values):
+        """Check that at least one of {`value`, `value_id`} is provided."""
+        msg = 'Must give values for either `value`, `value_id`, or both'
+        value, value_id = values.get('value'), values.get('value_id')
+        assert value or value_id, msg
+        return values
 
     class Config:
         """Configure model example"""
