@@ -2,7 +2,8 @@
 gene records.
 """
 from typing import Type, List, Optional, Dict, Union, Any
-from pydantic import BaseModel, StrictInt, StrictBool, validator
+from pydantic import BaseModel, StrictInt, StrictBool, validator, \
+    root_validator
 from enum import Enum, IntEnum
 from pydantic.fields import Field
 from datetime import datetime
@@ -287,29 +288,30 @@ class GeneValueObject(BaseModel):
 class GeneDescriptor(BaseModel):
     """Define model for VRSATILE Gene Descriptor."""
 
+    id: str
     type = "GeneDescriptor"
     value: Optional[GeneValueObject]
     value_id: Optional[str]
-    id: str
     label: Optional[str]
     xrefs: Optional[List[str]]
     alternate_labels: Optional[List[str]]
     extensions: Optional[List[Extension]]
 
     @validator('value_id', 'id')
-    def is_curie(cls, v, values, field):
+    def is_curie(cls, v, field):
         """Validate that `id` and `value_id`, if populated, are CURIES."""
-        msg = f'{field["name"]} must be a CURIE'
+        msg = f'{field.name} must be a CURIE'
         if v is not None:
             assert v.count(':') == 1 and v.find(' ') == -1, msg
         return v
 
-    @validator('id')
-    def check_value_or_value_id(cls, v, values):
+    @root_validator(pre=True)
+    def check_card_number_omitted(cls, values):
         """Check that at least one of {`value`, `value_id`} is provided."""
         msg = 'Must give values for either `value`, `value_id`, or both'
-        assert any((values['value'], values['value_id'])), msg
-        return v
+        value, value_id = values.get('value'), values.get('value_id')
+        assert value or value_id, msg
+        return values
 
     class Config:
         """Configure model example"""
