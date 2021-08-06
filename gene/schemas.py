@@ -29,8 +29,8 @@ class Strand(str, Enum):
 class CytobandInterval(BaseModel):
     """GA4GH cytoband interval definition."""
 
-    end: str
-    start: str
+    end: StrictStr
+    start: StrictStr
     type = "CytobandInterval"
 
     @validator('start', 'end')
@@ -112,14 +112,14 @@ class Chromosome(str, Enum):
 class Location(BaseModel):
     """Define string constraints for the location attribute."""
 
-    id: str = Field(..., alias='_id')
+    id: StrictStr = Field(..., alias='_id')
     type: LocationType
 
 
 class ChromosomeLocation(Location):
     """GA4GH Chromosome Location definition."""
 
-    species_id: str
+    species_id: StrictStr
     chr: str
     interval: CytobandInterval
 
@@ -161,7 +161,7 @@ class ChromosomeLocation(Location):
 class SequenceLocation(Location):
     """GA4GH Sequence Location definition."""
 
-    sequence_id: str
+    sequence_id: StrictStr
     interval: SimpleInterval
 
     @validator('sequence_id')
@@ -195,17 +195,17 @@ class SequenceLocation(Location):
 class Gene(BaseModel):
     """Gene"""
 
-    concept_id: str
-    symbol: str
+    concept_id: StrictStr
+    symbol: StrictStr
     symbol_status: Optional[SymbolStatus]
-    label: Optional[str]
+    label: Optional[StrictStr]
     strand: Optional[Strand]
-    location_annotations: Optional[List[str]] = []
+    location_annotations: Optional[List[StrictStr]] = []
     locations: Optional[List[Union[SequenceLocation, ChromosomeLocation]]] = []
-    aliases: Optional[List[str]] = []
-    previous_symbols: Optional[List[str]] = []
+    aliases: Optional[List[StrictStr]] = []
+    previous_symbols: Optional[List[StrictStr]] = []
     xrefs: Optional[List[str]] = []
-    associated_with: Optional[List[str]] = []
+    associated_with: Optional[List[StrictStr]] = []
 
     class Config:
         """Configure model example"""
@@ -235,7 +235,7 @@ class Extension(BaseModel):
     """Define model for VRSATILE Extension."""
 
     type = "Extension"
-    name: str
+    name: StrictStr
     value: Union[StrictStr, List[Dict], List[StrictStr]]
 
     class Config:
@@ -259,7 +259,7 @@ class Extension(BaseModel):
 class GeneValueObject(BaseModel):
     """Define model for VRS Gene Value Object."""
 
-    id: str
+    id: StrictStr
     type = "Gene"
 
     @validator('id')
@@ -288,13 +288,13 @@ class GeneValueObject(BaseModel):
 class GeneDescriptor(BaseModel):
     """Define model for VRSATILE Gene Descriptor."""
 
-    id: str
+    id: StrictStr
     type = "GeneDescriptor"
     value: Optional[GeneValueObject]
-    value_id: Optional[str]
-    label: Optional[str]
-    xrefs: Optional[List[str]]
-    alternate_labels: Optional[List[str]]
+    value_id: Optional[StrictStr]
+    label: Optional[StrictStr]
+    xrefs: Optional[List[StrictStr]]
+    alternate_labels: Optional[List[StrictStr]]
     extensions: Optional[List[Extension]]
 
     @validator('value_id', 'id')
@@ -387,8 +387,8 @@ class GeneDescriptor(BaseModel):
 class GeneGroup(Gene):
     """A grouping of genes based on common attributes."""
 
-    description: str
-    type_identifier: str
+    description: StrictStr
+    type_identifier: StrictStr
     genes: List[Gene]
 
 
@@ -484,13 +484,13 @@ class ItemTypes(str, Enum):
 class SourceMeta(BaseModel):
     """Metadata for a given source to return in response object."""
 
-    data_license: str
-    data_license_url: str
-    version: str
-    data_url: Optional[str]
-    rdp_url: Optional[str]
-    data_license_attributes: Dict[str, StrictBool]
-    genome_assemblies: Optional[List[str]]
+    data_license: StrictStr
+    data_license_url: StrictStr
+    version: StrictStr
+    data_url: Optional[StrictStr]
+    rdp_url: Optional[StrictStr]
+    data_license_attributes: Dict[StrictStr, StrictBool]
+    genome_assemblies: Optional[List[StrictStr]]
 
     class Config:
         """Configure model example"""
@@ -604,7 +604,7 @@ class ServiceMeta(BaseModel):
     """Metadata regarding the gene-normalization service."""
 
     name = 'gene-normalizer'
-    version: str
+    version: StrictStr
     response_datetime: datetime
     url = 'https://github.com/cancervariants/gene-normalization'
 
@@ -630,7 +630,7 @@ class ServiceMeta(BaseModel):
 class SearchService(BaseModel):
     """Define model for returning highest match typed concepts from sources."""
 
-    query: str
+    query: StrictStr
     warnings: Optional[List[Dict]]
     source_matches: Union[Dict[SourceName, MatchesKeyed], List[MatchesListed]]
     service_meta_: ServiceMeta
@@ -693,7 +693,7 @@ class SearchService(BaseModel):
 class NormalizeService(BaseModel):
     """Define model for returning normalized concept."""
 
-    query: str
+    query: StrictStr
     warnings: Optional[List[Dict]]
     match_type: MatchType
     gene_descriptor: Optional[GeneDescriptor]
