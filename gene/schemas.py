@@ -306,7 +306,7 @@ class GeneDescriptor(BaseModel):
         return v
 
     @root_validator(pre=True)
-    def check_card_number_omitted(cls, values):
+    def check_value_or_value_id_present(cls, values):
         """Check that at least one of {`value`, `value_id`} is provided."""
         msg = 'Must give values for either `value`, `value_id`, or both'
         value, value_id = values.get('value'), values.get('value_id')
