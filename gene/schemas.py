@@ -236,7 +236,7 @@ class Extension(BaseModel):
 
     type = "Extension"
     name: StrictStr
-    value: Union[StrictStr, List[Dict], List[StrictStr]]
+    value: Union[StrictStr, List[Dict], List[StrictStr], Dict]
 
     class Config:
         """Configure model example"""
