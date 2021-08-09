@@ -90,6 +90,12 @@ class QueryHandler:
             containing name of the source of the match
         """
         del item['label_and_type']
+        # DynamoDB Numbers get converted to Decimal
+        if 'locations' in item:
+            for loc in item['locations']:
+                if loc['interval']['type'] == "SimpleInterval":
+                    loc['interval']['start'] = int(loc['interval']['start'])
+                    loc['interval']['end'] = int(loc['interval']['end'])
         gene = Gene(**item)
         src_name = item['src_name']
 
@@ -442,7 +448,6 @@ class QueryHandler:
                             list(norm_concepts)
                     }
                 )
-
         response["gene_descriptor"] = \
             GeneDescriptor(**params).dict(exclude_none=True)
         response = self._add_merged_meta(response)

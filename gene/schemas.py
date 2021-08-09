@@ -2,11 +2,13 @@
 gene records.
 """
 from typing import Type, List, Optional, Dict, Union, Any
-from pydantic import BaseModel, StrictBool
+from pydantic import BaseModel, StrictInt, StrictBool, validator, \
+    root_validator
 from enum import Enum, IntEnum
 from pydantic.fields import Field
 from datetime import datetime
 from pydantic.types import StrictStr
+import re
 
 
 class SymbolStatus(str, Enum):
@@ -27,9 +29,18 @@ class Strand(str, Enum):
 class CytobandInterval(BaseModel):
     """GA4GH cytoband interval definition."""
 
-    end: str
-    start: str
+    end: StrictStr
+    start: StrictStr
     type = "CytobandInterval"
+
+    @validator('start', 'end')
+    def valid_loc(cls, v):
+        """Validate start, end"""
+        assert bool(re.match(r"^cen|[pq](ter|([1-9][0-9]*(\.[1-9][0-9]*)?))$",
+                             v)), r'start/end positions must match the ' \
+                                  r'regular expression ^cen|[pq](ter|([1-9]' \
+                                  r'[0-9]*(\.[1-9][0-9]*)?))$'
+        return v
 
     class Config:
         """Configure model example"""
@@ -52,8 +63,8 @@ class CytobandInterval(BaseModel):
 class SimpleInterval(BaseModel):
     """GA4GH simple interval definition."""
 
-    end: int
-    start: int
+    end: StrictInt
+    start: StrictInt
     type = "SimpleInterval"
 
     class Config:
@@ -101,16 +112,28 @@ class Chromosome(str, Enum):
 class Location(BaseModel):
     """Define string constraints for the location attribute."""
 
-    id: str = Field(..., alias='_id')
+    id: StrictStr = Field(..., alias='_id')
     type: LocationType
 
 
 class ChromosomeLocation(Location):
     """GA4GH Chromosome Location definition."""
 
-    species_id: str
+    species_id: StrictStr
     chr: str
     interval: CytobandInterval
+
+    @validator('species_id')
+    def is_curie(cls, v):
+        """Validate species_id"""
+        assert v.count(':') == 1 and v.find(' ') == -1, 'species_id must be a CURIE'  # noqa: E501
+        return v
+
+    @validator('chr')
+    def valid_chr(cls, v):
+        """Validate chr"""
+        assert v.isalnum(), 'chr must have only alphanumeric characters'
+        return v
 
     class Config:
         """Configure model example"""
@@ -138,8 +161,14 @@ class ChromosomeLocation(Location):
 class SequenceLocation(Location):
     """GA4GH Sequence Location definition."""
 
-    sequence_id: str
+    sequence_id: StrictStr
     interval: SimpleInterval
+
+    @validator('sequence_id')
+    def is_curie(cls, v):
+        """Validate sequence_id"""
+        assert v.count(':') == 1 and v.find(' ') == -1, 'sequence_id must be a CURIE'  # noqa: E501
+        return v
 
     class Config:
         """Configure model example"""
@@ -166,17 +195,17 @@ class SequenceLocation(Location):
 class Gene(BaseModel):
     """Gene"""
 
-    concept_id: str
-    symbol: str
+    concept_id: StrictStr
+    symbol: StrictStr
     symbol_status: Optional[SymbolStatus]
-    label: Optional[str]
+    label: Optional[StrictStr]
     strand: Optional[Strand]
-    location_annotations: Optional[List[str]] = []
-    locations: Optional[List[Union[ChromosomeLocation, SequenceLocation]]] = []
-    aliases: Optional[List[str]] = []
-    previous_symbols: Optional[List[str]] = []
+    location_annotations: Optional[List[StrictStr]] = []
+    locations: Optional[List[Union[SequenceLocation, ChromosomeLocation]]] = []
+    aliases: Optional[List[StrictStr]] = []
+    previous_symbols: Optional[List[StrictStr]] = []
     xrefs: Optional[List[str]] = []
-    associated_with: Optional[List[str]] = []
+    associated_with: Optional[List[StrictStr]] = []
 
     class Config:
         """Configure model example"""
@@ -206,7 +235,7 @@ class Extension(BaseModel):
     """Define model for VRSATILE Extension."""
 
     type = "Extension"
-    name: str
+    name: StrictStr
     value: Union[StrictStr, List[Dict], List[StrictStr]]
 
     class Config:
@@ -230,8 +259,14 @@ class Extension(BaseModel):
 class GeneValueObject(BaseModel):
     """Define model for VRS Gene Value Object."""
 
-    id: str
+    id: StrictStr
     type = "Gene"
+
+    @validator('id')
+    def is_curie(cls, v):
+        """Validate that `id` is a CURIE"""
+        assert v.count(':') == 1 and v.find(' ') == -1, 'id must be a CURIE'
+        return v
 
     class Config:
         """Configure model example"""
@@ -253,13 +288,30 @@ class GeneValueObject(BaseModel):
 class GeneDescriptor(BaseModel):
     """Define model for VRSATILE Gene Descriptor."""
 
-    id: str
+    id: StrictStr
     type = "GeneDescriptor"
-    value: GeneValueObject
-    label: Optional[str]
-    xrefs: Optional[List[str]]
-    alternate_labels: Optional[List[str]]
+    value: Optional[GeneValueObject]
+    value_id: Optional[StrictStr]
+    label: Optional[StrictStr]
+    xrefs: Optional[List[StrictStr]]
+    alternate_labels: Optional[List[StrictStr]]
     extensions: Optional[List[Extension]]
+
+    @validator('value_id', 'id')
+    def is_curie(cls, v, field):
+        """Validate that `id` and `value_id`, if populated, are CURIES."""
+        msg = f'{field.name} must be a CURIE'
+        if v is not None:
+            assert v.count(':') == 1 and v.find(' ') == -1, msg
+        return v
+
+    @root_validator(pre=True)
+    def check_value_or_value_id_present(cls, values):
+        """Check that at least one of {`value`, `value_id`} is provided."""
+        msg = 'Must give values for either `value`, `value_id`, or both'
+        value, value_id = values.get('value'), values.get('value_id')
+        assert value or value_id, msg
+        return values
 
     class Config:
         """Configure model example"""
@@ -335,8 +387,8 @@ class GeneDescriptor(BaseModel):
 class GeneGroup(Gene):
     """A grouping of genes based on common attributes."""
 
-    description: str
-    type_identifier: str
+    description: StrictStr
+    type_identifier: StrictStr
     genes: List[Gene]
 
 
@@ -432,13 +484,13 @@ class ItemTypes(str, Enum):
 class SourceMeta(BaseModel):
     """Metadata for a given source to return in response object."""
 
-    data_license: str
-    data_license_url: str
-    version: str
-    data_url: Optional[str]
-    rdp_url: Optional[str]
-    data_license_attributes: Dict[str, StrictBool]
-    genome_assemblies: Optional[List[str]]
+    data_license: StrictStr
+    data_license_url: StrictStr
+    version: StrictStr
+    data_url: Optional[StrictStr]
+    rdp_url: Optional[StrictStr]
+    data_license_attributes: Dict[StrictStr, StrictBool]
+    genome_assemblies: Optional[List[StrictStr]]
 
     class Config:
         """Configure model example"""
@@ -552,7 +604,7 @@ class ServiceMeta(BaseModel):
     """Metadata regarding the gene-normalization service."""
 
     name = 'gene-normalizer'
-    version: str
+    version: StrictStr
     response_datetime: datetime
     url = 'https://github.com/cancervariants/gene-normalization'
 
@@ -578,7 +630,7 @@ class ServiceMeta(BaseModel):
 class SearchService(BaseModel):
     """Define model for returning highest match typed concepts from sources."""
 
-    query: str
+    query: StrictStr
     warnings: Optional[List[Dict]]
     source_matches: Union[Dict[SourceName, MatchesKeyed], List[MatchesListed]]
     service_meta_: ServiceMeta
@@ -641,7 +693,7 @@ class SearchService(BaseModel):
 class NormalizeService(BaseModel):
     """Define model for returning normalized concept."""
 
-    query: str
+    query: StrictStr
     warnings: Optional[List[Dict]]
     match_type: MatchType
     gene_descriptor: Optional[GeneDescriptor]
