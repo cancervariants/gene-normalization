@@ -419,12 +419,14 @@ class QueryHandler:
         extension_and_record_labels = [
             ("symbol_status", "symbol_status"),
             ("approved_name", "label"),
-            ("chromsome_location", "locations"),
+            ("chromosome_location", "locations"),
             ("associated_with", "associated_with"),
             ("previous_symbols", "previous_symbols")
         ]
         for ext_label, record_label in extension_and_record_labels:
             if record_label in record and record[record_label]:
+                if ext_label == 'chromosome_location':
+                    record[record_label] = record[record_label][0]
                 extensions.append(Extension(
                     name=ext_label,
                     value=record[record_label]

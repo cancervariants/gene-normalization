@@ -385,6 +385,7 @@ def compare_gene_descriptor(test, actual):
     if extensions_present:
         assert len(actual["extensions"]) == len(test["extensions"]), \
             "len of extensions"
+        n_ext_correct = 0
         for test_ext in test["extensions"]:
             for actual_ext in actual["extensions"]:
                 if actual_ext["name"] == test_ext["name"]:
@@ -396,6 +397,9 @@ def compare_gene_descriptor(test, actual):
                     else:
                         assert actual_ext["value"] == test_ext["value"]
                     assert actual_ext["type"] == test_ext["type"]
+                    n_ext_correct += 1
+        assert n_ext_correct == len(test['extensions']), \
+            "number of correct extensions"
 
 
 def test_search_query(query_handler, num_sources):
