@@ -112,7 +112,7 @@ class Chromosome(str, Enum):
 class Location(BaseModel):
     """Define string constraints for the location attribute."""
 
-    id: StrictStr = Field(..., alias='_id')
+    id: Optional[StrictStr] = Field(alias='_id')
     type: LocationType
 
 
