@@ -3,7 +3,7 @@ from gene import PREFIX_LOOKUP
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 from os import environ
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Set
 import boto3
 import click
 import sys
@@ -240,6 +240,31 @@ class Database:
                          f"search term {query}: "
                          f"{e.response['Error']['Message']}")
             return []
+
+    def get_ids_for_merge(self) -> Set[str]:
+        """Retrieve concept IDs for use in generating normalized records.
+
+        :return: List of concept IDs as strings.
+        """
+        last_evaluated_key = None
+        concept_ids = []
+        params = {
+            'ProjectionExpression': 'concept_id',
+        }
+        while True:
+            if last_evaluated_key:
+                response = self.genes.scan(
+                    ExclusiveStartKey=last_evaluated_key, **params
+                )
+            else:
+                response = self.genes.scan(**params)
+            records = response['Items']
+            for record in records:
+                concept_ids.append(record['concept_id'])
+            last_evaluated_key = response.get('LastEvaluatedKey')
+            if not last_evaluated_key:
+                break
+        return set(concept_ids)
 
     def add_record(self, record: Dict, record_type: str = "identity"):
         """Add new record to database.
