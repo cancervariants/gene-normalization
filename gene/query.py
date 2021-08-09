@@ -420,7 +420,8 @@ class QueryHandler:
             ("symbol_status", "symbol_status"),
             ("approved_name", "label"),
             ("chromsome_location", "locations"),
-            ("associated_with", "associated_with")
+            ("associated_with", "associated_with"),
+            ("previous_symbols", "previous_symbols")
         ]
         for ext_label, record_label in extension_and_record_labels:
             if record_label in record and record[record_label]:

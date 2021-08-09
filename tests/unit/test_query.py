@@ -48,6 +48,14 @@ def normalized_ache():
         ],
         "extensions": [
             {
+                "name": "previous_symbols",
+                "value": [
+                    "ACEE",
+                    "YT"
+                ],
+                "type": "Extension"
+            },
+            {
                 "name": "approved_name",
                 "value": "acetylcholinesterase (Cartwright blood group)",
                 "type": "Extension"
@@ -193,6 +201,15 @@ def normalized_abl1():
             "ABL"
         ],
         "extensions": [
+            {
+                "name": "previous_symbols",
+                "value": [
+                    "LOC116063",
+                    "LOC112779",
+                    "ABL"
+                ],
+                "type": "Extension"
+            },
             {
                 "name": "approved_name",
                 "value": "ABL proto-oncogene 1, non-receptor tyrosine kinase",
@@ -504,6 +521,12 @@ def test_ache_query(query_handler, num_sources, normalized_ache):
     compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, cpy_normalized_ache,
                            expected_source_meta=expected_source_meta)
 
+    q = "ACEE"
+    resp = query_handler.normalize(q)
+    cpy_normalized_ache["id"] = "normalize.gene:ACEE"
+    compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, cpy_normalized_ache,
+                           expected_source_meta=expected_source_meta)
+
     q = "omim:100740"
     resp = query_handler.normalize(q)
     cpy_normalized_ache["id"] = "normalize.gene:omim%3A100740"
@@ -571,6 +594,12 @@ def test_braf_query(query_handler, num_sources, normalized_braf):
     q = "NS7"
     resp = query_handler.normalize(q)
     cpy_normalized_braf["id"] = "normalize.gene:NS7"
+    compare_normalize_resp(resp, q, MatchType.ALIAS, cpy_normalized_braf,
+                           expected_source_meta=expected_source_meta)
+
+    q = "b-raf"
+    resp = query_handler.normalize(q)
+    cpy_normalized_braf["id"] = "normalize.gene:b-raf"
     compare_normalize_resp(resp, q, MatchType.ALIAS, cpy_normalized_braf,
                            expected_source_meta=expected_source_meta)
 
@@ -647,6 +676,12 @@ def test_abl1_query(query_handler, num_sources, normalized_abl1):
     q = "LOC116063"
     resp = query_handler.normalize(q)
     cpy_normalized_abl1["id"] = "normalize.gene:LOC116063"
+    compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, cpy_normalized_abl1,
+                           expected_source_meta=expected_source_meta)
+
+    q = "LOC112779"
+    resp = query_handler.normalize(q)
+    cpy_normalized_abl1["id"] = "normalize.gene:LOC112779"
     compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, cpy_normalized_abl1,
                            expected_source_meta=expected_source_meta)
 
