@@ -11,6 +11,30 @@ from pydantic.types import StrictStr
 import re
 
 
+def check_curie(cls, v):
+    """Validate curies."""
+    if v is not None:
+        def _is_curie(value):
+            """Check that value is a curie
+
+            :param str value: Value to validate
+            """
+            assert all(
+                [
+                    value.count(':') == 1,
+                    value.find(' ') == -1,
+                    value[-1] != ':'
+                ]
+            ), 'must be a CURIE'
+
+        if isinstance(v, str):
+            _is_curie(v)
+        elif isinstance(v, list):
+            for item in v:
+                _is_curie(item)
+    return v
+
+
 class SymbolStatus(str, Enum):
     """Define string constraints for symbol status attribute."""
 
@@ -123,11 +147,7 @@ class ChromosomeLocation(Location):
     chr: str
     interval: CytobandInterval
 
-    @validator('species_id')
-    def is_curie(cls, v):
-        """Validate species_id"""
-        assert v.count(':') == 1 and v.find(' ') == -1, 'species_id must be a CURIE'  # noqa: E501
-        return v
+    _validate_curie = validator('species_id', allow_reuse=True)(check_curie)
 
     @validator('chr')
     def valid_chr(cls, v):
@@ -164,11 +184,7 @@ class SequenceLocation(Location):
     sequence_id: StrictStr
     interval: SimpleInterval
 
-    @validator('sequence_id')
-    def is_curie(cls, v):
-        """Validate sequence_id"""
-        assert v.count(':') == 1 and v.find(' ') == -1, 'sequence_id must be a CURIE'  # noqa: E501
-        return v
+    _validate_curie = validator('sequence_id', allow_reuse=True)(check_curie)
 
     class Config:
         """Configure model example"""
@@ -262,11 +278,7 @@ class GeneValueObject(BaseModel):
     id: StrictStr
     type = "Gene"
 
-    @validator('id')
-    def is_curie(cls, v):
-        """Validate that `id` is a CURIE"""
-        assert v.count(':') == 1 and v.find(' ') == -1, 'id must be a CURIE'
-        return v
+    _validate_curie = validator('id', allow_reuse=True)(check_curie)
 
     class Config:
         """Configure model example"""
@@ -297,13 +309,8 @@ class GeneDescriptor(BaseModel):
     alternate_labels: Optional[List[StrictStr]]
     extensions: Optional[List[Extension]]
 
-    @validator('value_id', 'id')
-    def is_curie(cls, v, field):
-        """Validate that `id` and `value_id`, if populated, are CURIES."""
-        msg = f'{field.name} must be a CURIE'
-        if v is not None:
-            assert v.count(':') == 1 and v.find(' ') == -1, msg
-        return v
+    for curie_field in ['id', 'value_id']:
+        _validate_curie = validator(curie_field, allow_reuse=True)(check_curie)
 
     @root_validator(pre=True)
     def check_value_or_value_id_present(cls, values):
