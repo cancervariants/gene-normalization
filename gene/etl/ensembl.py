@@ -1,9 +1,7 @@
 """This module defines the Ensembl ETL methods."""
-import pydantic
-
 from .base import Base
 from gene import PROJECT_ROOT
-from gene.schemas import SourceName, NamespacePrefix, Strand, Gene, SourceMeta
+from gene.schemas import SourceName, NamespacePrefix, Strand, SourceMeta
 import logging
 from gene.database import Database
 import gffutils
@@ -21,7 +19,7 @@ class Ensembl(Base):
                  database: Database,
                  host='ftp.ensembl.org',
                  data_dir='pub/',
-                 version=104
+                 version='104'
                  ):
         """Initialize Ensembl ETL class.
 
@@ -45,13 +43,15 @@ class Ensembl(Base):
         logger.info('Downloading Ensembl data file...')
         ens_dir = PROJECT_ROOT / 'data' / 'ensembl'
         ens_dir.mkdir(exist_ok=True, parents=True)
-        self._ftp_download(self._host,
-                           f'{self._data_dir}release-{self._version}'
-                           f'/gff3/homo_sapiens/',
-                           f'ensembl_{self._version}.gff3',
-                           ens_dir,
-                           self._fn)
-        logger.info('Successfully downloaded Ensembl data file.')
+        new_fn = f'ensembl_{self._version}.gff3'
+        if not (ens_dir / new_fn).exists():
+            self._ftp_download(self._host,
+                               f'{self._data_dir}release-{self._version}'
+                               f'/gff3/homo_sapiens/',
+                               new_fn,
+                               ens_dir,
+                               self._fn)
+            logger.info('Successfully downloaded Ensembl data file.')
 
     def _extract_data(self, *args, **kwargs):
         """Extract data from the Ensembl source."""
@@ -86,13 +86,7 @@ class Ensembl(Base):
                     if f_id == 'gene':
                         gene = self._add_gene(f, sr, accession_numbers)
                         if gene:
-                            try:
-                                assert Gene(**gene)
-                            except pydantic.error_wrappers.ValidationError:
-                                logger.warning(f"Unable to load gene due to "
-                                               f"validation error: {gene}")
-                            else:
-                                self._load_gene(gene, batch)
+                            self._load_gene(gene, batch)
         logger.info('Successfully transformed Ensembl.')
 
     def _add_gene(self, f, sr, accession_numbers):

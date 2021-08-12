@@ -11,6 +11,13 @@ import shutil
 from os import remove
 from dateutil import parser
 import datetime
+import logging
+import pydantic
+from gene.schemas import Gene
+
+
+logger = logging.getLogger('gene')
+logger.setLevel(logging.DEBUG)
 
 
 class Base(ABC):
@@ -76,32 +83,38 @@ class Base(ABC):
         :param dict gene: Gene record
         :param BatchWriter batch: Object to write data to DynamoDB
         """
-        concept_id = gene['concept_id'].lower()
-        gene['label_and_type'] = f"{concept_id}##identity"
-        gene['src_name'] = \
-            PREFIX_LOOKUP[gene['concept_id'].split(':')[0].lower()]
-        gene['item_type'] = 'identity'
+        try:
+            assert Gene(**gene)
+        except pydantic.error_wrappers.ValidationError as e:
+            logger.warning(f"Unable to load {gene} due to validation error: "
+                           f"{e}")
+        else:
+            concept_id = gene['concept_id'].lower()
+            gene['label_and_type'] = f"{concept_id}##identity"
+            gene['src_name'] = \
+                PREFIX_LOOKUP[gene['concept_id'].split(':')[0].lower()]
+            gene['item_type'] = 'identity'
 
-        for attr_type, item_type in ITEM_TYPES.items():
-            if attr_type in gene:
-                value = gene[attr_type]
-                if value is not None and value != []:
-                    if isinstance(value, str):
-                        items = [value.lower()]
+            for attr_type, item_type in ITEM_TYPES.items():
+                if attr_type in gene:
+                    value = gene[attr_type]
+                    if value is not None and value != []:
+                        if isinstance(value, str):
+                            items = [value.lower()]
+                        else:
+                            gene[attr_type] = list(set(value))
+                            items = {item.lower() for item in value}
+                        for item in items:
+                            batch.put_item(Item={
+                                'label_and_type': f"{item}##{item_type}",
+                                'concept_id': concept_id,
+                                'src_name': gene['src_name'],
+                                'item_type': item_type
+                            })
                     else:
-                        gene[attr_type] = list(set(value))
-                        items = {item.lower() for item in value}
-                    for item in items:
-                        batch.put_item(Item={
-                            'label_and_type': f"{item}##{item_type}",
-                            'concept_id': concept_id,
-                            'src_name': gene['src_name'],
-                            'item_type': item_type
-                        })
-                else:
-                    del gene[attr_type]
-        batch.put_item(Item=gene)
-        self._processed_ids.append(concept_id)
+                        del gene[attr_type]
+            batch.put_item(Item=gene)
+            self._processed_ids.append(concept_id)
 
     def _ftp_download(self, host: str, data_dir: str, fn: str,
                       source_dir: Path,

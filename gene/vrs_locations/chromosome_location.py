@@ -1,7 +1,6 @@
 """This module defines GA4GH Chromosome Location."""
 from ga4gh.vrs import models
 from ga4gh.core import ga4gh_identify
-from gene.schemas import ChromosomeLocation as vrs_cl
 import re
 import logging
 import python_jsonschema_objects
@@ -52,7 +51,6 @@ class ChromosomeLocation:
                 chr_location = \
                     self.add_location(
                         location)
-                assert vrs_cl(**chr_location)
             except python_jsonschema_objects.validators. \
                     ValidationError as e:
                 logger.info(f"{e} for {gene['symbol']}")

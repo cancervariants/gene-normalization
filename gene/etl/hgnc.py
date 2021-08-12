@@ -1,7 +1,7 @@
 """This module defines the HGNC ETL methods."""
 from .base import Base
 from gene import PROJECT_ROOT, PREFIX_LOOKUP
-from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, Gene, \
+from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, \
     SourceMeta, Annotation, Chromosome
 from gene.database import Database
 import logging
@@ -91,8 +91,6 @@ class HGNC(Base):
                     self._get_previous_symbols(r, gene)
                 if 'location' in r:
                     self._get_location(r, gene)
-
-                assert Gene(**gene)
                 self._load_gene(gene, batch)
         logger.info('Successfully transformed HGNC.')
 

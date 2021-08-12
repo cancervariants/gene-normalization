@@ -2,7 +2,6 @@
 from ga4gh.vrs import models
 from ga4gh.core import ga4gh_identify
 import logging
-from gene.schemas import SequenceLocation as vrs_sl
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -35,7 +34,6 @@ class SequenceLocation:
                 )
                 seq_location._id = ga4gh_identify(seq_location)
                 location = seq_location.as_dict()
-                assert vrs_sl(**location)
             else:
                 logger.info(f"{params['concept_id']} has invalid interval:"
                             f"start={gene.start} end={gene.end}")
