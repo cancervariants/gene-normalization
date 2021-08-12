@@ -19,7 +19,7 @@ class Ensembl(Base):
                  database: Database,
                  host='ftp.ensembl.org',
                  data_dir='pub/',
-                 version=104
+                 version='104'
                  ):
         """Initialize Ensembl ETL class.
 
@@ -43,13 +43,15 @@ class Ensembl(Base):
         logger.info('Downloading Ensembl data file...')
         ens_dir = PROJECT_ROOT / 'data' / 'ensembl'
         ens_dir.mkdir(exist_ok=True, parents=True)
-        self._ftp_download(self._host,
-                           f'{self._data_dir}release-{self._version}'
-                           f'/gff3/homo_sapiens/',
-                           f'ensembl_{self._version}.gff3',
-                           ens_dir,
-                           self._fn)
-        logger.info('Successfully downloaded Ensembl data file.')
+        new_fn = f'ensembl_{self._version}.gff3'
+        if not (ens_dir / new_fn).exists():
+            self._ftp_download(self._host,
+                               f'{self._data_dir}release-{self._version}'
+                               f'/gff3/homo_sapiens/',
+                               new_fn,
+                               ens_dir,
+                               self._fn)
+            logger.info('Successfully downloaded Ensembl data file.')
 
     def _extract_data(self, *args, **kwargs):
         """Extract data from the Ensembl source."""
