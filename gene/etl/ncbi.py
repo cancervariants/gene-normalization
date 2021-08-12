@@ -527,7 +527,6 @@ class NCBI(Base):
 
         with self._database.genes.batch_writer() as batch:
             for gene in info_genes.keys():
-                assert Gene(**info_genes[gene])
                 self._load_gene(info_genes[gene], batch)
         logger.info('Successfully transformed NCBI.')
 

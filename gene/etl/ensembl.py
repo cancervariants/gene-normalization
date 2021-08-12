@@ -1,9 +1,7 @@
 """This module defines the Ensembl ETL methods."""
-import pydantic
-
 from .base import Base
 from gene import PROJECT_ROOT
-from gene.schemas import SourceName, NamespacePrefix, Strand, Gene, SourceMeta
+from gene.schemas import SourceName, NamespacePrefix, Strand, SourceMeta
 import logging
 from gene.database import Database
 import gffutils
@@ -86,13 +84,7 @@ class Ensembl(Base):
                     if f_id == 'gene':
                         gene = self._add_gene(f, sr, accession_numbers)
                         if gene:
-                            try:
-                                assert Gene(**gene)
-                            except pydantic.error_wrappers.ValidationError:
-                                logger.warning(f"Unable to load gene due to "
-                                               f"validation error: {gene}")
-                            else:
-                                self._load_gene(gene, batch)
+                            self._load_gene(gene, batch)
         logger.info('Successfully transformed Ensembl.')
 
     def _add_gene(self, f, sr, accession_numbers):
