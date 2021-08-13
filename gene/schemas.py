@@ -144,8 +144,9 @@ class ChromosomeLocation(Location):
     """GA4GH Chromosome Location definition."""
 
     species_id: StrictStr
-    chr: str
+    chr: StrictStr
     interval: CytobandInterval
+    type = LocationType.CHROMOSOME
 
     _validate_curie = validator('species_id', allow_reuse=True)(check_curie)
 
@@ -183,6 +184,7 @@ class SequenceLocation(Location):
 
     sequence_id: StrictStr
     interval: SimpleInterval
+    type = LocationType.SEQUENCE
 
     _validate_curie = validator('sequence_id', allow_reuse=True)(check_curie)
 
@@ -222,6 +224,12 @@ class Gene(BaseModel):
     previous_symbols: Optional[List[StrictStr]] = []
     xrefs: Optional[List[str]] = []
     associated_with: Optional[List[StrictStr]] = []
+
+    _validate_concept_id = \
+        validator('concept_id', allow_reuse=True)(check_curie)
+    _validate_xrefs = validator('xrefs', allow_reuse=True)(check_curie)
+    _validate_associated_with = \
+        validator('associated_with', allow_reuse=True)(check_curie)
 
     class Config:
         """Configure model example"""
@@ -309,8 +317,8 @@ class GeneDescriptor(BaseModel):
     alternate_labels: Optional[List[StrictStr]]
     extensions: Optional[List[Extension]]
 
-    for curie_field in ['id', 'value_id']:
-        _validate_curie = validator(curie_field, allow_reuse=True)(check_curie)
+    _validate_id = validator('id', allow_reuse=True)(check_curie)
+    _validate_value_id = validator('value_id', allow_reuse=True)(check_curie)
 
     @root_validator(pre=True)
     def check_value_or_value_id_present(cls, values):
