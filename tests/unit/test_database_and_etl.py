@@ -65,8 +65,8 @@ def _get_aliases(sr, seqid):
 @pytest.fixture(scope='module')
 def etl_data_path():
     """Create a test fixture to return etl data path."""
-    project_root = Path().resolve().parents[1]
-    return project_root / 'tests' / 'unit' / 'data' / 'etl_data'
+    test_root = Path(__file__).resolve().parents[2]
+    return test_root / 'tests' / 'unit' / 'data' / 'etl_data'
 
 
 def test_tables_created(dynamodb):
