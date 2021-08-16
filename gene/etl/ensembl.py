@@ -38,10 +38,9 @@ class Ensembl(Base):
         self._data_file_url = None
         self._assembly = 'GRCh38'
 
-    def _download_data(self):
+    def _download_data(self, ens_dir=PROJECT_ROOT / 'data' / 'ensembl'):
         """Download Ensembl GFF3 data file."""
         logger.info('Downloading Ensembl data file...')
-        ens_dir = PROJECT_ROOT / 'data' / 'ensembl'
         ens_dir.mkdir(exist_ok=True, parents=True)
         new_fn = f'ensembl_{self._version}.gff3'
         if not (ens_dir / new_fn).exists():
@@ -53,13 +52,13 @@ class Ensembl(Base):
                                self._fn)
             logger.info('Successfully downloaded Ensembl data file.')
 
-    def _extract_data(self, *args, **kwargs):
+    def _extract_data(self, ens_dir=PROJECT_ROOT / 'data' / 'ensembl',
+                      *args, **kwargs):
         """Extract data from the Ensembl source."""
         if 'data_path' in kwargs:
             self._data_src = kwargs['data_path']
         else:
-            ensembl_dir = PROJECT_ROOT / 'data' / 'ensembl'
-            self._data_src = sorted(list(ensembl_dir.iterdir()))[-1]
+            self._data_src = sorted(list(ens_dir.iterdir()))[-1]
 
     def _transform_data(self, *args, **kwargs):
         """Transform the Ensembl source."""

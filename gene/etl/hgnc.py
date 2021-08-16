@@ -36,10 +36,10 @@ class HGNC(Base):
         self._fn = fn
         self._version = None
 
-    def _download_data(self, *args, **kwargs):
+    def _download_data(self, hgnc_data_dir=PROJECT_ROOT / 'data' / 'hgnc',
+                       *args, **kwargs):
         """Download HGNC JSON data file."""
         logger.info('Downloading HGNC data file...')
-        hgnc_data_dir = PROJECT_ROOT / 'data' / 'hgnc'
         hgnc_data_dir.mkdir(exist_ok=True, parents=True)
         tmp_fn = 'hgnc_version.json'
         self._version = \
@@ -49,13 +49,13 @@ class HGNC(Base):
                     f"{hgnc_data_dir}/hgnc_{self._version}.json")
         logger.info('Successfully downloaded HGNC data file.')
 
-    def _extract_data(self, *args, **kwargs):
+    def _extract_data(self, hgnc_data_dir=PROJECT_ROOT / 'data' / 'hgnc',
+                      *args, **kwargs):
         """Extract data from the HGNC source."""
         if 'data_path' in kwargs:
             self._data_src = kwargs['data_path']
         else:
-            hgnc_dir = PROJECT_ROOT / 'data' / 'hgnc'
-            self._data_src = sorted(list(hgnc_dir.iterdir()))[-1]
+            self._data_src = sorted(list(hgnc_data_dir.iterdir()))[-1]
 
     def _transform_data(self, *args, **kwargs):
         """Transform the HGNC source."""

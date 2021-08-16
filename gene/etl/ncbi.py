@@ -100,12 +100,11 @@ class NCBI(Base):
                 gff_downloaded = True
         return info_downloaded and history_downloaded and gff_downloaded
 
-    def _extract_data(self):
+    def _extract_data(self, local_data_dir=PROJECT_ROOT / 'data' / 'ncbi'):
         """Gather data from local files or download from source.
         - Data is expected to be in <PROJECT ROOT>/data/ncbi.
         - For now, data files should all be from the same source data version.
         """
-        local_data_dir = PROJECT_ROOT / 'data' / 'ncbi'
         local_data_dir.mkdir(exist_ok=True, parents=True)
         if not self._files_downloaded(local_data_dir):
             self._download_data(local_data_dir)

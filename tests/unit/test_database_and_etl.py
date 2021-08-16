@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 from boto3.dynamodb.conditions import Key
 from mock import patch
+import shutil
 
 ALIASES = {
     "NC_000001.11": ["ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO"],
@@ -77,13 +78,18 @@ def test_tables_created(dynamodb):
 
 
 @patch.object(Ensembl, 'get_seqrepo')
-def test_ensembl_transform(test_get_seqrepo,
-                           processed_ids, dynamodb,
-                           etl_data_path, is_test_env):
-    """Test ensembl transform method."""
+def test_ensembl_etl(test_get_seqrepo, processed_ids, dynamodb, etl_data_path,
+                     is_test_env):
+    """Test that ensembl etl methods work correctly."""
     if is_test_env:
         test_get_seqrepo.return_value = None
         e = Ensembl(dynamodb.db)
+
+        tmp_dir = etl_data_path / 'ensembl'
+        e._download_data(tmp_dir)
+        e._extract_data(tmp_dir)
+        shutil.rmtree(tmp_dir)
+
         e._sequence_location.get_aliases = _get_aliases
         e._data_src = etl_data_path / 'ensembl_104.gff3'
         e._transform_data()
@@ -92,12 +98,18 @@ def test_ensembl_transform(test_get_seqrepo,
 
 
 @patch.object(HGNC, 'get_seqrepo')
-def test_hgnc_transform(test_get_seqrepo, processed_ids, dynamodb,
-                        etl_data_path, is_test_env):
-    """Test hgnc transform method."""
+def test_hgnc_etl(test_get_seqrepo, processed_ids, dynamodb, etl_data_path,
+                  is_test_env):
+    """Test that hgnc etl methods work correctly."""
     if is_test_env:
         test_get_seqrepo.return_value = None
         h = HGNC(dynamodb.db)
+
+        tmp_dir = etl_data_path / 'hgnc'
+        h._download_data(tmp_dir)
+        h._extract_data(tmp_dir)
+        shutil.rmtree(tmp_dir)
+
         h._data_src = etl_data_path / 'hgnc_20210810.json'
         h._version = '20210810'
         h._transform_data()
@@ -106,12 +118,17 @@ def test_hgnc_transform(test_get_seqrepo, processed_ids, dynamodb,
 
 
 @patch.object(NCBI, 'get_seqrepo')
-def test_ncbi_transform(test_get_seqrepo, processed_ids, dynamodb,
-                        etl_data_path, is_test_env):
-    """Test ncbi transform method."""
+def test_ncbi_etl(test_get_seqrepo, processed_ids, dynamodb, etl_data_path,
+                  is_test_env):
+    """Test that ncbi etl methods work correctly."""
     if is_test_env:
         test_get_seqrepo.return_value = None
         n = NCBI(dynamodb.db)
+
+        tmp_dir = etl_data_path / 'ncbi'
+        n._extract_data(tmp_dir)
+        shutil.rmtree(tmp_dir)
+
         n._sequence_location.get_aliases = _get_aliases
         n._info_src = etl_data_path / 'ncbi_info_20210813.tsv'
         n._history_src = etl_data_path / 'ncbi_history_20210813.tsv'
