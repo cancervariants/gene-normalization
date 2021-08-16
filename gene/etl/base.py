@@ -31,6 +31,7 @@ class Base(ABC):
         :param Database database: DynamoDB database
         :param str host: Hostname of FTP site
         :param str data_dir: Data directory of FTP site to look at
+        :param Path seqrepo_dir: Path to seqrepo directory
         """
         self._database = database
         self._host = host
@@ -151,7 +152,11 @@ class Base(ABC):
         return version
 
     def get_seqrepo(self, seqrepo_dir) -> SeqRepo:
-        """Return SeqRepo instance."""
+        """Return SeqRepo instance if seqrepo_dir exists.
+
+        :param Path seqrepo_dir: Path to seqrepo directory
+        :return: SeqRepo instance
+        """
         if not seqrepo_dir.exists():
             raise NotADirectoryError(f"Could not find {seqrepo_dir}")
         return SeqRepo(seqrepo_dir)
