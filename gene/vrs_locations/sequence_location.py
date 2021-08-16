@@ -1,4 +1,6 @@
 """This module defines GA4GH Sequence Location."""
+from typing import List
+
 from ga4gh.vrs import models
 from ga4gh.core import ga4gh_identify
 import logging
@@ -10,6 +12,15 @@ logger.setLevel(logging.DEBUG)
 class SequenceLocation:
     """The class for GA4GH Sequence Location."""
 
+    def get_aliases(self, sr, seqid) -> List[str]:
+        """Get aliases for a sequence id
+
+        :param SeqRepo sr: seqrepo instance
+        :param str seqid: Sequence ID accession
+        :return: List of aliases for seqid
+        """
+        return sr.translate_alias(seqid)
+
     def add_location(self, seqid, gene, params, sr):
         """Get a gene's Sequence Location.
 
@@ -20,7 +31,7 @@ class SequenceLocation:
         :return: A dictionary of a GA4GH VRS SequenceLocation.
         """
         location = dict()
-        aliases = sr.translate_alias(seqid)
+        aliases = self.get_aliases(sr, seqid)
         sequence_id = [a for a in aliases if a.startswith('ga4gh')][0]
 
         if gene.start != '.' and gene.end != '.' and sequence_id:

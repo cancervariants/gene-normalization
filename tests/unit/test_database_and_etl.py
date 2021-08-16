@@ -6,6 +6,25 @@ from gene.database import Database
 import os
 from pathlib import Path
 from boto3.dynamodb.conditions import Key
+from mock import patch
+
+ALIASES = {
+    "NC_000001.11": ["ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO"],
+    "NC_000002.12": ["ga4gh:SQ.pnAqCRBrTsUoBghSD1yp_jXWSmlbdh4g"],
+    "NC_000003.12": ["ga4gh:SQ.Zu7h9AggXxhTaGVsy7h_EZSChSZGcmgX"],
+    "NC_000007.14": ["ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"],
+    "NC_000009.12": ["ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI"],
+    "NC_000011.10": ["ga4gh:SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1"],
+    "NC_000015.10": ["ga4gh:SQ.AsXvWL1-2i5U_buw6_niVIxD6zTbAuS6"],
+    "NC_000017.11": ["ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7"],
+    "NC_000019.10": ["ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl"],
+    "NC_000023.11": ["ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP"],
+    "NC_000008.11": ["ga4gh:SQ.209Z7zJ-mFypBEWLk4rNC6S_OxY5p7bs"],
+    "NC_000012.12": ["ga4gh:SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl"],
+    "NC_000024.10": ["ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5"],
+    "NT_167246.2": ["ga4gh:SQ.MjujHSAsgNWRTX4w3ysM7b5OVhZpdXu1"],
+    "NT_167249.2": ["ga4gh:SQ.Q8IworEhpLeXwpz1CHM7C3luysh-ltx-"]
+}
 
 
 @pytest.fixture(scope='module')
@@ -33,6 +52,16 @@ def processed_ids():
     return list()
 
 
+def _get_aliases(sr, seqid):
+    """Monkey patch get aliases method
+
+    :param SeqRepo sr: seqrepo instance
+    :param str seqid: Sequence ID accession
+    :return: List of aliases for seqid
+    """
+    return ALIASES[seqid]
+
+
 @pytest.fixture(scope='module')
 def etl_data_path():
     """Create a test fixture to return etl data path."""
@@ -47,20 +76,27 @@ def test_tables_created(dynamodb):
     assert 'gene_metadata' in existing_tables
 
 
-def test_ensembl_transform(processed_ids, dynamodb, etl_data_path,
-                           is_test_env):
+@patch.object(Ensembl, 'get_seqrepo')
+def test_ensembl_transform(test_get_seqrepo,
+                           processed_ids, dynamodb,
+                           etl_data_path, is_test_env):
     """Test ensembl transform method."""
     if is_test_env:
+        test_get_seqrepo.return_value = None
         e = Ensembl(dynamodb.db)
+        e._sequence_location.get_aliases = _get_aliases
         e._data_src = etl_data_path / 'ensembl_104.gff3'
         e._transform_data()
         e._add_meta()
         processed_ids += e._processed_ids
 
 
-def test_hgnc_transform(processed_ids, dynamodb, etl_data_path, is_test_env):
+@patch.object(HGNC, 'get_seqrepo')
+def test_hgnc_transform(test_get_seqrepo, processed_ids, dynamodb,
+                        etl_data_path, is_test_env):
     """Test hgnc transform method."""
     if is_test_env:
+        test_get_seqrepo.return_value = None
         h = HGNC(dynamodb.db)
         h._data_src = etl_data_path / 'hgnc_20210810.json'
         h._version = '20210810'
@@ -69,10 +105,14 @@ def test_hgnc_transform(processed_ids, dynamodb, etl_data_path, is_test_env):
         processed_ids += h._processed_ids
 
 
-def test_ncbi_transform(processed_ids, dynamodb, etl_data_path, is_test_env):
+@patch.object(NCBI, 'get_seqrepo')
+def test_ncbi_transform(test_get_seqrepo, processed_ids, dynamodb,
+                        etl_data_path, is_test_env):
     """Test ncbi transform method."""
     if is_test_env:
+        test_get_seqrepo.return_value = None
         n = NCBI(dynamodb.db)
+        n._sequence_location.get_aliases = _get_aliases
         n._info_src = etl_data_path / 'ncbi_info_20210813.tsv'
         n._history_src = etl_data_path / 'ncbi_history_20210813.tsv'
         n._gff_src = etl_data_path / 'ncbi_GRCh38.p13.gff'

@@ -514,8 +514,6 @@ class NCBI(Base):
         prev_symbols = self._get_prev_symbols()
         info_genes = self._get_gene_info(prev_symbols)
 
-        sr = self.get_seqrepo()
-
         # create db for gff file
         db = gffutils.create_db(str(self._gff_src),
                                 dbfn=":memory:",
@@ -523,7 +521,7 @@ class NCBI(Base):
                                 merge_strategy="create_unique",
                                 keep_order=True)
 
-        self._get_gene_gff(db, info_genes, sr)
+        self._get_gene_gff(db, info_genes, self.seqrepo)
 
         with self._database.genes.batch_writer() as batch:
             for gene in info_genes.keys():

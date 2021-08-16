@@ -23,8 +23,9 @@ logger.setLevel(logging.DEBUG)
 class Base(ABC):
     """The ETL base class."""
 
-    def __init__(self, database: Database, host: str, data_dir: str, *args,
-                 **kwargs) -> None:
+    def __init__(self, database: Database, host: str, data_dir: str,
+                 seqrepo_dir=PROJECT_ROOT / 'data' / 'seqrepo' / 'latest',
+                 *args, **kwargs) -> None:
         """Instantiate Base class.
 
         :param Database database: DynamoDB database
@@ -35,6 +36,7 @@ class Base(ABC):
         self._host = host
         self._data_dir = data_dir
         self._processed_ids = list()
+        self.seqrepo = self.get_seqrepo(seqrepo_dir)
 
     @abstractmethod
     def perform_etl(self) -> List[str]:
@@ -148,9 +150,8 @@ class Base(ABC):
                 remove(filepath)
         return version
 
-    def get_seqrepo(self) -> SeqRepo:
+    def get_seqrepo(self, seqrepo_dir) -> SeqRepo:
         """Return SeqRepo instance."""
-        seqrepo_dir = PROJECT_ROOT / 'data' / 'seqrepo' / 'latest'
         if not seqrepo_dir.exists():
-            raise NotADirectoryError("Could not find gene/data/seqrepo/latest")
+            raise NotADirectoryError(f"Could not find {seqrepo_dir}")
         return SeqRepo(seqrepo_dir)

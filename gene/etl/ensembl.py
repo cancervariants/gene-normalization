@@ -70,8 +70,6 @@ class Ensembl(Base):
                                 merge_strategy="create_unique",
                                 keep_order=True)
 
-        sr = self.get_seqrepo()
-
         # Get accession numbers
         accession_numbers = dict()
         for item in db.features_of_type('scaffold'):
@@ -84,7 +82,8 @@ class Ensembl(Base):
                 if f.attributes.get('ID'):
                     f_id = f.attributes.get('ID')[0].split(':')[0]
                     if f_id == 'gene':
-                        gene = self._add_gene(f, sr, accession_numbers)
+                        gene = \
+                            self._add_gene(f, self.seqrepo, accession_numbers)
                         if gene:
                             self._load_gene(gene, batch)
         logger.info('Successfully transformed Ensembl.')
