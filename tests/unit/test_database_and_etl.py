@@ -85,10 +85,10 @@ def test_ensembl_etl(test_get_seqrepo, processed_ids, dynamodb, etl_data_path,
         test_get_seqrepo.return_value = None
         e = Ensembl(dynamodb.db)
 
-        tmp_dir = etl_data_path / 'ensembl'
-        e._download_data(tmp_dir)
-        e._extract_data(tmp_dir)
-        shutil.rmtree(tmp_dir)
+        e.src_data_dir = etl_data_path / 'ensembl'
+        e._download_data()
+        e._extract_data()
+        shutil.rmtree(e.src_data_dir)
 
         e._sequence_location.get_aliases = _get_aliases
         e._data_src = etl_data_path / 'ensembl_104.gff3'
@@ -105,10 +105,10 @@ def test_hgnc_etl(test_get_seqrepo, processed_ids, dynamodb, etl_data_path,
         test_get_seqrepo.return_value = None
         h = HGNC(dynamodb.db)
 
-        tmp_dir = etl_data_path / 'hgnc'
-        h._download_data(tmp_dir)
-        h._extract_data(tmp_dir)
-        shutil.rmtree(tmp_dir)
+        h.src_data_dir = etl_data_path / 'hgnc'
+        h._download_data()
+        h._extract_data()
+        shutil.rmtree(h.src_data_dir)
 
         h._data_src = etl_data_path / 'hgnc_20210810.json'
         h._version = '20210810'
@@ -125,9 +125,9 @@ def test_ncbi_etl(test_get_seqrepo, processed_ids, dynamodb, etl_data_path,
         test_get_seqrepo.return_value = None
         n = NCBI(dynamodb.db)
 
-        tmp_dir = etl_data_path / 'ncbi'
-        n._extract_data(tmp_dir)
-        shutil.rmtree(tmp_dir)
+        n.src_data_dir = etl_data_path / 'ncbi'
+        n._extract_data()
+        shutil.rmtree(n.src_data_dir)
 
         n._sequence_location.get_aliases = _get_aliases
         n._info_src = etl_data_path / 'ncbi_info_20210813.tsv'

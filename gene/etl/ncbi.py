@@ -24,15 +24,17 @@ class NCBI(Base):
                  database: Database,
                  host='ftp.ncbi.nlm.nih.gov',
                  data_dir='gene/DATA/',
+                 src_data_dir=PROJECT_ROOT / 'data' / 'ncbi',
                  assembly: str = 'GRCh38.p13'):
         """Construct the NCBI ETL instance.
 
         :param Database database: gene database for adding new data
         :param str host: FTP host name
         :param str data_dir: FTP data directory to use
+        :param Path src_data_dir: Data directory for NCBI
         :param str assembly: The genome assembly
         """
-        super().__init__(database, host, data_dir)
+        super().__init__(database, host, data_dir, src_data_dir)
         self._sequence_location = SequenceLocation()
         self._chromosome_location = ChromosomeLocation()
         self._data_url = f"ftp://{host}"
@@ -100,15 +102,15 @@ class NCBI(Base):
                 gff_downloaded = True
         return info_downloaded and history_downloaded and gff_downloaded
 
-    def _extract_data(self, local_data_dir=PROJECT_ROOT / 'data' / 'ncbi'):
+    def _extract_data(self):
         """Gather data from local files or download from source.
         - Data is expected to be in <PROJECT ROOT>/data/ncbi.
         - For now, data files should all be from the same source data version.
         """
-        local_data_dir.mkdir(exist_ok=True, parents=True)
-        if not self._files_downloaded(local_data_dir):
-            self._download_data(local_data_dir)
-        local_files = [f for f in local_data_dir.iterdir()
+        self._create_data_directory()
+        if not self._files_downloaded(self.src_data_dir):
+            self._download_data(self.src_data_dir)
+        local_files = [f for f in self.src_data_dir.iterdir()
                        if f.name.startswith('ncbi')]
         local_files.sort(key=lambda f: f.name.split('_')[-1], reverse=True)
         self._info_src = [f for f in local_files

@@ -19,6 +19,7 @@ class Ensembl(Base):
                  database: Database,
                  host='ftp.ensembl.org',
                  data_dir='pub/',
+                 src_data_dir=PROJECT_ROOT / 'data' / 'ensembl',
                  version='104'
                  ):
         """Initialize Ensembl ETL class.
@@ -26,9 +27,10 @@ class Ensembl(Base):
         :param Database database: DynamoDB database
         :param str host: FTP host name
         :param str data_dir: FTP data directory to use
+        :param Path src_data_dir: Data directory for Ensembl
         :param int version: Version for fn
         """
-        super().__init__(database, host, data_dir)
+        super().__init__(database, host, data_dir, src_data_dir)
         self._sequence_location = SequenceLocation()
         self._host = host
         self._data_dir = data_dir
@@ -38,27 +40,26 @@ class Ensembl(Base):
         self._data_file_url = None
         self._assembly = 'GRCh38'
 
-    def _download_data(self, ens_dir=PROJECT_ROOT / 'data' / 'ensembl'):
+    def _download_data(self):
         """Download Ensembl GFF3 data file."""
         logger.info('Downloading Ensembl data file...')
-        ens_dir.mkdir(exist_ok=True, parents=True)
+        self._create_data_directory()
         new_fn = f'ensembl_{self._version}.gff3'
-        if not (ens_dir / new_fn).exists():
+        if not (self.src_data_dir / new_fn).exists():
             self._ftp_download(self._host,
                                f'{self._data_dir}release-{self._version}'
                                f'/gff3/homo_sapiens/',
                                new_fn,
-                               ens_dir,
+                               self.src_data_dir,
                                self._fn)
             logger.info('Successfully downloaded Ensembl data file.')
 
-    def _extract_data(self, ens_dir=PROJECT_ROOT / 'data' / 'ensembl',
-                      *args, **kwargs):
+    def _extract_data(self, *args, **kwargs):
         """Extract data from the Ensembl source."""
         if 'data_path' in kwargs:
             self._data_src = kwargs['data_path']
         else:
-            self._data_src = sorted(list(ens_dir.iterdir()))[-1]
+            self._data_src = sorted(list(self.src_data_dir.iterdir()))[-1]
 
     def _transform_data(self, *args, **kwargs):
         """Transform the Ensembl source."""

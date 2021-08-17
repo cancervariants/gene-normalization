@@ -24,6 +24,7 @@ class Base(ABC):
     """The ETL base class."""
 
     def __init__(self, database: Database, host: str, data_dir: str,
+                 src_data_dir: Path,
                  seqrepo_dir=PROJECT_ROOT / 'data' / 'seqrepo' / 'latest',
                  *args, **kwargs) -> None:
         """Instantiate Base class.
@@ -31,11 +32,13 @@ class Base(ABC):
         :param Database database: DynamoDB database
         :param str host: Hostname of FTP site
         :param str data_dir: Data directory of FTP site to look at
+        :param Path src_data_dir: Data directory for source
         :param Path seqrepo_dir: Path to seqrepo directory
         """
         self._database = database
         self._host = host
         self._data_dir = data_dir
+        self.src_data_dir = src_data_dir
         self._processed_ids = list()
         self.seqrepo = self.get_seqrepo(seqrepo_dir)
 
@@ -61,6 +64,10 @@ class Base(ABC):
     def _add_meta(self, *args, **kwargs) -> None:
         """Add source meta to DynamoDB table."""
         raise NotImplementedError
+
+    def _create_data_directory(self):
+        """Create data directory for source."""
+        self.src_data_dir.mkdir(exist_ok=True, parents=True)
 
     def _load_meta(self, db, metadata, source_name) -> None:
         """Load source metadata into database.
