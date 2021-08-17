@@ -24,15 +24,17 @@ class NCBI(Base):
                  database: Database,
                  host='ftp.ncbi.nlm.nih.gov',
                  data_dir='gene/DATA/',
+                 src_data_dir=PROJECT_ROOT / 'data' / 'ncbi',
                  assembly: str = 'GRCh38.p13'):
         """Construct the NCBI ETL instance.
 
         :param Database database: gene database for adding new data
         :param str host: FTP host name
         :param str data_dir: FTP data directory to use
+        :param Path src_data_dir: Data directory for NCBI
         :param str assembly: The genome assembly
         """
-        super().__init__(database, host, data_dir)
+        super().__init__(database, host, data_dir, src_data_dir)
         self._sequence_location = SequenceLocation()
         self._chromosome_location = ChromosomeLocation()
         self._data_url = f"ftp://{host}"
@@ -105,11 +107,10 @@ class NCBI(Base):
         - Data is expected to be in <PROJECT ROOT>/data/ncbi.
         - For now, data files should all be from the same source data version.
         """
-        local_data_dir = PROJECT_ROOT / 'data' / 'ncbi'
-        local_data_dir.mkdir(exist_ok=True, parents=True)
-        if not self._files_downloaded(local_data_dir):
-            self._download_data(local_data_dir)
-        local_files = [f for f in local_data_dir.iterdir()
+        self._create_data_directory()
+        if not self._files_downloaded(self.src_data_dir):
+            self._download_data(self.src_data_dir)
+        local_files = [f for f in self.src_data_dir.iterdir()
                        if f.name.startswith('ncbi')]
         local_files.sort(key=lambda f: f.name.split('_')[-1], reverse=True)
         self._info_src = [f for f in local_files
@@ -514,8 +515,6 @@ class NCBI(Base):
         prev_symbols = self._get_prev_symbols()
         info_genes = self._get_gene_info(prev_symbols)
 
-        sr = self.get_seqrepo()
-
         # create db for gff file
         db = gffutils.create_db(str(self._gff_src),
                                 dbfn=":memory:",
@@ -523,7 +522,7 @@ class NCBI(Base):
                                 merge_strategy="create_unique",
                                 keep_order=True)
 
-        self._get_gene_gff(db, info_genes, sr)
+        self._get_gene_gff(db, info_genes, self.seqrepo)
 
         with self._database.genes.batch_writer() as batch:
             for gene in info_genes.keys():

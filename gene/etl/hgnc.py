@@ -21,6 +21,7 @@ class HGNC(Base):
                  database: Database,
                  host='ftp.ebi.ac.uk',
                  data_dir='pub/databases/genenames/hgnc/json/',
+                 src_data_dir=PROJECT_ROOT / 'data' / 'hgnc',
                  fn='hgnc_complete_set.json'
                  ):
         """Initialize HGNC ETL class.
@@ -28,9 +29,10 @@ class HGNC(Base):
         :param Database database: DynamoDB database
         :param str host: FTP host name
         :param str data_dir: FTP data directory to use
+        :param Path src_data_dir: Data directory for HGNC
         :param str fn: Data file to download
         """
-        super().__init__(database, host, data_dir)
+        super().__init__(database, host, data_dir, src_data_dir)
         self._chromosome_location = ChromosomeLocation()
         self._data_url = f"ftp://{host}/{data_dir}{fn}"
         self._fn = fn
@@ -39,14 +41,13 @@ class HGNC(Base):
     def _download_data(self, *args, **kwargs):
         """Download HGNC JSON data file."""
         logger.info('Downloading HGNC data file...')
-        hgnc_data_dir = PROJECT_ROOT / 'data' / 'hgnc'
-        hgnc_data_dir.mkdir(exist_ok=True, parents=True)
+        self._create_data_directory()
         tmp_fn = 'hgnc_version.json'
         self._version = \
             self._ftp_download(self._host, self._data_dir, tmp_fn,
-                               hgnc_data_dir, self._fn)
-        shutil.move(f"{hgnc_data_dir}/{tmp_fn}",
-                    f"{hgnc_data_dir}/hgnc_{self._version}.json")
+                               self.src_data_dir, self._fn)
+        shutil.move(f"{self.src_data_dir}/{tmp_fn}",
+                    f"{self.src_data_dir}/hgnc_{self._version}.json")
         logger.info('Successfully downloaded HGNC data file.')
 
     def _extract_data(self, *args, **kwargs):
@@ -54,8 +55,7 @@ class HGNC(Base):
         if 'data_path' in kwargs:
             self._data_src = kwargs['data_path']
         else:
-            hgnc_dir = PROJECT_ROOT / 'data' / 'hgnc'
-            self._data_src = sorted(list(hgnc_dir.iterdir()))[-1]
+            self._data_src = sorted(list(self.src_data_dir.iterdir()))[-1]
 
     def _transform_data(self, *args, **kwargs):
         """Transform the HGNC source."""

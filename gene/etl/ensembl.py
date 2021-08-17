@@ -19,6 +19,7 @@ class Ensembl(Base):
                  database: Database,
                  host='ftp.ensembl.org',
                  data_dir='pub/',
+                 src_data_dir=PROJECT_ROOT / 'data' / 'ensembl',
                  version='104'
                  ):
         """Initialize Ensembl ETL class.
@@ -26,9 +27,10 @@ class Ensembl(Base):
         :param Database database: DynamoDB database
         :param str host: FTP host name
         :param str data_dir: FTP data directory to use
+        :param Path src_data_dir: Data directory for Ensembl
         :param int version: Version for fn
         """
-        super().__init__(database, host, data_dir)
+        super().__init__(database, host, data_dir, src_data_dir)
         self._sequence_location = SequenceLocation()
         self._host = host
         self._data_dir = data_dir
@@ -41,15 +43,14 @@ class Ensembl(Base):
     def _download_data(self):
         """Download Ensembl GFF3 data file."""
         logger.info('Downloading Ensembl data file...')
-        ens_dir = PROJECT_ROOT / 'data' / 'ensembl'
-        ens_dir.mkdir(exist_ok=True, parents=True)
+        self._create_data_directory()
         new_fn = f'ensembl_{self._version}.gff3'
-        if not (ens_dir / new_fn).exists():
+        if not (self.src_data_dir / new_fn).exists():
             self._ftp_download(self._host,
                                f'{self._data_dir}release-{self._version}'
                                f'/gff3/homo_sapiens/',
                                new_fn,
-                               ens_dir,
+                               self.src_data_dir,
                                self._fn)
             logger.info('Successfully downloaded Ensembl data file.')
 
@@ -58,8 +59,7 @@ class Ensembl(Base):
         if 'data_path' in kwargs:
             self._data_src = kwargs['data_path']
         else:
-            ensembl_dir = PROJECT_ROOT / 'data' / 'ensembl'
-            self._data_src = sorted(list(ensembl_dir.iterdir()))[-1]
+            self._data_src = sorted(list(self.src_data_dir.iterdir()))[-1]
 
     def _transform_data(self, *args, **kwargs):
         """Transform the Ensembl source."""
@@ -69,8 +69,6 @@ class Ensembl(Base):
                                 force=True,
                                 merge_strategy="create_unique",
                                 keep_order=True)
-
-        sr = self.get_seqrepo()
 
         # Get accession numbers
         accession_numbers = dict()
@@ -84,7 +82,8 @@ class Ensembl(Base):
                 if f.attributes.get('ID'):
                     f_id = f.attributes.get('ID')[0].split(':')[0]
                     if f_id == 'gene':
-                        gene = self._add_gene(f, sr, accession_numbers)
+                        gene = \
+                            self._add_gene(f, self.seqrepo, accession_numbers)
                         if gene:
                             self._load_gene(gene, batch)
         logger.info('Successfully transformed Ensembl.')
