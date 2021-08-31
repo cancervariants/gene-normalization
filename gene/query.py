@@ -7,8 +7,9 @@ from .version import __version__
 from gene import NAMESPACE_LOOKUP, PREFIX_LOOKUP, ITEM_TYPES
 from gene.database import Database
 from gene.schemas import Gene, SourceMeta, MatchType, SourceName, \
-    ServiceMeta, GeneDescriptor, GeneValueObject, Extension, SourcePriority, \
-    NormalizeService, SearchService
+    ServiceMeta, SourcePriority, NormalizeService, SearchService
+from ga4gh.vrsatile.pydantic.vrs_model import Gene as GeneValueObject
+from ga4gh.vrsatile.pydantic.vrsatile_model import GeneDescriptor, Extension
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 from datetime import datetime
@@ -93,9 +94,11 @@ class QueryHandler:
         # DynamoDB Numbers get converted to Decimal
         if 'locations' in item:
             for loc in item['locations']:
-                if loc['interval']['type'] == "SimpleInterval":
-                    loc['interval']['start'] = int(loc['interval']['start'])
-                    loc['interval']['end'] = int(loc['interval']['end'])
+                if loc['interval']['type'] == "SequenceInterval":
+                    loc['interval']['start']['value'] = \
+                        int(loc['interval']['start']['value'])
+                    loc['interval']['end']['value'] = \
+                        int(loc['interval']['end']['value'])
         gene = Gene(**item)
         src_name = item['src_name']
 
@@ -373,7 +376,7 @@ class QueryHandler:
         """
         sources_meta = {}
         gene_descr = response['gene_descriptor']
-        ids = [gene_descr['value']['id']] + gene_descr.get('xrefs', [])
+        ids = [gene_descr['gene']['gene_id']] + gene_descr.get('xrefs', [])
         for concept_id in ids:
             prefix = concept_id.split(':')[0]
             src_name = PREFIX_LOOKUP[prefix.lower()]
@@ -396,7 +399,7 @@ class QueryHandler:
         params = {
             "id": f"normalize.gene:{quote(response['query'])}",
             "label": record["symbol"],
-            "value": GeneValueObject(id=record["concept_id"])
+            "gene": GeneValueObject(gene_id=record["concept_id"])
         }
 
         # xrefs
