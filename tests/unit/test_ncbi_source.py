@@ -48,11 +48,11 @@ def dpf1():
                 'type': 'ChromosomeLocation'
             },
             {
-                '_id': 'ga4gh:VSL.5ddLPk8gIdQm3YA4r4p5NAsty9SPwXvJ',
+                '_id': 'ga4gh:VSL.MbzGuoGI9MRB8oPe6eE-ULk3FIBdpMF8',
                 'interval': {
-                    'end': 38229695,
-                    'start': 38211006,
-                    'type': 'SimpleInterval'
+                    'end': {'value': 38229695, 'type': 'Number'},
+                    'start': {'value': 38211005, 'type': 'Number'},
+                    'type': 'SequenceInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl',
                 'type': 'SequenceLocation'
@@ -89,11 +89,11 @@ def pdp1():
                 'type': 'ChromosomeLocation'
             },
             {
-                '_id': 'ga4gh:VSL.s8NNWWCxWeiOCUa90ge6x8wxFWpO34gV',
+                '_id': 'ga4gh:VSL.KmLM61Mm2jxuep7cdgg7lvOOXaIxSW0Y',
                 'interval': {
-                    'end': 93926068,
-                    'start': 93916923,
-                    'type': 'SimpleInterval'
+                    'end': {'value': 93926068, 'type': 'Number'},
+                    'start': {'value': 93916922, 'type': 'Number'},
+                    'type': 'SequenceInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.209Z7zJ-mFypBEWLk4rNC6S_OxY5p7bs',
                 'type': 'SequenceLocation'
@@ -143,21 +143,21 @@ def spry3():
                 'type': 'ChromosomeLocation'
             },
             {
-                '_id': 'ga4gh:VSL.ILQGzmwapQ5xuIBoFPDTKUOuN9gJNSqp',
+                '_id': 'ga4gh:VSL.r6_z0hmAdPdufX0g1ciRj_zPU6poQviA',
                 'interval': {
-                    'end': 155782459,
-                    'start': 155612586,
-                    'type': 'SimpleInterval'
+                    'end': {'value': 155782459, 'type': 'Number'},
+                    'start': {'value': 155612585, 'type': 'Number'},
+                    'type': 'SequenceInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP',
                 'type': 'SequenceLocation'
             },
             {
-                '_id': 'ga4gh:VSL.R8x4-hQzGNmp654J83nUT2RJlIXOucno',
+                '_id': 'ga4gh:VSL.Cr_HtUTpUe6KB37Y7zOTDbx9JglIzE1O',
                 'interval': {
-                    'end': 56968979,
-                    'start': 56923423,
-                    'type': 'SimpleInterval'
+                    'end': {'value': 56968979, 'type': 'Number'},
+                    'start': {'value': 56923422, 'type': 'Number'},
+                    'type': 'SequenceInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5',
                 'type': 'SequenceLocation'
@@ -235,11 +235,11 @@ def znf84():
                 'type': 'ChromosomeLocation'
             },
             {
-                '_id': 'ga4gh:VSL.xuSNWLM7M4vru2gbt2hOfmjL7GD_UYdA',
+                '_id': 'ga4gh:VSL.w5FE3al-0SUkARxk_RdCD5ypYIh_WtSM',
                 'interval': {
-                    'end': 133063299,
-                    'start': 133037301,
-                    'type': 'SimpleInterval'
+                    'end': {'value': 133063299, 'type': 'Number'},
+                    'start': {'value': 133037300, 'type': 'Number'},
+                    'type': 'SequenceInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl',
                 'type': 'SequenceLocation'
@@ -266,21 +266,21 @@ def slc25a6():
         'strand': '-',
         'locations': [
             {
-                '_id': 'ga4gh:VSL.8LvkImsib1GaFH8UQrz9DwjdrgkWNmdD',
+                '_id': 'ga4gh:VSL.HG0bXHwmZoxZzU2ckz4T6lvxIswXhLQZ',
                 'interval': {
-                    'end': 1392113,
-                    'start': 1386152,
-                    'type': 'SimpleInterval'
+                    'end': {'value': 1392113, 'type': 'Number'},
+                    'start': {'value': 1386151, 'type': 'Number'},
+                    'type': 'SequenceInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP',
                 'type': 'SequenceLocation'
             },
             {
-                '_id': 'ga4gh:VSL.QLShSFmwPqUKTzjNS-x3Y3DZtOV4SK4J',
+                '_id': 'ga4gh:VSL.1J-MNAWJ9hvZtIM_90lqLbxEt707zL_A',
                 'interval': {
-                    'end': 1392113,
-                    'start': 1386152,
-                    'type': 'SimpleInterval'
+                    'end': {'value': 1392113, 'type': 'Number'},
+                    'start': {'value': 1386151, 'type': 'Number'},
+                    'type': 'SequenceInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5',
                 'type': 'SequenceLocation'
@@ -415,21 +415,21 @@ def prkrap1():
                 'type': 'ChromosomeLocation'
             },
             {
-                '_id': 'ga4gh:VSL.Sk6GHE3MekN_PaimBKBmsQR6pLqQ-SAN',
+                '_id': 'ga4gh:VSL.WB_2IFcms7VmbkPBXUgUaH-R1EdKRs4s',
                 'interval': {
-                    'end': 3941874,
-                    'start': 3940270,
-                    'type': 'SimpleInterval'
+                    'end': {'value': 3941874, 'type': 'Number'},
+                    'start': {'value': 3940269, 'type': 'Number'},
+                    'type': 'SequenceInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.MjujHSAsgNWRTX4w3ysM7b5OVhZpdXu1',
                 'type': 'SequenceLocation'
             },
             {
-                '_id': 'ga4gh:VSL.WTVn8f6OmsdbiEniT8W4CHuHJdp78oBP',
+                '_id': 'ga4gh:VSL.PIeADExe9_iSJkTLQbSvhxAJ8PM19R6r',
                 'interval': {
-                    'end': 3932085,
-                    'start': 3930481,
-                    'type': 'SimpleInterval'
+                    'end': {'value': 3932085, 'type': 'Number'},
+                    'start': {'value': 3930480, 'type': 'Number'},
+                    'type': 'SequenceInterval'
                 },
                 'sequence_id': 'ga4gh:SQ.Q8IworEhpLeXwpz1CHM7C3luysh-ltx-',
                 'type': 'SequenceLocation'

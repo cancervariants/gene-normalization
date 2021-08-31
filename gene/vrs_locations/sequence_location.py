@@ -37,14 +37,14 @@ class SequenceLocation:
             if 0 <= gene.start <= gene.end:
                 seq_location = models.SequenceLocation(
                     sequence_id=sequence_id,
-                    interval=models.SimpleInterval(
-                        start=gene.start,
-                        end=gene.end
+                    interval=models.SequenceInterval(
+                        start=models.Number(value=gene.start - 1),
+                        end=models.Number(value=gene.end)
                     )
                 )
                 seq_location._id = ga4gh_identify(seq_location)
                 location = seq_location.as_dict()
             else:
                 logger.info(f"{params['concept_id']} has invalid interval:"
-                            f"start={gene.start} end={gene.end}")
+                            f"start={gene.start - 1} end={gene.end}")
         return location

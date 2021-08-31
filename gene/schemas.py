@@ -2,37 +2,14 @@
 gene records.
 """
 from typing import Type, List, Optional, Dict, Union, Any
-from pydantic import BaseModel, StrictInt, StrictBool, validator, \
-    root_validator
+from pydantic import BaseModel, StrictBool, validator
 from enum import Enum, IntEnum
-from pydantic.fields import Field
+from ga4gh.vrsatile.pydantic import return_value
+from ga4gh.vrsatile.pydantic.vrs_model import SequenceLocation, \
+    ChromosomeLocation, CURIE
+from ga4gh.vrsatile.pydantic.vrsatile_model import GeneDescriptor
 from datetime import datetime
 from pydantic.types import StrictStr
-import re
-
-
-def check_curie(cls, v):
-    """Validate curies."""
-    if v is not None:
-        def _is_curie(value):
-            """Check that value is a curie
-
-            :param str value: Value to validate
-            """
-            assert all(
-                [
-                    value.count(':') == 1,
-                    value.find(' ') == -1,
-                    value[-1] != ':'
-                ]
-            ), 'must be a CURIE'
-
-        if isinstance(v, str):
-            _is_curie(v)
-        elif isinstance(v, list):
-            for item in v:
-                _is_curie(item)
-    return v
 
 
 class SymbolStatus(str, Enum):
@@ -48,72 +25,6 @@ class Strand(str, Enum):
 
     FORWARD = "+"
     REVERSE = "-"
-
-
-class CytobandInterval(BaseModel):
-    """GA4GH cytoband interval definition."""
-
-    end: StrictStr
-    start: StrictStr
-    type = "CytobandInterval"
-
-    @validator('start', 'end')
-    def valid_loc(cls, v):
-        """Validate start, end"""
-        assert bool(re.match(r"^cen|[pq](ter|([1-9][0-9]*(\.[1-9][0-9]*)?))$",
-                             v)), r'start/end positions must match the ' \
-                                  r'regular expression ^cen|[pq](ter|([1-9]' \
-                                  r'[0-9]*(\.[1-9][0-9]*)?))$'
-        return v
-
-    class Config:
-        """Configure model example"""
-
-        @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['CytobandInterval']) -> None:
-            """Configure OpenAPI schema"""
-            if 'title' in schema.keys():
-                schema.pop('title', None)
-            for p in schema.get('properties', {}).values():
-                p.pop('title', None)
-            schema['example'] = {
-                "end": "q22.2",
-                "start": "q22.3",
-                "type": "CytobandInterval"
-            }
-
-
-class SimpleInterval(BaseModel):
-    """GA4GH simple interval definition."""
-
-    end: StrictInt
-    start: StrictInt
-    type = "SimpleInterval"
-
-    class Config:
-        """Configure model example"""
-
-        @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['SimpleInterval']) -> None:
-            """Configure OpenAPI schema"""
-            if 'title' in schema.keys():
-                schema.pop('title', None)
-            for p in schema.get('properties', {}).values():
-                p.pop('title', None)
-            schema['example'] = {
-                "end": 44908822,
-                "start": 44908821,
-                "type": "SimpleInterval"
-            }
-
-
-class LocationType(str, Enum):
-    """Define string constraints for location type attribute."""
-
-    CHROMOSOME = "ChromosomeLocation"
-    SEQUENCE = "SequenceLocation"
 
 
 class Annotation(str, Enum):
@@ -133,87 +44,10 @@ class Chromosome(str, Enum):
     MITOCHONDRIA = 'MT'
 
 
-class Location(BaseModel):
-    """Define string constraints for the location attribute."""
-
-    id: Optional[StrictStr] = Field(alias='_id')
-    type: LocationType
-
-
-class ChromosomeLocation(Location):
-    """GA4GH Chromosome Location definition."""
-
-    species_id: StrictStr
-    chr: StrictStr
-    interval: CytobandInterval
-    type = LocationType.CHROMOSOME
-
-    _validate_curie = validator('species_id', allow_reuse=True)(check_curie)
-
-    @validator('chr')
-    def valid_chr(cls, v):
-        """Validate chr"""
-        assert v.isalnum(), 'chr must have only alphanumeric characters'
-        return v
-
-    class Config:
-        """Configure model example"""
-
-        @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['ChromosomeLocation']) -> None:
-            """Configure OpenAPI schema"""
-            if 'title' in schema.keys():
-                schema.pop('title', None)
-            for p in schema.get('properties', {}).values():
-                p.pop('title', None)
-            schema['example'] = {
-                "chr": "11",
-                "interval": {
-                    "end": "q22.2",
-                    "start": "q22.3",
-                    "type": "CytobandInterval"
-                },
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
-
-
-class SequenceLocation(Location):
-    """GA4GH Sequence Location definition."""
-
-    sequence_id: StrictStr
-    interval: SimpleInterval
-    type = LocationType.SEQUENCE
-
-    _validate_curie = validator('sequence_id', allow_reuse=True)(check_curie)
-
-    class Config:
-        """Configure model example"""
-
-        @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['SequenceLocation']) -> None:
-            """Configure OpenAPI schema"""
-            if 'title' in schema.keys():
-                schema.pop('title', None)
-            for p in schema.get('properties', {}).values():
-                p.pop('title', None)
-            schema['example'] = {
-                "interval": {
-                    "end": 44908822,
-                    "start": 44908821,
-                    "type": "SimpleInterval"
-                },
-                "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
-                "type": "SequenceLocation"
-            }
-
-
 class Gene(BaseModel):
     """Gene"""
 
-    concept_id: StrictStr
+    concept_id: CURIE
     symbol: StrictStr
     symbol_status: Optional[SymbolStatus]
     label: Optional[StrictStr]
@@ -222,14 +56,14 @@ class Gene(BaseModel):
     locations: Optional[List[Union[SequenceLocation, ChromosomeLocation]]] = []
     aliases: Optional[List[StrictStr]] = []
     previous_symbols: Optional[List[StrictStr]] = []
-    xrefs: Optional[List[str]] = []
-    associated_with: Optional[List[StrictStr]] = []
+    xrefs: Optional[List[CURIE]] = []
+    associated_with: Optional[List[CURIE]] = []
 
-    _validate_concept_id = \
-        validator('concept_id', allow_reuse=True)(check_curie)
-    _validate_xrefs = validator('xrefs', allow_reuse=True)(check_curie)
-    _validate_associated_with = \
-        validator('associated_with', allow_reuse=True)(check_curie)
+    _get_concept_id_val = \
+        validator('concept_id', allow_reuse=True)(return_value)
+    _get_xrefs_val = validator('xrefs', allow_reuse=True)(return_value)
+    _get_associated_with_val = \
+        validator('associated_with', allow_reuse=True)(return_value)
 
     class Config:
         """Configure model example"""
@@ -252,150 +86,6 @@ class Gene(BaseModel):
                 "symbol_status": None,
                 "strand": "-",
                 "location": []
-            }
-
-
-class Extension(BaseModel):
-    """Define model for VRSATILE Extension."""
-
-    type = "Extension"
-    name: StrictStr
-    value: Union[StrictStr, List[Dict], List[StrictStr], Dict]
-
-    class Config:
-        """Configure model example"""
-
-        @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['Extension']) -> None:
-            """Configure OpenAPI schema"""
-            if 'title' in schema.keys():
-                schema.pop('title', None)
-            for p in schema.get('properties', {}).values():
-                p.pop('title', None)
-            schema['example'] = {
-                "type": "Extension",
-                "name": "strand",
-                "value": "-"
-            }
-
-
-class GeneValueObject(BaseModel):
-    """Define model for VRS Gene Value Object."""
-
-    id: StrictStr
-    type = "Gene"
-
-    _validate_curie = validator('id', allow_reuse=True)(check_curie)
-
-    class Config:
-        """Configure model example"""
-
-        @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['Gene']) -> None:
-            """Configure OpenAPI schema"""
-            if 'title' in schema.keys():
-                schema.pop('title', None)
-            for p in schema.get('properties', {}).values():
-                p.pop('title', None)
-            schema['example'] = {
-                "type": "Gene",
-                "id": "hgnc:5"
-            }
-
-
-class GeneDescriptor(BaseModel):
-    """Define model for VRSATILE Gene Descriptor."""
-
-    id: StrictStr
-    type = "GeneDescriptor"
-    value: Optional[GeneValueObject]
-    value_id: Optional[StrictStr]
-    label: Optional[StrictStr]
-    xrefs: Optional[List[StrictStr]]
-    alternate_labels: Optional[List[StrictStr]]
-    extensions: Optional[List[Extension]]
-
-    _validate_id = validator('id', allow_reuse=True)(check_curie)
-    _validate_value_id = validator('value_id', allow_reuse=True)(check_curie)
-
-    @root_validator(pre=True)
-    def check_value_or_value_id_present(cls, values):
-        """Check that at least one of {`value`, `value_id`} is provided."""
-        msg = 'Must give values for either `value`, `value_id`, or both'
-        value, value_id = values.get('value'), values.get('value_id')
-        assert value or value_id, msg
-        return values
-
-    class Config:
-        """Configure model example"""
-
-        @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['Extension']) -> None:
-            """Configure OpenAPI schema"""
-            if 'title' in schema.keys():
-                schema.pop('title', None)
-            for p in schema.get('properties', {}).values():
-                p.pop('title', None)
-            schema['example'] = {
-                "id": "normalize.gene:BRAF",
-                "name": "GeneDescriptor",
-                "value": {
-                    "id": "hgnc:1097",
-                    "type": "Gene"
-                },
-                "label": "BRAF",
-                "xrefs": [
-                    "ncbigene:673",
-                    "ensembl:ENSG00000157764"
-                ],
-                "alternate_labels": [
-                    "B-Raf proto-oncogene, serine/threonine kinase",
-                    "BRAF1"
-                ],
-                "extensions": [
-                    {
-                        "name": "symbol_status",
-                        "value": "approved",
-                        "type": "Extension"
-                    },
-                    {
-                        "name": "associated_with",
-                        "value": [
-                            "vega:OTTHUMG00000157457",
-                            "ucsc:uc003vwc.5",
-                            "ccds:CCDS5863",
-                            "ccds:CCDS87555",
-                            "uniprot:P15056",
-                            "pubmed:2284096",
-                            "pubmed:1565476",
-                            "cosmic:BRAF",
-                            "omim:164757",
-                            "orphanet:119066",
-                            "iuphar:1943",
-                            "ena.embl:M95712",
-                            "refseq:NM_004333"
-                        ],
-                        "type": "Extension"
-                    },
-                    {
-                        "name": "chromosome_location",
-                        "value": {
-                            "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",  # noqa: E501
-                            "type": "ChromosomeLocation",
-                            "species_id": "taxonomy:9606",
-                            "chr": "7",
-                            "interval": {
-                                "end": "q34",
-                                "start": "q34",
-                                "type": "CytobandInterval"
-                            }
-                        },
-                        "type": "Extension"
-                    }
-                ]
             }
 
 
@@ -733,7 +423,7 @@ class NormalizeService(BaseModel):
                 "gene_descriptor": {
                     "id": "normalize.gene:BRAF",
                     "name": "GeneDescriptor",
-                    "value": {
+                    "gene": {
                         "id": "hgnc:1097",
                         "type": "Gene"
                     },
