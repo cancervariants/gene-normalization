@@ -422,9 +422,9 @@ class NormalizeService(BaseModel):
                 "match_type": 100,
                 "gene_descriptor": {
                     "id": "normalize.gene:BRAF",
-                    "name": "GeneDescriptor",
+                    "type": "GeneDescriptor",
                     "gene": {
-                        "id": "hgnc:1097",
+                        "gene_id": "hgnc:1097",
                         "type": "Gene"
                     },
                     "label": "BRAF",
@@ -433,7 +433,11 @@ class NormalizeService(BaseModel):
                         "ensembl:ENSG00000157764"
                     ],
                     "alternate_labels": [
-                        "BRAF1"
+                        "BRAF1",
+                        "RAFB1",
+                        "B-raf",
+                        "NS7",
+                        "B-RAF1"
                     ],
                     "extensions": [
                         {
@@ -449,19 +453,19 @@ class NormalizeService(BaseModel):
                         {
                             "name": "associated_with",
                             "value": [
-                                "vega:OTTHUMG00000157457",
-                                "ucsc:uc003vwc.5",
                                 "ccds:CCDS5863",
+                                "iuphar:1943",
+                                "orphanet:119066",
+                                "cosmic:BRAF",
+                                "pubmed:2284096",
+                                "ucsc:uc003vwc.5",
+                                "omim:164757",
+                                "refseq:NM_004333",
                                 "ccds:CCDS87555",
                                 "uniprot:P15056",
-                                "pubmed:2284096",
-                                "pubmed:1565476",
-                                "cosmic:BRAF",
-                                "omim:164757",
-                                "orphanet:119066",
-                                "iuphar:1943",
                                 "ena.embl:M95712",
-                                "refseq:NM_004333"
+                                "vega:OTTHUMG00000157457",
+                                "pubmed:1565476"
                             ],
                             "type": "Extension"
                         },
@@ -482,42 +486,55 @@ class NormalizeService(BaseModel):
                         }
                     ]
                 },
-                "source_matches": [
-                    {
-                        "source": "Ensembl",
-                        "match_type": 100,
-                        "records": [
-                            {
-                                "label": None,
-                                "concept_id": "ensembl:ENSG00000157764",
-                                "symbol": "BRAF",
-                                "previous_symbols": [],
-                                "aliases": [],
-                                "xrefs": [],
-                                "symbol_status": None,
-                                "strand": "-",
-                                "locations": []
-                            }
-                        ],
-                        "source_meta_": {
-                            "data_license": "custom",
-                            "data_license_url": "https://uswest.ensembl.org/info/about/legal/index.html",  # noqa: E501
-                            "version": "102",
-                            "data_url": "http://ftp.ensembl.org/pub/",
-                            "rdp_url": None,
-                            "data_license_attributes": {
-                                "non_commercial": False,
-                                "share_alike": False,
-                                "attribution": False
-                            },
-                            "genome_assemblies": "GRCh38"
-                        }
+                "source_meta_": {
+                    "HGNC": {
+                        "data_license": "custom",
+                        "data_license_url": "https://www.genenames.org/about/",
+                        "version": "20210810",
+                        "data_url": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json",  # noqa: E501
+                        "rdp_url": None,
+                        "data_license_attributes": {
+                            "non_commercial": False,
+                            "attribution": False,
+                            "share_alike": False
+                        },
+                        "genome_assemblies": []
+                    },
+                    "Ensembl": {
+                        "data_license": "custom",
+                        "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",  # noqa: E501
+                        "version": "104",
+                        "data_url": "ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.104.gff3.gz",  # noqa: E501
+                        "rdp_url": None,
+                        "data_license_attributes": {
+                            "non_commercial": False,
+                            "attribution": False,
+                            "share_alike": False
+                        },
+                        "genome_assemblies": [
+                            "GRCh38"
+                        ]
+                    },
+                    "NCBI": {
+                        "data_license": "custom",
+                        "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
+                        "version": "20210813",
+                        "data_url": "ftp://ftp.ncbi.nlm.nih.gov",
+                        "rdp_url": "https://reusabledata.org/ncbi-gene.html",
+                        "data_license_attributes": {
+                            "non_commercial": False,
+                            "attribution": False,
+                            "share_alike": False
+                        },
+                        "genome_assemblies": [
+                            "GRCh38.p13"
+                        ]
                     }
-                ],
+                },
                 "service_meta_": {
                     'name': 'gene-normalizer',
-                    'version': '0.1.0',
-                    'response_datetime': '2021-04-05T16:44:15.367831',
+                    'version': '0.1.19',
+                    'response_datetime': '2021-09-06T10:52:20.334720',
                     'url': 'https://github.com/cancervariants/gene-normalization'  # noqa: E501
                 }
             }

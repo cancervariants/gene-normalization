@@ -58,7 +58,6 @@ search_description = ("For each source, return strongest-match concepts "
 
 @app.get("/gene/search",
          summary=read_query_summary,
-         operation_id="getQueryResponse",
          response_description=response_description,
          response_model=SearchService,
          description=search_description
@@ -97,7 +96,6 @@ normalize_q_desecr = "Gene to normalize."
 
 @app.get("/gene/normalize",
          summary=normalize_summary,
-         operation_id="getQueryResponse",
          response_description=normalize_response_descr,
          response_model=NormalizeService,
          description=normalize_descr)
