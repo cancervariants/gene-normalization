@@ -1,6 +1,6 @@
 """Test that the gene normalizer works as intended for the HGNC source."""
 import pytest
-from gene.schemas import Gene, MatchType
+from gene.schemas import Gene, MatchType, SourceName
 from gene.query import QueryHandler
 from datetime import datetime
 from tests.conftest import assertion_checks
@@ -15,7 +15,7 @@ def hgnc():
 
         def search(self, query_str, incl='hgnc'):
             resp = self.query_handler.search(query_str, keyed=True, incl=incl)
-            return resp['source_matches']['HGNC']
+            return resp.source_matches[SourceName.HGNC]
 
     h = QueryGetter()
     return h
@@ -899,35 +899,35 @@ def test_gstt1(gstt1, hgnc):
 def test_no_match(hgnc):
     """Test that a term normalizes to correct gene concept as a NO match."""
     normalizer_response = hgnc.search('A1BG - AS1')
-    assert normalizer_response['match_type'] == MatchType.NO_MATCH
-    assert len(normalizer_response['records']) == 0
+    assert normalizer_response.match_type == MatchType.NO_MATCH
+    assert len(normalizer_response.records) == 0
 
     normalizer_response = hgnc.search('hnc:5')
-    assert normalizer_response['match_type'] == MatchType.NO_MATCH
+    assert normalizer_response.match_type == MatchType.NO_MATCH
 
     # Test empty query
     normalizer_response = hgnc.search('')
-    assert normalizer_response['match_type'] == MatchType.NO_MATCH
-    assert len(normalizer_response['records']) == 0
+    assert normalizer_response.match_type == MatchType.NO_MATCH
+    assert len(normalizer_response.records) == 0
 
     # Do not search on label
     normalizer_response = hgnc.search('A1BG antisense RNA 1')
-    assert normalizer_response['match_type'] == MatchType.NO_MATCH
-    assert len(normalizer_response['records']) == 0
+    assert normalizer_response.match_type == MatchType.NO_MATCH
+    assert len(normalizer_response.records) == 0
 
 
 def test_meta_info(a1bg_as1, hgnc):
     """Test that the meta field is correct."""
     normalizer_response = hgnc.search('HGNC:37133')
-    assert normalizer_response['source_meta_'].data_license == 'custom'
-    assert normalizer_response['source_meta_'].data_license_url == \
+    assert normalizer_response.source_meta_.data_license == 'custom'
+    assert normalizer_response.source_meta_.data_license_url == \
            'https://www.genenames.org/about/'
-    assert datetime.strptime(normalizer_response['source_meta_'].version, "%Y%m%d")  # noqa: E501
-    assert normalizer_response['source_meta_'].data_url == \
+    assert datetime.strptime(normalizer_response.source_meta_.version, "%Y%m%d")  # noqa: E501
+    assert normalizer_response.source_meta_.data_url == \
            'ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json'  # noqa: E501
-    assert normalizer_response['source_meta_'].rdp_url is None
-    assert normalizer_response['source_meta_'].genome_assemblies == []
-    assert normalizer_response['source_meta_'].data_license_attributes == {
+    assert normalizer_response.source_meta_.rdp_url is None
+    assert normalizer_response.source_meta_.genome_assemblies == []
+    assert normalizer_response.source_meta_.data_license_attributes == {
         "non_commercial": False,
         "share_alike": False,
         "attribution": False

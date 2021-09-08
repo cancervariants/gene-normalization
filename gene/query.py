@@ -302,7 +302,7 @@ class QueryHandler:
         )
 
     def search(self, query_str: str, keyed: bool = False,
-               incl: str = '', excl: str = '', **params):
+               incl: str = '', excl: str = '', **params) -> SearchService:
         """Return highest match for each source.
 
         :param str query_str: query, a string, to search for
@@ -316,7 +316,7 @@ class QueryHandler:
             exclude. Will include all other source. Case-insensitive. Raises
             InvalidParameterException if both incl and excl args are
             provided, or if invalid source names are given.
-        :return: dict containing all matches found in sources.
+        :return: SearchService class containing all matches found in sources.
         """
         possible_sources = {name.value.lower(): name.value for name in
                             SourceName.__members__.values()}
@@ -365,8 +365,7 @@ class QueryHandler:
             resp = self.response_list(query_str, query_sources)
 
         resp['service_meta_'] = self._get_service_meta()
-        assert SearchService(**resp)
-        return resp
+        return SearchService(**resp)
 
     def _add_merged_meta(self, response: Dict) -> Dict:
         """Add source metadata to response object.
@@ -483,7 +482,7 @@ class QueryHandler:
         response['match_type'] = MatchType.NO_MATCH
         return response
 
-    def normalize(self, query: str) -> Dict:
+    def normalize(self, query: str) -> NormalizeService:
         """Return normalized concept for query.
 
         :param str query: String to find normalized concept for
@@ -566,5 +565,4 @@ class QueryHandler:
 
         if not matching_records:
             response['match_type'] = MatchType.NO_MATCH
-        assert NormalizeService(**response)
-        return response
+        return NormalizeService(**response)

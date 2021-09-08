@@ -19,7 +19,7 @@ uvloop = "*"
 websockets = "*"
 httptools = "*"
 typing-extensions = "*"
-"ga4gh.vrsatile.pydantic" = "*"
+"ga4gh.vrsatile.pydantic" = ">=0.0.3"
 
 [dev-packages]
 gene = {editable = true, path = "."}
