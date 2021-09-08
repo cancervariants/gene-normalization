@@ -365,7 +365,8 @@ class QueryHandler:
             resp = self.response_list(query_str, query_sources)
 
         resp['service_meta_'] = self._get_service_meta()
-        return SearchService(**resp).dict()
+        # return SearchService(**resp).dict() doesn't work
+        return SearchService(**resp)
 
     def _add_merged_meta(self, response: Dict) -> Dict:
         """Add source metadata to response object.
@@ -565,4 +566,4 @@ class QueryHandler:
 
         if not matching_records:
             response['match_type'] = MatchType.NO_MATCH
-        return NormalizeService(**response).dict()
+        return NormalizeService(**response)
