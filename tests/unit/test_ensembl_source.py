@@ -1,6 +1,6 @@
 """Test that the gene normalizer works as intended for the Ensembl source."""
 import pytest
-from gene.schemas import Gene, MatchType
+from gene.schemas import Gene, MatchType, SourceName
 from gene.query import QueryHandler
 from tests.conftest import assertion_checks
 
@@ -14,7 +14,7 @@ def ensembl():
 
         def search(self, query_str, incl='ensembl'):
             resp = self.query_handler.search(query_str, keyed=True, incl=incl)
-            return resp['source_matches']['Ensembl']
+            return resp['source_matches'][SourceName.ENSEMBL]
 
     e = QueryGetter()
     return e
@@ -365,15 +365,16 @@ def test_no_match(ensembl):
 def test_meta_info(ddx11l1, ensembl):
     """Test that the meta field is correct."""
     normalizer_response = ensembl.search('chromosome:1')
-    assert normalizer_response['source_meta_'].data_license == 'custom'
-    assert normalizer_response['source_meta_'].data_license_url ==\
+    assert normalizer_response['source_meta_']['data_license'] == 'custom'
+    assert normalizer_response['source_meta_']['data_license_url'] ==\
            'https://useast.ensembl.org/info/about/legal/disclaimer.html'
-    assert normalizer_response['source_meta_'].version == '104'
-    assert normalizer_response['source_meta_'].data_url == \
+    assert normalizer_response['source_meta_']['version'] == '104'
+    assert normalizer_response['source_meta_']['data_url'] == \
            'ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.104.gff3.gz'
-    assert normalizer_response['source_meta_'].rdp_url is None
-    assert normalizer_response['source_meta_'].genome_assemblies == ['GRCh38']
-    assert normalizer_response['source_meta_'].data_license_attributes == {
+    assert normalizer_response['source_meta_']['rdp_url'] is None
+    assert normalizer_response['source_meta_']['genome_assemblies'] ==\
+           ['GRCh38']
+    assert normalizer_response['source_meta_']['data_license_attributes'] == {
         "non_commercial": False,
         "share_alike": False,
         "attribution": False

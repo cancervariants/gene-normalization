@@ -299,7 +299,7 @@ class QueryHandler:
         return ServiceMeta(
             version=__version__,
             response_datetime=datetime.now()
-        )
+        ).dict()
 
     def search(self, query_str: str, keyed: bool = False,
                incl: str = '', excl: str = '', **params):
@@ -365,8 +365,7 @@ class QueryHandler:
             resp = self.response_list(query_str, query_sources)
 
         resp['service_meta_'] = self._get_service_meta()
-        assert SearchService(**resp)
-        return resp
+        return SearchService(**resp).dict()
 
     def _add_merged_meta(self, response: Dict) -> Dict:
         """Add source metadata to response object.
@@ -566,5 +565,4 @@ class QueryHandler:
 
         if not matching_records:
             response['match_type'] = MatchType.NO_MATCH
-        assert NormalizeService(**response)
-        return response
+        return NormalizeService(**response).dict()

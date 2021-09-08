@@ -1,6 +1,6 @@
 """Test import of NCBI source data"""
 import pytest
-from gene.schemas import Gene, MatchType
+from gene.schemas import Gene, MatchType, SourceName
 from gene.query import QueryHandler
 from datetime import datetime
 from tests.conftest import assertion_checks, check_ncbi_discontinued_gene
@@ -15,7 +15,7 @@ def ncbi():
 
         def search(self, query_str, incl='ncbi'):
             resp = self.query_handler.search(query_str, keyed=True, incl=incl)
-            return resp['source_matches']['NCBI']
+            return resp['source_matches'][SourceName.NCBI]
 
     n = QueryGetter()
     return n
@@ -765,17 +765,17 @@ def test_no_match(ncbi):
     assert response['match_type'] == 0
     assert len(response['records']) == 0
     # double-check that meta still populates
-    assert response['source_meta_'].data_license == 'custom'
-    assert response['source_meta_'].data_license_url == \
+    assert response['source_meta_']['data_license'] == 'custom'
+    assert response['source_meta_']['data_license_url'] == \
            'https://www.ncbi.nlm.nih.gov/home/about/policies/'
-    assert datetime.strptime(response['source_meta_'].version, "%Y%m%d")
-    assert response['source_meta_'].data_url == \
+    assert datetime.strptime(response['source_meta_']['version'], "%Y%m%d")
+    assert response['source_meta_']['data_url'] == \
         'ftp://ftp.ncbi.nlm.nih.gov'
-    assert response['source_meta_'].rdp_url == \
+    assert response['source_meta_']['rdp_url'] == \
         'https://reusabledata.org/ncbi-gene.html'
-    assert not response['source_meta_'].data_license_attributes['non_commercial']  # noqa: E501
-    assert not response['source_meta_'].data_license_attributes['share_alike']
-    assert not response['source_meta_'].data_license_attributes['attribution']
+    assert not response['source_meta_']['data_license_attributes']['non_commercial']  # noqa: E501
+    assert not response['source_meta_']['data_license_attributes']['share_alike']  # noqa: E501
+    assert not response['source_meta_']['data_license_attributes']['attribution']  # noqa: E501
 
     # check blank
     response = ncbi.search('')
@@ -811,16 +811,16 @@ def test_no_match(ncbi):
 def test_meta(ncbi, pdp1):
     """Test NCBI source metadata."""
     response = ncbi.search('PDP1')
-    assert response['source_meta_'].data_license == 'custom'
-    assert response['source_meta_'].data_license_url == \
+    assert response['source_meta_']['data_license'] == 'custom'
+    assert response['source_meta_']['data_license_url'] == \
         'https://www.ncbi.nlm.nih.gov/home/about/policies/'
-    assert datetime.strptime(response['source_meta_'].version, "%Y%m%d")
-    assert response['source_meta_'].data_url == \
+    assert datetime.strptime(response['source_meta_']['version'], "%Y%m%d")
+    assert response['source_meta_']['data_url'] == \
         'ftp://ftp.ncbi.nlm.nih.gov'
-    assert response['source_meta_'].rdp_url == \
+    assert response['source_meta_']['rdp_url'] == \
         'https://reusabledata.org/ncbi-gene.html'
-    assert response['source_meta_'].genome_assemblies == ['GRCh38.p13']
-    assert response['source_meta_'].data_license_attributes == {
+    assert response['source_meta_']['genome_assemblies'] == ['GRCh38.p13']
+    assert response['source_meta_']['data_license_attributes'] == {
         "non_commercial": False,
         "share_alike": False,
         "attribution": False
