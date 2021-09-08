@@ -4,9 +4,9 @@ from gene.schemas import SymbolStatus
 
 def assertion_checks(normalizer_response, test_gene, n_records, match_type):
     """Check that normalizer_response and test_gene are the same."""
-    assert normalizer_response['match_type'] == match_type
-    assert len(normalizer_response['records']) == n_records
-    normalized_gene = normalizer_response['records'][0]
+    assert normalizer_response.match_type == match_type
+    assert len(normalizer_response.records) == n_records
+    normalized_gene = normalizer_response.records[0]
     assert normalized_gene.label == test_gene.label
     assert normalized_gene.concept_id == test_gene.concept_id
     assert set(normalized_gene.aliases) == set(test_gene.aliases)
@@ -29,9 +29,9 @@ def assertion_checks(normalizer_response, test_gene, n_records, match_type):
 def check_ncbi_discontinued_gene(normalizer_response, concept_id, symbol,
                                  n_records, match_type):
     """Check that searches on NCBI discontinued genes are correct."""
-    assert normalizer_response['match_type'] == match_type
-    assert len(normalizer_response['records']) == n_records
-    resp = normalizer_response['records'][0]
+    assert normalizer_response.match_type == match_type
+    assert len(normalizer_response.records) == n_records
+    resp = normalizer_response.records[0]
     assert resp.concept_id == concept_id
     assert resp.symbol == symbol
     assert resp.symbol_status == SymbolStatus.DISCONTINUED

@@ -1,6 +1,6 @@
 """Test import of NCBI source data"""
 import pytest
-from gene.schemas import Gene, MatchType
+from gene.schemas import Gene, MatchType, SourceName
 from gene.query import QueryHandler
 from datetime import datetime
 from tests.conftest import assertion_checks, check_ncbi_discontinued_gene
@@ -15,7 +15,7 @@ def ncbi():
 
         def search(self, query_str, incl='ncbi'):
             resp = self.query_handler.search(query_str, keyed=True, incl=incl)
-            return resp['source_matches']['NCBI']
+            return resp.source_matches[SourceName.NCBI]
 
     n = QueryGetter()
     return n
@@ -535,10 +535,10 @@ def test_dpf1(ncbi, dpf1):
 
     # No Match
     normalizer_response = ncbi.search('DPF 1')
-    assert normalizer_response['match_type'] == 0
+    assert normalizer_response.match_type == 0
 
     normalizer_response = ncbi.search('DPG1')
-    assert normalizer_response['match_type'] == 0
+    assert normalizer_response.match_type == 0
 
 
 def test_pdp1(ncbi, pdp1):
@@ -655,8 +655,8 @@ def test_loc106783576(ncbi, loc106783576):
 def test_oms(ncbi):
     """Test that OMS matches to correct gene concept."""
     normalizer_response = ncbi.search('NCBIgene:619538')
-    assert normalizer_response['match_type'] == 0
-    assert len(normalizer_response['records']) == 0
+    assert normalizer_response.match_type == 0
+    assert len(normalizer_response.records) == 0
 
 
 def test_glc1b(ncbi, glc1b):
@@ -762,65 +762,65 @@ def test_discontinued_genes(ncbi):
 def test_no_match(ncbi):
     """Test that nonexistent query doesn't normalize to a match."""
     response = ncbi.search('cisplatin')
-    assert response['match_type'] == 0
-    assert len(response['records']) == 0
+    assert response.match_type == 0
+    assert len(response.records) == 0
     # double-check that meta still populates
-    assert response['source_meta_'].data_license == 'custom'
-    assert response['source_meta_'].data_license_url == \
+    assert response.source_meta_.data_license == 'custom'
+    assert response.source_meta_.data_license_url == \
            'https://www.ncbi.nlm.nih.gov/home/about/policies/'
-    assert datetime.strptime(response['source_meta_'].version, "%Y%m%d")
-    assert response['source_meta_'].data_url == \
+    assert datetime.strptime(response.source_meta_.version, "%Y%m%d")
+    assert response.source_meta_.data_url == \
         'ftp://ftp.ncbi.nlm.nih.gov'
-    assert response['source_meta_'].rdp_url == \
+    assert response.source_meta_.rdp_url == \
         'https://reusabledata.org/ncbi-gene.html'
-    assert not response['source_meta_'].data_license_attributes['non_commercial']  # noqa: E501
-    assert not response['source_meta_'].data_license_attributes['share_alike']
-    assert not response['source_meta_'].data_license_attributes['attribution']
+    assert not response.source_meta_.data_license_attributes['non_commercial']  # noqa: E501
+    assert not response.source_meta_.data_license_attributes['share_alike']
+    assert not response.source_meta_.data_license_attributes['attribution']
 
     # check blank
     response = ncbi.search('')
-    assert response['match_type'] == 0
+    assert response.match_type == 0
 
     # check some strange characters
     response = ncbi.search('----')
-    assert response['match_type'] == 0
+    assert response.match_type == 0
 
     response = ncbi.search('""')
-    assert response['match_type'] == 0
+    assert response.match_type == 0
 
     response = ncbi.search('~~~')
-    assert response['match_type'] == 0
+    assert response.match_type == 0
 
     response = ncbi.search(' ')
-    assert response['match_type'] == 0
+    assert response.match_type == 0
 
     # Incorrect Concept IDs
     response = ncbi.search('ncblgene:8193')
-    assert response['match_type'] == 0
+    assert response.match_type == 0
 
     response = ncbi.search('NCBIGENE54704')
-    assert response['match_type'] == 0
+    assert response.match_type == 0
 
     response = ncbi.search('54704')
-    assert response['match_type'] == 0
+    assert response.match_type == 0
 
     response = ncbi.search('ncbigene;54704')
-    assert response['match_type'] == 0
+    assert response.match_type == 0
 
 
 def test_meta(ncbi, pdp1):
     """Test NCBI source metadata."""
     response = ncbi.search('PDP1')
-    assert response['source_meta_'].data_license == 'custom'
-    assert response['source_meta_'].data_license_url == \
+    assert response.source_meta_.data_license == 'custom'
+    assert response.source_meta_.data_license_url == \
         'https://www.ncbi.nlm.nih.gov/home/about/policies/'
-    assert datetime.strptime(response['source_meta_'].version, "%Y%m%d")
-    assert response['source_meta_'].data_url == \
+    assert datetime.strptime(response.source_meta_.version, "%Y%m%d")
+    assert response.source_meta_.data_url == \
         'ftp://ftp.ncbi.nlm.nih.gov'
-    assert response['source_meta_'].rdp_url == \
+    assert response.source_meta_.rdp_url == \
         'https://reusabledata.org/ncbi-gene.html'
-    assert response['source_meta_'].genome_assemblies == ['GRCh38.p13']
-    assert response['source_meta_'].data_license_attributes == {
+    assert response.source_meta_.genome_assemblies == ['GRCh38.p13']
+    assert response.source_meta_.data_license_attributes == {
         "non_commercial": False,
         "share_alike": False,
         "attribution": False
