@@ -1,4 +1,5 @@
 """Module to test the query module."""
+from ga4gh.vrsatile.pydantic.vrsatile_model import GeneDescriptor
 from gene.query import QueryHandler, InvalidParameterException
 from gene.schemas import SourceName, MatchType
 import copy
@@ -27,7 +28,7 @@ def query_handler():
 @pytest.fixture(scope='module')
 def normalized_ache():
     """Return normalized Gene Descriptor for ACHE."""
-    return {
+    params = {
         "id": "normalize.gene:ACHE",
         "type": "GeneDescriptor",
         "gene_id": "hgnc:108",
@@ -96,12 +97,13 @@ def normalized_ache():
             }
         ]
     }
+    return GeneDescriptor(**params)
 
 
 @pytest.fixture(scope='module')
 def normalized_braf():
     """Return normalized Gene Descriptor for BRAF."""
-    return {
+    params = {
         "id": "normalize.gene:BRAF",
         "type": "GeneDescriptor",
         "gene_id": "hgnc:1097",
@@ -164,12 +166,13 @@ def normalized_braf():
             }
         ]
     }
+    return GeneDescriptor(**params)
 
 
 @pytest.fixture(scope='module')
 def normalized_abl1():
     """Return normalized Gene Descriptor for ABL1."""
-    return {
+    params = {
         "id": "normalize.gene:ABL1",
         "type": "GeneDescriptor",
         "gene_id": "hgnc:76",
@@ -247,12 +250,13 @@ def normalized_abl1():
             }
         ]
     }
+    return GeneDescriptor(**params)
 
 
 @pytest.fixture(scope='module')
 def normalized_p150():
     """Return normalized Gene Descriptor for p150."""
-    return {
+    params = {
         "id": "normalize.gene:P150",
         "type": "GeneDescriptor",
         "gene_id": "hgnc:1910",
@@ -311,6 +315,7 @@ def normalized_p150():
             }
         ]
     }
+    return GeneDescriptor(**params)
 
 
 @pytest.fixture(scope='module')
@@ -319,15 +324,21 @@ def num_sources():
     return len({s for s in SourceName})
 
 
+@pytest.fixture(scope="module")
+def source_meta():
+    """Create test fixture for source meta"""
+    return [SourceName.HGNC, SourceName.ENSEMBL, SourceName.NCBI]
+
+
 def compare_normalize_resp(resp, expected_query, expected_match_type,
                            expected_gene_descriptor, expected_warnings=None,
                            expected_source_meta=None):
     """Check that normalize response is correct"""
-    assert resp["query"] == expected_query
+    assert resp.query == expected_query
     if expected_warnings:
-        assert len(resp["warnings"]) == len(expected_warnings), "warnings len"
+        assert len(resp.warnings) == len(expected_warnings), "warnings len"
         for e_warnings in expected_warnings:
-            for r_warnings in resp["warnings"]:
+            for r_warnings in resp.warnings:
                 for e_key, e_val in e_warnings.items():
                     for r_key, r_val in r_warnings.items():
                         if e_key == r_val:
@@ -336,18 +347,18 @@ def compare_normalize_resp(resp, expected_query, expected_match_type,
                             else:
                                 assert r_val == e_val, "warnings val"
     else:
-        assert resp["warnings"] == [], "warnings != []"
-    assert resp["match_type"] == expected_match_type
-    compare_gene_descriptor(expected_gene_descriptor, resp["gene_descriptor"])
+        assert resp.warnings == [], "warnings != []"
+    assert resp.match_type == expected_match_type
+    compare_gene_descriptor(expected_gene_descriptor, resp.gene_descriptor)
     if not expected_source_meta:
-        assert resp["source_meta_"] == {}
+        assert resp.source_meta_ == {}
     else:
-        resp_source_meta_keys = resp["source_meta_"].keys()
+        resp_source_meta_keys = resp.source_meta_.keys()
         assert len(resp_source_meta_keys) == len(expected_source_meta),\
             "source_meta_keys"
         for src in expected_source_meta:
             assert src in resp_source_meta_keys
-    compare_service_meta(resp["service_meta_"])
+    compare_service_meta(resp.service_meta_)
 
 
 def compare_service_meta(service_meta):
@@ -361,32 +372,32 @@ def compare_service_meta(service_meta):
 
 def compare_gene_descriptor(test, actual):
     """Test that actual and expected gene descriptors match."""
-    assert actual["id"] == test["id"]
-    assert actual["type"] == test["type"]
-    assert actual["gene_id"] == test["gene_id"]
-    assert actual["label"] == test["label"]
-    assert set(actual["xrefs"]) == set(test["xrefs"]), "xrefs"
-    assert set(actual["alternate_labels"]) == set(test["alternate_labels"]), \
+    assert actual.id == test.id
+    assert actual.type == test.type
+    assert actual.gene_id == test.gene_id
+    assert actual.label == test.label
+    assert set(actual.xrefs) == set(test.xrefs), "xrefs"
+    assert set(actual.alternate_labels) == set(test.alternate_labels), \
         "alt labels"
-    extensions_present = "extensions" in test.keys()
-    assert ("extensions" in actual.keys()) == extensions_present
+    extensions_present = "extensions" in test.__fields__.keys()
+    assert ("extensions" in actual.__fields__.keys()) == extensions_present
     if extensions_present:
-        assert len(actual["extensions"]) == len(test["extensions"]), \
+        assert len(actual.extensions) == len(test.extensions), \
             "len of extensions"
         n_ext_correct = 0
-        for test_ext in test["extensions"]:
-            for actual_ext in actual["extensions"]:
-                if actual_ext["name"] == test_ext["name"]:
-                    assert isinstance(actual_ext["value"],
-                                      type(test_ext["value"]))
-                    if isinstance(test_ext["value"], list):
-                        assert set(actual_ext["value"]) == \
-                               set(test_ext["value"]), f"{test_ext['value']} value"  # noqa: E501
+        for test_ext in test.extensions:
+            for actual_ext in actual.extensions:
+                if actual_ext.name == test_ext.name:
+                    assert isinstance(actual_ext.value,
+                                      type(test_ext.value))
+                    if isinstance(test_ext.value, list):
+                        assert set(actual_ext.value) == \
+                               set(test_ext.value), f"{test_ext.value} value"  # noqa: E501
                     else:
-                        assert actual_ext["value"] == test_ext["value"]
-                    assert actual_ext["type"] == test_ext["type"]
+                        assert actual_ext.value == test_ext.value
+                    assert actual_ext.type == test_ext.type
                     n_ext_correct += 1
-        assert n_ext_correct == len(test['extensions']), \
+        assert n_ext_correct == len(test.extensions), \
             "number of correct extensions"
 
 
@@ -439,7 +450,7 @@ def test_search_invalid_parameter_exception(query_handler):
         resp = query_handler.search('BRAF', incl='hgnc', excl='hgnc')  # noqa: F841, E501
 
 
-def test_ache_query(query_handler, num_sources, normalized_ache):
+def test_ache_query(query_handler, num_sources, normalized_ache, source_meta):
     """Test that ACHE concept_id shows xref matches."""
     # Search
     resp = query_handler.search('ncbigene:43', keyed=True)
@@ -465,69 +476,68 @@ def test_ache_query(query_handler, num_sources, normalized_ache):
 
     # Normalize
     q = "ACHE"
-    expected_source_meta = ["HGNC", "Ensembl", "NCBI"]
     resp = query_handler.normalize(q)
     compare_normalize_resp(resp, q, MatchType.SYMBOL, normalized_ache,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "ache"
     resp = query_handler.normalize(q)
     cpy_normalized_ache = copy.deepcopy(normalized_ache)
-    cpy_normalized_ache["id"] = "normalize.gene:ache"
+    cpy_normalized_ache.id = "normalize.gene:ache"
     compare_normalize_resp(resp, q, MatchType.SYMBOL, cpy_normalized_ache,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "hgnc:108"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache["id"] = "normalize.gene:hgnc%3A108"
+    cpy_normalized_ache.id = "normalize.gene:hgnc%3A108"
     compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_ache,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "ensembl:ENSG00000087085"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache["id"] = "normalize.gene:ensembl%3AENSG00000087085"
+    cpy_normalized_ache.id = "normalize.gene:ensembl%3AENSG00000087085"
     compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_ache,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "ncbigene:43"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache["id"] = "normalize.gene:ncbigene%3A43"
+    cpy_normalized_ache.id = "normalize.gene:ncbigene%3A43"
     compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_ache,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "3.1.1.7"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache["id"] = "normalize.gene:3.1.1.7"
+    cpy_normalized_ache.id = "normalize.gene:3.1.1.7"
     compare_normalize_resp(resp, q, MatchType.ALIAS, cpy_normalized_ache,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "ARACHE"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache["id"] = "normalize.gene:ARACHE"
+    cpy_normalized_ache.id = "normalize.gene:ARACHE"
     compare_normalize_resp(resp, q, MatchType.ALIAS, cpy_normalized_ache,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "YT"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache["id"] = "normalize.gene:YT"
+    cpy_normalized_ache.id = "normalize.gene:YT"
     compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, cpy_normalized_ache,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "ACEE"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache["id"] = "normalize.gene:ACEE"
+    cpy_normalized_ache.id = "normalize.gene:ACEE"
     compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, cpy_normalized_ache,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "omim:100740"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache["id"] = "normalize.gene:omim%3A100740"
+    cpy_normalized_ache.id = "normalize.gene:omim%3A100740"
     compare_normalize_resp(resp, q, MatchType.ASSOCIATED_WITH,
                            cpy_normalized_ache,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
 
-def test_braf_query(query_handler, num_sources, normalized_braf):
+def test_braf_query(query_handler, num_sources, normalized_braf, source_meta):
     """Test that BRAF concept_id shows xref matches."""
     # Search
     resp = query_handler.search('ncbigene:673', keyed=True)
@@ -553,57 +563,56 @@ def test_braf_query(query_handler, num_sources, normalized_braf):
 
     # Normalize
     q = "BRAF"
-    expected_source_meta = ["HGNC", "Ensembl", "NCBI"]
     resp = query_handler.normalize(q)
     compare_normalize_resp(resp, q, MatchType.SYMBOL, normalized_braf,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "braf"
     resp = query_handler.normalize(q)
     cpy_normalized_braf = copy.deepcopy(normalized_braf)
-    cpy_normalized_braf["id"] = "normalize.gene:braf"
+    cpy_normalized_braf.id = "normalize.gene:braf"
     compare_normalize_resp(resp, q, MatchType.SYMBOL, cpy_normalized_braf,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "hgnc:1097"
     resp = query_handler.normalize(q)
-    cpy_normalized_braf["id"] = "normalize.gene:hgnc%3A1097"
+    cpy_normalized_braf.id = "normalize.gene:hgnc%3A1097"
     compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_braf,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "ensembl:ENSG00000157764"
     resp = query_handler.normalize(q)
-    cpy_normalized_braf["id"] = "normalize.gene:ensembl%3AENSG00000157764"
+    cpy_normalized_braf.id = "normalize.gene:ensembl%3AENSG00000157764"
     compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_braf,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "ncbigene:673"
     resp = query_handler.normalize(q)
-    cpy_normalized_braf["id"] = "normalize.gene:ncbigene%3A673"
+    cpy_normalized_braf.id = "normalize.gene:ncbigene%3A673"
     compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_braf,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "NS7"
     resp = query_handler.normalize(q)
-    cpy_normalized_braf["id"] = "normalize.gene:NS7"
+    cpy_normalized_braf.id = "normalize.gene:NS7"
     compare_normalize_resp(resp, q, MatchType.ALIAS, cpy_normalized_braf,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "b-raf"
     resp = query_handler.normalize(q)
-    cpy_normalized_braf["id"] = "normalize.gene:b-raf"
+    cpy_normalized_braf.id = "normalize.gene:b-raf"
     compare_normalize_resp(resp, q, MatchType.ALIAS, cpy_normalized_braf,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "omim:164757"
     resp = query_handler.normalize(q)
-    cpy_normalized_braf["id"] = "normalize.gene:omim%3A164757"
+    cpy_normalized_braf.id = "normalize.gene:omim%3A164757"
     compare_normalize_resp(resp, q, MatchType.ASSOCIATED_WITH,
                            cpy_normalized_braf,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
 
-def test_abl1_query(query_handler, num_sources, normalized_abl1):
+def test_abl1_query(query_handler, num_sources, normalized_abl1, source_meta):
     """Test that ABL1 concept_id shows xref matches."""
     # Search
     resp = query_handler.search('ncbigene:25', keyed=True)
@@ -629,79 +638,77 @@ def test_abl1_query(query_handler, num_sources, normalized_abl1):
 
     # Normalize
     q = "ABL1"
-    expected_source_meta = ["HGNC", "Ensembl", "NCBI"]
     resp = query_handler.normalize(q)
     compare_normalize_resp(resp, q, MatchType.SYMBOL, normalized_abl1,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "abl1"
     resp = query_handler.normalize(q)
     cpy_normalized_abl1 = copy.deepcopy(normalized_abl1)
-    cpy_normalized_abl1["id"] = "normalize.gene:abl1"
+    cpy_normalized_abl1.id = "normalize.gene:abl1"
     compare_normalize_resp(resp, q, MatchType.SYMBOL, cpy_normalized_abl1,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "hgnc:76"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1["id"] = "normalize.gene:hgnc%3A76"
+    cpy_normalized_abl1.id = "normalize.gene:hgnc%3A76"
     compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_abl1,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "ensembl:ENSG00000097007"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1["id"] = "normalize.gene:ensembl%3AENSG00000097007"
+    cpy_normalized_abl1.id = "normalize.gene:ensembl%3AENSG00000097007"
     compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_abl1,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "ncbigene:25"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1["id"] = "normalize.gene:ncbigene%3A25"
+    cpy_normalized_abl1.id = "normalize.gene:ncbigene%3A25"
     compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_abl1,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "v-abl"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1["id"] = "normalize.gene:v-abl"
+    cpy_normalized_abl1.id = "normalize.gene:v-abl"
     compare_normalize_resp(resp, q, MatchType.ALIAS, cpy_normalized_abl1,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "LOC116063"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1["id"] = "normalize.gene:LOC116063"
+    cpy_normalized_abl1.id = "normalize.gene:LOC116063"
     compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, cpy_normalized_abl1,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "LOC112779"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1["id"] = "normalize.gene:LOC112779"
+    cpy_normalized_abl1.id = "normalize.gene:LOC112779"
     compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, cpy_normalized_abl1,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "ABL"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1["id"] = "normalize.gene:ABL"
+    cpy_normalized_abl1.id = "normalize.gene:ABL"
     compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, cpy_normalized_abl1,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
     q = "refseq:NM_007313"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1["id"] = "normalize.gene:refseq%3ANM_007313"
+    cpy_normalized_abl1.id = "normalize.gene:refseq%3ANM_007313"
     compare_normalize_resp(resp, q, MatchType.ASSOCIATED_WITH,
                            cpy_normalized_abl1,
-                           expected_source_meta=expected_source_meta)
+                           expected_source_meta=source_meta)
 
 
-def test_multiple_norm_concepts(query_handler, normalized_p150):
+def test_multiple_norm_concepts(query_handler, normalized_p150, source_meta):
     """Tests where more than one normalized concept is found."""
     q = "P150"
-    expected_source_meta = ["HGNC", "Ensembl", "NCBI"]
     resp = query_handler.normalize(q)
     expected_warnings = [{
         "multiple_normalized_concepts_found":
             ['hgnc:16850', 'hgnc:76', 'hgnc:17168', 'hgnc:500', 'hgnc:8982']
     }]
     compare_normalize_resp(resp, q, MatchType.ALIAS, normalized_p150,
-                           expected_source_meta=expected_source_meta,
+                           expected_source_meta=source_meta,
                            expected_warnings=expected_warnings)
 
 

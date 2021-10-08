@@ -38,7 +38,8 @@ class QueryHandler:
         """
         self.db = Database(db_url=db_url, region_name=db_region)
 
-    def emit_warnings(self, query_str: str) -> List:
+    @staticmethod
+    def emit_warnings(query_str: str) -> List:
         """Emit warnings if query contains non breaking space characters.
 
         :param str query_str: query string
@@ -113,7 +114,7 @@ class QueryHandler:
         elif matches[src_name]['match_type'].value == match_type.value:
             matches[src_name]['records'].append(gene)
 
-        return (response, src_name)
+        return response, src_name
 
     def fetch_records(self,
                       response: Dict[str, Dict],
@@ -143,7 +144,7 @@ class QueryHandler:
             except ClientError as e:
                 logger.error(e.response['Error']['Message'])
 
-        return (response, matched_sources)
+        return response, matched_sources
 
     def fill_no_matches(self, resp: Dict) -> Dict:
         """Fill all empty source_matches slots with NO_MATCH results.
@@ -192,7 +193,7 @@ class QueryHandler:
                 result = self.db.genes.query(
                     KeyConditionExpression=filter_exp
                 )
-                if len(result['Items']) > 0:  # TODO remove check?
+                if len(result['Items']) > 0:
                     concept_id_items += result['Items']
             except ClientError as e:
                 logger.error(e.response['Error']['Message'])
@@ -201,7 +202,7 @@ class QueryHandler:
             (resp, src_name) = self.add_record(resp, item,
                                                MatchType.CONCEPT_ID)
             sources = sources - {src_name}
-        return (resp, sources)
+        return resp, sources
 
     def check_match_type(self,
                          query: str,
@@ -230,14 +231,14 @@ class QueryHandler:
                 sources = sources - matched_srcs
         except ClientError as e:
             logger.error(e.response['Error']['Message'])
-        return (resp, sources)
+        return resp, sources
 
-    def response_keyed(self, query: str, sources: List[str]) -> Dict:
+    def response_keyed(self, query: str, sources: Set[str]) -> Dict:
         """Return response as dict where key is source name and value
         is a list of records. Corresponds to `keyed=true` API parameter.
 
         :param str query: string to match against
-        :param List[str] sources: sources to match from
+        :param Set[str] sources: sources to match from
         :return: completed response object to return to client
         """
         resp = {
@@ -268,7 +269,7 @@ class QueryHandler:
 
         return resp
 
-    def response_list(self, query: str, sources: List[str]) -> Dict:
+    def response_list(self, query: str, sources: Set[str]) -> Dict:
         """Return response as list, where the first key-value in each item
         is the source name. Corresponds to `keyed=false` API parameter.
 
@@ -290,7 +291,8 @@ class QueryHandler:
 
         return response_dict
 
-    def _get_service_meta(self) -> ServiceMeta:
+    @staticmethod
+    def _get_service_meta() -> ServiceMeta:
         """Return metadata about gene-normalizer service.
 
         :return: Service Meta
@@ -384,7 +386,7 @@ class QueryHandler:
         return response
 
     def add_gene_descriptor(self, response, record, match_type,
-                            possible_concepts=[]):
+                            possible_concepts=[]) -> Dict:
         """Add gene descriptor to response.
 
         :param Dict response: Response object
@@ -458,7 +460,8 @@ class QueryHandler:
         response["match_type"] = match_type
         return response
 
-    def _record_order(self, record: Dict) -> (int, str):
+    @staticmethod
+    def _record_order(record: Dict) -> (int, str):
         """Construct priority order for matching. Only called by sort().
 
         :param Dict record: individual record item in iterable to sort
@@ -468,7 +471,8 @@ class QueryHandler:
         source_rank = SourcePriority[src]
         return source_rank, record['concept_id']
 
-    def _handle_failed_merge_ref(self, record, response, query) -> Dict:
+    @staticmethod
+    def _handle_failed_merge_ref(record, response, query) -> Dict:
         """Log + fill out response for a failed merge reference lookup.
 
         :param Dict record: record containing failed merge_ref
@@ -495,32 +499,36 @@ class QueryHandler:
 
         if query == '':
             response['match_type'] = MatchType.NO_MATCH
-            return response
+            return NormalizeService(**response)
         query_str = query.lower().strip()
 
         # check merged concept ID match
         record = self.db.get_record_by_id(query_str, case_sensitive=False,
                                           merge=True)
         if record:
-            return self.add_gene_descriptor(response, record,
-                                            MatchType.CONCEPT_ID)
+            response = self.add_gene_descriptor(
+                response, record, MatchType.CONCEPT_ID)
+            return NormalizeService(**response)
 
         # check concept ID match
         record = self.db.get_record_by_id(query_str, case_sensitive=False)
         if record:
             merge_ref = record.get('merge_ref')
             if not merge_ref:
-                return self.add_gene_descriptor(response, record,
-                                                MatchType.CONCEPT_ID)
+                response = self.add_gene_descriptor(
+                    response, record, MatchType.CONCEPT_ID)
+                return NormalizeService(**response)
             merge = self.db.get_record_by_id(merge_ref,
                                              case_sensitive=False,
                                              merge=True)
             if merge is None:
-                return self._handle_failed_merge_ref(record, response,
-                                                     query_str)
+                response = self._handle_failed_merge_ref(
+                    record, response, query_str)
+                return NormalizeService(**response)
             else:
-                return self.add_gene_descriptor(response, merge,
-                                                MatchType.CONCEPT_ID)
+                response = self.add_gene_descriptor(
+                    response, merge, MatchType.CONCEPT_ID)
+                return NormalizeService(**response)
 
         # check other match types
         matching_records = None
@@ -544,23 +552,26 @@ class QueryHandler:
                 if record:
                     merge_ref = record.get('merge_ref')
                     if not merge_ref:
-                        return self.add_gene_descriptor(
+                        response = self.add_gene_descriptor(
                             response, record,
                             MatchType[match_type.upper()],
                             possible_concepts
                         )
+                        return NormalizeService(**response)
                     merge = self.db.get_record_by_id(record['merge_ref'],
                                                      case_sensitive=False,
                                                      merge=True)
                     if merge is None:
-                        return self._handle_failed_merge_ref(record, response,
-                                                             query_str)
+                        response = self._handle_failed_merge_ref(
+                            record, response, query_str)
+                        return NormalizeService(**response)
                     else:
-                        return self.add_gene_descriptor(
+                        response = self.add_gene_descriptor(
                             response, merge,
                             MatchType[match_type.upper()],
                             possible_concepts
                         )
+                        return NormalizeService(**response)
 
         if not matching_records:
             response['match_type'] = MatchType.NO_MATCH
