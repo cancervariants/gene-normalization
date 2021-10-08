@@ -712,6 +712,21 @@ def test_multiple_norm_concepts(query_handler, normalized_p150, source_meta):
                            expected_warnings=expected_warnings)
 
 
+def test_invalid_queries(query_handler):
+    """Test invalid queries"""
+    resp = query_handler.normalize("B R A F")
+    assert resp.match_type is MatchType.NO_MATCH
+
+    with pytest.raises(TypeError):
+        resp["match_type"]
+
+    resp = query_handler.search("B R A F")
+    assert resp.source_matches[0].match_type is MatchType.NO_MATCH
+
+    with pytest.raises(TypeError):
+        resp.source_matches[0]["match_type"]
+
+
 def test_service_meta(query_handler):
     """Test service meta info in response."""
     resp = query_handler.search("pheno")
