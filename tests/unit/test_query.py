@@ -30,10 +30,7 @@ def normalized_ache():
     return {
         "id": "normalize.gene:ACHE",
         "type": "GeneDescriptor",
-        "gene": {
-            "gene_id": "hgnc:108",
-            "type": "Gene"
-        },
+        "gene_id": "hgnc:108",
         "label": "ACHE",
         "xrefs": {
             "ensembl:ENSG00000087085",
@@ -107,10 +104,7 @@ def normalized_braf():
     return {
         "id": "normalize.gene:BRAF",
         "type": "GeneDescriptor",
-        "gene": {
-            "gene_id": "hgnc:1097",
-            "type": "Gene"
-        },
+        "gene_id": "hgnc:1097",
         "label": "BRAF",
         "xrefs": {
             "ensembl:ENSG00000157764",
@@ -178,10 +172,7 @@ def normalized_abl1():
     return {
         "id": "normalize.gene:ABL1",
         "type": "GeneDescriptor",
-        "gene": {
-            "gene_id": "hgnc:76",
-            "type": "Gene"
-        },
+        "gene_id": "hgnc:76",
         "label": "ABL1",
         "xrefs": {
             "ensembl:ENSG00000097007",
@@ -264,10 +255,7 @@ def normalized_p150():
     return {
         "id": "normalize.gene:P150",
         "type": "GeneDescriptor",
-        "gene": {
-            "gene_id": "hgnc:1910",
-            "type": "Gene"
-        },
+        "gene_id": "hgnc:1910",
         "label": "CHAF1A",
         "xrefs": {
             "ensembl:ENSG00000167670",
@@ -375,7 +363,7 @@ def compare_gene_descriptor(test, actual):
     """Test that actual and expected gene descriptors match."""
     assert actual["id"] == test["id"]
     assert actual["type"] == test["type"]
-    assert actual["gene"] == test["gene"]
+    assert actual["gene_id"] == test["gene_id"]
     assert actual["label"] == test["label"]
     assert set(actual["xrefs"]) == set(test["xrefs"]), "xrefs"
     assert set(actual["alternate_labels"]) == set(test["alternate_labels"]), \
