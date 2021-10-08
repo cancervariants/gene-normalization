@@ -20,6 +20,7 @@ websockets = "*"
 httptools = "*"
 typing-extensions = "*"
 "ga4gh.vrsatile.pydantic" = ">=0.0.3"
+jsonschema = ">=2.3, <4.0"
 
 [dev-packages]
 gene = {editable = true, path = "."}
