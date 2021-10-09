@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
 from gene.database import Database
-from gene import PREFIX_LOOKUP, ITEM_TYPES, PROJECT_ROOT
+from gene import PREFIX_LOOKUP, ITEM_TYPES, APP_ROOT
 from biocommons.seqrepo import SeqRepo
 from pathlib import Path
 from ftplib import FTP
@@ -25,7 +25,7 @@ class Base(ABC):
 
     def __init__(self, database: Database, host: str, data_dir: str,
                  src_data_dir: Path,
-                 seqrepo_dir=PROJECT_ROOT / 'data' / 'seqrepo' / 'latest',
+                 seqrepo_dir=APP_ROOT / 'data' / 'seqrepo' / 'latest',
                  *args, **kwargs) -> None:
         """Instantiate Base class.
 

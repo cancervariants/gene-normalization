@@ -1,6 +1,6 @@
 """This module defines the Ensembl ETL methods."""
 from .base import Base
-from gene import PROJECT_ROOT
+from gene import APP_ROOT
 from gene.schemas import SourceName, NamespacePrefix, Strand, SourceMeta
 import logging
 from gene.database import Database
@@ -19,7 +19,7 @@ class Ensembl(Base):
                  database: Database,
                  host='ftp.ensembl.org',
                  data_dir='pub/',
-                 src_data_dir=PROJECT_ROOT / 'data' / 'ensembl',
+                 src_data_dir=APP_ROOT / 'data' / 'ensembl',
                  version='104'
                  ):
         """Initialize Ensembl ETL class.

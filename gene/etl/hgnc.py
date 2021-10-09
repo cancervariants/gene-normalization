@@ -1,6 +1,6 @@
 """This module defines the HGNC ETL methods."""
 from .base import Base
-from gene import PROJECT_ROOT, PREFIX_LOOKUP
+from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, \
     SourceMeta, Annotation, Chromosome
 from gene.database import Database
@@ -21,7 +21,7 @@ class HGNC(Base):
                  database: Database,
                  host='ftp.ebi.ac.uk',
                  data_dir='pub/databases/genenames/hgnc/json/',
-                 src_data_dir=PROJECT_ROOT / 'data' / 'hgnc',
+                 src_data_dir=APP_ROOT / 'data' / 'hgnc',
                  fn='hgnc_complete_set.json'
                  ):
         """Initialize HGNC ETL class.

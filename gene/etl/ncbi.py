@@ -1,6 +1,6 @@
 """This module defines ETL methods for the NCBI data source."""
 from .base import Base
-from gene import PROJECT_ROOT, PREFIX_LOOKUP
+from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import Database
 from gene.schemas import SourceMeta, Gene, SourceName, NamespacePrefix, \
     Annotation, Chromosome, SymbolStatus
@@ -24,7 +24,7 @@ class NCBI(Base):
                  database: Database,
                  host='ftp.ncbi.nlm.nih.gov',
                  data_dir='gene/DATA/',
-                 src_data_dir=PROJECT_ROOT / 'data' / 'ncbi',
+                 src_data_dir=APP_ROOT / 'data' / 'ncbi',
                  assembly: str = 'GRCh38.p13'):
         """Construct the NCBI ETL instance.
 

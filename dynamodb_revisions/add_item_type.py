@@ -6,8 +6,8 @@ import click
 from botocore.exceptions import ClientError
 import logging
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-sys.path.append(f"{PROJECT_ROOT}")
+APP_ROOT = Path(__file__).resolve().parents[1]
+sys.path.append(f"{APP_ROOT}")
 
 from gene.database import Database  # noqa: E402
 
