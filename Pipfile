@@ -13,7 +13,6 @@ beautifulsoup4 = "*"
 gffutils = "*"
 requests = "*"
 "biocommons.seqrepo" = "*"
-seqrepo = "*"
 "ga4gh.vrs" = {version = "==0.7.0rc3", extras = ["extras"]}
 uvloop = "*"
 websockets = "*"
