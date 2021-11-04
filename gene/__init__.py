@@ -24,6 +24,9 @@ if 'GENE_NORM_EB_PROD' in environ:
     logger.addHandler(ch)
 
 
+SEQREPO_DATA_PATH = '/usr/local/share/seqrepo/latest'
+
+
 class DownloadException(Exception):
     """Exception for failures relating to source file downloads."""
 

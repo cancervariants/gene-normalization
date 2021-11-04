@@ -12,21 +12,18 @@ for direction on installing pipenv in your compute environment.
 Once installed, from the project root dir, just run:
 
 ```commandline
-pipenv sync
+pipenv shell
+pipenv lock && pipenv sync
 ```
 
 Gene Normalization relies on [SeqRepo](https://github.com/biocommons/biocommons.seqrepo) data. 
 
-From the _gene_ directory of the repository:
-```commandline
-pip install seqrepo
-mkdir -p data/seqrepo
-seqrepo -r data/seqrepo pull -i 2021-01-29
-sudo chmod -R u+w data/seqrepo
-cd data/seqrepo
-seqrepo_date_dir=$(ls -d */)
-mv $seqrepo_date_dir latest
+From the _root_ directory:
 ```
+pip install seqrepo
+sudo mkdir /usr/local/share/seqrepo
+sudo chown $USER /usr/local/share/seqrepo
+seqrepo pull -i 2021-01-29
 
 ### Deploying DynamoDB Locally
 
