@@ -2,7 +2,7 @@
 import pytest
 import pydantic
 from gene.schemas import Gene
-from ga4gh.vrsatile.pydantic.vrs_model import ChromosomeLocation, \
+from ga4gh.vrsatile.pydantic.vrs_models import ChromosomeLocation, \
     SequenceLocation, Gene as GeneValueObject, CytobandInterval, \
     SequenceInterval, Number
 
