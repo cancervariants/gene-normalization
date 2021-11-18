@@ -1,5 +1,5 @@
 """Module to test the query module."""
-from ga4gh.vrsatile.pydantic.vrsatile_model import GeneDescriptor
+from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
 from gene.query import QueryHandler, InvalidParameterException
 from gene.schemas import SourceName, MatchType
 import copy

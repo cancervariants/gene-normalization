@@ -8,7 +8,7 @@ from gene import NAMESPACE_LOOKUP, PREFIX_LOOKUP, ITEM_TYPES
 from gene.database import Database
 from gene.schemas import Gene, SourceMeta, MatchType, SourceName, \
     ServiceMeta, SourcePriority, NormalizeService, SearchService
-from ga4gh.vrsatile.pydantic.vrsatile_model import GeneDescriptor, Extension
+from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor, Extension
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 from datetime import datetime
