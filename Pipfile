@@ -13,12 +13,12 @@ beautifulsoup4 = "*"
 gffutils = "*"
 requests = "*"
 "biocommons.seqrepo" = "*"
-"ga4gh.vrs" = {version = "==0.7.0rc3", extras = ["extras"]}
+"ga4gh.vrs" = {version = ">=0.7.2", extras = ["extras"]}
 uvloop = "*"
 websockets = "*"
 httptools = "*"
 typing-extensions = "*"
-"ga4gh.vrsatile.pydantic" = ">=0.0.3"
+"ga4gh.vrsatile.pydantic" = ">=0.0.5"
 jsonschema = ">=2.3, <4.0"
 
 [dev-packages]

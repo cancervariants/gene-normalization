@@ -5,9 +5,9 @@ from typing import Type, List, Optional, Dict, Union, Any
 from pydantic import BaseModel, StrictBool, validator
 from enum import Enum, IntEnum
 from ga4gh.vrsatile.pydantic import return_value
-from ga4gh.vrsatile.pydantic.vrs_model import SequenceLocation, \
+from ga4gh.vrsatile.pydantic.vrs_models import SequenceLocation, \
     ChromosomeLocation, CURIE
-from ga4gh.vrsatile.pydantic.vrsatile_model import GeneDescriptor
+from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
 from datetime import datetime
 from pydantic.types import StrictStr
 
