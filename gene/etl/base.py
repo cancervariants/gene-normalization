@@ -164,6 +164,6 @@ class Base(ABC):
         :param Path seqrepo_dir: Path to seqrepo directory
         :return: SeqRepo instance
         """
-        if not seqrepo_dir.exists():
+        if not Path(seqrepo_dir).exists():
             raise NotADirectoryError(f"Could not find {seqrepo_dir}")
         return SeqRepo(seqrepo_dir)
