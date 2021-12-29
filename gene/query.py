@@ -17,12 +17,7 @@ from datetime import datetime
 class InvalidParameterException(Exception):
     """Exception for invalid parameter args provided by the user."""
 
-    def __init__(self, message: str):
-        """Create new instance
-
-        :param str message: string describing the nature of the error
-        """
-        super().__init__(message)
+    pass
 
 
 class QueryHandler:
@@ -99,6 +94,7 @@ class QueryHandler:
                         int(loc['interval']['start']['value'])
                     loc['interval']['end']['value'] = \
                         int(loc['interval']['end']['value'])
+        item["match_type"] = match_type
         gene = Gene(**item)
         src_name = item['src_name']
 
@@ -107,44 +103,36 @@ class QueryHandler:
             pass
         elif matches[src_name] is None:
             matches[src_name] = {
-                'match_type': match_type,
                 'records': [gene],
                 'source_meta_': self.fetch_meta(src_name)
             }
-        elif matches[src_name]['match_type'].value == match_type.value:
+        else:
             matches[src_name]['records'].append(gene)
 
         return response, src_name
 
-    def fetch_records(self,
-                      response: Dict[str, Dict],
-                      concept_ids: List[str],
-                      match_type: MatchType) -> (Dict, Set):
-        """Return matched Gene records as a structured response for a given
-        collection of concept IDs.
+    def fetch_record(self, response: Dict[str, Dict], concept_id: str,
+                     match_type: MatchType) -> None:
+        """Add fetched record to response
 
         :param Dict[str, Dict] response: in-progress response object to return
             to client.
-        :param List[str] concept_ids: List of concept IDs to build from.
+        :param str concept_id: Concept id to fetch record for.
             Should be all lower-case.
-        :param MatchType match_type: record should be assigned this type of
-            match.
-        :return: response Dict with records filled in via provided concept
-            IDs, and Set of source names of matched records
+        :param MatchType match_type: match type for record
         """
         matched_sources = set()
-        for concept_id in concept_ids:
-            try:
-                pk = f'{concept_id.lower()}##identity'
-                filter_exp = Key('label_and_type').eq(pk)
-                result = self.db.genes.query(KeyConditionExpression=filter_exp)
-                match = result['Items'][0]
-                (response, src) = self.add_record(response, match, match_type)
-                matched_sources.add(src)
-            except ClientError as e:
-                logger.error(e.response['Error']['Message'])
+        try:
+            pk = f'{concept_id}##identity'
 
-        return response, matched_sources
+            filter_exp = Key('label_and_type').eq(pk)
+            result = self.db.genes.query(KeyConditionExpression=filter_exp)
+            match = result['Items'][0]
+
+            (response, src) = self.add_record(response, match, match_type)
+            matched_sources.add(src)
+        except ClientError as e:
+            logger.error(e.response['Error']['Message'])
 
     def fill_no_matches(self, resp: Dict) -> Dict:
         """Fill all empty source_matches slots with NO_MATCH results.
@@ -162,27 +150,21 @@ class QueryHandler:
                 }
         return resp
 
-    def check_concept_id(self,
-                         query: str,
-                         resp: Dict,
-                         sources: Set[str]) -> (Dict, Set):
+    def check_concept_id(self, query: str) -> Set:
         """Check query for concept ID match. Should only find 0 or 1 matches,
         but stores them as a collection to be safe.
 
         :param str query: search string
-        :param Dict resp: in-progress response object to return to client
-        :param Set[str] sources: remaining unmatched sources
-        :return: Tuple with updated resp object and updated set of unmatched
-            sources
+        :return: Set of matched concept ids
         """
-        concept_id_items = []
+        concept_id_items = set()
         if [p for p in PREFIX_LOOKUP.keys() if query.startswith(p)]:
             pk = f'{query}##identity'
             filter_exp = Key('label_and_type').eq(pk)
             try:
                 result = self.db.genes.query(KeyConditionExpression=filter_exp)
-                if len(result['Items']) > 0:
-                    concept_id_items += result['Items']
+                for item in result['Items']:
+                    concept_id_items.add(item['concept_id'])
             except ClientError as e:
                 logger.error(e.response['Error']['Message'])
         for prefix in [p for p in NAMESPACE_LOOKUP.keys() if
@@ -193,45 +175,32 @@ class QueryHandler:
                 result = self.db.genes.query(
                     KeyConditionExpression=filter_exp
                 )
-                if len(result['Items']) > 0:
-                    concept_id_items += result['Items']
+                for item in result['Items']:
+                    concept_id_items.add(item['concept_id'])
             except ClientError as e:
                 logger.error(e.response['Error']['Message'])
-
-        for item in concept_id_items:
-            (resp, src_name) = self.add_record(resp, item,
-                                               MatchType.CONCEPT_ID)
-            sources = sources - {src_name}
-        return resp, sources
+        return concept_id_items
 
     def check_match_type(self,
                          query: str,
-                         resp: Dict,
-                         sources: Set[str],
-                         match: str) -> (Dict, Set):
+                         match: str) -> Set:
         """Check query for selected match type.
 
         :param str query: search string
-        :param Dict resp: in-progress response object to return to client
-        :param Set[str] sources: remaining unmatched sources
         :param str match: Match type name
-        :return: Tuple with updated resp object and updated set of unmatched
-                 sources
+        :return: Set of matched concept ids
         """
         filter_exp = Key('label_and_type').eq(f'{query}##{match}')
+        concept_ids = set()
         try:
             db_response = self.db.genes.query(
                 KeyConditionExpression=filter_exp
             )
             if 'Items' in db_response.keys():
-                concept_ids = [i['concept_id'] for i in db_response['Items']]
-                (resp, matched_srcs) = self.fetch_records(
-                    resp, concept_ids, MatchType[match.upper()]
-                )
-                sources = sources - matched_srcs
+                concept_ids = {i['concept_id'] for i in db_response['Items']}
         except ClientError as e:
             logger.error(e.response['Error']['Message'])
-        return resp, sources
+        return concept_ids
 
     def response_keyed(self, query: str, sources: Set[str]) -> Dict:
         """Return response as dict where key is source name and value
@@ -249,25 +218,38 @@ class QueryHandler:
             }
         }
         if query == '':
-            resp = self.fill_no_matches(resp)
-            return resp
+            return self.fill_no_matches(resp)
         query_l = query.lower()
 
+        matched_concept_ids = set()
         # check if concept ID match
-        (resp, sources) = self.check_concept_id(query_l, resp, sources)
-        if len(sources) == 0:
-            return resp
+        matched_concept_ids = matched_concept_ids.union(
+            self.check_concept_id(query_l))
 
         for match in ITEM_TYPES.values():
-            (resp, sources) = self.check_match_type(
-                query_l, resp, sources, match)
-            if len(sources) == 0:
-                return resp
+            matched_concept_ids = matched_concept_ids.union(
+                self.check_match_type(query_l, match))
+
+        added_concept_ids = list()
+        for concept_id in matched_concept_ids:
+            matched_records = self.db.genes.query(
+                IndexName='concept_id_index',
+                KeyConditionExpression=Key('concept_id').eq(concept_id)
+            )
+            for record in matched_records['Items']:
+                if record["concept_id"] in added_concept_ids:
+                    continue
+                else:
+                    added_concept_ids.append(record["concept_id"])
+                    if record["item_type"] not in ["merger", "identity"]:
+                        self.fetch_record(
+                            resp, record['concept_id'],
+                            MatchType[record['item_type'].upper()])
+                    elif record["item_type"] != "merger":
+                        self.add_record(resp, record, MatchType.CONCEPT_ID)
 
         # remaining sources get no match
-        resp = self.fill_no_matches(resp)
-
-        return resp
+        return self.fill_no_matches(resp)
 
     def response_list(self, query: str, sources: Set[str]) -> Dict:
         """Return response as list, where the first key-value in each item
