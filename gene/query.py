@@ -81,7 +81,7 @@ class QueryHandler:
         :param Dict[str, Dict] response: in-progress response object to return
             to client
         :param Dict item: Item retrieved from DynamoDB
-        :param MatchTy pe match_type: type of query match
+        :param MatchType match_type: match type for query
         :return: Tuple containing updated response object, and string
             containing name of the source of the match
         """
@@ -121,16 +121,12 @@ class QueryHandler:
             Should be all lower-case.
         :param MatchType match_type: match type for record
         """
-        matched_sources = set()
         try:
             pk = f'{concept_id}##identity'
-
             filter_exp = Key('label_and_type').eq(pk)
             result = self.db.genes.query(KeyConditionExpression=filter_exp)
             match = result['Items'][0]
-
-            (response, src) = self.add_record(response, match, match_type)
-            matched_sources.add(src)
+            self.add_record(response, match, match_type)
         except ClientError as e:
             logger.error(e.response['Error']['Message'])
 
@@ -149,58 +145,6 @@ class QueryHandler:
                     'source_meta_': self.fetch_meta(src_name)
                 }
         return resp
-
-    def check_concept_id(self, query: str) -> Set:
-        """Check query for concept ID match. Should only find 0 or 1 matches,
-        but stores them as a collection to be safe.
-
-        :param str query: search string
-        :return: Set of matched concept ids
-        """
-        concept_id_items = set()
-        if [p for p in PREFIX_LOOKUP.keys() if query.startswith(p)]:
-            pk = f'{query}##identity'
-            filter_exp = Key('label_and_type').eq(pk)
-            try:
-                result = self.db.genes.query(KeyConditionExpression=filter_exp)
-                for item in result['Items']:
-                    concept_id_items.add(item['concept_id'])
-            except ClientError as e:
-                logger.error(e.response['Error']['Message'])
-        for prefix in [p for p in NAMESPACE_LOOKUP.keys() if
-                       query.startswith(p)]:
-            pk = f'{NAMESPACE_LOOKUP[prefix].lower()}:{query}##identity'
-            filter_exp = Key('label_and_type').eq(pk)
-            try:
-                result = self.db.genes.query(
-                    KeyConditionExpression=filter_exp
-                )
-                for item in result['Items']:
-                    concept_id_items.add(item['concept_id'])
-            except ClientError as e:
-                logger.error(e.response['Error']['Message'])
-        return concept_id_items
-
-    def check_match_type(self,
-                         query: str,
-                         match: str) -> Set:
-        """Check query for selected match type.
-
-        :param str query: search string
-        :param str match: Match type name
-        :return: Set of matched concept ids
-        """
-        filter_exp = Key('label_and_type').eq(f'{query}##{match}')
-        concept_ids = set()
-        try:
-            db_response = self.db.genes.query(
-                KeyConditionExpression=filter_exp
-            )
-            if 'Items' in db_response.keys():
-                concept_ids = {i['concept_id'] for i in db_response['Items']}
-        except ClientError as e:
-            logger.error(e.response['Error']['Message'])
-        return concept_ids
 
     def response_keyed(self, query: str, sources: Set[str]) -> Dict:
         """Return response as dict where key is source name and value
@@ -221,32 +165,42 @@ class QueryHandler:
             return self.fill_no_matches(resp)
         query_l = query.lower()
 
-        matched_concept_ids = set()
-        # check if concept ID match
-        matched_concept_ids = matched_concept_ids.union(
-            self.check_concept_id(query_l))
+        queries = set()
+        if [p for p in PREFIX_LOOKUP.keys() if query_l.startswith(p)]:
+            pk = f'{query_l}##identity'
+            queries.add(pk)
+
+        for prefix in [p for p in NAMESPACE_LOOKUP.keys() if
+                       query_l.startswith(p)]:
+            pk = f'{NAMESPACE_LOOKUP[prefix].lower()}:{query_l}##identity'
+            queries.add(pk)
 
         for match in ITEM_TYPES.values():
-            matched_concept_ids = matched_concept_ids.union(
-                self.check_match_type(query_l, match))
+            pk = f'{query_l}##{match}'
+            queries.add(pk)
 
-        added_concept_ids = list()
-        for concept_id in matched_concept_ids:
-            matched_records = self.db.genes.query(
-                IndexName='concept_id_index',
-                KeyConditionExpression=Key('concept_id').eq(concept_id)
-            )
-            for record in matched_records['Items']:
-                if record["concept_id"] in added_concept_ids:
-                    continue
-                else:
-                    added_concept_ids.append(record["concept_id"])
-                    if record["item_type"] not in ["merger", "identity"]:
-                        self.fetch_record(
-                            resp, record['concept_id'],
-                            MatchType[record['item_type'].upper()])
-                    elif record["item_type"] != "merger":
-                        self.add_record(resp, record, MatchType.CONCEPT_ID)
+        matched_concept_ids = list()
+        for q in queries:
+            try:
+                query_resp = self.db.genes.query(
+                    KeyConditionExpression=Key('label_and_type').eq(q)
+                )
+                for record in query_resp['Items']:
+                    concept_id = record['concept_id']
+                    if concept_id in matched_concept_ids:
+                        continue
+                    else:
+                        if record['item_type'] == "identity":
+                            self.add_record(resp, record, MatchType.CONCEPT_ID)
+                        else:
+                            self.fetch_record(
+                                resp, concept_id,
+                                MatchType[record['item_type'].upper()])
+                        matched_concept_ids.append(concept_id)
+
+            except ClientError as e:
+                logger.error(e.response['Error']['Message'])
+                continue
 
         # remaining sources get no match
         return self.fill_no_matches(resp)
