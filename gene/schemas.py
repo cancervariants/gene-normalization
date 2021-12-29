@@ -44,9 +44,23 @@ class Chromosome(str, Enum):
     MITOCHONDRIA = 'MT'
 
 
+class MatchType(IntEnum):
+    """Define string constraints for use in Match Type attributes."""
+
+    CONCEPT_ID = 100
+    SYMBOL = 100
+    PREV_SYMBOL = 80
+    ALIAS = 60
+    XREF = 60
+    ASSOCIATED_WITH = 60
+    FUZZY_MATCH = 20
+    NO_MATCH = 0
+
+
 class Gene(BaseModel):
     """Gene"""
 
+    match_type: MatchType
     concept_id: CURIE
     symbol: StrictStr
     symbol_status: Optional[SymbolStatus]
@@ -95,19 +109,6 @@ class GeneGroup(Gene):
     description: StrictStr
     type_identifier: StrictStr
     genes: List[Gene]
-
-
-class MatchType(IntEnum):
-    """Define string constraints for use in Match Type attributes."""
-
-    CONCEPT_ID = 100
-    SYMBOL = 100
-    PREV_SYMBOL = 80
-    ALIAS = 60
-    XREF = 60
-    ASSOCIATED_WITH = 60
-    FUZZY_MATCH = 20
-    NO_MATCH = 0
 
 
 class SourceName(Enum):
@@ -228,7 +229,6 @@ class MatchesKeyed(BaseModel):
     Used when matches are requested as an object, not an array.
     """
 
-    match_type: MatchType
     records: List[Gene]
     source_meta_: SourceMeta
 
@@ -270,7 +270,6 @@ class MatchesListed(BaseModel):
     """
 
     source: SourceName
-    match_type: MatchType
     records: List[Gene]
     source_meta_: SourceMeta
 
