@@ -151,22 +151,6 @@ class Database:
                             'ReadCapacityUnits': 10,
                             'WriteCapacityUnits': 10
                         }
-                    },
-                    {
-                        'IndexName': 'concept_id_index',
-                        'KeySchema': [
-                            {
-                                'AttributeName': 'concept_id',
-                                'KeyType': 'HASH'
-                            }
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'ALL'
-                        },
-                        'ProvisionedThroughput': {
-                            'ReadCapacityUnits': 10,
-                            'WriteCapacityUnits': 10
-                        }
                     }
                 ],
                 ProvisionedThroughput={
