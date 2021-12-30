@@ -2,8 +2,8 @@
 from .base import Base
 from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import Database
-from gene.schemas import SourceMeta, Gene, SourceName, NamespacePrefix, \
-    Annotation, Chromosome, SymbolStatus, MatchType
+from gene.schemas import SourceMeta, SourceName, NamespacePrefix, \
+    Annotation, Chromosome, SymbolStatus
 import logging
 from pathlib import Path
 import csv
@@ -144,14 +144,12 @@ class NCBI(Base):
                     else:
                         # Load discontinued genes
                         params = {
-                            'match_type': MatchType.PREV_SYMBOL,
                             'concept_id':
                                 f'{NamespacePrefix.NCBI.value.lower()}:'
                                 f'{row[2]}',
                             'symbol': row[3],
                             'symbol_status': SymbolStatus.DISCONTINUED.value
                         }
-                        assert Gene(**params)
                         self._load_gene(params, batch)
         history_file.close()
         return prev_symbols

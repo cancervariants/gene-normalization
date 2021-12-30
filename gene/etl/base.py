@@ -93,9 +93,7 @@ class Base(ABC):
         :param BatchWriter batch: Object to write data to DynamoDB
         """
         try:
-            gene['match_type'] = MatchType.NO_MATCH
-            assert Gene(**gene)
-            del gene['match_type']
+            assert Gene(match_type=MatchType.NO_MATCH, **gene)
         except pydantic.error_wrappers.ValidationError as e:
             logger.warning(f"Unable to load {gene} due to validation error: "
                            f"{e}")
