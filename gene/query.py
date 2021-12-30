@@ -144,6 +144,12 @@ class QueryHandler:
                     'records': [],
                     'source_meta_': self.fetch_meta(src_name)
                 }
+            else:
+                # sort records based on highest match_type
+                records = resp['source_matches'][src_name]['records']
+                if len(records) > 1:
+                    records = sorted(
+                        records, key=lambda k: k.match_type, reverse=True)
         return resp
 
     def response_keyed(self, query: str, sources: Set[str]) -> Dict:
