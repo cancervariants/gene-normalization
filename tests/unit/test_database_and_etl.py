@@ -147,7 +147,7 @@ def test_merged_conecpts(processed_ids, dynamodb, is_test_env):
 
 def test_item_type(dynamodb):
     """Check that items are tagged with item_type attribute."""
-    filter_exp = Key('label_and_type').eq('ncbigene:43##identity')
+    filter_exp = Key('label_and_type').eq('ncbigene:8193##identity')
     item = \
         dynamodb.db.genes.query(KeyConditionExpression=filter_exp)['Items'][0]
     assert 'item_type' in item
@@ -159,7 +159,7 @@ def test_item_type(dynamodb):
     assert 'item_type' in item
     assert item['item_type'] == 'symbol'
 
-    filter_exp = Key('label_and_type').eq('a1bgas##prev_symbol')
+    filter_exp = Key('label_and_type').eq('loc157663##prev_symbol')
     item = \
         dynamodb.db.genes.query(KeyConditionExpression=filter_exp)['Items'][0]
     assert 'item_type' in item
@@ -177,7 +177,7 @@ def test_item_type(dynamodb):
     assert 'item_type' in item
     assert item['item_type'] == 'associated_with'
 
-    filter_exp = Key('label_and_type').eq('ensembl:ensg00000097007##xref')
+    filter_exp = Key('label_and_type').eq('ensembl:ensg00000268895##xref')
     item = \
         dynamodb.db.genes.query(KeyConditionExpression=filter_exp)['Items'][0]
     assert 'item_type' in item
