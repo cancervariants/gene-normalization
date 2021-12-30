@@ -171,19 +171,19 @@ class QueryHandler:
             return self.fill_no_matches(resp)
         query_l = query.lower()
 
-        queries = set()
+        queries = list()
         if [p for p in PREFIX_LOOKUP.keys() if query_l.startswith(p)]:
             pk = f'{query_l}##identity'
-            queries.add(pk)
+            queries.append(pk)
 
         for prefix in [p for p in NAMESPACE_LOOKUP.keys() if
                        query_l.startswith(p)]:
             pk = f'{NAMESPACE_LOOKUP[prefix].lower()}:{query_l}##identity'
-            queries.add(pk)
+            queries.append(pk)
 
         for match in ITEM_TYPES.values():
             pk = f'{query_l}##{match}'
-            queries.add(pk)
+            queries.append(pk)
 
         matched_concept_ids = list()
         for q in queries:
