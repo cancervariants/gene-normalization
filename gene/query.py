@@ -130,8 +130,9 @@ class QueryHandler:
         except ClientError as e:
             logger.error(e.response['Error']['Message'])
 
-    def fill_no_matches(self, resp: Dict) -> Dict:
-        """Fill all empty source_matches slots with NO_MATCH results.
+    def post_process_resp(self, resp: Dict) -> Dict:
+        """Fill all empty source_matches slots with NO_MATCH results and
+        sort source records by descending `match_type`.
 
         :param Dict resp: incoming response object
         :return: response object with empty source slots filled with
@@ -145,7 +146,6 @@ class QueryHandler:
                     'source_meta_': self.fetch_meta(src_name)
                 }
             else:
-                # sort records based on highest match_type
                 records = resp['source_matches'][src_name]['records']
                 if len(records) > 1:
                     records = sorted(
@@ -168,7 +168,7 @@ class QueryHandler:
             }
         }
         if query == '':
-            return self.fill_no_matches(resp)
+            return self.post_process_resp(resp)
         query_l = query.lower()
 
         queries = list()
@@ -209,7 +209,7 @@ class QueryHandler:
                 continue
 
         # remaining sources get no match
-        return self.fill_no_matches(resp)
+        return self.post_process_resp(resp)
 
     def response_list(self, query: str, sources: Set[str]) -> Dict:
         """Return response as list, where the first key-value in each item
