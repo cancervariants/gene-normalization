@@ -48,6 +48,7 @@ def sequence_location(sequence_interval):
 def gene():
     """Create a valid gene test fixture."""
     return Gene(
+        match_type=100,
         concept_id='hgnc:1097',
         symbol='BRAF'
     )
@@ -57,16 +58,19 @@ def test_gene(gene, chromosome_location, sequence_location):
     """Test that validators for gene work correctly."""
     assert gene
     assert Gene(
+        match_type=100,
         concept_id='ensembl:1',
         symbol='GENE',
         locations=[chromosome_location, sequence_location]
     )
     assert Gene(
+        match_type=100,
         concept_id='ensembl:1',
         symbol='GENE',
         locations=[sequence_location]
     )
     assert Gene(
+        match_type=100,
         concept_id='ensembl:1',
         symbol='GENE',
         locations=[sequence_location]
@@ -75,6 +79,7 @@ def test_gene(gene, chromosome_location, sequence_location):
     # id not a valid curie
     with pytest.raises(pydantic.error_wrappers.ValidationError):
         Gene(
+            match_type=100,
             concept_id='hgnc1096',
             symbol='BRAF'
         )
@@ -82,6 +87,7 @@ def test_gene(gene, chromosome_location, sequence_location):
     # symbol not a str
     with pytest.raises(pydantic.error_wrappers.ValidationError):
         Gene(
+            match_type=100,
             concept_id='hgnc:1096',
             symbol=1
         )
@@ -89,6 +95,7 @@ def test_gene(gene, chromosome_location, sequence_location):
     # strand not -/+
     with pytest.raises(pydantic.error_wrappers.ValidationError):
         Gene(
+            match_type=100,
             concept_id='hgnc:1096',
             symbol='BRAF',
             strand='positive'
@@ -97,6 +104,7 @@ def test_gene(gene, chromosome_location, sequence_location):
     # xrefs not a valid curie
     with pytest.raises(pydantic.error_wrappers.ValidationError):
         Gene(
+            match_type=100,
             concept_id='hgnc:1096',
             symbol='BRAF',
             xrefs=['hgnc', 'hgnc:1']
@@ -105,6 +113,7 @@ def test_gene(gene, chromosome_location, sequence_location):
     # associated_with not a valid curie
     with pytest.raises(pydantic.error_wrappers.ValidationError):
         Gene(
+            match_type=100,
             concept_id='hgnc:1096',
             symbol='BRAF',
             associated_with=['hgnc', 'hgnc:1']
@@ -113,6 +122,7 @@ def test_gene(gene, chromosome_location, sequence_location):
     # symbol status invalid
     with pytest.raises(pydantic.error_wrappers.ValidationError):
         Gene(
+            match_type=100,
             concept_id='hgnc:1096',
             symbol='BRAF',
             symbol_status='nothing'
@@ -121,6 +131,7 @@ def test_gene(gene, chromosome_location, sequence_location):
     # locations not a sequence or chromosome location
     with pytest.raises(pydantic.error_wrappers.ValidationError):
         Gene(
+            match_type=100,
             concept_id='hgnc:1096',
             symbol='BRAF',
             locations=[GeneValueObject(id='hgnc:1')]
@@ -129,6 +140,7 @@ def test_gene(gene, chromosome_location, sequence_location):
     # location not a list
     with pytest.raises(pydantic.error_wrappers.ValidationError):
         Gene(
+            match_type=100,
             concept_id='hgnc:1096',
             symbol='BRAF',
             locations=chromosome_location
