@@ -2,7 +2,7 @@
 from .base import Base
 from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import Database
-from gene.schemas import SourceMeta, Gene, SourceName, NamespacePrefix, \
+from gene.schemas import SourceMeta, SourceName, NamespacePrefix, \
     Annotation, Chromosome, SymbolStatus
 import logging
 from pathlib import Path
@@ -150,7 +150,6 @@ class NCBI(Base):
                             'symbol': row[3],
                             'symbol_status': SymbolStatus.DISCONTINUED.value
                         }
-                        assert Gene(**params)
                         self._load_gene(params, batch)
         history_file.close()
         return prev_symbols

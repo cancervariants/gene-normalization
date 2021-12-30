@@ -2,7 +2,7 @@
 import pytest
 from gene.schemas import Gene, MatchType, SourceName
 from gene.query import QueryHandler
-from tests.conftest import assertion_checks
+from tests.conftest import check_resp_single_record
 
 
 @pytest.fixture(scope='module')
@@ -24,6 +24,7 @@ def ensembl():
 def ddx11l1():
     """Create a DDX11L1 fixutre."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'concept_id': 'ensembl:ENSG00000223972',
         'symbol': 'DDX11L1',
         'label': 'DEAD/H-box helicase 11 like 1 (pseudogene)',
@@ -54,6 +55,7 @@ def ddx11l1():
 def tp53():
     """Create a TP53 fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'concept_id': 'ensembl:ENSG00000141510',
         'symbol': 'TP53',
         'label': 'tumor protein p53',
@@ -84,6 +86,7 @@ def tp53():
 def u6():
     """Create a U6 test fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'concept_id': 'ensembl:ENSG00000278757',
         'symbol': 'U6',
         'label': 'U6 spliceosomal RNA',
@@ -114,6 +117,7 @@ def u6():
 def CH17_340M24_3():
     """Create a CH17-340M24.3 test fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'concept_id': 'ensembl:ENSG00000197180',
         'symbol': 'CH17-340M24.3',
         'label': 'uncharacterized protein BC009467',
@@ -144,6 +148,7 @@ def CH17_340M24_3():
 def AC091057_5():
     """Create a AC091057.5 test fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'concept_id': 'ensembl:ENSG00000284906',
         'symbol': 'AC091057.5',
         'label': 'Rho GTPase-activating protein 11B',
@@ -174,6 +179,7 @@ def AC091057_5():
 def hsa_mir_1253():
     """Create a AC091057.5 test fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'concept_id': 'ensembl:ENSG00000272920',
         'symbol': 'hsa-mir-1253',
         'label': 'hsa-mir-1253',
@@ -204,6 +210,7 @@ def hsa_mir_1253():
 def spry3():
     """Create a SPRY3 test fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'concept_id': 'ensembl:ENSG00000168939',
         'symbol': 'SPRY3',
         'label': 'sprouty RTK signaling antagonist 3',
@@ -233,147 +240,133 @@ def spry3():
 def test_ddx11l1(ensembl, ddx11l1):
     """Test that DDX11L1 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = ensembl.search('ensembl:ENSG00000223972')
-    assertion_checks(normalizer_response, ddx11l1, 1, MatchType.CONCEPT_ID)
+    resp = ensembl.search('ensembl:ENSG00000223972')
+    check_resp_single_record(resp, ddx11l1, MatchType.CONCEPT_ID)
 
-    normalizer_response = ensembl.search('ENSEMBL:ENSG00000223972')
-    assertion_checks(normalizer_response, ddx11l1, 1, MatchType.CONCEPT_ID)
+    resp = ensembl.search('ENSEMBL:ENSG00000223972')
+    check_resp_single_record(resp, ddx11l1, MatchType.CONCEPT_ID)
 
-    normalizer_response = ensembl.search('ENSG00000223972')
-    assertion_checks(normalizer_response, ddx11l1, 1, MatchType.CONCEPT_ID)
+    resp = ensembl.search('ENSG00000223972')
+    check_resp_single_record(resp, ddx11l1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = ensembl.search('ddx11l1')
-    assertion_checks(normalizer_response, ddx11l1, 1, MatchType.SYMBOL)
+    resp = ensembl.search('ddx11l1')
+    check_resp_single_record(resp, ddx11l1, MatchType.SYMBOL)
 
-    normalizer_response = ensembl.search('DDX11L1')
-    assertion_checks(normalizer_response, ddx11l1, 1, MatchType.SYMBOL)
+    resp = ensembl.search('DDX11L1')
+    check_resp_single_record(resp, ddx11l1, MatchType.SYMBOL)
 
 
 def test_tp53(ensembl, tp53):
     """Test that tp53 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = ensembl.search('ensembl:ENSG00000141510')
-    assertion_checks(normalizer_response, tp53, 1, MatchType.CONCEPT_ID)
+    resp = ensembl.search('ensembl:ENSG00000141510')
+    check_resp_single_record(resp, tp53, MatchType.CONCEPT_ID)
 
-    normalizer_response = ensembl.search('ENSEMBL:ENSG00000141510')
-    assertion_checks(normalizer_response, tp53, 1, MatchType.CONCEPT_ID)
+    resp = ensembl.search('ENSEMBL:ENSG00000141510')
+    check_resp_single_record(resp, tp53, MatchType.CONCEPT_ID)
 
-    normalizer_response = ensembl.search('ENSG00000141510')
-    assertion_checks(normalizer_response, tp53, 1, MatchType.CONCEPT_ID)
+    resp = ensembl.search('ENSG00000141510')
+    check_resp_single_record(resp, tp53, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = ensembl.search('tp53')
-    assertion_checks(normalizer_response, tp53, 1, MatchType.SYMBOL)
+    resp = ensembl.search('tp53')
+    check_resp_single_record(resp, tp53, MatchType.SYMBOL)
 
-    normalizer_response = ensembl.search('TP53')
-    assertion_checks(normalizer_response, tp53, 1, MatchType.SYMBOL)
+    resp = ensembl.search('TP53')
+    check_resp_single_record(resp, tp53, MatchType.SYMBOL)
 
 
 def test_CH17_340M24_3(ensembl, CH17_340M24_3):
     """Test that CH17-340M24.3 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = ensembl.search('ensembl:ENSG00000197180')
-    assertion_checks(normalizer_response, CH17_340M24_3, 1,
-                     MatchType.CONCEPT_ID)
+    resp = ensembl.search('ensembl:ENSG00000197180')
+    check_resp_single_record(resp, CH17_340M24_3, MatchType.CONCEPT_ID)
 
-    normalizer_response = ensembl.search('ENSEMBL:ENSG00000197180')
-    assertion_checks(normalizer_response, CH17_340M24_3, 1,
-                     MatchType.CONCEPT_ID)
+    resp = ensembl.search('ENSEMBL:ENSG00000197180')
+    check_resp_single_record(resp, CH17_340M24_3, MatchType.CONCEPT_ID)
 
-    normalizer_response = ensembl.search('ENSG00000197180')
-    assertion_checks(normalizer_response, CH17_340M24_3, 1,
-                     MatchType.CONCEPT_ID)
+    resp = ensembl.search('ENSG00000197180')
+    check_resp_single_record(resp, CH17_340M24_3, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = ensembl.search('CH17-340M24.3')
-    assertion_checks(normalizer_response, CH17_340M24_3, 1,
-                     MatchType.SYMBOL)
+    resp = ensembl.search('CH17-340M24.3')
+    check_resp_single_record(resp, CH17_340M24_3, MatchType.SYMBOL)
 
 
 def test_hsa_mir_1253(ensembl, hsa_mir_1253):
     """Test that hsa-mir-1253 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = ensembl.search('ensembl:ENSG00000272920')
-    assertion_checks(normalizer_response, hsa_mir_1253, 1,
-                     MatchType.CONCEPT_ID)
+    resp = ensembl.search('ensembl:ENSG00000272920')
+    check_resp_single_record(resp, hsa_mir_1253, MatchType.CONCEPT_ID)
 
-    normalizer_response = ensembl.search('ENSEMBL:ENSG00000272920')
-    assertion_checks(normalizer_response, hsa_mir_1253, 1,
-                     MatchType.CONCEPT_ID)
+    resp = ensembl.search('ENSEMBL:ENSG00000272920')
+    check_resp_single_record(resp, hsa_mir_1253, MatchType.CONCEPT_ID)
 
-    normalizer_response = ensembl.search('ENSG00000272920')
-    assertion_checks(normalizer_response, hsa_mir_1253, 1,
-                     MatchType.CONCEPT_ID)
+    resp = ensembl.search('ENSG00000272920')
+    check_resp_single_record(resp, hsa_mir_1253, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = ensembl.search('hsa-mir-1253')
-    assertion_checks(normalizer_response, hsa_mir_1253, 1,
-                     MatchType.SYMBOL)
+    resp = ensembl.search('hsa-mir-1253')
+    check_resp_single_record(resp, hsa_mir_1253, MatchType.SYMBOL)
 
     # associated_with
-    normalizer_response = ensembl.search('mirbase:MI0006387')
-    assertion_checks(normalizer_response, hsa_mir_1253, 1,
-                     MatchType.ASSOCIATED_WITH)
+    resp = ensembl.search('mirbase:MI0006387')
+    check_resp_single_record(resp, hsa_mir_1253, MatchType.ASSOCIATED_WITH)
 
 
 def test_spry3(ensembl, spry3):
     """Test that spry3 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = ensembl.search('ensembl:EnSG00000168939')
-    assertion_checks(normalizer_response, spry3, 1, MatchType.CONCEPT_ID)
+    resp = ensembl.search('ensembl:EnSG00000168939')
+    check_resp_single_record(resp, spry3, MatchType.CONCEPT_ID)
 
-    normalizer_response = ensembl.search('ENSEMBL:EnSG00000168939')
-    assertion_checks(normalizer_response, spry3, 1, MatchType.CONCEPT_ID)
+    resp = ensembl.search('ENSEMBL:EnSG00000168939')
+    check_resp_single_record(resp, spry3, MatchType.CONCEPT_ID)
 
-    normalizer_response = ensembl.search('EnSG00000168939')
-    assertion_checks(normalizer_response, spry3, 1, MatchType.CONCEPT_ID)
+    resp = ensembl.search('EnSG00000168939')
+    check_resp_single_record(resp, spry3, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = ensembl.search('spry3')
-    assertion_checks(normalizer_response, spry3, 1, MatchType.SYMBOL)
+    resp = ensembl.search('spry3')
+    check_resp_single_record(resp, spry3, MatchType.SYMBOL)
 
 
 def test_no_match(ensembl):
     """Test that a term normalizes to correct gene concept as a NO match."""
-    normalizer_response = ensembl.search('A1BG - AS1')
-    assert normalizer_response.match_type == MatchType.NO_MATCH
-    assert len(normalizer_response.records) == 0
+    resp = ensembl.search('A1BG - AS1')
+    assert len(resp.records) == 0
 
-    normalizer_response = ensembl.search('hnc:5')
-    assert normalizer_response.match_type == MatchType.NO_MATCH
+    resp = ensembl.search('hnc:5')
+    assert len(resp.records) == 0
 
     # Test empty query
-    normalizer_response = ensembl.search('')
-    assert normalizer_response.match_type == MatchType.NO_MATCH
-    assert len(normalizer_response.records) == 0
+    resp = ensembl.search('')
+    assert len(resp.records) == 0
 
     # Do not search on label
-    normalizer_response = ensembl.search('A1BG antisense RNA 1')
-    assert normalizer_response.match_type == MatchType.NO_MATCH
-    assert len(normalizer_response.records) == 0
+    resp = ensembl.search('A1BG antisense RNA 1')
+    assert len(resp.records) == 0
 
-    normalizer_response = ensembl.search('ensembl:ENSG00000278704')
-    assert normalizer_response.match_type == MatchType.NO_MATCH
-    assert len(normalizer_response.records) == 0
+    resp = ensembl.search('ensembl:ENSG00000278704')
+    assert len(resp.records) == 0
 
-    normalizer_response = ensembl.search('ensembl:ENSG00000284906')
-    assert normalizer_response.match_type == MatchType.NO_MATCH
-    assert len(normalizer_response.records) == 0.
+    resp = ensembl.search('ensembl:ENSG00000284906')
+    assert len(resp.records) == 0
 
 
 def test_meta_info(ddx11l1, ensembl):
     """Test that the meta field is correct."""
-    normalizer_response = ensembl.search('chromosome:1')
-    assert normalizer_response.source_meta_.data_license == 'custom'
-    assert normalizer_response.source_meta_.data_license_url ==\
+    resp = ensembl.search('chromosome:1')
+    assert resp.source_meta_.data_license == 'custom'
+    assert resp.source_meta_.data_license_url ==\
            'https://useast.ensembl.org/info/about/legal/disclaimer.html'
-    assert normalizer_response.source_meta_.version == '104'
-    assert normalizer_response.source_meta_.data_url == \
+    assert resp.source_meta_.version == '104'
+    assert resp.source_meta_.data_url == \
            'ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.104.gff3.gz'
-    assert normalizer_response.source_meta_.rdp_url is None
-    assert normalizer_response.source_meta_.genome_assemblies == ['GRCh38']
-    assert normalizer_response.source_meta_.data_license_attributes == {
+    assert resp.source_meta_.rdp_url is None
+    assert resp.source_meta_.genome_assemblies == ['GRCh38']
+    assert resp.source_meta_.data_license_attributes == {
         "non_commercial": False,
         "share_alike": False,
         "attribution": False

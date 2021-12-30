@@ -3,7 +3,7 @@ import pytest
 from gene.schemas import Gene, MatchType, SourceName
 from gene.query import QueryHandler
 from datetime import datetime
-from tests.conftest import assertion_checks
+from tests.conftest import check_resp_single_record
 
 
 @pytest.fixture(scope='module')
@@ -28,6 +28,7 @@ def hgnc():
 def a1bg_as1():
     """Create an A1BG-AS1 gene fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'label': 'A1BG antisense RNA 1',
         'concept_id': 'hgnc:37133',
         'symbol': 'A1BG-AS1',
@@ -73,6 +74,7 @@ def a1bg_as1():
 def tp53():
     """Create a TP53 gene fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'label': 'tumor protein p53',
         'concept_id': 'hgnc:11998',
         'symbol': 'TP53',
@@ -134,6 +136,7 @@ def tp53():
 def a3galt2():
     """Create an A3GALT2 gene fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'label': 'alpha 1,3-galactosyltransferase 2',
         'concept_id': 'hgnc:30005',
         'symbol': 'A3GALT2',
@@ -182,6 +185,7 @@ def a3galt2():
 def wdhd1():
     """Create a WDHD1 gene fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'label': 'WD repeat and HMG-box DNA binding protein 1',
         'concept_id': 'hgnc:23170',
         'symbol': 'WDHD1',
@@ -231,6 +235,7 @@ def wdhd1():
 def g6pr():
     """Create a G6PR gene fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'label': 'glucose-6-phosphatase regulator',
         'concept_id': 'hgnc:4059',
         'symbol': 'G6PR',
@@ -260,6 +265,7 @@ def g6pr():
 def pirc24():
     """Create a PIRC24 gene fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'label': 'piwi-interacting RNA cluster 24',
         'concept_id': 'hgnc:37528',
         'symbol': 'PIRC24',
@@ -286,6 +292,7 @@ def pirc24():
 def gage4():
     """Create a GAGE4 gene fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'label': 'G antigen 4',
         'concept_id': 'hgnc:4101',
         'symbol': 'GAGE4',
@@ -329,6 +336,7 @@ def gage4():
 def mafip():
     """Create a MAFIP gene fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'label': 'MAFF interacting protein (pseudogene)',
         'concept_id': 'hgnc:31102',
         'symbol': 'MAFIP',
@@ -366,6 +374,7 @@ def mafip():
 def mt_7sdna():
     """Create a MT-7SDNA gene fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'label': 'mitochondrially encoded 7S DNA',
         'concept_id': 'hgnc:7409',
         'symbol': 'MT-7SDNA',
@@ -390,6 +399,7 @@ def mt_7sdna():
 def cecr():
     """Create a CECR gene fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'label': 'cat eye syndrome chromosome region',
         'concept_id': 'hgnc:1838',
         'symbol': 'CECR',
@@ -424,6 +434,7 @@ def cecr():
 def csf2ra():
     """Create a CSF2RA gene fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'label': 'colony stimulating factor 2 receptor subunit alpha',
         'concept_id': 'hgnc:2435',
         'symbol': 'CSF2RA',
@@ -493,6 +504,7 @@ def csf2ra():
 def rps24p5():
     """Create a RPS24P5 gene fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'label': 'ribosomal protein S24 pseudogene 5',
         'concept_id': 'hgnc:36026',
         'symbol': 'RPS24P5',
@@ -531,6 +543,7 @@ def rps24p5():
 def trl_cag2_1():
     """Create a TRL-CAG2-1 gene fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'label': 'tRNA-Leu (anticodon CAG) 2-1',
         'concept_id': 'hgnc:34692',
         'symbol': 'TRL-CAG2-1',
@@ -570,6 +583,7 @@ def trl_cag2_1():
 def myo5b():
     """Create a MYO5B gene fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'label': 'myosin VB',
         'concept_id': 'hgnc:7603',
         'symbol': 'MYO5B',
@@ -620,6 +634,7 @@ def myo5b():
 def gstt1():
     """Create an GSTT1 gene fixture."""
     params = {
+        'match_type': MatchType.NO_MATCH,
         'label': 'glutathione S-transferase theta 1',
         'concept_id': 'hgnc:4641',
         'symbol': 'GSTT1',
@@ -661,273 +676,270 @@ def gstt1():
 def test_a1bg_as1(a1bg_as1, hgnc):
     """Test that a1bg_as1 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.search('hgnc:37133')
-    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('hgnc:37133')
+    check_resp_single_record(resp, a1bg_as1, MatchType.CONCEPT_ID)
 
-    normalizer_response = hgnc.search('HGNC:37133')
-    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('HGNC:37133')
+    check_resp_single_record(resp, a1bg_as1, MatchType.CONCEPT_ID)
 
-    normalizer_response = hgnc.search('Hgnc:37133')
-    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('Hgnc:37133')
+    check_resp_single_record(resp, a1bg_as1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.search('A1BG-AS1')
-    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.SYMBOL)
+    resp = hgnc.search('A1BG-AS1')
+    check_resp_single_record(resp, a1bg_as1, MatchType.SYMBOL)
 
-    normalizer_response = hgnc.search('A1BG-as1')
-    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.SYMBOL)
+    resp = hgnc.search('A1BG-as1')
+    check_resp_single_record(resp, a1bg_as1, MatchType.SYMBOL)
 
     # Previous Symbol
-    normalizer_response = hgnc.search('NCRNA00181')
-    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.PREV_SYMBOL)
+    resp = hgnc.search('NCRNA00181')
+    check_resp_single_record(resp, a1bg_as1, MatchType.PREV_SYMBOL)
 
-    normalizer_response = hgnc.search('A1BGAS')
-    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.PREV_SYMBOL)
+    resp = hgnc.search('A1BGAS')
+    check_resp_single_record(resp, a1bg_as1, MatchType.PREV_SYMBOL)
 
-    normalizer_response = hgnc.search('A1BG-AS')
-    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.PREV_SYMBOL)
+    resp = hgnc.search('A1BG-AS')
+    check_resp_single_record(resp, a1bg_as1, MatchType.PREV_SYMBOL)
 
     # Alias
-    normalizer_response = hgnc.search('FLJ23569')
-    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.ALIAS)
+    resp = hgnc.search('FLJ23569')
+    check_resp_single_record(resp, a1bg_as1, MatchType.ALIAS)
 
-    normalizer_response = hgnc.search('flj23569')
-    assertion_checks(normalizer_response, a1bg_as1, 1, MatchType.ALIAS)
+    resp = hgnc.search('flj23569')
+    check_resp_single_record(resp, a1bg_as1, MatchType.ALIAS)
 
 
 def test_a3galt2(a3galt2, hgnc):
     """Test that a3galt2 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.search('hgnc:30005')
-    assertion_checks(normalizer_response, a3galt2, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('hgnc:30005')
+    check_resp_single_record(resp, a3galt2, MatchType.CONCEPT_ID)
 
-    normalizer_response = hgnc.search('HGNC:30005')
-    assertion_checks(normalizer_response, a3galt2, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('HGNC:30005')
+    check_resp_single_record(resp, a3galt2, MatchType.CONCEPT_ID)
 
-    normalizer_response = hgnc.search('Hgnc:30005')
-    assertion_checks(normalizer_response, a3galt2, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('Hgnc:30005')
+    check_resp_single_record(resp, a3galt2, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.search('A3GALT2')
-    assertion_checks(normalizer_response, a3galt2, 1, MatchType.SYMBOL)
+    resp = hgnc.search('A3GALT2')
+    check_resp_single_record(resp, a3galt2, MatchType.SYMBOL)
 
-    normalizer_response = hgnc.search('a3galt2')
-    assertion_checks(normalizer_response, a3galt2, 1, MatchType.SYMBOL)
+    resp = hgnc.search('a3galt2')
+    check_resp_single_record(resp, a3galt2, MatchType.SYMBOL)
 
     # Previous Symbol
-    normalizer_response = hgnc.search('A3GALT2P')
-    assertion_checks(normalizer_response, a3galt2, 1, MatchType.PREV_SYMBOL)
+    resp = hgnc.search('A3GALT2P')
+    check_resp_single_record(resp, a3galt2, MatchType.PREV_SYMBOL)
 
-    normalizer_response = hgnc.search('A3GALT2p')
-    assertion_checks(normalizer_response, a3galt2, 1, MatchType.PREV_SYMBOL)
+    resp = hgnc.search('A3GALT2p')
+    check_resp_single_record(resp, a3galt2, MatchType.PREV_SYMBOL)
 
     # Alias
-    normalizer_response = hgnc.search('IGBS3S')
-    assertion_checks(normalizer_response, a3galt2, 1, MatchType.ALIAS)
+    resp = hgnc.search('IGBS3S')
+    check_resp_single_record(resp, a3galt2, MatchType.ALIAS)
 
-    normalizer_response = hgnc.search('igB3s')
-    assertion_checks(normalizer_response, a3galt2, 1, MatchType.ALIAS)
+    resp = hgnc.search('igB3s')
+    check_resp_single_record(resp, a3galt2, MatchType.ALIAS)
 
 
 def test_tp53(tp53, hgnc):
     """Test that tp53 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.search('hgnc:11998')
-    assertion_checks(normalizer_response, tp53, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('hgnc:11998')
+    check_resp_single_record(resp, tp53, MatchType.CONCEPT_ID)
 
-    normalizer_response = hgnc.search('HGNC:11998')
-    assertion_checks(normalizer_response, tp53, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('HGNC:11998')
+    check_resp_single_record(resp, tp53, MatchType.CONCEPT_ID)
 
-    normalizer_response = hgnc.search('Hgnc:11998')
-    assertion_checks(normalizer_response, tp53, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('Hgnc:11998')
+    check_resp_single_record(resp, tp53, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.search('tp53')
-    assertion_checks(normalizer_response, tp53, 1, MatchType.SYMBOL)
+    resp = hgnc.search('tp53')
+    check_resp_single_record(resp, tp53, MatchType.SYMBOL)
 
-    normalizer_response = hgnc.search('TP53')
-    assertion_checks(normalizer_response, tp53, 1, MatchType.SYMBOL)
+    resp = hgnc.search('TP53')
+    check_resp_single_record(resp, tp53, MatchType.SYMBOL)
 
     # Alias
-    normalizer_response = hgnc.search('LFS1')
-    assertion_checks(normalizer_response, tp53, 1, MatchType.ALIAS)
+    resp = hgnc.search('LFS1')
+    check_resp_single_record(resp, tp53, MatchType.ALIAS)
 
-    normalizer_response = hgnc.search('p53')
-    assertion_checks(normalizer_response, tp53, 1, MatchType.ALIAS)
+    resp = hgnc.search('p53')
+    check_resp_single_record(resp, tp53, MatchType.ALIAS)
 
 
 def test_wdhd1(wdhd1, hgnc):
     """Test that a1bg_as1 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.search('hgnc:23170')
-    assertion_checks(normalizer_response, wdhd1, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('hgnc:23170')
+    check_resp_single_record(resp, wdhd1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.search('WDHD1')
-    assertion_checks(normalizer_response, wdhd1, 1, MatchType.SYMBOL)
+    resp = hgnc.search('WDHD1')
+    check_resp_single_record(resp, wdhd1, MatchType.SYMBOL)
 
 
 def test_g6pr(g6pr, hgnc):
     """Test that g6pr normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.search('hgnc:4059')
-    assertion_checks(normalizer_response, g6pr, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('hgnc:4059')
+    check_resp_single_record(resp, g6pr, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.search('G6PR')
-    assertion_checks(normalizer_response, g6pr, 1, MatchType.SYMBOL)
+    resp = hgnc.search('G6PR')
+    check_resp_single_record(resp, g6pr, MatchType.SYMBOL)
 
 
 def test_pirc24(pirc24, hgnc):
     """Test that pirc24 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.search('hgnc:37528')
-    assertion_checks(normalizer_response, pirc24, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('hgnc:37528')
+    check_resp_single_record(resp, pirc24, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.search('PIRC24')
-    assertion_checks(normalizer_response, pirc24, 1, MatchType.SYMBOL)
+    resp = hgnc.search('PIRC24')
+    check_resp_single_record(resp, pirc24, MatchType.SYMBOL)
 
 
 def test_gage4(gage4, hgnc):
     """Test that gage4 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.search('hgnc:4101')
-    assertion_checks(normalizer_response, gage4, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('hgnc:4101')
+    check_resp_single_record(resp, gage4, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.search('GAGE4')
-    assertion_checks(normalizer_response, gage4, 1, MatchType.SYMBOL)
+    resp = hgnc.search('GAGE4')
+    check_resp_single_record(resp, gage4, MatchType.SYMBOL)
 
 
 def test_mafip(mafip, hgnc):
     """Test that mafip normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.search('hgnc:31102')
-    assertion_checks(normalizer_response, mafip, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('hgnc:31102')
+    check_resp_single_record(resp, mafip, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.search('MAFIP')
-    assertion_checks(normalizer_response, mafip, 1, MatchType.SYMBOL)
+    resp = hgnc.search('MAFIP')
+    check_resp_single_record(resp, mafip, MatchType.SYMBOL)
 
 
 def test_mt_7sdna(mt_7sdna, hgnc):
     """Test that mt_7sdna normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.search('hgnc:7409')
-    assertion_checks(normalizer_response, mt_7sdna, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('hgnc:7409')
+    check_resp_single_record(resp, mt_7sdna, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.search('MT-7SDNA')
-    assertion_checks(normalizer_response, mt_7sdna, 1, MatchType.SYMBOL)
+    resp = hgnc.search('MT-7SDNA')
+    check_resp_single_record(resp, mt_7sdna, MatchType.SYMBOL)
 
 
 def test_cecr(cecr, hgnc):
     """Test that cecr normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.search('hgnc:1838')
-    assertion_checks(normalizer_response, cecr, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('hgnc:1838')
+    check_resp_single_record(resp, cecr, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.search('CECR')
-    assertion_checks(normalizer_response, cecr, 1, MatchType.SYMBOL)
+    resp = hgnc.search('CECR')
+    check_resp_single_record(resp, cecr, MatchType.SYMBOL)
 
 
 def test_csf2ra(csf2ra, hgnc):
     """Test that csf2ra normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.search('hgnc:2435')
-    assertion_checks(normalizer_response, csf2ra, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('hgnc:2435')
+    check_resp_single_record(resp, csf2ra, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.search('CSF2RA')
-    assertion_checks(normalizer_response, csf2ra, 1, MatchType.SYMBOL)
+    resp = hgnc.search('CSF2RA')
+    check_resp_single_record(resp, csf2ra, MatchType.SYMBOL)
 
 
 def test_rps24p5(rps24p5, hgnc):
     """Test that rps24p5 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.search('hgnc:36026')
-    assertion_checks(normalizer_response, rps24p5, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('hgnc:36026')
+    check_resp_single_record(resp, rps24p5, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.search('rpS24P5')
-    assertion_checks(normalizer_response, rps24p5, 1, MatchType.SYMBOL)
+    resp = hgnc.search('rpS24P5')
+    check_resp_single_record(resp, rps24p5, MatchType.SYMBOL)
 
 
 def test_trl_cag2_1(trl_cag2_1, hgnc):
     """Test that trl_cag2_1 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.search('hgnc:34692')
-    assertion_checks(normalizer_response, trl_cag2_1, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('hgnc:34692')
+    check_resp_single_record(resp, trl_cag2_1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.search('TRL-CAG2-1')
-    assertion_checks(normalizer_response, trl_cag2_1, 1, MatchType.SYMBOL)
+    resp = hgnc.search('TRL-CAG2-1')
+    check_resp_single_record(resp, trl_cag2_1, MatchType.SYMBOL)
 
 
 def test_myo5b(myo5b, hgnc):
     """Test that myo5b normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.search('hgnc:7603')
-    assertion_checks(normalizer_response, myo5b, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('hgnc:7603')
+    check_resp_single_record(resp, myo5b, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.search('MYO5B')
-    assertion_checks(normalizer_response, myo5b, 1, MatchType.SYMBOL)
+    resp = hgnc.search('MYO5B')
+    check_resp_single_record(resp, myo5b, MatchType.SYMBOL)
 
     # associated_with
-    normalizer_response = hgnc.search('refseq:NM_001080467')
-    assertion_checks(normalizer_response, myo5b, 1, MatchType.ASSOCIATED_WITH)
+    resp = hgnc.search('refseq:NM_001080467')
+    check_resp_single_record(resp, myo5b, MatchType.ASSOCIATED_WITH)
 
 
 def test_gstt1(gstt1, hgnc):
     """Test that gstt1 normalizes to correct gene concept."""
     # Concept ID
-    normalizer_response = hgnc.search('hgnc:4641')
-    assertion_checks(normalizer_response, gstt1, 1, MatchType.CONCEPT_ID)
+    resp = hgnc.search('hgnc:4641')
+    check_resp_single_record(resp, gstt1, MatchType.CONCEPT_ID)
 
     # Symbol
-    normalizer_response = hgnc.search('GSTT1')
-    assertion_checks(normalizer_response, gstt1, 1, MatchType.SYMBOL)
+    resp = hgnc.search('GSTT1')
+    check_resp_single_record(resp, gstt1, MatchType.SYMBOL)
 
     # associated_with
-    normalizer_response = hgnc.search('omim:600436')
-    assertion_checks(normalizer_response, gstt1, 1, MatchType.ASSOCIATED_WITH)
+    resp = hgnc.search('omim:600436')
+    check_resp_single_record(resp, gstt1, MatchType.ASSOCIATED_WITH)
 
 
 def test_no_match(hgnc):
     """Test that a term normalizes to correct gene concept as a NO match."""
-    normalizer_response = hgnc.search('A1BG - AS1')
-    assert normalizer_response.match_type == MatchType.NO_MATCH
-    assert len(normalizer_response.records) == 0
+    resp = hgnc.search('A1BG - AS1')
+    assert len(resp.records) == 0
 
-    normalizer_response = hgnc.search('hnc:5')
-    assert normalizer_response.match_type == MatchType.NO_MATCH
+    resp = hgnc.search('hnc:5')
+    assert len(resp.records) == 0
 
     # Test empty query
-    normalizer_response = hgnc.search('')
-    assert normalizer_response.match_type == MatchType.NO_MATCH
-    assert len(normalizer_response.records) == 0
+    resp = hgnc.search('')
+    assert len(resp.records) == 0
 
     # Do not search on label
-    normalizer_response = hgnc.search('A1BG antisense RNA 1')
-    assert normalizer_response.match_type == MatchType.NO_MATCH
-    assert len(normalizer_response.records) == 0
+    resp = hgnc.search('A1BG antisense RNA 1')
+    assert len(resp.records) == 0
 
 
 def test_meta_info(a1bg_as1, hgnc):
     """Test that the meta field is correct."""
-    normalizer_response = hgnc.search('HGNC:37133')
-    assert normalizer_response.source_meta_.data_license == 'custom'
-    assert normalizer_response.source_meta_.data_license_url == \
+    resp = hgnc.search('HGNC:37133')
+    assert resp.source_meta_.data_license == 'custom'
+    assert resp.source_meta_.data_license_url == \
            'https://www.genenames.org/about/'
-    assert datetime.strptime(normalizer_response.source_meta_.version, "%Y%m%d")  # noqa: E501
-    assert normalizer_response.source_meta_.data_url == \
+    assert datetime.strptime(resp.source_meta_.version, "%Y%m%d")  # noqa: E501
+    assert resp.source_meta_.data_url == \
            'ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json'  # noqa: E501
-    assert normalizer_response.source_meta_.rdp_url is None
-    assert normalizer_response.source_meta_.genome_assemblies == []
-    assert normalizer_response.source_meta_.data_license_attributes == {
+    assert resp.source_meta_.rdp_url is None
+    assert resp.source_meta_.genome_assemblies == []
+    assert resp.source_meta_.data_license_attributes == {
         "non_commercial": False,
         "share_alike": False,
         "attribution": False

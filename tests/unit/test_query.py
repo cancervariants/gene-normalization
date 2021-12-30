@@ -456,23 +456,26 @@ def test_ache_query(query_handler, num_sources, normalized_ache, source_meta):
     resp = query_handler.search('ncbigene:43', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].match_type == MatchType.XREF
-    assert matches[SourceName.ENSEMBL].match_type == MatchType.NO_MATCH
-    assert matches[SourceName.NCBI].match_type == MatchType.CONCEPT_ID
+    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
+    assert len(matches[SourceName.ENSEMBL].records) == 0
+    assert matches[SourceName.NCBI].records[0].match_type == \
+           MatchType.CONCEPT_ID
 
     resp = query_handler.search('hgnc:108', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].match_type == MatchType.CONCEPT_ID
-    assert matches[SourceName.ENSEMBL].match_type == MatchType.XREF
-    assert matches[SourceName.NCBI].match_type == MatchType.XREF
+    assert matches[SourceName.HGNC].records[0].match_type == \
+           MatchType.CONCEPT_ID
+    assert matches[SourceName.ENSEMBL].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
 
     resp = query_handler.search('ensembl:ENSG00000087085', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].match_type == MatchType.XREF
-    assert matches[SourceName.ENSEMBL].match_type == MatchType.CONCEPT_ID
-    assert matches[SourceName.NCBI].match_type == MatchType.XREF
+    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.ENSEMBL].records[0].match_type == \
+           MatchType.CONCEPT_ID
+    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
 
     # Normalize
     q = "ACHE"
@@ -543,23 +546,26 @@ def test_braf_query(query_handler, num_sources, normalized_braf, source_meta):
     resp = query_handler.search('ncbigene:673', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].match_type == MatchType.XREF
-    assert matches[SourceName.ENSEMBL].match_type == MatchType.NO_MATCH
-    assert matches[SourceName.NCBI].match_type == MatchType.CONCEPT_ID
+    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
+    assert len(matches[SourceName.ENSEMBL].records) == 0
+    assert matches[SourceName.NCBI].records[0].match_type == \
+           MatchType.CONCEPT_ID
 
     resp = query_handler.search('hgnc:1097', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].match_type == MatchType.CONCEPT_ID
-    assert matches[SourceName.ENSEMBL].match_type == MatchType.XREF
-    assert matches[SourceName.NCBI].match_type == MatchType.XREF
+    assert matches[SourceName.HGNC].records[0].match_type ==\
+           MatchType.CONCEPT_ID
+    assert matches[SourceName.ENSEMBL].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
 
     resp = query_handler.search('ensembl:ENSG00000157764', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].match_type == MatchType.XREF
-    assert matches[SourceName.ENSEMBL].match_type == MatchType.CONCEPT_ID
-    assert matches[SourceName.NCBI].match_type == MatchType.XREF
+    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.ENSEMBL].records[0].match_type == \
+           MatchType.CONCEPT_ID
+    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
 
     # Normalize
     q = "BRAF"
@@ -618,23 +624,26 @@ def test_abl1_query(query_handler, num_sources, normalized_abl1, source_meta):
     resp = query_handler.search('ncbigene:25', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].match_type == MatchType.XREF
-    assert matches[SourceName.ENSEMBL].match_type == MatchType.NO_MATCH
-    assert matches[SourceName.NCBI].match_type == MatchType.CONCEPT_ID
+    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
+    assert len(matches[SourceName.ENSEMBL].records) == 0
+    assert matches[SourceName.NCBI].records[0].match_type == \
+           MatchType.CONCEPT_ID
 
     resp = query_handler.search('hgnc:76', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].match_type == MatchType.CONCEPT_ID
-    assert matches[SourceName.ENSEMBL].match_type == MatchType.XREF
-    assert matches[SourceName.NCBI].match_type == MatchType.XREF
+    assert matches[SourceName.HGNC].records[0].match_type == \
+           MatchType.CONCEPT_ID
+    assert matches[SourceName.ENSEMBL].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
 
     resp = query_handler.search('ensembl:ENSG00000097007', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].match_type == MatchType.XREF
-    assert matches[SourceName.ENSEMBL].match_type == MatchType.CONCEPT_ID
-    assert matches[SourceName.NCBI].match_type == MatchType.XREF
+    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.ENSEMBL].records[0].match_type == \
+           MatchType.CONCEPT_ID
+    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
 
     # Normalize
     q = "ABL1"
@@ -721,10 +730,10 @@ def test_invalid_queries(query_handler):
         resp["match_type"]
 
     resp = query_handler.search("B R A F")
-    assert resp.source_matches[0].match_type is MatchType.NO_MATCH
+    assert len(resp.source_matches[0].records) == 0
 
     with pytest.raises(TypeError):
-        resp.source_matches[0]["match_type"]
+        resp.source_matches[0].records["match_type"]
 
 
 def test_service_meta(query_handler):
