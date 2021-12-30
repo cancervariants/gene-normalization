@@ -32,6 +32,10 @@ NC_000008.11	BestRefSeq%2CGnomon	gene	93916923	93926068	.	+	.	ID=gene-PDP1;Dbxre
 ##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606
 NC_000009.12	RefSeq	region	1	138394717	.	+	.	ID=NC_000009.12:1..138394717;Dbxref=taxon:9606;Name=9;chromosome=9;gbkey=Src;genome=chromosome;mol_type=genomic DNA
 NC_000009.12	BestRefSeq	gene	130713043	130887675	.	+	.	ID=gene-ABL1;Dbxref=GeneID:25,HGNC:HGNC:76,MIM:189980;Name=ABL1;description=ABL proto-oncogene 1%2C non-receptor tyrosine kinase;gbkey=Gene;gene=ABL1;gene_biotype=protein_coding;gene_synonym=ABL,BCR-ABL,bcr/abl,c-ABL,c-ABL1,CHDSKM,JTK7,p150,v-abl
+NC_000009.12	BestRefSeq	gene	4662294	4665258	.	+	.	ID=gene-PLPP6;Dbxref=GeneID:403313,HGNC:HGNC:23682,MIM:611666;Name=PLPP6;description=phospholipid phosphatase 6;gbkey=Gene;gene=PLPP6;gene_biotype=protein_coding;gene_synonym=bA6J24.6,PDP1,PPAPDC2,PSDP
+NC_000009.12	BestRefSeq	mRNA	4662294	4665258	.	+	.	ID=rna-NM_203453.5;Parent=gene-PLPP6;Dbxref=Ensembl:ENST00000381883.5,GeneID:403313,Genbank:NM_203453.5,HGNC:HGNC:23682,MIM:611666;Name=NM_203453.5;gbkey=mRNA;gene=PLPP6;product=phospholipid phosphatase 6;tag=MANE Select;transcript_id=NM_203453.5
+NC_000009.12	BestRefSeq	exon	4662294	4665258	.	+	.	ID=exon-NM_203453.5-1;Parent=rna-NM_203453.5;Dbxref=Ensembl:ENST00000381883.5,GeneID:403313,Genbank:NM_203453.5,HGNC:HGNC:23682,MIM:611666;gbkey=mRNA;gene=PLPP6;product=phospholipid phosphatase 6;tag=MANE Select;transcript_id=NM_203453.5
+NC_000009.12	BestRefSeq	CDS	4662376	4663263	.	+	0	ID=cds-NP_982278.3;Parent=rna-NM_203453.5;Dbxref=CCDS:CCDS34981.1,Ensembl:ENSP00000371307.2,GeneID:403313,Genbank:NP_982278.3,HGNC:HGNC:23682,MIM:611666;Name=NP_982278.3;gbkey=CDS;gene=PLPP6;product=phospholipid phosphatase 6;protein_id=NP_982278.3;tag=MANE Select
 ##sequence-region NC_000011.10 1 135086622
 ##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606
 NC_000011.10	RefSeq	region	1	135086622	.	+	.	ID=NC_000011.10:1..135086622;Dbxref=taxon:9606;Name=11;chromosome=11;gbkey=Src;genome=chromosome;mol_type=genomic DNA
