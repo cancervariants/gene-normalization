@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 pydantic = "*"
-fastapi = "*"
+fastapi = ">=0.72.0"
 uvicorn = "*"
 click = "*"
 boto3 = "*"
