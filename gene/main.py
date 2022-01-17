@@ -9,7 +9,11 @@ import html
 
 
 query_handler = QueryHandler()
-app = FastAPI(docs_url='/gene', openapi_url='/gene/openapi.json')
+app = FastAPI(
+    docs_url="/gene",
+    openapi_url="/gene/openapi.json",
+    swagger_ui_parameters={"tryItOutEnabled": True}
+)
 
 
 def custom_openapi():
