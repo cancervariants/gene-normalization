@@ -23,8 +23,10 @@ class ChromosomeLocation:
             chr=location['chr'],
             interval=models.CytobandInterval(
                 start=location['start'],
-                end=location['end']
-            )
+                end=location['end'],
+                type="CytobandInterval"
+            ),
+            type="ChromosomeLocation"
         )
         chr_location._id = ga4gh_identify(chr_location)
         return chr_location.as_dict()
