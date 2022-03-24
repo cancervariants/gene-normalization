@@ -2,7 +2,6 @@
 import re
 from typing import List, Dict, Set
 from urllib.parse import quote
-from uvicorn.config import logger
 from .version import __version__
 from gene import NAMESPACE_LOOKUP, PREFIX_LOOKUP, ITEM_TYPES
 from gene.database import Database
@@ -12,6 +11,7 @@ from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor, Extension
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 from datetime import datetime
+from gene import logger
 
 
 class InvalidParameterException(Exception):
@@ -241,7 +241,7 @@ class QueryHandler:
         """
         return ServiceMeta(
             version=__version__,
-            response_datetime=datetime.now()
+            response_datetime=str(datetime.now())
         )
 
     def search(self, query_str: str, keyed: bool = False,

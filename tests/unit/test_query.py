@@ -4,7 +4,6 @@ from gene.query import QueryHandler, InvalidParameterException
 from gene.schemas import SourceName, MatchType
 import copy
 import pytest
-from datetime import datetime
 
 
 @pytest.fixture(scope='module')
@@ -327,7 +326,8 @@ def num_sources():
 @pytest.fixture(scope="module")
 def source_meta():
     """Create test fixture for source meta"""
-    return [SourceName.HGNC, SourceName.ENSEMBL, SourceName.NCBI]
+    return [SourceName.HGNC.value, SourceName.ENSEMBL.value,
+            SourceName.NCBI.value]
 
 
 def compare_normalize_resp(resp, expected_query, expected_match_type,
@@ -365,7 +365,7 @@ def compare_service_meta(service_meta):
     """Check that service metadata is correct."""
     assert service_meta.name == "gene-normalizer"
     assert service_meta.version >= "0.1.0"
-    assert isinstance(service_meta.response_datetime, datetime)
+    assert isinstance(service_meta.response_datetime, str)
     assert service_meta.url == \
            'https://github.com/cancervariants/gene-normalization'
 
@@ -430,15 +430,15 @@ def test_search_query_inc_exc(query_handler, num_sources):
     resp = query_handler.search('BRAF', keyed=True, incl=sources)
     matches = resp.source_matches
     assert len(matches) == len(sources.split())
-    assert SourceName.HGNC in matches
-    assert SourceName.NCBI in matches
+    assert SourceName.HGNC.value in matches
+    assert SourceName.NCBI.value in matches
 
     sources = 'HGnC'
     resp = query_handler.search('BRAF', keyed=True, excl=sources)
     matches = resp.source_matches
     assert len(matches) == num_sources - len(sources.split())
-    assert SourceName.ENSEMBL in matches
-    assert SourceName.NCBI in matches
+    assert SourceName.ENSEMBL.value in matches
+    assert SourceName.NCBI.value in matches
 
 
 def test_search_invalid_parameter_exception(query_handler):
@@ -456,26 +456,31 @@ def test_ache_query(query_handler, num_sources, normalized_ache, source_meta):
     resp = query_handler.search('ncbigene:43', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
-    assert len(matches[SourceName.ENSEMBL].records) == 0
-    assert matches[SourceName.NCBI].records[0].match_type == \
+    assert matches[SourceName.HGNC.value].records[0].match_type == \
+        MatchType.XREF
+    assert len(matches[SourceName.ENSEMBL.value].records) == 0
+    assert matches[SourceName.NCBI.value].records[0].match_type == \
            MatchType.CONCEPT_ID
 
     resp = query_handler.search('hgnc:108', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].records[0].match_type == \
+    assert matches[SourceName.HGNC.value].records[0].match_type == \
            MatchType.CONCEPT_ID
-    assert matches[SourceName.ENSEMBL].records[0].match_type == MatchType.XREF
-    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.ENSEMBL.value].records[0].match_type == \
+        MatchType.XREF
+    assert matches[SourceName.NCBI.value].records[0].match_type == \
+        MatchType.XREF
 
     resp = query_handler.search('ensembl:ENSG00000087085', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
-    assert matches[SourceName.ENSEMBL].records[0].match_type == \
+    assert matches[SourceName.HGNC.value].records[0].match_type == \
+        MatchType.XREF
+    assert matches[SourceName.ENSEMBL.value].records[0].match_type == \
            MatchType.CONCEPT_ID
-    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.NCBI.value].records[0].match_type == \
+        MatchType.XREF
 
     # Normalize
     q = "ACHE"
@@ -546,26 +551,31 @@ def test_braf_query(query_handler, num_sources, normalized_braf, source_meta):
     resp = query_handler.search('ncbigene:673', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
-    assert len(matches[SourceName.ENSEMBL].records) == 0
-    assert matches[SourceName.NCBI].records[0].match_type == \
+    assert matches[SourceName.HGNC.value].records[0].match_type == \
+        MatchType.XREF
+    assert len(matches[SourceName.ENSEMBL.value].records) == 0
+    assert matches[SourceName.NCBI.value].records[0].match_type == \
            MatchType.CONCEPT_ID
 
     resp = query_handler.search('hgnc:1097', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].records[0].match_type ==\
+    assert matches[SourceName.HGNC.value].records[0].match_type ==\
            MatchType.CONCEPT_ID
-    assert matches[SourceName.ENSEMBL].records[0].match_type == MatchType.XREF
-    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.ENSEMBL.value].records[0].match_type == \
+        MatchType.XREF
+    assert matches[SourceName.NCBI.value].records[0].match_type == \
+        MatchType.XREF
 
     resp = query_handler.search('ensembl:ENSG00000157764', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
-    assert matches[SourceName.ENSEMBL].records[0].match_type == \
+    assert matches[SourceName.HGNC.value].records[0].match_type == \
+        MatchType.XREF
+    assert matches[SourceName.ENSEMBL.value].records[0].match_type == \
            MatchType.CONCEPT_ID
-    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.NCBI.value].records[0].match_type == \
+        MatchType.XREF
 
     # Normalize
     q = "BRAF"
@@ -624,26 +634,31 @@ def test_abl1_query(query_handler, num_sources, normalized_abl1, source_meta):
     resp = query_handler.search('ncbigene:25', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
-    assert len(matches[SourceName.ENSEMBL].records) == 0
-    assert matches[SourceName.NCBI].records[0].match_type == \
+    assert matches[SourceName.HGNC.value].records[0].match_type == \
+        MatchType.XREF
+    assert len(matches[SourceName.ENSEMBL.value].records) == 0
+    assert matches[SourceName.NCBI.value].records[0].match_type == \
            MatchType.CONCEPT_ID
 
     resp = query_handler.search('hgnc:76', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].records[0].match_type == \
+    assert matches[SourceName.HGNC.value].records[0].match_type == \
            MatchType.CONCEPT_ID
-    assert matches[SourceName.ENSEMBL].records[0].match_type == MatchType.XREF
-    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.ENSEMBL.value].records[0].match_type == \
+        MatchType.XREF
+    assert matches[SourceName.NCBI.value].records[0].match_type == \
+        MatchType.XREF
 
     resp = query_handler.search('ensembl:ENSG00000097007', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
-    assert matches[SourceName.ENSEMBL].records[0].match_type == \
+    assert matches[SourceName.HGNC.value].records[0].match_type == \
+        MatchType.XREF
+    assert matches[SourceName.ENSEMBL.value].records[0].match_type == \
            MatchType.CONCEPT_ID
-    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.NCBI.value].records[0].match_type == \
+        MatchType.XREF
 
     # Normalize
     q = "ABL1"
@@ -724,7 +739,7 @@ def test_multiple_norm_concepts(query_handler, normalized_p150, source_meta):
 def test_invalid_queries(query_handler):
     """Test invalid queries"""
     resp = query_handler.normalize("B R A F")
-    assert resp.match_type is MatchType.NO_MATCH
+    assert resp.match_type is MatchType.NO_MATCH.value
 
     with pytest.raises(TypeError):
         resp["match_type"]

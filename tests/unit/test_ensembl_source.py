@@ -14,7 +14,7 @@ def ensembl():
 
         def search(self, query_str, incl='ensembl'):
             resp = self.query_handler.search(query_str, keyed=True, incl=incl)
-            return resp.source_matches[SourceName.ENSEMBL]
+            return resp.source_matches[SourceName.ENSEMBL.value]
 
     e = QueryGetter()
     return e

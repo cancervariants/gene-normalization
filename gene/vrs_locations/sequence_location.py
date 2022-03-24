@@ -38,9 +38,12 @@ class SequenceLocation:
                 seq_location = models.SequenceLocation(
                     sequence_id=sequence_id,
                     interval=models.SequenceInterval(
-                        start=models.Number(value=gene.start - 1),
-                        end=models.Number(value=gene.end)
-                    )
+                        start=models.Number(value=gene.start - 1,
+                                            type="Number"),
+                        end=models.Number(value=gene.end, type="Number"),
+                        type="SequenceInterval"
+                    ),
+                    type="SequenceLocation"
                 )
                 seq_location._id = ga4gh_identify(seq_location)
                 location = seq_location.as_dict()

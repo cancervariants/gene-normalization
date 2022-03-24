@@ -8,7 +8,6 @@ from ga4gh.vrsatile.pydantic import return_value
 from ga4gh.vrsatile.pydantic.vrs_models import SequenceLocation, \
     ChromosomeLocation, CURIE
 from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
-from datetime import datetime
 from pydantic.types import StrictStr
 
 
@@ -81,6 +80,8 @@ class Gene(BaseModel):
 
     class Config:
         """Configure model example"""
+
+        use_enum_values = True
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
@@ -201,6 +202,8 @@ class SourceMeta(BaseModel):
     class Config:
         """Configure model example"""
 
+        use_enum_values = True
+
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
                          model: Type['SourceMeta']) -> None:
@@ -234,6 +237,8 @@ class MatchesKeyed(BaseModel):
 
     class Config:
         """Configure model example"""
+
+        use_enum_values = True
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
@@ -276,6 +281,8 @@ class MatchesListed(BaseModel):
     class Config:
         """Configure model example"""
 
+        use_enum_values = True
+
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
                          model: Type['MatchesListed']) -> None:
@@ -309,11 +316,13 @@ class ServiceMeta(BaseModel):
 
     name = 'gene-normalizer'
     version: StrictStr
-    response_datetime: datetime
+    response_datetime: StrictStr
     url = 'https://github.com/cancervariants/gene-normalization'
 
     class Config:
         """Configure model example"""
+
+        use_enum_values = True
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
@@ -326,7 +335,7 @@ class ServiceMeta(BaseModel):
             schema['example'] = {
                 'name': 'gene-normalizer',
                 'version': '0.1.0',
-                'response_datetime': '2021-04-05T16:44:15.367831',
+                'response_datetime': '2022-03-23 15:57:14.180908',
                 'url': 'https://github.com/cancervariants/gene-normalization'
             }
 
@@ -341,6 +350,8 @@ class SearchService(BaseModel):
 
     class Config:
         """Configure model example"""
+
+        use_enum_values = True
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
@@ -388,7 +399,7 @@ class SearchService(BaseModel):
                 "service_meta_": {
                     'name': 'gene-normalizer',
                     'version': '0.1.0',
-                    'response_datetime': '2021-04-05T16:44:15.367831',
+                    'response_datetime': '2022-03-23 15:57:14.180908',
                     'url': 'https://github.com/cancervariants/gene-normalization'  # noqa: E501
                 }
             }
@@ -406,6 +417,8 @@ class NormalizeService(BaseModel):
 
     class Config:
         """Configure model example"""
+
+        use_enum_values = True
 
         @staticmethod
         def schema_extra(schema: Dict[str, Any],
@@ -533,7 +546,7 @@ class NormalizeService(BaseModel):
                 "service_meta_": {
                     'name': 'gene-normalizer',
                     'version': '0.1.19',
-                    'response_datetime': '2021-09-06T10:52:20.334720',
+                    'response_datetime': '2022-03-23 15:57:14.180908',
                     'url': 'https://github.com/cancervariants/gene-normalization'  # noqa: E501
                 }
             }
