@@ -14,10 +14,6 @@ gffutils = "*"
 requests = "*"
 "biocommons.seqrepo" = "*"
 "ga4gh.vrs" = {version = ">=0.7.5.dev1", extras = ["extras"]}
-uvloop = "*"
-websockets = "*"
-httptools = "*"
-typing-extensions = "*"
 "ga4gh.vrsatile.pydantic" = ">=0.0.10"
 
 [dev-packages]
