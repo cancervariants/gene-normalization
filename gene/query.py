@@ -386,7 +386,8 @@ class QueryHandler:
                     value=gene_type
                 ))
         else:
-            for field_name in GeneTypeFieldName._member_names_:
+            for f in GeneTypeFieldName:
+                field_name = f.value
                 values = record.get(field_name, [])
                 for value in values:
                     extensions.append(Extension(

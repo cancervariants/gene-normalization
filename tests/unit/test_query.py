@@ -97,17 +97,17 @@ def normalized_ache():
             {
                 "name": "ncbi_gene_type",
                 "type": "Extension",
-                "value": ["protein-coding"]
+                "value": "protein-coding"
             },
             {
                 "name": "hgnc_locus_type",
                 "type": "Extension",
-                "value": ["gene with protein product"]
+                "value": "gene with protein product"
             },
             {
                 "name": "ensembl_biotype",
                 "type": "Extension",
-                "value": ["protein_coding"]
+                "value": "protein_coding"
             }
         ]
     }
@@ -181,17 +181,17 @@ def normalized_braf():
             {
                 "name": "ncbi_gene_type",
                 "type": "Extension",
-                "value": ["protein-coding"]
+                "value": "protein-coding"
             },
             {
                 "name": "hgnc_locus_type",
                 "type": "Extension",
-                "value": ["gene with protein product"]
+                "value": "gene with protein product"
             },
             {
                 "name": "ensembl_biotype",
                 "type": "Extension",
-                "value": ["protein_coding"]
+                "value": "protein_coding"
             }
         ]
     }
@@ -280,17 +280,17 @@ def normalized_abl1():
             {
                 "name": "ncbi_gene_type",
                 "type": "Extension",
-                "value": ["protein-coding"]
+                "value": "protein-coding"
             },
             {
                 "name": "hgnc_locus_type",
                 "type": "Extension",
-                "value": ["gene with protein product"]
+                "value": "gene with protein product"
             },
             {
                 "name": "ensembl_biotype",
                 "type": "Extension",
-                "value": ["protein_coding"]
+                "value": "protein_coding"
             }
         ]
     }
@@ -360,17 +360,17 @@ def normalized_p150():
             {
                 "name": "ncbi_gene_type",
                 "type": "Extension",
-                "value": ["protein-coding"]
+                "value": "protein-coding"
             },
             {
                 "name": "hgnc_locus_type",
                 "type": "Extension",
-                "value": ["gene with protein product"]
+                "value": "gene with protein product"
             },
             {
                 "name": "ensembl_biotype",
                 "type": "Extension",
-                "value": ["protein_coding"]
+                "value": "protein_coding"
             }
         ]
     }
