@@ -130,9 +130,9 @@ class Merge:
             merged_attrs['xrefs'] = [r['concept_id'] for r in records[1:]]
 
         # merge from constituent records
-        set_fields = ['aliases', 'associated_with', 'previous_symbols']
-        scalar_fields = ['symbol', 'symbol_status', 'label', 'strand',
-                         'location_annotations', 'locations']
+        set_fields = ["aliases", "associated_with", "previous_symbols"]
+        scalar_fields = ["symbol", "symbol_status", "label", "strand",
+                         "location_annotations", "locations", "gene_type"]
         for record in records:
             for field in set_fields:
                 merged_attrs[field] |= set(record.get(field, set()))

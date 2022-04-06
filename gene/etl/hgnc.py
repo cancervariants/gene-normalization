@@ -1,7 +1,7 @@
 """This module defines the HGNC ETL methods."""
 from .base import Base
 from gene import APP_ROOT, PREFIX_LOOKUP
-from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, \
+from gene.schemas import GeneType, SourceName, SymbolStatus, NamespacePrefix, \
     SourceMeta, Annotation, Chromosome
 from gene.database import Database
 import logging
@@ -57,6 +57,33 @@ class HGNC(Base):
         else:
             self._data_src = sorted(list(self.src_data_dir.iterdir()))[-1]
 
+    locus_type_lookup = {
+        "RNA, Y": GeneType.Y_RNA,
+        "RNA, cluster": GeneType.CLUSTER_RNA,
+        "RNA, long non-coding": GeneType.LNCRNA,
+        "RNA, micro": GeneType.MIRNA,
+        "RNA, misc": GeneType.MISC_RNA,
+        "RNA, ribosomal": GeneType.RRNA,
+        "RNA, small nuclear": GeneType.SNRNA,
+        "RNA, small nucleolar": GeneType.SNORNA,
+        "RNA, transfer": GeneType.TRNA,
+        "RNA, vault": GeneType.VAULT_RNA,
+        "T cell receptor gene": GeneType.TR_GENE,
+        "T cell receptor pseudogene": GeneType.TR_PSEUDOGENE,
+        "complex locus constituent": GeneType.COMPLEX_LOCUS_CONSTITUENT,
+        "endogenous retrovirus": GeneType.ENDOGEOUS_RETROVIRUS,
+        "fragile site": GeneType.FRAGILE_SITE,
+        "gene with protein product": GeneType.PROTEIN_CODING,
+        "immunoglobulin gene": GeneType.IG_GENE,
+        "immunoglobulin pseudogene": GeneType.IG_PSEUDOGENE,
+        "protocadherin": GeneType.PROTOCADHERIN,
+        "pseudogene": GeneType.PSEUDOGENE,
+        "readthrough": GeneType.READTHROUGH,
+        "region": GeneType.BIOLOGICAL_REGION,
+        "unknown": GeneType.UNKNOWN,
+        "virus integration site": GeneType.VIRUS_INTEGRATION_SITE
+    }
+
     def _transform_data(self, *args, **kwargs):
         """Transform the HGNC source."""
         logger.info('Transforming HGNC...')
@@ -91,6 +118,10 @@ class HGNC(Base):
                     self._get_previous_symbols(r, gene)
                 if 'location' in r:
                     self._get_location(r, gene)
+                if "locus_type" in r:
+                    gene_type = self.locus_type_lookup[r["locus_type"]]
+                    if gene_type:
+                        gene["gene_type"] = gene_type
                 self._load_gene(gene, batch)
         logger.info('Successfully transformed HGNC.')
 

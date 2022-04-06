@@ -2,7 +2,7 @@
 from .base import Base
 from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import Database
-from gene.schemas import SourceMeta, SourceName, NamespacePrefix, \
+from gene.schemas import GeneType, SourceMeta, SourceName, NamespacePrefix, \
     Annotation, Chromosome, SymbolStatus
 import logging
 from pathlib import Path
@@ -231,6 +231,11 @@ class NCBI(Base):
             if row[1] in prev_symbols.keys():
                 params['previous_symbols'] = prev_symbols[row[1]]
             info_genes[params['symbol']] = params
+            # get type
+            gene_type = row[9]
+            if gene_type == 'pseudo':
+                gene_type = 'pseudogene'
+            params['gene_type'] = GeneType[gene_type.replace('-', '_').upper()]
         return info_genes
 
     def _get_gene_gff(self, db, info_genes, sr):
