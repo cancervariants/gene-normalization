@@ -128,6 +128,7 @@ def normalized_braf():
         },
         "alternate_labels": [
             "BRAF1",
+            "BRAF-1",
             "RAFB1",
             "NS7",
             "B-RAF1",
