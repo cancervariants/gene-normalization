@@ -5,10 +5,10 @@ Services and guidelines for normalizing gene terms
 Following are sections include instructions specifically for developers.
 
 ### Installation
-For a development install, we recommend using Pipenv. See the 
-[pipenv docs](https://pipenv-fork.readthedocs.io/en/latest/#install-pipenv-today) 
+For a development install, we recommend using Pipenv. See the
+[pipenv docs](https://pipenv-fork.readthedocs.io/en/latest/#install-pipenv-today)
 for direction on installing pipenv in your compute environment.
- 
+
 Once installed, from the project root dir, just run:
 
 ```commandline
@@ -16,7 +16,7 @@ pipenv shell
 pipenv lock && pipenv sync
 ```
 
-Gene Normalization relies on [SeqRepo](https://github.com/biocommons/biocommons.seqrepo) data. 
+Gene Normalization relies on [SeqRepo](https://github.com/biocommons/biocommons.seqrepo) data.
 
 From the _root_ directory:
 ```
@@ -24,6 +24,7 @@ pip install seqrepo
 sudo mkdir /usr/local/share/seqrepo
 sudo chown $USER /usr/local/share/seqrepo
 seqrepo pull -i 2021-01-29
+```
 
 ### Deploying DynamoDB Locally
 
@@ -70,7 +71,7 @@ To change the port, simply add `-port value`.
 #### Update source(s)
 The sources we currently use are: HGNC, Ensembl, and NCBI.
 
-To update one source, simply set `--normalizer` to the source you wish to update. 
+To update one source, simply set `--normalizer` to the source you wish to update.
 
 From the project root, run the following to update the HGNC source:
 
@@ -82,7 +83,7 @@ To update multiple sources, you can use the `--normalizer` flag with the source 
 
 #### Update all sources
 
-To update all sources, use the `--update_all` flag. 
+To update all sources, use the `--update_all` flag.
 
 From the project root, run the following to update all sources:
 
@@ -92,13 +93,13 @@ python3 -m gene.cli --update_all
 
 #### Specifying the database URL endpoint
 The default URL endpoint is `http://localhost:8000`.
-There are two different ways to specify the database URL endpoint. 
+There are two different ways to specify the database URL endpoint.
 
 The first way is to set the `--db_url` flag to the URL endpoint.
 ```commandline
 python3 -m gene.cli --update_all --db_url="http://localhost:8001"
 ```
- 
+
 The second way is to set the `GENE_NORM_DB_URL` to the URL endpoint.
 ```commandline
 export GENE_NORM_DB_URL="http://localhost:8001"
@@ -111,6 +112,6 @@ From the project root, run the following:
  uvicorn gene.main:app --reload
 ```
 
-Next, view the OpenAPI docs on your local machine: 
+Next, view the OpenAPI docs on your local machine:
 
 http://127.0.0.1:8000/gene
