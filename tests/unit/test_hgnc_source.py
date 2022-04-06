@@ -66,7 +66,7 @@ def a1bg_as1():
             "ensembl:ENSG00000268895",
             "ncbigene:503538"
         ],
-        "gene_type": "lncRNA"
+        "gene_type": "RNA, long non-coding"
     }
     return Gene(**params)
 
@@ -129,7 +129,7 @@ def tp53():
             "ensembl:ENSG00000141510",
             "ncbigene:7157"
         ],
-        "gene_type": "protein_coding"
+        "gene_type": "gene with protein product"
     }
     return Gene(**params)
 
@@ -179,7 +179,7 @@ def a3galt2():
             "pubmed:18630988",
             "refseq:NM_001080438"
         ],
-        "gene_type": "protein_coding"
+        "gene_type": "gene with protein product"
     }
     return Gene(**params)
 
@@ -230,7 +230,7 @@ def wdhd1():
             "pubmed:9175701",
             "pubmed:20028748"
         ],
-        "gene_type": "protein_coding"
+        "gene_type": "gene with protein product"
     }
     return Gene(**params)
 
@@ -289,7 +289,7 @@ def pirc24():
         "associated_with": [
             "pubmed:17881367"
         ],
-        "gene_type": "cluster_RNA"
+        "gene_type": "RNA, cluster"
     }
     return Gene(**params)
 
@@ -334,7 +334,7 @@ def gage4():
             "ena.embl:U19145",
             "pubmed:7544395"
         ],
-        "gene_type": "protein_coding"
+        "gene_type": "gene with protein product"
     }
     return Gene(**params)
 
@@ -399,7 +399,7 @@ def mt_7sdna():
             "pubmed:24709344",
             "pubmed:273237"
         ],
-        "gene_type": "biological_region"
+        "gene_type": "region"
     }
     return Gene(**params)
 
@@ -435,7 +435,7 @@ def cecr():
             "ncbigene:1055"
         ],
         "associated_with": [],
-        "gene_type": "biological_region"
+        "gene_type": "region"
     }
     return Gene(**params)
 
@@ -506,7 +506,7 @@ def csf2ra():
             "ccds:CCDS35193",
             "pubmed:1702217"
         ],
-        "gene_type": "protein_coding"
+        "gene_type": "gene with protein product"
     }
     return Gene(**params)
 
@@ -587,7 +587,7 @@ def trl_cag2_1():
         "associated_with": [
             "ena.embl:HG983896"
         ],
-        "gene_type": "tRNA"
+        "gene_type": "RNA, transfer"
     }
     return Gene(**params)
 
@@ -636,7 +636,7 @@ def myo5b():
             "pubmed:8884266",
             "pubmed:17462998"
         ],
-        "gene_type": "protein_coding"
+        "gene_type": "gene with protein product"
     }
     return Gene(**params)
 
@@ -683,7 +683,7 @@ def gstt1():
             "ensembl:ENSG00000277656",
             "ncbigene:2952"
         ],
-        "gene_type": "protein_coding"
+        "gene_type": "gene with protein product"
     }
     return Gene(**params)
 

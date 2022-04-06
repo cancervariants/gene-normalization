@@ -5,8 +5,7 @@ import gffutils
 
 from .base import Base
 from gene import APP_ROOT
-from gene.schemas import GeneType, SourceName, NamespacePrefix, Strand, \
-    SourceMeta
+from gene.schemas import SourceName, NamespacePrefix, Strand, SourceMeta
 from gene.database import Database
 from gene.vrs_locations import SequenceLocation
 
@@ -159,9 +158,6 @@ class Ensembl(Base):
                         elif "associated_with" in source:
                             gene["associated_with"] = source["associated_with"]
                     continue
-
-                if key == "biotype":
-                    val = GeneType[val.upper()]
 
                 gene[attributes[key]] = val
 

@@ -6,7 +6,8 @@ from .version import __version__
 from gene import NAMESPACE_LOOKUP, PREFIX_LOOKUP, ITEM_TYPES
 from gene.database import Database
 from gene.schemas import Gene, SourceMeta, MatchType, SourceName, \
-    ServiceMeta, SourcePriority, NormalizeService, SearchService
+    ServiceMeta, SourcePriority, NormalizeService, SearchService, \
+    GeneTypeFieldName
 from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor, Extension
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
@@ -367,7 +368,6 @@ class QueryHandler:
             ("chromosome_location", "locations"),
             ("associated_with", "associated_with"),
             ("previous_symbols", "previous_symbols"),
-            ("gene_type", "gene_type")
         ]
         for ext_label, record_label in extension_and_record_labels:
             if record_label in record and record[record_label]:
@@ -377,6 +377,22 @@ class QueryHandler:
                     name=ext_label,
                     value=record[record_label]
                 ))
+        # handle gene types separately because they're wonky
+        if record["item_type"] == "identity":
+            gene_type = record.get("gene_type")
+            if gene_type:
+                extensions.append(Extension(
+                    name=GeneTypeFieldName[record["src_name"].upper()],
+                    value=gene_type
+                ))
+        else:
+            for field_name in GeneTypeFieldName._member_names_:
+                values = record.get(field_name, [])
+                for value in values:
+                    extensions.append(Extension(
+                        name=field_name,
+                        value=value
+                    ))
         if extensions:
             params["extensions"] = extensions
 

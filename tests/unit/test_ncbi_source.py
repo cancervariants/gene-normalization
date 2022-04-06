@@ -60,7 +60,7 @@ def dpf1():
                 "type": "SequenceLocation"
             }
         ],
-        "gene_type": "protein_coding"
+        "gene_type": "protein-coding"
     }
     return Gene(**params)
 
@@ -103,7 +103,7 @@ def pdp1_symbol():
                 "type": "SequenceLocation"
             }
         ],
-        "gene_type": "protein_coding"
+        "gene_type": "protein-coding"
 
     }
     return Gene(**params)
@@ -117,7 +117,7 @@ def pdp1_alias():
         "label": "phospholipid phosphatase 6",
         "concept_id": "ncbigene:403313",
         "symbol": "PLPP6",
-        "aliases": ["PDP1", "PSDP", "PPAPDC2", "bA6J24.6"],
+        "aliases": ["PDP1", "PSDP", "PPAPDC2", "bA6J24.6", "LPRP-B", "PA-PSP"],
         "xrefs": ["hgnc:23682", "ensembl:ENSG00000205808"],
         "previous_symbols": [],
         "associated_with": ["omim:611666"],
@@ -147,7 +147,7 @@ def pdp1_alias():
                 "type": "SequenceLocation"
             }
         ],
-        "gene_type": "protein_coding"
+        "gene_type": "protein-coding"
     }
     return Gene(**params)
 
@@ -212,7 +212,7 @@ def spry3():
                 "type": "SequenceLocation"
             }
         ],
-        "gene_type": "protein_coding"
+        "gene_type": "protein-coding"
     }
     return Gene(**params)
 
@@ -300,7 +300,7 @@ def znf84():
                 "type": "SequenceLocation"
             }
         ],
-        "gene_type": "protein_coding"
+        "gene_type": "protein-coding"
     }
     return Gene(**params)
 
@@ -343,7 +343,7 @@ def slc25a6():
                 "type": "SequenceLocation"
             }
         ],
-        "gene_type": "protein_coding"
+        "gene_type": "protein-coding"
     }
     return Gene(**params)
 
@@ -377,7 +377,7 @@ def loc106783576():
                 "type": "ChromosomeLocation"
             }
         ],
-        "gene_type": "biological_region"
+        "gene_type": "biological-region"
     }
     return Gene(**params)
 
@@ -500,7 +500,7 @@ def prkrap1():
                 "type": "SequenceLocation"
             }
         ],
-        "gene_type": "pseudogene"
+        "gene_type": "pseudo"
     }
     return Gene(**params)
 

@@ -56,78 +56,6 @@ class MatchType(IntEnum):
     NO_MATCH = 0
 
 
-class GeneType(str, Enum):
-    """Define string constriants for use in gene type fields.
-    Values are slightly modified from original sources to be internally
-    consistent (eg "Pseudogene, rRNA" -> "rRNA_pseudogene") and to align with
-    INSDC vocabulary where relevant.
-    See https://ensembl.org/info/genome/genebuild/biotypes.html,
-    https://www.ncbi.nlm.nih.gov/books/NBK3841/#EntrezGene.Properties,
-    https://www.genenames.org/help/symbol-report/#locus_type for more info.
-    """
-
-    BIOLOGICAL_REGION = "biological_region"
-    CLUSTER_RNA = "cluster_RNA"
-    COMPLEX_LOCUS_CONSTITUENT = "complex_locus_constituent"
-    ENDOGEOUS_RETROVIRUS = "endogenous_retrovirus"
-    FRAGILE_SITE = "fragile_site"
-    IG_GENE = "IG_gene"
-    IG_C_GENE = "IG_C_gene"
-    IG_C_PSEUDOGENE = "IG_C_pseudogene"
-    IG_D_GENE = "IG_D_gene"
-    IG_J_GENE = "IG_J_gene"
-    IG_J_PSEUDOGENE = "IG_J_pseudogene"
-    IG_PSEUDOGENE = "IG_pseudogene"
-    IG_V_GENE = "IG_V_gene"
-    IG_V_PSEUDOGENE = "IG_V_pseudogene"
-    LNCRNA = "lncRNA"
-    MIRNA = "miRNA"
-    MISC_RNA = "misc_RNA"
-    MT_RRNA = "Mt_rRNA"
-    MT_TRNA = "Mt_tRNA"
-    NCRNA = "ncRNA"
-    NONSENSE_MEDIATED_DECAY = "nonsense_mediated_decay"
-    NON_STOP_DECAY = "non_stop_decay"
-    POLYMORPHIC_PSEUDOGENE = "polymorphic_pseudogene"
-    PROCESSED_PSEUDOGENE = "processed_pseudogene"
-    PROCESSED_TRANSCRIPT = "processed_transcript"
-    PROTEIN_CODING = "protein_coding"
-    PROTOCADHERIN = "protocadherin"
-    PSEUDOGENE = "pseudogene"
-    READTHROUGH = "readthrough"
-    RETAINED_INTRON = "retained_intron"
-    RIBOZYME = "ribozyme"
-    RRNA = "rRNA"
-    RRNA_PSEUDOGENE = "rRNA_pseudogene"
-    SCARNA = "scaRNA"
-    SCRNA = "scRNA"
-    SNORNA = "snoRNA"
-    SNRNA = "snRNA"
-    SRNA = "sRNA"
-    TEC = "TEC"
-    TRANSCRIBED_PROCESSED_PSEUDOGENE = "transcribed_processed_pseudogene"
-    TRANSCRIBED_UNITARY_PSEUDOGENE = "transcribed_unitary_pseudogene"
-    TRANSCRIBED_UNPROCESSED_PSEUDOGENE = "transcribed_unprocessed_pseudogene"
-    TRANSLATED_PROCESSED_PSEUDOGENE = "translated_processed_pseudogene"
-    TRANSLATED_UNPROCESSED_PSEUDOGENE = "translated_unprocessed_pseudogene"
-    TRNA = "tRNA"
-    TR_GENE = "TR_gene"
-    TR_PSEUDOGENE = "TR_pseudogene"
-    TR_C_GENE = "TR_C_gene"
-    TR_D_GENE = "TR_D_gene"
-    TR_J_GENE = "TR_J_gene"
-    TR_J_PSEUDOGENE = "TR_J_pseudogene"
-    TR_V_GENE = "TR_V_gene"
-    TR_V_PSEUDOGENE = "TR_V_pseudogene"
-    UNITARY_PSEUDOGENE = "unitary_pseudogene"
-    OTHER = "other"
-    UNKNOWN = "unknown"
-    UNPROCESSED_PSEUDOGENE = "unprocessed_pseudogene"
-    VAULT_RNA = "vault_RNA"
-    VIRUS_INTEGRATION_SITE = "virus_integration_site"
-    Y_RNA = "Y_RNA"
-
-
 class Gene(BaseModel):
     """Gene"""
 
@@ -143,7 +71,7 @@ class Gene(BaseModel):
     previous_symbols: Optional[List[StrictStr]] = []
     xrefs: Optional[List[CURIE]] = []
     associated_with: Optional[List[CURIE]] = []
-    gene_type: Optional[GeneType]
+    gene_type: Optional[StrictStr]
 
     _get_concept_id_val = \
         validator('concept_id', allow_reuse=True)(return_value)
@@ -173,7 +101,7 @@ class Gene(BaseModel):
                 "xrefs": [],
                 "symbol_status": None,
                 "strand": "-",
-                "location": []
+                "location": [],
             }
 
 
@@ -476,6 +404,16 @@ class SearchService(BaseModel):
                     'url': 'https://github.com/cancervariants/gene-normalization'  # noqa: E501
                 }
             }
+
+
+class GeneTypeFieldName(str, Enum):
+    """Designate source-specific gene type field names for Extensions and
+    internal records.
+    """
+
+    HGNC = "hgnc_locus_type"
+    NCBI = "ncbi_gene_type"
+    ENSEMBL = "ensembl_biotype"
 
 
 class NormalizeService(BaseModel):

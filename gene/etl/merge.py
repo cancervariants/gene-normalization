@@ -1,6 +1,6 @@
 """Create concept groups and merged records."""
 from gene.database import Database
-from gene.schemas import SourcePriority
+from gene.schemas import SourcePriority, GeneTypeFieldName
 from typing import Set, Dict
 from timeit import default_timer as timer
 import logging
@@ -121,10 +121,13 @@ class Merge:
 
         # initialize merged record
         merged_attrs = {
-            'concept_id': records[0]['concept_id'],
-            'aliases': set(),
-            'associated_with': set(),
-            'previous_symbols': set()
+            "concept_id": records[0]["concept_id"],
+            "aliases": set(),
+            "associated_with": set(),
+            "previous_symbols": set(),
+            "hgnc_locus_type": set(),
+            "ncbi_gene_type": set(),
+            "ensembl_biotype": set()
         }
         if len(records) > 1:
             merged_attrs['xrefs'] = [r['concept_id'] for r in records[1:]]
@@ -132,7 +135,7 @@ class Merge:
         # merge from constituent records
         set_fields = ["aliases", "associated_with", "previous_symbols"]
         scalar_fields = ["symbol", "symbol_status", "label", "strand",
-                         "location_annotations", "locations", "gene_type"]
+                         "location_annotations", "locations"]
         for record in records:
             for field in set_fields:
                 merged_attrs[field] |= set(record.get(field, set()))
@@ -141,7 +144,13 @@ class Merge:
                 if field not in merged_attrs and field in record:
                     merged_attrs[field] = record[field]
 
-        for field in set_fields:
+            gene_type = record.get("gene_type")
+            if gene_type:
+                merged_field = GeneTypeFieldName[record["src_name"].upper()]
+                merged_attrs[merged_field] |= {gene_type}
+
+        for field in set_fields + ["hgnc_locus_type", "ncbi_gene_type",
+                                   "ensembl_biotype"]:
             field_value = merged_attrs[field]
             if field_value:
                 merged_attrs[field] = list(field_value)
