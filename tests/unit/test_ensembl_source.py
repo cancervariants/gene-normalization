@@ -85,38 +85,6 @@ def tp53():
 
 
 @pytest.fixture(scope="module")
-def u6():
-    """Create a U6 test fixture."""
-    params = {
-        "match_type": MatchType.NO_MATCH,
-        "concept_id": "ensembl:ENSG00000278757",
-        "symbol": "U6",
-        "label": "U6 spliceosomal RNA",
-        "previous_symbols": [],
-        "aliases": [],
-        "xrefs": [],
-        "symbol_status": None,
-        "location_annotations": [],
-        "locations": [
-            {
-                "_id": "ga4gh:VSL.mtPBK609IiOFy0gztyTnEGdWM_k_e85C",
-                "interval": {
-                    "end": {"value": 516479, "type": "Number"},
-                    "start": {"value": 516375, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
-                "sequence_id": "ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
-                "type": "SequenceLocation"
-            }
-        ],
-        "strand": "-",
-        "associated_with": ["rfam:RF00026"],
-        "gene_type": "snRNA"
-    }
-    return Gene(**params)
-
-
-@pytest.fixture(scope="module")
 def CH17_340M24_3():
     """Create a CH17-340M24.3 test fixture."""
     params = {
@@ -144,37 +112,6 @@ def CH17_340M24_3():
         "strand": "-",
         "associated_with": [],
         "gene_type": "lncRNA"
-    }
-    return Gene(**params)
-
-
-@pytest.fixture(scope="module")
-def AC091057_5():
-    """Create a AC091057.5 test fixture."""
-    params = {
-        "match_type": MatchType.NO_MATCH,
-        "concept_id": "ensembl:ENSG00000284906",
-        "symbol": "AC091057.5",
-        "label": "Rho GTPase-activating protein 11B",
-        "previous_symbols": [],
-        "aliases": [],
-        "xrefs": [],
-        "symbol_status": None,
-        "location_annotations": [],
-        "locations": [
-            {
-                "_id": "ga4gh:VSL.sZGLn8Ah76rP34pu8-7W73lkCwQ7XSJD",
-                "interval": {
-                    "end": {"value": 30685606, "type": "Number"},
-                    "start": {"value": 30624547, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
-                "sequence_id": "ga4gh:SQ.AsXvWL1-2i5U_buw6_niVIxD6zTbAuS6",
-                "type": "SequenceLocation"
-            }
-        ],
-        "strand": "+",
-        "associated_with": ["uniprot:Q3KRB8"],
     }
     return Gene(**params)
 
