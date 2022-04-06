@@ -77,7 +77,7 @@ class Merge:
             db_record = self._database.get_record_by_id(record_id)
             if not db_record:
                 logger.warning(f"Record ID set creator could not resolve "
-                               f"lookup fo r{record_id} in ID set: "
+                               f"lookup for {record_id} in ID set: "
                                f"{observed_id_set}")
                 return observed_id_set - {record_id}
 
