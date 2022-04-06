@@ -2,8 +2,8 @@
 from .base import Base
 from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import Database
-from gene.schemas import SourceMeta, SourceName, NamespacePrefix, \
-    Annotation, Chromosome, SymbolStatus
+from gene.schemas import SourceMeta, SourceName, NamespacePrefix, Annotation, \
+    Chromosome, SymbolStatus
 import logging
 from pathlib import Path
 import csv
@@ -231,6 +231,8 @@ class NCBI(Base):
             if row[1] in prev_symbols.keys():
                 params['previous_symbols'] = prev_symbols[row[1]]
             info_genes[params['symbol']] = params
+            # get type
+            params['gene_type'] = row[9]
         return info_genes
 
     def _get_gene_gff(self, db, info_genes, sr):

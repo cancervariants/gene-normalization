@@ -92,7 +92,8 @@
                     "NM_001374258.1"
                 ],
                 "alias_symbol": [
-                    "BRAF1"
+                    "BRAF1",
+                    "BRAF-1"
                 ],
                 "_version_": 1707696197057118209,
                 "uuid": "fbac0c54-1e0e-47af-a39a-82949139939c",

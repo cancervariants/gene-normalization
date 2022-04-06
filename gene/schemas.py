@@ -71,6 +71,7 @@ class Gene(BaseModel):
     previous_symbols: Optional[List[StrictStr]] = []
     xrefs: Optional[List[CURIE]] = []
     associated_with: Optional[List[CURIE]] = []
+    gene_type: Optional[StrictStr]
 
     _get_concept_id_val = \
         validator('concept_id', allow_reuse=True)(return_value)
@@ -100,7 +101,7 @@ class Gene(BaseModel):
                 "xrefs": [],
                 "symbol_status": None,
                 "strand": "-",
-                "location": []
+                "location": [],
             }
 
 
@@ -403,6 +404,16 @@ class SearchService(BaseModel):
                     'url': 'https://github.com/cancervariants/gene-normalization'  # noqa: E501
                 }
             }
+
+
+class GeneTypeFieldName(str, Enum):
+    """Designate source-specific gene type field names for Extensions and
+    internal records.
+    """
+
+    HGNC = "hgnc_locus_type"
+    NCBI = "ncbi_gene_type"
+    ENSEMBL = "ensembl_biotype"
 
 
 class NormalizeService(BaseModel):
