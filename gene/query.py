@@ -1,6 +1,6 @@
 """This module provides methods for handling queries."""
 import re
-from typing import List, Dict, Set
+from typing import List, Dict, Set, Tuple
 from urllib.parse import quote
 from .version import __version__
 from gene import NAMESPACE_LOOKUP, PREFIX_LOOKUP, ITEM_TYPES
@@ -76,7 +76,7 @@ class QueryHandler:
     def add_record(self,
                    response: Dict[str, Dict],
                    item: Dict,
-                   match_type: MatchType) -> (Dict, str):
+                   match_type: MatchType) -> Tuple[Dict, str]:
         """Add individual record (i.e. Item in DynamoDB) to response object
 
         :param Dict[str, Dict] response: in-progress response object to return
@@ -126,8 +126,10 @@ class QueryHandler:
             pk = f'{concept_id}##identity'
             filter_exp = Key('label_and_type').eq(pk)
             result = self.db.genes.query(KeyConditionExpression=filter_exp)
-            match = result['Items'][0]
-            self.add_record(response, match, match_type)
+            items = result['Items']
+            if items:
+                match = items[0]
+                self.add_record(response, match, match_type)
         except ClientError as e:
             logger.error(e.response['Error']['Message'])
 
@@ -421,7 +423,7 @@ class QueryHandler:
         return response
 
     @staticmethod
-    def _record_order(record: Dict) -> (int, str):
+    def _record_order(record: Dict) -> Tuple[int, str]:
         """Construct priority order for matching. Only called by sort().
 
         :param Dict record: individual record item in iterable to sort
@@ -495,9 +497,11 @@ class QueryHandler:
         for match_type in ITEM_TYPES.values():
             # get matches list for match tier
             matching_refs = self.db.get_records_by_type(query_str, match_type)
-            matching_records = \
-                [self.db.get_record_by_id(m['concept_id'], False)
-                 for m in matching_refs]
+            matching_records = list()
+            for m in matching_refs:
+                record = self.db.get_record_by_id(m['concept_id'], False)
+                if record:
+                    matching_records.append(record)
             matching_records.sort(key=self._record_order)
 
             if len(matching_refs) > 1:
