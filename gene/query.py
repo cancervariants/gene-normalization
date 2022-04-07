@@ -130,6 +130,8 @@ class QueryHandler:
             if items:
                 match = items[0]
                 self.add_record(response, match, match_type)
+            else:
+                logger.warning(f"No items found for label_and_type={pk}")
         except ClientError as e:
             logger.error(e.response['Error']['Message'])
 
@@ -502,6 +504,8 @@ class QueryHandler:
                 record = self.db.get_record_by_id(m['concept_id'], False)
                 if record:
                     matching_records.append(record)
+                else:
+                    logger.warning(f"No record found for {m['concept_id']}")
             matching_records.sort(key=self._record_order)
 
             if len(matching_refs) > 1:
