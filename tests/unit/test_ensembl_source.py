@@ -99,10 +99,10 @@ def CH17_340M24_3():
         "location_annotations": [],
         "locations": [
             {
-                "_id": "ga4gh:VSL.EJaq2KK3bIftDcyP1YAmJLb08JbBAmAn",
+                "_id": "ga4gh:VSL.Qgt1dnZLg46y-lkbsk2lCnlfose0VsFt",
                 "interval": {
-                    "end": {"value": 154428479, "type": "Number"},
-                    "start": {"value": 154424379, "type": "Number"},
+                    "end": {"value": 154428512, "type": "Number"},
+                    "start": {"value": 154424377, "type": "Number"},
                     "type": "SequenceInterval"
                 },
                 "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
