@@ -28,7 +28,6 @@ class Ensembl(Base):
         :param str host: FTP host name
         :param str data_dir: FTP data directory to use
         :param Path src_data_dir: Data directory for Ensembl
-        :param int version: Version for fn
         """
         super().__init__(database, host, data_dir, src_data_dir)
         self._sequence_location = SequenceLocation()
