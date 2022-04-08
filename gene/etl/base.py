@@ -144,18 +144,29 @@ class Base(ABC):
             version = \
                 datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%Y%m%d')
             ftp.cwd(data_dir)
-            if data_fn.endswith('.gz'):
-                filepath = source_dir / f'{fn}.gz'
-            else:
-                filepath = source_dir / fn
-            with open(filepath, 'wb') as fp:
-                ftp.retrbinary(f'RETR {data_fn}', fp.write)
-            if data_fn.endswith('.gz'):
-                with gzip.open(filepath, 'rb') as f_in:
-                    with open(source_dir / fn, 'wb') as f_out:
-                        shutil.copyfileobj(f_in, f_out)
-                remove(filepath)
+            self._ftp_download_file(ftp, data_fn, source_dir, fn)
         return version
+
+    def _ftp_download_file(self, ftp: FTP, data_fn: str, source_dir: Path,
+                           fn: str) -> None:
+        """Download data file from FTP
+
+        :param FTP ftp: FTP instance
+        :param str data_fn: Filename on FTP site to be downloaded
+        :param Path source_dir: Source's data directory
+        :param str fn: Filename for downloaded file
+        """
+        if data_fn.endswith('.gz'):
+            filepath = source_dir / f'{fn}.gz'
+        else:
+            filepath = source_dir / fn
+        with open(filepath, 'wb') as fp:
+            ftp.retrbinary(f'RETR {data_fn}', fp.write)
+        if data_fn.endswith('.gz'):
+            with gzip.open(filepath, 'rb') as f_in:
+                with open(source_dir / fn, 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+            remove(filepath)
 
     def get_seqrepo(self, seqrepo_dir) -> SeqRepo:
         """Return SeqRepo instance if seqrepo_dir exists.
