@@ -61,7 +61,10 @@ class CLI:
             normalizers = [src for src in SOURCES]
             CLI()._update_normalizers(normalizers, db, update_merged)
         elif not normalizer:
-            CLI()._help_msg()
+            if update_merged:
+                CLI()._load_merge(db, [])
+            else:
+                CLI()._help_msg()
         else:
             normalizers = normalizer.lower().split()
 
