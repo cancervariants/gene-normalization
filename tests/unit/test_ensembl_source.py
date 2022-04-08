@@ -298,15 +298,15 @@ def test_no_match(ensembl):
     assert len(resp.records) == 0
 
 
-def test_meta_info(ddx11l1, ensembl):
+def test_meta_info(ensembl):
     """Test that the meta field is correct."""
     resp = ensembl.search("chromosome:1")
     assert resp.source_meta_.data_license == "custom"
-    assert resp.source_meta_.data_license_url ==\
-           "https://useast.ensembl.org/info/about/legal/disclaimer.html"
-    assert resp.source_meta_.version == "104"
+    assert resp.source_meta_.data_license_url == \
+        "https://useast.ensembl.org/info/about/legal/disclaimer.html"
+    assert resp.source_meta_.version == "105"
     assert resp.source_meta_.data_url == \
-           "ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.104.gff3.gz"
+        "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.105.gff3.gz"  # noqa: E501
     assert resp.source_meta_.rdp_url is None
     assert resp.source_meta_.genome_assemblies == ["GRCh38"]
     assert resp.source_meta_.data_license_attributes == {
