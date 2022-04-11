@@ -1,5 +1,7 @@
 """This module defines the Ensembl ETL methods."""
 import logging
+import re
+from ftplib import FTP
 
 import gffutils
 
@@ -17,44 +19,52 @@ logger.setLevel(logging.DEBUG)
 class Ensembl(Base):
     """ETL the Ensembl source into the normalized database."""
 
-    def __init__(self,
-                 database: Database,
-                 host="ftp.ensembl.org",
-                 data_dir="pub/",
-                 src_data_dir=APP_ROOT / "data" / "ensembl",
-                 version="104"
-                 ):
+    def __init__(self, database: Database, host="ftp.ensembl.org",
+                 data_dir="pub/current_gff3/homo_sapiens/",
+                 src_data_dir=APP_ROOT / "data" / "ensembl") -> None:
         """Initialize Ensembl ETL class.
 
         :param Database database: DynamoDB database
         :param str host: FTP host name
         :param str data_dir: FTP data directory to use
         :param Path src_data_dir: Data directory for Ensembl
-        :param int version: Version for fn
         """
         super().__init__(database, host, data_dir, src_data_dir)
         self._sequence_location = SequenceLocation()
         self._host = host
         self._data_dir = data_dir
-        self._version = version
-        self._fn = f"Homo_sapiens.GRCh38.{self._version}.gff3.gz"
-        self._data_url = f"ftp://{self._host}/{self._data_dir}{self._fn}"
-        self._data_file_url = None
-        self._assembly = "GRCh38"
+        self._version = None
+        self._fn = None
+        self._data_url = None
+        self._assembly = None
 
-    def _download_data(self):
-        """Download Ensembl GFF3 data file."""
-        logger.info("Downloading Ensembl data file...")
+    def _download_data(self) -> None:
+        """Download latest Ensembl GFF3 data file."""
+        logger.info("Downloading latest Ensembl data file...")
         self._create_data_directory()
-        new_fn = f"ensembl_{self._version}.gff3"
-        if not (self.src_data_dir / new_fn).exists():
-            self._ftp_download(self._host,
-                               f"{self._data_dir}release-{self._version}"
-                               f"/gff3/homo_sapiens/",
-                               new_fn,
-                               self.src_data_dir,
-                               self._fn)
-            logger.info("Successfully downloaded Ensembl data file.")
+        regex_pattern = r"Homo_sapiens\.(?P<assembly>GRCh\d+)\.(?P<version>\d+)\.gff3\.gz"  # noqa: E501
+        regex = re.compile(regex_pattern)
+        with FTP(self._host) as ftp:
+            ftp.login()
+            ftp.cwd(self._data_dir)
+            files = ftp.nlst()
+            for f in files:
+                match = regex.match(f)
+                if match:
+                    resp = match.groupdict()
+                    self._assembly = resp["assembly"]
+                    self._version = resp["version"]
+                    self._fn = f
+                    self._data_url = f"ftp://{self._host}/{self._data_dir}{self._fn}"
+                    new_fn = f"ensembl_{self._version}.gff3"
+                    if not (self.src_data_dir / new_fn).exists():
+                        self._ftp_download_file(ftp, self._fn, self.src_data_dir,
+                                                new_fn)
+                        logger.info(f"Successfully downloaded Ensembl {self._version}"
+                                    f" data.")
+                    else:
+                        logger.info(f"Ensembl {self._version} data already exists.")
+                    break
 
     def _extract_data(self, *args, **kwargs):
         """Extract data from the Ensembl source."""
