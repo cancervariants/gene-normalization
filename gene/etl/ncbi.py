@@ -2,8 +2,8 @@
 from .base import Base
 from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import Database
-from gene.schemas import SourceMeta, SourceName, NamespacePrefix, \
-    Annotation, Chromosome, SymbolStatus
+from gene.schemas import SourceMeta, SourceName, NamespacePrefix, Annotation, \
+    Chromosome, SymbolStatus
 import logging
 from pathlib import Path
 import csv
@@ -11,6 +11,7 @@ from datetime import datetime
 import re
 import gffutils
 from gene.vrs_locations import SequenceLocation, ChromosomeLocation
+from ftplib import FTP
 
 
 logger = logging.getLogger('gene')
@@ -24,21 +25,19 @@ class NCBI(Base):
                  database: Database,
                  host='ftp.ncbi.nlm.nih.gov',
                  data_dir='gene/DATA/',
-                 src_data_dir=APP_ROOT / 'data' / 'ncbi',
-                 assembly: str = 'GRCh38.p13'):
+                 src_data_dir=APP_ROOT / 'data' / 'ncbi'):
         """Construct the NCBI ETL instance.
 
         :param Database database: gene database for adding new data
         :param str host: FTP host name
         :param str data_dir: FTP data directory to use
         :param Path src_data_dir: Data directory for NCBI
-        :param str assembly: The genome assembly
         """
         super().__init__(database, host, data_dir, src_data_dir)
         self._sequence_location = SequenceLocation()
         self._chromosome_location = ChromosomeLocation()
         self._data_url = f"ftp://{host}"
-        self._assembly = assembly
+        self._assembly = None
         self._date_today = datetime.today().strftime('%Y%m%d')
 
     def perform_etl(self):
@@ -51,7 +50,7 @@ class NCBI(Base):
         self._database.flush_batch()
         return self._processed_ids
 
-    def _download_data(self, ncbi_dir: Path):
+    def _download_data(self):
         """Download NCBI info, history, and GRCh38 files.
 
         :param str ncbi_dir: The NCBI data directory
@@ -61,25 +60,41 @@ class NCBI(Base):
         fn = f'ncbi_info_{self._date_today}.tsv'
         data_fn = 'Homo_sapiens.gene_info.gz'
         logger.info('Downloading NCBI gene_info....')
-        self._ftp_download(self._host, data_dir, fn, ncbi_dir, data_fn)
+        self._ftp_download(self._host, data_dir, fn, self.src_data_dir, data_fn)
         logger.info('Successfully downloaded NCBI gene_info.')
 
         # Download history
         fn = f'ncbi_history_{self._date_today}.tsv'
         data_fn = 'gene_history.gz'
         logger.info('Downloading NCBI gene_history...')
-        self._ftp_download(self._host, self._data_dir, fn, ncbi_dir, data_fn)
+        self._ftp_download(self._host, self._data_dir, fn, self.src_data_dir, data_fn)
         logger.info('Successfully downloaded NCBI gene_history.')
 
         # Download gff
-        og_fn = 'GCF_000001405.39_GRCh38.p13'
-        data_dir = 'genomes/refseq/vertebrate_mammalian/Homo_sapiens/' \
-                   f'latest_assembly_versions/{og_fn}/'
-        fn = f'ncbi_{self._assembly}.gff'
-        data_fn = f'{og_fn}_genomic.gff.gz'
-        logger.info('Downloading NCBI gff data file...')
-        self._ftp_download(self._host, data_dir, fn, ncbi_dir, data_fn)
-        logger.info('Successfully downloaded NCBI gff data file.')
+        self._download_gff()
+
+    def _download_gff(self) -> None:
+        """Download latest gff data"""
+        regex_patern = r"GCF_\d+\.\d+_(?P<assembly>GRCh\d+\.\S+)_genomic.gff.gz"
+        regex = re.compile(regex_patern)
+        with FTP(self._host) as ftp:
+            ftp.login()
+            ftp.cwd("genomes/refseq/vertebrate_mammalian/Homo_sapiens/"
+                    "latest_assembly_versions")
+            dir = ftp.nlst()[0]
+            ftp.cwd(dir)
+            for f in ftp.nlst():
+                match = regex.match(f)
+                if match:
+                    resp = match.groupdict()
+                    self._assembly = resp["assembly"]
+                    new_fn = f"ncbi_{self._assembly}.gff"
+                    if not (self.src_data_dir / new_fn).exists():
+                        self._ftp_download_file(ftp, f, self.src_data_dir, new_fn)
+                        logger.info(f"Successfully downloaded NCBI {f} data.")
+                    else:
+                        logger.info(f"NCBI {f} already exists.")
+                    break
 
     def _files_downloaded(self, data_dir: Path) -> bool:
         """Check whether needed source files exist.
@@ -109,7 +124,7 @@ class NCBI(Base):
         """
         self._create_data_directory()
         if not self._files_downloaded(self.src_data_dir):
-            self._download_data(self.src_data_dir)
+            self._download_data()
         local_files = [f for f in self.src_data_dir.iterdir()
                        if f.name.startswith('ncbi')]
         local_files.sort(key=lambda f: f.name.split('_')[-1], reverse=True)
@@ -231,6 +246,8 @@ class NCBI(Base):
             if row[1] in prev_symbols.keys():
                 params['previous_symbols'] = prev_symbols[row[1]]
             info_genes[params['symbol']] = params
+            # get type
+            params['gene_type'] = row[9]
         return info_genes
 
     def _get_gene_gff(self, db, info_genes, sr):

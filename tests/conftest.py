@@ -22,6 +22,7 @@ def assertion_checks(normalized_gene, test_gene, match_type):
     assert set(normalized_gene.location_annotations) == \
            set(test_gene.location_annotations)
     assert normalized_gene.strand == test_gene.strand
+    assert normalized_gene.gene_type == test_gene.gene_type
 
 
 def check_resp_single_record(resp, test_gene, match_type):

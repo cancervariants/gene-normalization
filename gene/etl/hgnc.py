@@ -91,6 +91,8 @@ class HGNC(Base):
                     self._get_previous_symbols(r, gene)
                 if 'location' in r:
                     self._get_location(r, gene)
+                if "locus_type" in r:
+                    gene["gene_type"] = r["locus_type"]
                 self._load_gene(gene, batch)
         logger.info('Successfully transformed HGNC.')
 
