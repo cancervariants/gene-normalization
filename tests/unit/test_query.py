@@ -378,6 +378,61 @@ def normalized_p150():
     return GeneDescriptor(**params)
 
 
+@pytest.fixture(scope="module")
+def normalized_loc_653303():
+    """Provide test fixture for NCBI gene LOC653303. Used to validate
+    normalized results that don't merge records.
+    """
+    params = {
+        "id": "normalize.gene:LOC653303",
+        "type": "GeneDescriptor",
+        "label": "LOC653303",
+        "alternate_labels": [
+            "LOC196266",
+            "LOC654080",
+            "LOC731196"
+        ],
+        "extensions": [
+            {
+                "type": "Extension",
+                "name": "approved_name",
+                "value": "proprotein convertase subtilisin/kexin type 7 pseudogene"  # noqa: E501
+            },
+            {
+                "type": "Extension",
+                "name": "chromosome_location",
+                "value": {
+                    "_id": "ga4gh:VCL.WzURLvTklFI7K2GAP8gIw6vgWDWXMXuW",
+                    "type": "ChromosomeLocation",
+                    "species_id": "taxonomy:9606",
+                    "chr": "11",
+                    "interval": {
+                        "type": "CytobandInterval",
+                        "start": "q23.3",
+                        "end": "q23.3"
+                    }
+                }
+            },
+            {
+                "type": "Extension",
+                "name": "previous_symbols",
+                "value": [
+                    "LOC196266",
+                    "LOC731196",
+                    "LOC654080"
+                ]
+            },
+            {
+                "type": "Extension",
+                "name": "ncbi_gene_type",
+                "value": "pseudo"
+            }
+        ],
+        "gene_id": "ncbigene:653303"
+    }
+    return GeneDescriptor(**params)
+
+
 @pytest.fixture(scope='module')
 def num_sources():
     """Get the number of sources."""
@@ -437,7 +492,8 @@ def compare_gene_descriptor(test, actual):
     assert actual.type == test.type
     assert actual.gene_id == test.gene_id
     assert actual.label == test.label
-    assert set(actual.xrefs) == set(test.xrefs), "xrefs"
+    if actual.xrefs or test.xrefs:
+        assert set(actual.xrefs) == set(test.xrefs), "xrefs"
     assert set(actual.alternate_labels) == set(test.alternate_labels), \
         "alt labels"
     extensions_present = "extensions" in test.__fields__.keys()
@@ -795,6 +851,16 @@ def test_multiple_norm_concepts(query_handler, normalized_p150, source_meta):
     compare_normalize_resp(resp, q, MatchType.ALIAS, normalized_p150,
                            expected_source_meta=source_meta,
                            expected_warnings=expected_warnings)
+
+
+def test_normalize_unmerged(query_handler, normalized_loc_653303):
+    """Test that the normalized endpoint correctly shapes unmerged identity
+    records into gene descriptors.
+    """
+    q = "LOC653303"
+    resp = query_handler.normalize(q)
+    compare_normalize_resp(resp, q, MatchType.SYMBOL, normalized_loc_653303,
+                           expected_source_meta=[SourceName.NCBI.value])
 
 
 def test_invalid_queries(query_handler):

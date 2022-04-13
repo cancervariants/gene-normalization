@@ -40,6 +40,12 @@ NC_000009.12	BestRefSeq	CDS	4662376	4663263	.	+	0	ID=cds-NP_982278.3;Parent=rna-
 ##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606
 NC_000011.10	RefSeq	region	1	135086622	.	+	.	ID=NC_000011.10:1..135086622;Dbxref=taxon:9606;Name=11;chromosome=11;gbkey=Src;genome=chromosome;mol_type=genomic DNA
 NC_000011.10	BestRefSeq	gene	10751246	10779746	.	+	.	ID=gene-CTR9;Dbxref=GeneID:9646,HGNC:HGNC:16850,MIM:609366;Name=CTR9;description=CTR9 homolog%2C Paf1/RNA polymerase II complex component;gbkey=Gene;gene=CTR9;gene_biotype=protein_coding;gene_synonym=p150,p150TSP,SH2BP1,TSBP
+NC_000011.10    Curated Genomic pseudogene      117135529       117138867       .       +       .       ID=gene-LOC653303;Dbxref=GeneID:653303;Name=LOC653303;description=proprotein convertase subtilisin/kexin type 7 pseudogene;gbkey=Gene;gene=LOC653303;gene_biotype=pseudogene;pseudo=true
+NC_000011.10    Curated Genomic exon    117135529       117135686       .       +       .       ID=id-LOC653303;Parent=gene-LOC653303;Dbxref=GeneID:653303;gbkey=exon;gene=LOC653303;pseudo=true
+NC_000011.10    Curated Genomic exon    117136519       117136613       .       +       .       ID=id-LOC653303-2;Parent=gene-LOC653303;Dbxref=GeneID:653303;gbkey=exon;gene=LOC653303;pseudo=true
+NC_000011.10    Curated Genomic exon    117137423       117137516       .       +       .       ID=id-LOC653303-3;Parent=gene-LOC653303;Dbxref=GeneID:653303;gbkey=exon;gene=LOC653303;pseudo=true
+NC_000011.10    Curated Genomic exon    117137785       117137902       .       +       .       ID=id-LOC653303-4;Parent=gene-LOC653303;Dbxref=GeneID:653303;gbkey=exon;gene=LOC653303;pseudo=true
+NC_000011.10    Curated Genomic exon    117138227       117138867       .       +       .       ID=id-LOC653303-5;Parent=gene-LOC653303;Dbxref=GeneID:653303;gbkey=exon;gene=LOC653303;pseudo=true
 ##sequence-region NC_000012.12 1 133275309
 ##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606
 NC_000012.12	RefSeq	region	1	133275309	.	+	.	ID=NC_000012.12:1..133275309;Dbxref=taxon:9606;Name=12;chromosome=12;gbkey=Src;genome=chromosome;mol_type=genomic DNA
