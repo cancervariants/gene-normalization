@@ -382,7 +382,7 @@ class QueryHandler:
             gene_type = record.get("gene_type")
             if gene_type:
                 extensions.append(Extension(
-                    name=GeneTypeFieldName[record["src_name"].upper()],
+                    name=GeneTypeFieldName[record["src_name"].upper()].value,
                     value=gene_type
                 ))
         else:
