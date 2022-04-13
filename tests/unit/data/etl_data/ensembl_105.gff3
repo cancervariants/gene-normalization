@@ -242,7 +242,7 @@
 ###
 X	GRCh38	chromosome	1	156040895	.	.	.	ID=chromosome:X;Alias=CM000685.2,chrX,NC_000023.11
 ###
-X	havana	ncRNA_gene	154424380	154428479	.	-	.	ID=gene:ENSG00000197180;Name=CH17-340M24.3;biotype=lncRNA;description=uncharacterized protein BC009467 [Source:NCBI gene (formerly Entrezgene)%3BAcc:158960];gene_id=ENSG00000197180;logic_name=havana_homo_sapiens;version=2
+X	havana	ncRNA_gene	154424378	154428512	.	-	.	ID=gene:ENSG00000197180;Name=CH17-340M24.3;biotype=lncRNA;description=uncharacterized protein BC009467 [Source:NCBI gene (formerly Entrezgene)%3BAcc:158960];gene_id=ENSG00000197180;logic_name=havana_homo_sapiens;version=3
 ###
 X	ensembl_havana	gene	155612572	155782459	.	+	.	ID=gene:ENSG00000168939;Name=SPRY3;biotype=protein_coding;description=sprouty RTK signaling antagonist 3 [Source:HGNC Symbol%3BAcc:HGNC:11271];gene_id=ENSG00000168939;logic_name=ensembl_havana_gene_homo_sapiens;version=12
 ###
