@@ -91,7 +91,7 @@ def test_ensembl_etl(test_get_seqrepo, processed_ids, dynamodb, etl_data_path,
         shutil.rmtree(e.src_data_dir)
 
         e._sequence_location.get_aliases = _get_aliases
-        e._data_src = etl_data_path / 'ensembl_105.gff3'
+        e._data_src = etl_data_path / 'ensembl_106.gff3'
         e._transform_data()
         e._add_meta()
         processed_ids += e._processed_ids
@@ -132,7 +132,7 @@ def test_ncbi_etl(test_get_seqrepo, processed_ids, dynamodb, etl_data_path,
         n._sequence_location.get_aliases = _get_aliases
         n._info_src = etl_data_path / 'ncbi_info_20210813.tsv'
         n._history_src = etl_data_path / 'ncbi_history_20210813.tsv'
-        n._gff_src = etl_data_path / 'ncbi_GRCh38.p13.gff'
+        n._gff_src = etl_data_path / 'ncbi_GRCh38.p14.gff'
         n._version = n._info_src.stem.split('_')[-1]
         n._transform_data()
         n._add_meta()

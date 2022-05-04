@@ -304,9 +304,9 @@ def test_meta_info(ensembl):
     assert resp.source_meta_.data_license == "custom"
     assert resp.source_meta_.data_license_url == \
         "https://useast.ensembl.org/info/about/legal/disclaimer.html"
-    assert resp.source_meta_.version == "105"
+    assert resp.source_meta_.version == "106"
     assert resp.source_meta_.data_url == \
-        "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.105.gff3.gz"  # noqa: E501
+        "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.106.gff3.gz"  # noqa: E501
     assert resp.source_meta_.rdp_url is None
     assert resp.source_meta_.genome_assemblies == ["GRCh38"]
     assert resp.source_meta_.data_license_attributes == {
