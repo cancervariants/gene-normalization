@@ -426,7 +426,7 @@ class GeneTypeFieldName(str, Enum):
 class BaseNormalizationService(BaseModel):
     """Base method providing shared attributes to Normalization service classes."""
 
-    query: str
+    query: StrictStr
     warnings: Optional[List[Dict]]
     match_type: MatchType
     service_meta_: ServiceMeta
