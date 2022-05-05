@@ -892,7 +892,7 @@ def test_meta(ncbi):
         "ftp://ftp.ncbi.nlm.nih.gov"
     assert response.source_meta_.rdp_url == \
         "https://reusabledata.org/ncbi-gene.html"
-    assert response.source_meta_.genome_assemblies == ["GRCh38.p13"]
+    assert response.source_meta_.genome_assemblies == ["GRCh38.p14"]
     assert response.source_meta_.data_license_attributes == {
         "non_commercial": False,
         "share_alike": False,
