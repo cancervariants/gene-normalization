@@ -56,10 +56,11 @@ class MatchType(IntEnum):
     NO_MATCH = 0
 
 
-class Gene(BaseModel):
-    """Gene"""
+class BaseGene(BaseModel):
+    """Base gene model. Provide shared resources for records produced by
+    /search and /normalize_unmerged.
+    """
 
-    match_type: MatchType
     concept_id: CURIE
     symbol: StrictStr
     symbol_status: Optional[SymbolStatus]
@@ -78,6 +79,12 @@ class Gene(BaseModel):
     _get_xrefs_val = validator('xrefs', allow_reuse=True)(return_value)
     _get_associated_with_val = \
         validator('associated_with', allow_reuse=True)(return_value)
+
+
+class Gene(BaseGene):
+    """Gene"""
+
+    match_type: MatchType
 
     class Config:
         """Configure model example"""
@@ -416,15 +423,20 @@ class GeneTypeFieldName(str, Enum):
     ENSEMBL = "ensembl_biotype"
 
 
-class NormalizeService(BaseModel):
-    """Define model for returning normalized concept."""
+class BaseNormalizationService(BaseModel):
+    """Base method providing shared attributes to Normalization service classes."""
 
     query: StrictStr
     warnings: Optional[List[Dict]]
     match_type: MatchType
+    service_meta_: ServiceMeta
+
+
+class NormalizeService(BaseNormalizationService):
+    """Define model for returning normalized concept."""
+
     gene_descriptor: Optional[GeneDescriptor]
     source_meta_: Optional[Dict[SourceName, SourceMeta]]
-    service_meta_: ServiceMeta
 
     class Config:
         """Configure model example"""
@@ -559,5 +571,247 @@ class NormalizeService(BaseModel):
                     'version': '0.1.19',
                     'response_datetime': '2022-03-23 15:57:14.180908',
                     'url': 'https://github.com/cancervariants/gene-normalization'  # noqa: E501
+                }
+            }
+
+
+class MatchesNormalized(BaseModel):
+    """Matches associated with normalized concept from a single source."""
+
+    records: List[BaseGene]
+    source_meta_: SourceMeta
+
+    class Config:
+        """Configure OpenAPI schema"""
+
+        @staticmethod
+        def schema_extra(schema: Dict[str, Any],
+                         model: Type["MatchesNormalized"]) -> None:
+            """Configure OpenAPI schema"""
+            if "title" in schema.keys():
+                schema.pop("title", None)
+            for prop in schema.get("properties", {}).values():
+                prop.pop("title", None)
+
+
+class UnmergedNormalizationService(BaseNormalizationService):
+    """Response providing source records corresponding to normalization of user query.
+    Enables retrieval of normalized concept while retaining sourcing for accompanying
+    attributes.
+    """
+
+    normalized_concept_id: Optional[CURIE]
+    source_matches: Dict[SourceName, MatchesNormalized]
+
+    class Config:
+        """Configure OpenAPI schema"""
+
+        @staticmethod
+        def schema_extra(schema: Dict[str, Any],
+                         model: Type["UnmergedNormalizationService"]) -> None:
+            """Configure OpenAPI schema example"""
+            if "title" in schema.keys():
+                schema.pop("title", None)
+            for prop in schema.get("properties", {}).values():
+                prop.pop("title", None)
+            schema["example"] = {
+                "query": "hgnc:108",
+                "warnings": [],
+                "match_type": 100,
+                "service_meta_": {
+                    "version": "0.1.27",
+                    "response_datetime": "2022-04-26 14:20:54.180240",
+                    "name": "gene-normalizer",
+                    "url": "https://github.com/cancervariants/gene-normalization"
+                },
+                "normalized_concept_id": "hgnc:108",
+                "source_matches": {
+                    "HGNC": {
+                        "records": [
+                            {
+                                "concept_id": "hgnc:108",
+                                "symbol": "ACHE",
+                                "symbol_status": "approved",
+                                "label": "acetylcholinesterase (Cartwright blood group)",  # noqa: E501
+                                "strand": None,
+                                "location_annotations": [],
+                                "locations": [
+                                    {
+                                        "type": "ChromosomeLocation",
+                                        "_id": "ga4gh:VCL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",  # noqa: E501
+                                        "species_id": "taxonomy:9606",
+                                        "chr": "7",
+                                        "interval": {
+                                            "type": "CytobandInterval",
+                                            "start": "q22.1",
+                                            "end": "q22.1"
+                                        }
+                                    }
+                                ],
+                                "aliases": [
+                                    "3.1.1.7"
+                                ],
+                                "previous_symbols": [
+                                    "YT"
+                                ],
+                                "xrefs": [
+                                    "ncbigene:43",
+                                    "ensembl:ENSG00000087085"
+                                ],
+                                "associated_with": [
+                                    "ucsc:uc003uxi.4",
+                                    "vega:OTTHUMG00000157033",
+                                    "merops:S09.979",
+                                    "ccds:CCDS5710",
+                                    "omim:100740",
+                                    "iuphar:2465",
+                                    "ccds:CCDS5709",
+                                    "refseq:NM_015831",
+                                    "pubmed:1380483",
+                                    "uniprot:P22303",
+                                    "ccds:CCDS64736"
+                                ],
+                                "gene_type": "gene with protein product"
+                            }
+                        ],
+                        "source_meta_": {
+                            "data_license": "custom",
+                            "data_license_url": "https://www.genenames.org/about/",
+                            "version": "20220407",
+                            "data_url": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json",  # noqa: E501
+                            "rdp_url": None,
+                            "data_license_attributes": {
+                                "non_commercial": False,
+                                "share_alike": False,
+                                "attribution": False
+                            },
+                            "genome_assemblies": []
+                        }
+                    },
+                    "Ensembl": {
+                        "records": [
+                            {
+                                "concept_id": "ensembl:ENSG00000087085",
+                                "symbol": "ACHE",
+                                "symbol_status": None,
+                                "label": "acetylcholinesterase (Cartwright blood group)",  # noqa: E501
+                                "strand": "-",
+                                "location_annotations": [],
+                                "locations": [
+                                    {
+                                        "_id": "ga4gh:VSL.AF6wPZclBqTauGr3yx_CqmMndLKhq0Cm",  # noqa: E501
+                                        "type": "SequenceLocation",
+                                        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                        "interval": {
+                                            "type": "SequenceInterval",
+                                            "start": {
+                                                "type": "Number",
+                                                "value": 100889993
+                                            },
+                                            "end": {
+                                                "type": "Number",
+                                                "value": 100896974
+                                            }
+                                        }
+                                    }
+                                ],
+                                "aliases": [],
+                                "previous_symbols": [],
+                                "xrefs": [
+                                    "hgnc:108"
+                                ],
+                                "associated_with": [],
+                                "gene_type": "protein_coding"
+                            }
+                        ],
+                        "source_meta_": {
+                            "data_license": "custom",
+                            "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",  # noqa: E501
+                            "version": "104",
+                            "data_url": "ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.104.gff3.gz",  # noqa: E501
+                            "rdp_url": None,
+                            "data_license_attributes": {
+                                "non_commercial": False,
+                                "share_alike": False,
+                                "attribution": False
+                            },
+                            "genome_assemblies": [
+                                "GRCh38"
+                            ]
+                        }
+                    },
+                    "NCBI": {
+                        "records": [
+                            {
+                                "concept_id": "ncbigene:43",
+                                "symbol": "ACHE",
+                                "symbol_status": None,
+                                "label": "acetylcholinesterase (Cartwright blood group)",  # noqa: E501
+                                "strand": "-",
+                                "location_annotations": [],
+                                "locations": [
+                                    {
+                                        "type": "ChromosomeLocation",
+                                        "_id": "ga4gh:VCL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",  # noqa: E501
+                                        "species_id": "taxonomy:9606",
+                                        "chr": "7",
+                                        "interval": {
+                                            "type": "CytobandInterval",
+                                            "start": "q22.1",
+                                            "end": "q22.1"
+                                        }
+                                    },
+                                    {
+                                        "_id": "ga4gh:VSL.EepkXho2doYcUT1DW54fT1a00_zkqrn0",  # noqa: E501
+                                        "type": "SequenceLocation",
+                                        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                        "interval": {
+                                            "type": "SequenceInterval",
+                                            "start": {
+                                                "type": "Number",
+                                                "value": 100889993
+                                            },
+                                            "end": {
+                                                "type": "Number",
+                                                "value": 100896994
+                                            }
+                                        }
+                                    }
+                                ],
+                                "aliases": [
+                                    "YT",
+                                    "ARACHE",
+                                    "ACEE",
+                                    "N-ACHE"
+                                ],
+                                "previous_symbols": [
+                                    "ACEE"
+                                ],
+                                "xrefs": [
+                                    "hgnc:108",
+                                    "ensembl:ENSG00000087085"
+                                ],
+                                "associated_with": [
+                                    "omim:100740"
+                                ],
+                                "gene_type": "protein-coding"
+                            }
+                        ],
+                        "source_meta_": {
+                            "data_license": "custom",
+                            "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
+                            "version": "20220407",
+                            "data_url": "ftp://ftp.ncbi.nlm.nih.gov",
+                            "rdp_url": "https://reusabledata.org/ncbi-gene.html",
+                            "data_license_attributes": {
+                                "non_commercial": False,
+                                "share_alike": False,
+                                "attribution": False
+                            },
+                            "genome_assemblies": [
+                                "GRCh38.p13"
+                            ]
+                        }
+                    }
                 }
             }

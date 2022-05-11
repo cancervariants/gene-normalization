@@ -4,7 +4,8 @@ from fastapi.openapi.utils import get_openapi
 from typing import Optional
 from gene import __version__
 from gene.query import QueryHandler, InvalidParameterException
-from gene.schemas import SearchService, NormalizeService
+from gene.schemas import SearchService, NormalizeService, \
+    UnmergedNormalizationService
 import html
 
 
@@ -96,7 +97,7 @@ def search(q: str = Query(..., description=q_descr),  # noqa: D103
 normalize_summary = "Given query, provide merged normalized record."
 normalize_response_descr = "A response to a validly-formed query."
 normalize_descr = "Return merged highest-match concept for query."
-normalize_q_desecr = "Gene to normalize."
+normalize_q_descr = "Gene to normalize."
 
 
 @app.get("/gene/normalize",
@@ -104,7 +105,7 @@ normalize_q_desecr = "Gene to normalize."
          response_description=normalize_response_descr,
          response_model=NormalizeService,
          description=normalize_descr)
-def normalize(q: str = Query(..., description=normalize_q_desecr)):
+def normalize(q: str = Query(..., description=normalize_q_descr)):
     """Return strongest match concepts to query string provided by user.
 
     :param str q: gene search term
@@ -115,3 +116,33 @@ def normalize(q: str = Query(..., description=normalize_q_desecr)):
     except InvalidParameterException as e:
         raise HTTPException(status_code=422, detail=str(e))
     return resp
+
+
+unmerged_matches_summary = ("Given query, provide source records corresponding to "
+                            "normalized concept.")
+unmerged_response_descr = ("Response containing source records contained within "
+                           "normalized concept.")
+unmerged_normalize_description = ("Return unmerged records associated with the "
+                                  "normalized result of the user-provided query "
+                                  "string.")
+
+
+@app.get("/gene/normalize_unmerged",
+         summary=unmerged_matches_summary,
+         operation_id="getUnmergedRecords",
+         response_description=unmerged_response_descr,
+         response_model=UnmergedNormalizationService,
+         description=unmerged_normalize_description)
+def normalize_unmerged(
+    q: str = Query(..., description=normalize_q_descr)
+) -> UnmergedNormalizationService:
+    """Return all individual records associated with a normalized concept.
+
+    :param q: Gene search term
+    :returns: JSON response with matching normalized record and source metadata
+    """
+    try:
+        response = query_handler.normalize_unmerged(html.unescape(q))
+    except InvalidParameterException as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    return response

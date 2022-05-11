@@ -1,7 +1,7 @@
 """Module to test the query module."""
 from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
 from gene.query import QueryHandler, InvalidParameterException
-from gene.schemas import SourceName, MatchType
+from gene.schemas import BaseGene, SourceName, MatchType
 import copy
 import pytest
 
@@ -20,6 +20,9 @@ def query_handler():
 
         def normalize(self, query_str):
             return self.query_handler.normalize(query_str)
+
+        def normalize_unmerged(self, query_str):
+            return self.query_handler.normalize_unmerged(query_str)
 
     return QueryGetter()
 
@@ -378,6 +381,428 @@ def normalized_p150():
     return GeneDescriptor(**params)
 
 
+@pytest.fixture(scope="module")
+def normalized_loc_653303():
+    """Provide test fixture for NCBI gene LOC653303. Used to validate
+    normalized results that don't merge records.
+    """
+    params = {
+        "id": "normalize.gene:LOC653303",
+        "type": "GeneDescriptor",
+        "label": "LOC653303",
+        "alternate_labels": [
+            "LOC196266",
+            "LOC654080",
+            "LOC731196"
+        ],
+        "extensions": [
+            {
+                "type": "Extension",
+                "name": "approved_name",
+                "value": "proprotein convertase subtilisin/kexin type 7 pseudogene"  # noqa: E501
+            },
+            {
+                "type": "Extension",
+                "name": "chromosome_location",
+                "value": {
+                    "_id": "ga4gh:VCL.WzURLvTklFI7K2GAP8gIw6vgWDWXMXuW",
+                    "type": "ChromosomeLocation",
+                    "species_id": "taxonomy:9606",
+                    "chr": "11",
+                    "interval": {
+                        "type": "CytobandInterval",
+                        "start": "q23.3",
+                        "end": "q23.3"
+                    }
+                }
+            },
+            {
+                "type": "Extension",
+                "name": "previous_symbols",
+                "value": [
+                    "LOC196266",
+                    "LOC731196",
+                    "LOC654080"
+                ]
+            },
+            {
+                "type": "Extension",
+                "name": "ncbi_gene_type",
+                "value": "pseudo"
+            }
+        ],
+        "gene_id": "ncbigene:653303"
+    }
+    return GeneDescriptor(**params)
+
+
+@pytest.fixture(scope="module")
+def normalize_unmerged_loc_653303():
+    """Provide fixture for NCBI gene LOC655303. Used to validate normalized results
+    that don't merge records.
+    """
+    return {
+        "normalized_concept_id": "ncbigene:653303",
+        "source_matches": {
+            "NCBI": {
+                "records": [
+                    {
+                        "concept_id": "ncbigene:653303",
+                        "symbol": "LOC653303",
+                        "symbol_status": None,
+                        "label": "proprotein convertase subtilisin/kexin type 7 pseudogene",  # noqa: E501
+                        "strand": "+",
+                        "location_annotations": [],
+                        "locations": [
+                            {
+                                "type": "ChromosomeLocation",
+                                "_id": "ga4gh:VCL.WzURLvTklFI7K2GAP8gIw6vgWDWXMXuW",
+                                "species_id": "taxonomy:9606",
+                                "chr": "11",
+                                "interval": {
+                                    "type": "CytobandInterval",
+                                    "start": "q23.3",
+                                    "end": "q23.3"
+                                }
+                            },
+                            {
+                                "_id": "ga4gh:VSL.dhj3ZilmW0bmmUjUvrG7zCWwsPn-7XyB",
+                                "type": "SequenceLocation",
+                                "sequence_id": "ga4gh:SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1",  # noqa: E501
+                                "interval": {
+                                    "type": "SequenceInterval",
+                                    "start": {
+                                        "type": "Number",
+                                        "value": 117135528
+                                    },
+                                    "end": {
+                                        "type": "Number",
+                                        "value": 117138867
+                                    }
+                                }
+                            }
+                        ],
+                        "aliases": [],
+                        "previous_symbols": [
+                            "LOC196266",
+                            "LOC731196",
+                            "LOC654080"
+                        ],
+                        "xrefs": [],
+                        "associated_with": [],
+                        "gene_type": "pseudo",
+                    }
+                ]
+            }
+        }
+    }
+
+
+@pytest.fixture(scope="module")
+def normalize_unmerged_chaf1a():
+    """Return expected results from /normalize_unmerged for CHAF1A."""
+    return {
+        "normalized_concept_id": "hgnc:1910",
+        "source_matches": {
+            "HGNC": {
+                "records": [
+                    {
+                        "concept_id": "hgnc:1910",
+                        "symbol": "CHAF1A",
+                        "symbol_status": "approved",
+                        "label": "chromatin assembly factor 1 subunit A",
+                        "strand": None,
+                        "location_annotations": [],
+                        "locations": [
+                            {
+                                "type": "ChromosomeLocation",
+                                "_id": "ga4gh:VCL.yF2TzeunqY92v3yhDsCR_t5X997mWriF",
+                                "species_id": "taxonomy:9606",
+                                "chr": "19",
+                                "interval": {
+                                    "type": "CytobandInterval",
+                                    "start": "p13.3",
+                                    "end": "p13.3"
+                                }
+                            }
+                        ],
+                        "aliases": [
+                            "CAF1P150",
+                            "P150",
+                            "CAF1",
+                            "CAF1B",
+                            "MGC71229",
+                            "CAF-1"
+                        ],
+                        "previous_symbols": [],
+                        "xrefs": [
+                            "ensembl:ENSG00000167670",
+                            "ncbigene:10036"
+                        ],
+                        "associated_with": [
+                            "vega:OTTHUMG00000181922",
+                            "ccds:CCDS32875",
+                            "ucsc:uc002mal.4",
+                            "pubmed:7600578",
+                            "uniprot:Q13111",
+                            "omim:601246",
+                            "ena.embl:U20979",
+                            "refseq:NM_005483"
+                        ],
+                        "gene_type": "gene with protein product"
+                    }
+                ],
+            },
+            "Ensembl": {
+                "records": [
+                    {
+                        "concept_id": "ensembl:ENSG00000167670",
+                        "symbol": "CHAF1A",
+                        "symbol_status": None,
+                        "label": "chromatin assembly factor 1 subunit A",
+                        "strand": "+",
+                        "location_annotations": [],
+                        "locations": [
+                            {
+                                "_id": "ga4gh:VSL.VVxEanUPWWMy_IChkj_kPIpRnYAatqrq",
+                                "type": "SequenceLocation",
+                                "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",  # noqa: E501
+                                "interval": {
+                                    "type": "SequenceInterval",
+                                    "start": {
+                                        "type": "Number",
+                                        "value": 4402639
+                                    },
+                                    "end": {
+                                        "type": "Number",
+                                        "value": 4445018
+                                    }
+                                }
+                            }
+                        ],
+                        "aliases": [],
+                        "previous_symbols": [],
+                        "xrefs": [
+                            "hgnc:1910"
+                        ],
+                        "associated_with": [],
+                        "gene_type": "protein_coding"
+                    }
+                ],
+            },
+            "NCBI": {
+                "records": [
+                    {
+                        "concept_id": "ncbigene:10036",
+                        "symbol": "CHAF1A",
+                        "symbol_status": None,
+                        "label": "chromatin assembly factor 1 subunit A",
+                        "strand": "+",
+                        "location_annotations": [],
+                        "locations": [
+                            {
+                                "type": "ChromosomeLocation",
+                                "_id": "ga4gh:VCL.yF2TzeunqY92v3yhDsCR_t5X997mWriF",
+                                "species_id": "taxonomy:9606",
+                                "chr": "19",
+                                "interval": {
+                                    "type": "CytobandInterval",
+                                    "start": "p13.3",
+                                    "end": "p13.3"
+                                }
+                            },
+                            {
+                                "_id": "ga4gh:VSL.X4HEwp9RgFN5WpmJM4bWpcOcN9qHX-hj",
+                                "type": "SequenceLocation",
+                                "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",  # noqa: E501
+                                "interval": {
+                                    "type": "SequenceInterval",
+                                    "start": {
+                                        "type": "Number",
+                                        "value": 4402595
+                                    },
+                                    "end": {
+                                        "type": "Number",
+                                        "value": 4448322
+                                    }
+                                }
+                            }
+                        ],
+                        "aliases": [
+                            "CAF1P150",
+                            "P150",
+                            "CAF1",
+                            "CAF1B",
+                            "CAF-1"
+                        ],
+                        "previous_symbols": [],
+                        "xrefs": [
+                            "ensembl:ENSG00000167670",
+                            "hgnc:1910"
+                        ],
+                        "associated_with": [
+                            "omim:601246"
+                        ],
+                        "gene_type": "protein-coding"
+                    }
+                ]
+            }
+        }
+    }
+
+
+@pytest.fixture(scope="module")
+def normalize_unmerged_ache():
+    """Provide ACHE fixture for unmerged normalize endpoint."""
+    return {
+        "normalized_concept_id": "hgnc:108",
+        "source_matches": {
+            "NCBI": {
+                "records": [
+                    {
+                        "concept_id": "ncbigene:43",
+                        "symbol": "ACHE",
+                        "symbol_status": None,
+                        "label": "acetylcholinesterase (Cartwright blood group)",
+                        "strand": "-",
+                        "location_annotations": [],
+                        "locations": [
+                            {
+                                "type": "ChromosomeLocation",
+                                "_id": "ga4gh:VCL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
+                                "species_id": "taxonomy:9606",
+                                "chr": "7",
+                                "interval": {
+                                    "type": "CytobandInterval",
+                                    "start": "q22.1",
+                                    "end": "q22.1"
+                                }
+                            },
+                            {
+                                "_id": "ga4gh:VSL.EepkXho2doYcUT1DW54fT1a00_zkqrn0",
+                                "type": "SequenceLocation",
+                                "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                "interval": {
+                                    "type": "SequenceInterval",
+                                    "start": {
+                                        "type": "Number",
+                                        "value": 100889993
+                                    },
+                                    "end": {
+                                        "type": "Number",
+                                        "value": 100896994
+                                    }
+                                }
+                            }
+                        ],
+                        "aliases": [
+                            "YT",
+                            "ARACHE",
+                            "ACEE",
+                            "N-ACHE"
+                        ],
+                        "previous_symbols": [
+                            "ACEE"
+                        ],
+                        "xrefs": [
+                            "hgnc:108",
+                            "ensembl:ENSG00000087085"
+                        ],
+                        "associated_with": [
+                            "omim:100740"
+                        ],
+                        "gene_type": "protein-coding"
+                    }
+                ],
+            },
+            "Ensembl": {
+                "records": [
+                    {
+                        "concept_id": "ensembl:ENSG00000087085",
+                        "symbol": "ACHE",
+                        "symbol_status": None,
+                        "label": "acetylcholinesterase (Cartwright blood group)",
+                        "strand": "-",
+                        "location_annotations": [],
+                        "locations": [
+                            {
+                                "_id": "ga4gh:VSL.AF6wPZclBqTauGr3yx_CqmMndLKhq0Cm",
+                                "type": "SequenceLocation",
+                                "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                "interval": {
+                                    "type": "SequenceInterval",
+                                    "start": {
+                                        "type": "Number",
+                                        "value": 100889993
+                                    },
+                                    "end": {
+                                        "type": "Number",
+                                        "value": 100896974
+                                    }
+                                }
+                            }
+                        ],
+                        "aliases": [],
+                        "previous_symbols": [],
+                        "xrefs": ["hgnc:108"],
+                        "associated_with": [],
+                        "gene_type": "protein_coding",
+                    }
+                ]
+            },
+            "HGNC": {
+                "records": [
+                    {
+                        "concept_id": "hgnc:108",
+                        "symbol": "ACHE",
+                        "symbol_status": "approved",
+                        "label": "acetylcholinesterase (Cartwright blood group)",
+                        "strand": None,
+                        "location_annotations": [],
+                        "locations": [
+                            {
+                                "type": "ChromosomeLocation",
+                                "_id": "ga4gh:VCL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
+                                "species_id": "taxonomy:9606",
+                                "chr": "7",
+                                "interval": {
+                                    "type": "CytobandInterval",
+                                    "start": "q22.1",
+                                    "end": "q22.1"
+                                }
+                            }
+                        ],
+                        "aliases": [
+                            "3.1.1.7"
+                        ],
+                        "previous_symbols": [
+                            "YT"
+                        ],
+                        "xrefs": [
+                            "ncbigene:43",
+                            "ensembl:ENSG00000087085"
+                        ],
+                        "associated_with": [
+                            "ucsc:uc003uxi.4",
+                            "vega:OTTHUMG00000157033",
+                            "merops:S09.979",
+                            "ccds:CCDS5710",
+                            "omim:100740",
+                            "iuphar:2465",
+                            "ccds:CCDS5709",
+                            "refseq:NM_015831",
+                            "pubmed:1380483",
+                            "uniprot:P22303",
+                            "ccds:CCDS64736"
+                        ],
+                        "gene_type": "gene with protein product",
+                    }
+                ]
+            }
+        }
+    }
+
+
 @pytest.fixture(scope='module')
 def num_sources():
     """Get the number of sources."""
@@ -391,24 +816,29 @@ def source_meta():
             SourceName.NCBI.value]
 
 
-def compare_normalize_resp(resp, expected_query, expected_match_type,
-                           expected_gene_descriptor, expected_warnings=None,
-                           expected_source_meta=None):
-    """Check that normalize response is correct"""
-    assert resp.query == expected_query
+def compare_warnings(actual_warnings, expected_warnings):
+    """Compare response warnings against expected results."""
     if expected_warnings:
-        assert len(resp.warnings) == len(expected_warnings), "warnings len"
+        assert len(actual_warnings) == len(expected_warnings), "warnings len"
         for e_warnings in expected_warnings:
-            for r_warnings in resp.warnings:
+            for r_warnings in actual_warnings:
                 for e_key, e_val in e_warnings.items():
-                    for r_key, r_val in r_warnings.items():
+                    for r_val in r_warnings.values():
                         if e_key == r_val:
                             if isinstance(e_val, list):
                                 assert set(r_val) == set(e_val), "warnings val"
                             else:
                                 assert r_val == e_val, "warnings val"
     else:
-        assert resp.warnings == [], "warnings != []"
+        assert actual_warnings == [], "warnings != []"
+
+
+def compare_normalize_resp(resp, expected_query, expected_match_type,
+                           expected_gene_descriptor, expected_warnings=None,
+                           expected_source_meta=None):
+    """Check that normalize response is correct"""
+    assert resp.query == expected_query
+    compare_warnings(resp.warnings, expected_warnings)
     assert resp.match_type == expected_match_type
     compare_gene_descriptor(expected_gene_descriptor, resp.gene_descriptor)
     if not expected_source_meta:
@@ -420,6 +850,49 @@ def compare_normalize_resp(resp, expected_query, expected_match_type,
         for src in expected_source_meta:
             assert src in resp_source_meta_keys
     compare_service_meta(resp.service_meta_)
+
+
+def compare_unmerged_record(gene, test_gene):
+    """Check that gene and test_gene are the same."""
+    assert gene.label == test_gene.label
+    assert gene.concept_id == test_gene.concept_id
+    assert set(gene.aliases) == set(test_gene.aliases)
+    assert set(gene.xrefs) == \
+           set(test_gene.xrefs)
+    assert gene.symbol_status == test_gene.symbol_status
+    assert set(gene.previous_symbols) == \
+           set(test_gene.previous_symbols)
+    assert set(gene.associated_with) == \
+           set(test_gene.associated_with)
+    assert gene.symbol == test_gene.symbol
+    assert len(gene.locations) == len(test_gene.locations)
+    for loc in gene.locations:
+        assert loc in test_gene.locations
+    assert set(gene.location_annotations) == \
+           set(test_gene.location_annotations)
+    assert gene.strand == test_gene.strand
+    assert gene.gene_type == test_gene.gene_type
+
+
+def compare_unmerged_response(actual, query, warnings, match_type, fixture):
+    """Compare response from normalize unmerged endpoint to fixture."""
+    assert actual.query == query
+    compare_warnings(actual.warnings, warnings)
+    assert actual.match_type == match_type
+    assert actual.normalized_concept_id == fixture["normalized_concept_id"]
+
+    for source, match in actual.source_matches.items():
+        assert match.source_meta_  # check that it's there
+        for record in match.records:
+            concept_id = record.concept_id
+            fixture_gene = None
+            # get corresponding fixture record
+            for gene in fixture["source_matches"][source.value]["records"]:
+                if gene["concept_id"] == concept_id:
+                    fixture_gene = BaseGene(**gene)
+                    break
+            assert fixture_gene, f"Unable to find fixture for {concept_id}"
+            compare_unmerged_record(record, fixture_gene)
 
 
 def compare_service_meta(service_meta):
@@ -437,7 +910,8 @@ def compare_gene_descriptor(test, actual):
     assert actual.type == test.type
     assert actual.gene_id == test.gene_id
     assert actual.label == test.label
-    assert set(actual.xrefs) == set(test.xrefs), "xrefs"
+    if actual.xrefs or test.xrefs:
+        assert set(actual.xrefs) == set(test.xrefs), "xrefs"
     assert set(actual.alternate_labels) == set(test.alternate_labels), \
         "alt labels"
     extensions_present = "extensions" in test.__fields__.keys()
@@ -795,6 +1269,82 @@ def test_multiple_norm_concepts(query_handler, normalized_p150, source_meta):
     compare_normalize_resp(resp, q, MatchType.ALIAS, normalized_p150,
                            expected_source_meta=source_meta,
                            expected_warnings=expected_warnings)
+
+
+def test_normalize_single_entry(query_handler, normalized_loc_653303):
+    """Test that the normalized endpoint correctly shapes unmerged identity
+    records into gene descriptors.
+    """
+    q = "LOC653303"
+    resp = query_handler.normalize(q)
+    compare_normalize_resp(resp, q, MatchType.SYMBOL, normalized_loc_653303,
+                           expected_source_meta=[SourceName.NCBI.value])
+
+
+def test_normalize_unmerged(query_handler, normalize_unmerged_loc_653303,
+                            normalize_unmerged_chaf1a, normalize_unmerged_ache):
+    """Test that unmerged normalization produces correct results."""
+    # concept ID
+    q = "ncbigene:653303"
+    resp = query_handler.normalize_unmerged(q)
+    compare_unmerged_response(resp, q, [], MatchType.CONCEPT_ID,
+                              normalize_unmerged_loc_653303)
+
+    q = "hgnc:1910"
+    resp = query_handler.normalize_unmerged(q)
+    compare_unmerged_response(resp, q, [], MatchType.CONCEPT_ID,
+                              normalize_unmerged_chaf1a)
+
+    q = "HGNC:108"
+    resp = query_handler.normalize_unmerged(q)
+    compare_unmerged_response(resp, q, [], MatchType.CONCEPT_ID,
+                              normalize_unmerged_ache)
+
+    # symbol
+    q = "LOC653303"
+    resp = query_handler.normalize_unmerged(q)
+    compare_unmerged_response(resp, q, [], MatchType.SYMBOL,
+                              normalize_unmerged_loc_653303)
+
+    # prev symbol
+    q = "ACEE"
+    resp = query_handler.normalize_unmerged(q)
+    compare_unmerged_response(resp, q, [], MatchType.PREV_SYMBOL,
+                              normalize_unmerged_ache)
+
+    q = "LOC196266"
+    resp = query_handler.normalize_unmerged(q)
+    compare_unmerged_response(resp, q, [], MatchType.PREV_SYMBOL,
+                              normalize_unmerged_loc_653303)
+
+    # alias
+    q = "P150"
+    resp = query_handler.normalize_unmerged(q)
+    expected_warnings = [{
+        "multiple_normalized_concepts_found":
+            ['hgnc:500', 'hgnc:8982', 'hgnc:17168', 'hgnc:16850', 'hgnc:76']
+    }]
+    compare_unmerged_response(resp, q, expected_warnings, MatchType.ALIAS,
+                              normalize_unmerged_chaf1a)
+
+    q = "ARACHE"
+    resp = query_handler.normalize_unmerged(q)
+    compare_unmerged_response(resp, q, [], MatchType.ALIAS, normalize_unmerged_ache)
+
+    q = "MGC71229"
+    resp = query_handler.normalize_unmerged(q)
+    compare_unmerged_response(resp, q, [], MatchType.ALIAS, normalize_unmerged_chaf1a)
+
+    # assoc with
+    q = "omim:100740"
+    resp = query_handler.normalize_unmerged(q)
+    compare_unmerged_response(resp, q, [], MatchType.ASSOCIATED_WITH,
+                              normalize_unmerged_ache)
+
+    q = "uniprot:Q13111"
+    resp = query_handler.normalize_unmerged(q)
+    compare_unmerged_response(resp, q, [], MatchType.ASSOCIATED_WITH,
+                              normalize_unmerged_chaf1a)
 
 
 def test_invalid_queries(query_handler):
