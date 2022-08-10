@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/309797998.svg)](https://zenodo.org/badge/latestdoi/309797998)
+
 # Gene Normalization
 Services and guidelines for normalizing gene terms
 
