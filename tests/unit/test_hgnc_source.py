@@ -168,7 +168,8 @@ def a3galt2():
             "ccds:CCDS60080",
             "pubmed:10854427",
             "pubmed:18630988",
-            "refseq:NM_001080438"
+            "refseq:NM_001080438",
+            "omim:619850"
         ],
         "gene_type": "gene with protein product"
     }

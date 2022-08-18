@@ -310,7 +310,8 @@ def normalized_p150():
             "CAF-1",
             "P150",
             "CAF1B",
-            "CAF1"
+            "CAF1",
+            "LOC107985297"
         ],
         "extensions": [
             {
@@ -363,6 +364,11 @@ def normalized_p150():
                 "name": "ensembl_biotype",
                 "type": "Extension",
                 "value": "protein_coding"
+            },
+            {
+                "name": "previous_symbols",
+                "type": "Extension",
+                "value": ["LOC107985297"]
             }
         ]
     }
@@ -582,16 +588,16 @@ def normalize_unmerged_chaf1a():
                                 "end": "p13.3"
                             },
                             {
-                                "id": "ga4gh:SL.UYwpHa93UCJRHMdZ7fthnF3CJ5qXBnDJ",
+                                "id": "ga4gh:SL.LTvvCAh9DqsH8G0A_rNgPafqvPmWk0tn",
                                 "type": "SequenceLocation",
                                 "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",  # noqa: E501
                                 "start": {
                                     "type": "Number",
-                                    "value": 4402595
+                                    "value": 4402639
                                 },
                                 "end": {
                                     "type": "Number",
-                                    "value": 4448322
+                                    "value": 4450830
                                 }
                             }
                         ],
@@ -602,7 +608,7 @@ def normalize_unmerged_chaf1a():
                             "CAF1B",
                             "CAF-1"
                         ],
-                        "previous_symbols": [],
+                        "previous_symbols": ["LOC107985297"],
                         "xrefs": [
                             "ensembl:ENSG00000167670",
                             "hgnc:1910"

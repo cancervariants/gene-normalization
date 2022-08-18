@@ -175,9 +175,9 @@ def spry3():
                 "type": "SequenceLocation"
             },
             {
-                "id": "ga4gh:SL.jjvmg4DkZMSCV37ayTlOhMLox08dycup",
+                "id": "ga4gh:SL.I51347TrFRIHMT8Bg2iFbKP22_yFxXQb",
                 "end": {"value": 56968979, "type": "Number"},
-                "start": {"value": 56923422, "type": "Number"},
+                "start": {"value": 56954315, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
                 "type": "SequenceLocation"
             }
@@ -257,9 +257,9 @@ def znf84():
                 "type": "ChromosomeLocation"
             },
             {
-                "id": "ga4gh:SL.CSsAJPndmTxquSW19DKnHgX7jNwTyeev",
+                "id": "ga4gh:SL.M67HYj0B8ocTAWgZ9zUEourxxna6ZleJ",
                 "end": {"value": 133063299, "type": "Number"},
-                "start": {"value": 133037300, "type": "Number"},
+                "start": {"value": 133037508, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl",
                 "type": "SequenceLocation"
             }
