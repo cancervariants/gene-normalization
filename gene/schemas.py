@@ -5,8 +5,8 @@ from typing import Type, List, Optional, Dict, Union, Any
 from pydantic import BaseModel, StrictBool, validator
 from enum import Enum, IntEnum
 from ga4gh.vrsatile.pydantic import return_value
-from ga4gh.vrsatile.pydantic.vrs_models import SequenceLocation, \
-    ChromosomeLocation, CURIE
+from ga4gh.vrsatile.pydantic.core_models import CURIE
+from ga4gh.vrsatile.pydantic.vrs_models import SequenceLocation, ChromosomeLocation
 from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
 from pydantic.types import StrictStr
 
@@ -222,7 +222,7 @@ class SourceMeta(BaseModel):
                 prop.pop('title', None)
             schema['example'] = {
                 "data_license": "custom",
-                "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
+                "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",
                 "version": "20201215",
                 "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
                 "rdp_url": "https://reusabledata.org/ncbi-gene.html",
@@ -408,7 +408,7 @@ class SearchService(BaseModel):
                     'name': 'gene-normalizer',
                     'version': '0.1.0',
                     'response_datetime': '2022-03-23 15:57:14.180908',
-                    'url': 'https://github.com/cancervariants/gene-normalization'  # noqa: E501
+                    'url': 'https://github.com/cancervariants/gene-normalization'
                 }
             }
 
@@ -477,7 +477,7 @@ class NormalizeService(BaseNormalizationService):
                     "extensions": [
                         {
                             "name": "approved_name",
-                            "value": "B-Raf proto-oncogene, serine/threonine kinase",  # noqa: E501
+                            "value": "B-Raf proto-oncogene, serine/threonine kinase",
                             "type": "Extension"
                         },
                         {
@@ -507,15 +507,12 @@ class NormalizeService(BaseNormalizationService):
                         {
                             "name": "chromosome_location",
                             "value": {
-                                "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",  # noqa: E501
+                                "id": "ga4gh:CL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",  # noqa: E501
                                 "type": "ChromosomeLocation",
                                 "species_id": "taxonomy:9606",
                                 "chr": "7",
-                                "interval": {
-                                    "end": "q34",
-                                    "start": "q34",
-                                    "type": "CytobandInterval"
-                                }
+                                "end": "q34",
+                                "start": "q34",
                             },
                             "type": "Extension"
                         }
@@ -570,7 +567,7 @@ class NormalizeService(BaseNormalizationService):
                     'name': 'gene-normalizer',
                     'version': '0.1.19',
                     'response_datetime': '2022-03-23 15:57:14.180908',
-                    'url': 'https://github.com/cancervariants/gene-normalization'  # noqa: E501
+                    'url': 'https://github.com/cancervariants/gene-normalization'
                 }
             }
 
@@ -638,14 +635,11 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "locations": [
                                     {
                                         "type": "ChromosomeLocation",
-                                        "_id": "ga4gh:VCL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",  # noqa: E501
+                                        "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",  # noqa: E501
                                         "species_id": "taxonomy:9606",
                                         "chr": "7",
-                                        "interval": {
-                                            "type": "CytobandInterval",
-                                            "start": "q22.1",
-                                            "end": "q22.1"
-                                        }
+                                        "start": "q22.1",
+                                        "end": "q22.1"
                                     }
                                 ],
                                 "aliases": [
@@ -699,19 +693,16 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "location_annotations": [],
                                 "locations": [
                                     {
-                                        "_id": "ga4gh:VSL.AF6wPZclBqTauGr3yx_CqmMndLKhq0Cm",  # noqa: E501
+                                        "id": "ga4gh:SL.AF6wPZclBqTauGr3yx_CqmMndLKhq0Cm",  # noqa: E501
                                         "type": "SequenceLocation",
                                         "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
-                                        "interval": {
-                                            "type": "SequenceInterval",
-                                            "start": {
-                                                "type": "Number",
-                                                "value": 100889993
-                                            },
-                                            "end": {
-                                                "type": "Number",
-                                                "value": 100896974
-                                            }
+                                        "start": {
+                                            "type": "Number",
+                                            "value": 100889993
+                                        },
+                                        "end": {
+                                            "type": "Number",
+                                            "value": 100896974
                                         }
                                     }
                                 ],
@@ -752,29 +743,23 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "locations": [
                                     {
                                         "type": "ChromosomeLocation",
-                                        "_id": "ga4gh:VCL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",  # noqa: E501
+                                        "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",  # noqa: E501
                                         "species_id": "taxonomy:9606",
                                         "chr": "7",
-                                        "interval": {
-                                            "type": "CytobandInterval",
-                                            "start": "q22.1",
-                                            "end": "q22.1"
-                                        }
+                                        "start": "q22.1",
+                                        "end": "q22.1"
                                     },
                                     {
-                                        "_id": "ga4gh:VSL.EepkXho2doYcUT1DW54fT1a00_zkqrn0",  # noqa: E501
+                                        "id": "ga4gh:SL.EepkXho2doYcUT1DW54fT1a00_zkqrn0",  # noqa: E501
                                         "type": "SequenceLocation",
                                         "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
-                                        "interval": {
-                                            "type": "SequenceInterval",
-                                            "start": {
-                                                "type": "Number",
-                                                "value": 100889993
-                                            },
-                                            "end": {
-                                                "type": "Number",
-                                                "value": 100896994
-                                            }
+                                        "start": {
+                                            "type": "Number",
+                                            "value": 100889993
+                                        },
+                                        "end": {
+                                            "type": "Number",
+                                            "value": 100896994
                                         }
                                     }
                                 ],

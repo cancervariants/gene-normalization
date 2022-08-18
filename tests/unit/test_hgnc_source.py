@@ -36,13 +36,10 @@ def a1bg_as1():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL.3Zdz1Stgx8HdWf1cT1KaUHFUQjoKTTcD",
+                "id": "ga4gh:CL.Rz-M5wA0_bIhQYLKi2ZPqlqW3nBPfAx5",
                 "chr": "19",
-                "interval": {
-                    "end": "q13.43",
-                    "start": "q13.43",
-                    "type": "CytobandInterval"
-                },
+                "end": "q13.43",
+                "start": "q13.43",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -83,13 +80,10 @@ def tp53():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL._Cl_XG2bfBUVG6uwi-jHtCHavOAyfPXN",
+                "id": "ga4gh:CL.BPk3okUhv4BBatjkyC7eQQsyXL6YwmeF",
                 "chr": "17",
-                "interval": {
-                    "end": "p13.1",
-                    "start": "p13.1",
-                    "type": "CytobandInterval"
-                },
+                "end": "p13.1",
+                "start": "p13.1",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -146,13 +140,10 @@ def a3galt2():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL.Rs8bogwClWoTYjhY9vI9J3wnPEXlao-U",
+                "id": "ga4gh:CL.iiwv6oaDfVVkjMZ_OH6XEQmM0daVft4u",
                 "chr": "1",
-                "interval": {
-                    "end": "p35.1",
-                    "start": "p35.1",
-                    "type": "CytobandInterval"
-                },
+                "end": "p35.1",
+                "start": "p35.1",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -196,13 +187,10 @@ def wdhd1():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL.R_izmPbRVtPQ2HwflIVh1XLXvRtVi-a7",
+                "id": "ga4gh:CL.sNe5mpPbxivH2KE6HdaDA3U29BkCQXc3",
                 "chr": "14",
-                "interval": {
-                    "end": "q22.2",
-                    "start": "q22.3",
-                    "type": "CytobandInterval"
-                },
+                "end": "q22.2",
+                "start": "q22.3",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -308,13 +296,10 @@ def gage4():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL.AlwtARlUTZiNX3NEEKab-X5eeayXd8v8",
+                "id": "ga4gh:CL.6KzwrFm2WeSXqwIIiNbAu-pKQQHt2q5Q",
                 "chr": "X",
-                "interval": {
-                    "end": "p11.2",
-                    "start": "p11.4",
-                    "type": "CytobandInterval"
-                },
+                "end": "p11.2",
+                "start": "p11.4",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -416,13 +401,10 @@ def cecr():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL.-hT6Cp6B32GmZTD8BXh1xf6SJeLM1uN7",
+                "id": "ga4gh:CL.AgASk5sB6LCeaB6rcqOwmrm16ise3pof",
                 "chr": "22",
-                "interval": {
-                    "end": "q11",
-                    "start": "pter",
-                    "type": "CytobandInterval"
-                },
+                "end": "q11",
+                "start": "pter",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -452,24 +434,18 @@ def csf2ra():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL.B5KOWxL8BQRpM2MOHP-RUmGlmm4ZtMAC",
+                "id": "ga4gh:CL.cITg67iNn_QNZTKpJd0I-1JMMhW_yHGU",
                 "chr": "X",
-                "interval": {
-                    "end": "p22.32",
-                    "start": "p22.32",
-                    "type": "CytobandInterval"
-                },
+                "end": "p22.32",
+                "start": "p22.32",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             },
             {
-                "_id": "ga4gh:VCL.QzbpRniVtZz8V-7B7vKhGeX3A3huKacK",
+                "id": "ga4gh:CL.2uc0CuKSdD7pkb4jKUqg2eusTXro99wM",
                 "chr": "Y",
-                "interval": {
-                    "end": "p11.3",
-                    "start": "p11.3",
-                    "type": "CytobandInterval"
-                },
+                "end": "p11.3",
+                "start": "p11.3",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -523,13 +499,10 @@ def rps24p5():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL.dLLTOKtFTnVd3ope5gTii1Gbdj7FxSfa",
+                "id": "ga4gh:CL.Ri0ddtMpe6DGzrC9_QGbL35gYAtU2bh_",
                 "chr": "1",
-                "interval": {
-                    "end": "q41",
-                    "start": "p36.13",
-                    "type": "CytobandInterval"
-                },
+                "end": "q41",
+                "start": "p36.13",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -563,13 +536,10 @@ def trl_cag2_1():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL.r_iXu-FjXuJjmeNhmDEputf6tgjXRQIr",
+                "id": "ga4gh:CL.aZ5aYHaC3GhDWgwhKkAcd9GBvkEo034v",
                 "chr": "16",
-                "interval": {
-                    "end": "q13",
-                    "start": "q21",
-                    "type": "CytobandInterval"
-                },
+                "end": "q13",
+                "start": "q21",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -604,13 +574,10 @@ def myo5b():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL.1vd9qlPiSSaDZC5X4jIKpapokxvKrITd",
+                "id": "ga4gh:CL.hFukVqPVLD70cshAz1Gtmd6EC1imobpO",
                 "chr": "18",
-                "interval": {
-                    "end": "qter",
-                    "start": "cen",
-                    "type": "CytobandInterval"
-                },
+                "end": "qter",
+                "start": "cen",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -656,13 +623,10 @@ def gstt1():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL.EfA-UFrmtjncDxutoiP6PWxu32UtH1Zu",
+                "id": "ga4gh:CL.g74mxFvAzPoenOlyMjY32j-UFMvjjas_",
                 "chr": "22",
-                "interval": {
-                    "end": "q11.23",
-                    "start": "q11.23",
-                    "type": "CytobandInterval"
-                },
+                "end": "q11.23",
+                "start": "q11.23",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -949,7 +913,7 @@ def test_meta_info(hgnc):
     assert resp.source_meta_.data_license == "custom"
     assert resp.source_meta_.data_license_url == \
            "https://www.genenames.org/about/"
-    assert datetime.strptime(resp.source_meta_.version, "%Y%m%d")  # noqa: E501
+    assert datetime.strptime(resp.source_meta_.version, "%Y%m%d")
     assert resp.source_meta_.data_url == \
            "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"  # noqa: E501
     assert resp.source_meta_.rdp_url is None

@@ -3,44 +3,27 @@ import pytest
 import pydantic
 from gene.schemas import Gene
 from ga4gh.vrsatile.pydantic.vrs_models import ChromosomeLocation, \
-    SequenceLocation, Gene as GeneValueObject, CytobandInterval, \
-    SequenceInterval, Number
+    SequenceLocation, Gene as GeneValueObject, Number
 
 
 @pytest.fixture(scope='module')
-def cytoband_interval():
-    """Create a valid cytoband interval test fixture."""
-    return CytobandInterval(
+def chromosome_location():
+    """Create a valid chromosome location test fixture."""
+    return ChromosomeLocation(
+        species_id='taxonomy:9606',
+        chr='7',
         start='q34',
         end='q34'
     )
 
 
 @pytest.fixture(scope='module')
-def chromosome_location(cytoband_interval):
-    """Create a valid chromosome location test fixture."""
-    return ChromosomeLocation(
-        species_id='taxonomy:9606',
-        chr='7',
-        interval=cytoband_interval
-    )
-
-
-@pytest.fixture(scope='module')
-def sequence_interval():
-    """Create a valid simple interval test fixture."""
-    return SequenceInterval(
-        start=Number(value=140719327),
-        end=Number(value=140924929)
-    )
-
-
-@pytest.fixture(scope='module')
-def sequence_location(sequence_interval):
+def sequence_location():
     """Create a valid sequence location test fixture."""
     return SequenceLocation(
         sequence_id='ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul',
-        interval=sequence_interval
+        start=Number(value=140719327),
+        end=Number(value=140924929)
     )
 
 
