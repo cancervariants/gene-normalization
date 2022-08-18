@@ -23,6 +23,9 @@ class Database:
         :param str db_url: URL endpoint for DynamoDB source
         :param str region_name: default AWS region
         """
+        gene_concepts_table = "gene_concepts"  # default
+        gene_metadata_table = "gene_metadata"  # default
+
         if 'GENE_NORM_PROD' in environ or 'GENE_NORM_EB_PROD' in environ:
             boto_params = {
                 'region_name': region_name
@@ -36,6 +39,24 @@ class Database:
                 else:
                     click.echo("Exiting.")
                     sys.exit()
+        elif "GENE_NORM_NONPROD" in environ:
+            # This is a nonprod table. Only to be used for creating backups which
+            # prod will restore. Will need to manually delete / create this table
+            # on an as needed basis.
+            gene_concepts_table = "gene_concepts_nonprod"
+            gene_metadata_table = "gene_metadata_nonprod"
+
+            boto_params = {
+                "region_name": region_name
+            }
+
+            # This is used only for updating nonprod via CLI
+            if click.confirm("Are you sure you want to use the nonprod database?",
+                             default=False):
+                click.echo("***GENE NONPROD DATABASE IN USE***")
+            else:
+                click.echo("Exiting.")
+                sys.exit()
         else:
             if db_url:
                 endpoint_url = db_url
@@ -57,8 +78,8 @@ class Database:
                 'GENE_NORM_EB_PROD' not in environ and 'TEST' not in environ:
             self.create_db_tables()
 
-        self.genes = self.dynamodb.Table('gene_concepts')
-        self.metadata = self.dynamodb.Table('gene_metadata')
+        self.genes = self.dynamodb.Table(gene_concepts_table)
+        self.metadata = self.dynamodb.Table(gene_metadata_table)
         self.batch = self.genes.batch_writer()
         self.cached_sources = {}
 
