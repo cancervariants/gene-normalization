@@ -73,9 +73,10 @@ class Database:
         self.dynamodb = boto3.resource('dynamodb', **boto_params)
         self.dynamodb_client = boto3.client('dynamodb', **boto_params)
 
-        # Create tables if nonexistent if not connecting to production database
-        if 'GENE_NORM_PROD' not in environ and\
-                'GENE_NORM_EB_PROD' not in environ and 'TEST' not in environ:
+        # Only create tables for local instance
+        envs_do_not_create_tables = {"GENE_NORM_PROD", "GENE_NORM_EB_PROD",
+                                     "GENE_NORM_NONPROD", "TEST"}
+        if not set(envs_do_not_create_tables) & set(environ):
             self.create_db_tables()
 
         self.genes = self.dynamodb.Table(gene_concepts_table)
