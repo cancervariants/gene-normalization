@@ -14,6 +14,16 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 
+def confirm_aws_db_use(env_name: str) -> None:
+    """Check to ensure that AWS instance should actually be used."""
+    if click.confirm(f"Are you sure you want to use the AWS {env_name} database?",
+                     default=False):
+        click.echo(f"***GENE {env_name.upper()} DATABASE IN USE***")
+    else:
+        click.echo("Exiting.")
+        sys.exit()
+
+
 class Database:
     """The database class."""
 
@@ -33,12 +43,7 @@ class Database:
             if 'GENE_NORM_EB_PROD' not in environ:
                 # EB Instance should not have to confirm.
                 # This is used only for updating production via CLI
-                if click.confirm("Are you sure you want to use the "
-                                 "production database?", default=False):
-                    click.echo("***GENE PRODUCTION DATABASE IN USE***")
-                else:
-                    click.echo("Exiting.")
-                    sys.exit()
+                confirm_aws_db_use("PROD")
         elif "GENE_NORM_NONPROD" in environ:
             # This is a nonprod table. Only to be used for creating backups which
             # prod will restore. Will need to manually delete / create this table
@@ -51,12 +56,7 @@ class Database:
             }
 
             # This is used only for updating nonprod via CLI
-            if click.confirm("Are you sure you want to use the nonprod database?",
-                             default=False):
-                click.echo("***GENE NONPROD DATABASE IN USE***")
-            else:
-                click.echo("Exiting.")
-                sys.exit()
+            confirm_aws_db_use("NONPROD")
         else:
             if db_url:
                 endpoint_url = db_url
