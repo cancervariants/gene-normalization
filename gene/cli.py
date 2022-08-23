@@ -5,7 +5,7 @@ from gene import SOURCES_CLASS, SOURCES
 from gene.schemas import SourceName
 from gene.etl.merge import Merge
 from timeit import default_timer as timer
-from gene.database import Database
+from gene.database import Database, confirm_aws_db_use
 from boto3.dynamodb.conditions import Key
 from os import environ
 import logging
@@ -45,6 +45,11 @@ class CLI:
     def update_normalizer_db(normalizer, prod, db_url, update_all,
                              update_merged):
         """Update selected normalizer source(s) in the gene database."""
+        # Sometimes GENE_NORM_EB_PROD is accidentally set. We should verify that
+        # it should actually be used in CLI
+        if "GENE_NORM_EB_PROD" in environ:
+            confirm_aws_db_use("PROD")
+
         if prod:
             environ['GENE_NORM_PROD'] = "TRUE"
             db: Database = Database()

@@ -14,6 +14,16 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 
+def confirm_aws_db_use(env_name: str) -> None:
+    """Check to ensure that AWS instance should actually be used."""
+    if click.confirm(f"Are you sure you want to use the AWS {env_name} database?",
+                     default=False):
+        click.echo(f"***GENE {env_name.upper()} DATABASE IN USE***")
+    else:
+        click.echo("Exiting.")
+        sys.exit()
+
+
 class Database:
     """The database class."""
 
@@ -23,6 +33,9 @@ class Database:
         :param str db_url: URL endpoint for DynamoDB source
         :param str region_name: default AWS region
         """
+        gene_concepts_table = "gene_concepts"  # default
+        gene_metadata_table = "gene_metadata"  # default
+
         if 'GENE_NORM_PROD' in environ or 'GENE_NORM_EB_PROD' in environ:
             boto_params = {
                 'region_name': region_name
@@ -30,12 +43,20 @@ class Database:
             if 'GENE_NORM_EB_PROD' not in environ:
                 # EB Instance should not have to confirm.
                 # This is used only for updating production via CLI
-                if click.confirm("Are you sure you want to use the "
-                                 "production database?", default=False):
-                    click.echo("***GENE PRODUCTION DATABASE IN USE***")
-                else:
-                    click.echo("Exiting.")
-                    sys.exit()
+                confirm_aws_db_use("PROD")
+        elif "GENE_NORM_NONPROD" in environ:
+            # This is a nonprod table. Only to be used for creating backups which
+            # prod will restore. Will need to manually delete / create this table
+            # on an as needed basis.
+            gene_concepts_table = "gene_concepts_nonprod"
+            gene_metadata_table = "gene_metadata_nonprod"
+
+            boto_params = {
+                "region_name": region_name
+            }
+
+            # This is used only for updating nonprod via CLI
+            confirm_aws_db_use("NONPROD")
         else:
             if db_url:
                 endpoint_url = db_url
@@ -52,13 +73,14 @@ class Database:
         self.dynamodb = boto3.resource('dynamodb', **boto_params)
         self.dynamodb_client = boto3.client('dynamodb', **boto_params)
 
-        # Create tables if nonexistent if not connecting to production database
-        if 'GENE_NORM_PROD' not in environ and\
-                'GENE_NORM_EB_PROD' not in environ and 'TEST' not in environ:
+        # Only create tables for local instance
+        envs_do_not_create_tables = {"GENE_NORM_PROD", "GENE_NORM_EB_PROD",
+                                     "GENE_NORM_NONPROD", "TEST"}
+        if not set(envs_do_not_create_tables) & set(environ):
             self.create_db_tables()
 
-        self.genes = self.dynamodb.Table('gene_concepts')
-        self.metadata = self.dynamodb.Table('gene_metadata')
+        self.genes = self.dynamodb.Table(gene_concepts_table)
+        self.metadata = self.dynamodb.Table(gene_metadata_table)
         self.batch = self.genes.batch_writer()
         self.cached_sources = {}
 
