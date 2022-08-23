@@ -162,7 +162,7 @@ class Ensembl(Base):
                         src_id = val.split("Acc:")[-1].split("]")[0]
                         if ":" in src_id:
                             src_id = src_id.split(":")[-1]
-                        source = self._get_xref_associated_with(src_name, src_id)  # noqa: E501
+                        source = self._get_xref_associated_with(src_name, src_id)
                         if "xrefs" in source:
                             gene["xrefs"] = source["xrefs"]
                         elif "associated_with" in source:
@@ -199,11 +199,11 @@ class Ensembl(Base):
             source["xrefs"] = \
                 [f"{NamespacePrefix.NCBI.value}:{src_id}"]
         elif src_name.startswith("UniProt"):
-            source["associated_with"] = [f"{NamespacePrefix.UNIPROT.value}:{src_id}"]  # noqa: E501
+            source["associated_with"] = [f"{NamespacePrefix.UNIPROT.value}:{src_id}"]
         elif src_name.startswith("miRBase"):
-            source["associated_with"] = [f"{NamespacePrefix.MIRBASE.value}:{src_id}"]  # noqa: E501
+            source["associated_with"] = [f"{NamespacePrefix.MIRBASE.value}:{src_id}"]
         elif src_name.startswith("RFAM"):
-            source["associated_with"] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]  # noqa: E501
+            source["associated_with"] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]
         return source
 
     def perform_etl(self, *args, **kwargs):

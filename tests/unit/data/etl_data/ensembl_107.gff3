@@ -197,12 +197,12 @@
 #!genome-version GRCh38
 #!genome-date 2013-12
 #!genome-build-accession GCA_000001405.28
-#!genebuild-last-updated 2021-03
+#!genebuild-last-updated 2022-04
 1	GRCh38	chromosome	1	248956422	.	.	.	ID=chromosome:1;Alias=CM000663.2,chr1,NC_000001.11
 ###
 1	havana	pseudogene	11869	14409	.	+	.	ID=gene:ENSG00000223972;Name=DDX11L1;biotype=transcribed_unprocessed_pseudogene;description=DEAD/H-box helicase 11 like 1 (pseudogene) [Source:HGNC Symbol%3BAcc:HGNC:37102];gene_id=ENSG00000223972;logic_name=havana_homo_sapiens;version=5
 ###
-1	ensembl_havana	gene	220148293	220272453	.	-	.	ID=gene:ENSG00000118873;Name=RAB3GAP2;biotype=protein_coding;description=RAB3 GTPase activating non-catalytic protein subunit 2 [Source:HGNC Symbol%3BAcc:HGNC:17168];gene_id=ENSG00000118873;logic_name=ensembl_havana_gene_homo_sapiens;version=16
+1	ensembl_havana	gene	220148293	220272529	.	-	.	ID=gene:ENSG00000118873;Name=RAB3GAP2;biotype=protein_coding;description=RAB3 GTPase activating non-catalytic protein subunit 2 [Source:HGNC Symbol%3BAcc:HGNC:17168];gene_id=ENSG00000118873;logic_name=ensembl_havana_gene_homo_sapiens;version=17
 ###
 2	GRCh38	chromosome	1	242193529	.	.	.	ID=chromosome:2;Alias=CM000664.2,chr2,NC_000002.12
 ###
@@ -227,7 +227,6 @@
 11	ensembl_havana	gene	10751246	10801625	.	+	.	ID=gene:ENSG00000198730;Name=CTR9;biotype=protein_coding;description=CTR9 homolog%2C Paf1/RNA polymerase II complex component [Source:HGNC Symbol%3BAcc:HGNC:16850];gene_id=ENSG00000198730;logic_name=ensembl_havana_gene_homo_sapiens;version=9
 ###
 15	GRCh38	chromosome	1	101991189	.	.	.	ID=chromosome:15;Alias=CM000677.2,chr15,NC_000015.10
-###
 15	ensembl_havana	gene	89784895	89815401	.	-	.	ID=gene:ENSG00000166825;Name=ANPEP;biotype=protein_coding;description=alanyl aminopeptidase%2C membrane [Source:HGNC Symbol%3BAcc:HGNC:500];gene_id=ENSG00000166825;logic_name=ensembl_havana_gene_homo_sapiens;version=15
 ###
 17	GRCh38	chromosome	1	83257441	.	.	.	ID=chromosome:17;Alias=CM000679.2,chr17,NC_000017.11
@@ -242,7 +241,7 @@
 ###
 X	GRCh38	chromosome	1	156040895	.	.	.	ID=chromosome:X;Alias=CM000685.2,chrX,NC_000023.11
 ###
-X	havana	ncRNA_gene	154424378	154428512	.	-	.	ID=gene:ENSG00000197180;Name=CH17-340M24.3;biotype=lncRNA;description=uncharacterized protein BC009467 [Source:NCBI gene (formerly Entrezgene)%3BAcc:158960];gene_id=ENSG00000197180;logic_name=havana_homo_sapiens;version=3
+X	havana	ncRNA_gene	154424378	154428526	.	-	.	ID=gene:ENSG00000197180;Name=ATP6AP1-DT;biotype=lncRNA;description=ATP6AP1 divergent transcript [Source:HGNC Symbol%3BAcc:HGNC:25138];gene_id=ENSG00000197180;logic_name=havana_homo_sapiens;version=4
 ###
-X	ensembl_havana	gene	155612572	155782459	.	+	.	ID=gene:ENSG00000168939;Name=SPRY3;biotype=protein_coding;description=sprouty RTK signaling antagonist 3 [Source:HGNC Symbol%3BAcc:HGNC:11271];gene_id=ENSG00000168939;logic_name=ensembl_havana_gene_homo_sapiens;version=12
+X	ensembl_havana	gene	155612572	155782459	.	+	.	ID=gene:ENSG00000168939;Name=SPRY3;biotype=protein_coding;description=sprouty RTK signaling antagonist 3 [Source:HGNC Symbol%3BAcc:HGNC:11271];gene_id=ENSG00000168939;logic_name=ensembl_havana_gene_homo_sapiens;version=13
 ###

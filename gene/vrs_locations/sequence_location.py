@@ -18,7 +18,12 @@ class SequenceLocation:
         :param str seqid: Sequence ID accession
         :return: List of aliases for seqid
         """
-        return sr.translate_alias(seqid)
+        aliases = []
+        try:
+            aliases = sr.translate_alias(seqid)
+        except KeyError as e:
+            logger.warning(f"SeqRepo raised KeyError: {e}")
+        return aliases
 
     def add_location(self, seqid, gene, params, sr):
         """Get a gene's Sequence Location.
@@ -31,21 +36,20 @@ class SequenceLocation:
         """
         location = dict()
         aliases = self.get_aliases(sr, seqid)
+        if not aliases:
+            return location
+
         sequence_id = [a for a in aliases if a.startswith('ga4gh')][0]
 
         if gene.start != '.' and gene.end != '.' and sequence_id:
             if 0 <= gene.start <= gene.end:
                 seq_location = models.SequenceLocation(
                     sequence_id=sequence_id,
-                    interval=models.SequenceInterval(
-                        start=models.Number(value=gene.start - 1,
-                                            type="Number"),
-                        end=models.Number(value=gene.end, type="Number"),
-                        type="SequenceInterval"
-                    ),
+                    start=models.Number(value=gene.start - 1, type="Number"),
+                    end=models.Number(value=gene.end, type="Number"),
                     type="SequenceLocation"
                 )
-                seq_location._id = ga4gh_identify(seq_location)
+                seq_location.id = ga4gh_identify(seq_location)
                 location = seq_location.as_dict()
             else:
                 logger.info(f"{params['concept_id']} has invalid interval:"

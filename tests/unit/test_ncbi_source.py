@@ -39,23 +39,17 @@ def dpf1():
         "strand": "-",
         "locations": [
             {
-                "_id": "ga4gh:VCL.nEPKXzyfglrOMMFySOTQ8Om_f6xmr-pP",
+                "id": "ga4gh:CL.bzgLv8gt3KHK00OWTAEUNZcdgUjbHU8i",
                 "chr": "19",
-                "interval": {
-                    "end": "q13.2",
-                    "start": "q13.2",
-                    "type": "CytobandInterval"
-                },
+                "end": "q13.2",
+                "start": "q13.2",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             },
             {
-                "_id": "ga4gh:VSL.MbzGuoGI9MRB8oPe6eE-ULk3FIBdpMF8",
-                "interval": {
-                    "end": {"value": 38229695, "type": "Number"},
-                    "start": {"value": 38211005, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "id": "ga4gh:SL.edxKC-S5GBhbpASqBt7BEg6cFr6CcbY3",
+                "end": {"value": 38229695, "type": "Number"},
+                "start": {"value": 38211005, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
                 "type": "SequenceLocation"
             }
@@ -82,23 +76,17 @@ def pdp1_symbol():
         "strand": "+",
         "locations": [
             {
-                "_id": "ga4gh:VCL.n9W_wjDCStQf29yPcjhkMnFmESG8wN9A",
+                "id": "ga4gh:CL.cJsZWKrEtzpFn5psdCtgofb6NaEDVPfB",
                 "chr": "8",
-                "interval": {
-                    "end": "q22.1",
-                    "start": "q22.1",
-                    "type": "CytobandInterval"
-                },
+                "end": "q22.1",
+                "start": "q22.1",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             },
             {
-                "_id": "ga4gh:VSL.KmLM61Mm2jxuep7cdgg7lvOOXaIxSW0Y",
-                "interval": {
-                    "end": {"value": 93926068, "type": "Number"},
-                    "start": {"value": 93916922, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "id": "ga4gh:SL.HJJGMEo7TZQIwsq64prLwLhYzCkaGaDt",
+                "end": {"value": 93926068, "type": "Number"},
+                "start": {"value": 93916922, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.209Z7zJ-mFypBEWLk4rNC6S_OxY5p7bs",
                 "type": "SequenceLocation"
             }
@@ -126,23 +114,17 @@ def pdp1_alias():
         "strand": "+",
         "locations": [
             {
-                "_id": "ga4gh:VCL.MOV-2FXnbeP1BrCwBQLN0aRpVLGFs-Mb",
+                "id": "ga4gh:CL.7ivmMgKAqiFiRh1qsbA909w2kUcPabr_",
                 "chr": "9",
-                "interval": {
-                    "end": "p24.1",
-                    "start": "p24.1",
-                    "type": "CytobandInterval"
-                },
+                "end": "p24.1",
+                "start": "p24.1",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             },
             {
-                "_id": "ga4gh:VSL.X_fA-Sjsw2ZreE9rykzPNzCFctpFGG-u",
-                "interval": {
-                    "end": {"value": 4665258, "type": "Number"},
-                    "start": {"value": 4662293, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "id": "ga4gh:SL.jduggMCta37Xu9RgW251jNd7tmEuUOtw",
+                "end": {"value": 4665258, "type": "Number"},
+                "start": {"value": 4662293, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
                 "type": "SequenceLocation"
             }
@@ -170,44 +152,32 @@ def spry3():
         "strand": "+",
         "locations": [
             {
-                "_id": "ga4gh:VCL.A1s9hZY1tgmRi1WuXM1ETZOqJcpo4Ftx",
+                "id": "ga4gh:CL.r8Qv_b-B3SoguReqdunL3GCkt1RH-es1",
                 "chr": "Y",
-                "interval": {
-                    "end": "q12",
-                    "start": "q12",
-                    "type": "CytobandInterval"
-                },
+                "end": "q12",
+                "start": "q12",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             },
             {
-                "_id": "ga4gh:VCL.fEBeCyej0jVKsvjw4vxyW6j1h8UVLb5S",
+                "id": "ga4gh:CL.p5Va-YpCTrSTYWyJrpR-rvnxO1YWPIDY",
                 "chr": "X",
-                "interval": {
-                    "end": "q28",
-                    "start": "q28",
-                    "type": "CytobandInterval"
-                },
+                "end": "q28",
+                "start": "q28",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             },
             {
-                "_id": "ga4gh:VSL.r6_z0hmAdPdufX0g1ciRj_zPU6poQviA",
-                "interval": {
-                    "end": {"value": 155782459, "type": "Number"},
-                    "start": {"value": 155612585, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "id": "ga4gh:SL.kaGMGXo0NREqH_gsgDwqfQMnBSem3OP1",
+                "end": {"value": 155782459, "type": "Number"},
+                "start": {"value": 155612585, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
                 "type": "SequenceLocation"
             },
             {
-                "_id": "ga4gh:VSL.Cr_HtUTpUe6KB37Y7zOTDbx9JglIzE1O",
-                "interval": {
-                    "end": {"value": 56968979, "type": "Number"},
-                    "start": {"value": 56923422, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "id": "ga4gh:SL.I51347TrFRIHMT8Bg2iFbKP22_yFxXQb",
+                "end": {"value": 56968979, "type": "Number"},
+                "start": {"value": 56954315, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
                 "type": "SequenceLocation"
             }
@@ -279,23 +249,17 @@ def znf84():
         "strand": "+",
         "locations": [
             {
-                "_id": "ga4gh:VCL.CusjBE-q66vf4v8VSHRhMxjR_4G688Ve",
+                "id": "ga4gh:CL.6YvQEs6MuHuNvt0Vlv8r4hMKIOK5Ktq4",
                 "chr": "12",
-                "interval": {
-                    "end": "q24.33",
-                    "start": "q24.33",
-                    "type": "CytobandInterval"
-                },
+                "end": "q24.33",
+                "start": "q24.33",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             },
             {
-                "_id": "ga4gh:VSL.w5FE3al-0SUkARxk_RdCD5ypYIh_WtSM",
-                "interval": {
-                    "end": {"value": 133063299, "type": "Number"},
-                    "start": {"value": 133037300, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "id": "ga4gh:SL.M67HYj0B8ocTAWgZ9zUEourxxna6ZleJ",
+                "end": {"value": 133063299, "type": "Number"},
+                "start": {"value": 133037508, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl",
                 "type": "SequenceLocation"
             }
@@ -323,22 +287,16 @@ def slc25a6():
         "strand": "-",
         "locations": [
             {
-                "_id": "ga4gh:VSL.HG0bXHwmZoxZzU2ckz4T6lvxIswXhLQZ",
-                "interval": {
-                    "end": {"value": 1392113, "type": "Number"},
-                    "start": {"value": 1386151, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "id": "ga4gh:SL.bJtaHxlESQXto-K8WCE4jUS_uncnJP3l",
+                "end": {"value": 1392113, "type": "Number"},
+                "start": {"value": 1386151, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
                 "type": "SequenceLocation"
             },
             {
-                "_id": "ga4gh:VSL.1J-MNAWJ9hvZtIM_90lqLbxEt707zL_A",
-                "interval": {
-                    "end": {"value": 1392113, "type": "Number"},
-                    "start": {"value": 1386151, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "id": "ga4gh:SL.fkr3SI-mzvw2IJgPm3ck9k5pQtbJ8BvX",
+                "end": {"value": 1392113, "type": "Number"},
+                "start": {"value": 1386151, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
                 "type": "SequenceLocation"
             }
@@ -366,13 +324,10 @@ def loc106783576():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL.RFN35KQMhqzhmo4QP7AxKAzlPtnh7slL",
+                "id": "ga4gh:CL.YYGQrLtmKwKgp38asAkHT8AydAidnui8",
                 "chr": "10",
-                "interval": {
-                    "end": "cen",
-                    "start": "pter",
-                    "type": "CytobandInterval"
-                },
+                "end": "cen",
+                "start": "pter",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -400,13 +355,10 @@ def glc1b():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL.HStPIl_6UkNQmbjZW1TeUmHFMptbIj6t",
+                "id": "ga4gh:CL.8D0hLCktRxyPrx4Etgabq10vEq6TtU43",
                 "chr": "2",
-                "interval": {
-                    "end": "q13",
-                    "start": "cen",
-                    "type": "CytobandInterval"
-                },
+                "end": "q13",
+                "start": "cen",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -434,13 +386,10 @@ def hdpa():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL.faRHNO_VJMssbjYQ628mfdRgLqg9qK2b",
+                "id": "ga4gh:CL.kl9HXvnUCE6Z1ktXibt83NBdXvxnT2RA",
                 "chr": "X",
-                "interval": {
-                    "end": "p22.32",
-                    "start": "pter",
-                    "type": "CytobandInterval"
-                },
+                "end": "p22.32",
+                "start": "pter",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -469,33 +418,24 @@ def prkrap1():
         "strand": "+",
         "locations": [
             {
-                "_id": "ga4gh:VCL.HeTd-jABCr22v4rUfVWJbkz2NkPyGScK",
+                "id": "ga4gh:CL.FYt7UkCHZVLpkYe7zhNdMk1K6lxl_k7I",
                 "chr": "6",
-                "interval": {
-                    "end": "p21.3",
-                    "start": "p21.3",
-                    "type": "CytobandInterval"
-                },
+                "end": "p21.3",
+                "start": "p21.3",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             },
             {
-                "_id": "ga4gh:VSL.WB_2IFcms7VmbkPBXUgUaH-R1EdKRs4s",
-                "interval": {
-                    "end": {"value": 3941874, "type": "Number"},
-                    "start": {"value": 3940269, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "id": "ga4gh:SL.4rniEdEGTHBg9ZkvZLEVPR_MSBUlU2ih",
+                "end": {"value": 3941874, "type": "Number"},
+                "start": {"value": 3940269, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.MjujHSAsgNWRTX4w3ysM7b5OVhZpdXu1",
                 "type": "SequenceLocation"
             },
             {
-                "_id": "ga4gh:VSL.PIeADExe9_iSJkTLQbSvhxAJ8PM19R6r",
-                "interval": {
-                    "end": {"value": 3932085, "type": "Number"},
-                    "start": {"value": 3930480, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "id": "ga4gh:SL.qlH29_Ijp2JDyb29kxyCrtLOBa0NNx9j",
+                "end": {"value": 3932085, "type": "Number"},
+                "start": {"value": 3930480, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.Q8IworEhpLeXwpz1CHM7C3luysh-ltx-",
                 "type": "SequenceLocation"
             }
@@ -523,13 +463,10 @@ def mhb():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL.2WDJu032Gc_9BN4qiNELb577XomiZv8z",
+                "id": "ga4gh:CL.6vlmdqdXYxSAGsJI9no7kLN5iLKpvr5X",
                 "chr": "3",
-                "interval": {
-                    "end": "p21.32",
-                    "start": "p22.2",
-                    "type": "CytobandInterval"
-                },
+                "end": "p21.32",
+                "start": "p22.2",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -557,13 +494,10 @@ def spg37():
         "strand": None,
         "locations": [
             {
-                "_id": "ga4gh:VCL.P5jAIluXneqHZMV9FBEQ2ZqOpO-8fqbP",
+                "id": "ga4gh:CL.XWbwTwmJ95KD-aCuXfJcD8cNIvXbiXRh",
                 "chr": "8",
-                "interval": {
-                    "end": "q13.3",
-                    "start": "p21.2",
-                    "type": "CytobandInterval"
-                },
+                "end": "q13.3",
+                "start": "p21.2",
                 "species_id": "taxonomy:9606",
                 "type": "ChromosomeLocation"
             }
@@ -842,11 +776,9 @@ def test_no_match(ncbi):
     assert response.source_meta_.data_license_url == \
            "https://www.ncbi.nlm.nih.gov/home/about/policies/"
     assert datetime.strptime(response.source_meta_.version, "%Y%m%d")
-    assert response.source_meta_.data_url == \
-        "ftp://ftp.ncbi.nlm.nih.gov"
-    assert response.source_meta_.rdp_url == \
-        "https://reusabledata.org/ncbi-gene.html"
-    assert not response.source_meta_.data_license_attributes["non_commercial"]  # noqa: E501
+    assert response.source_meta_.data_url == "ftp://ftp.ncbi.nlm.nih.gov"
+    assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
+    assert not response.source_meta_.data_license_attributes["non_commercial"]
     assert not response.source_meta_.data_license_attributes["share_alike"]
     assert not response.source_meta_.data_license_attributes["attribution"]
 
@@ -888,10 +820,8 @@ def test_meta(ncbi):
     assert response.source_meta_.data_license_url == \
         "https://www.ncbi.nlm.nih.gov/home/about/policies/"
     assert datetime.strptime(response.source_meta_.version, "%Y%m%d")
-    assert response.source_meta_.data_url == \
-        "ftp://ftp.ncbi.nlm.nih.gov"
-    assert response.source_meta_.rdp_url == \
-        "https://reusabledata.org/ncbi-gene.html"
+    assert response.source_meta_.data_url == "ftp://ftp.ncbi.nlm.nih.gov"
+    assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
     assert response.source_meta_.genome_assemblies == ["GRCh38.p14"]
     assert response.source_meta_.data_license_attributes == {
         "non_commercial": False,

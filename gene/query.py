@@ -9,7 +9,8 @@ from gene.schemas import BaseGene, Gene, SourceMeta, MatchType, SourceName, \
     ServiceMeta, SourcePriority, NormalizeService, SearchService, \
     GeneTypeFieldName, UnmergedNormalizationService, MatchesNormalized, \
     BaseNormalizationService
-from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor, Extension
+from ga4gh.vrsatile.pydantic.core_models import Extension
+from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 from datetime import datetime
@@ -87,11 +88,9 @@ class QueryHandler:
         """
         if 'locations' in record:
             for loc in record['locations']:
-                if loc['interval']['type'] == "SequenceInterval":
-                    loc['interval']['start']['value'] = \
-                        int(loc['interval']['start']['value'])
-                    loc['interval']['end']['value'] = \
-                        int(loc['interval']['end']['value'])
+                if loc['type'] == 'SequenceLocation':
+                    loc['start']['value'] = int(loc['start']['value'])
+                    loc['end']['value'] = int(loc['end']['value'])
         return record
 
     def add_record(self,
