@@ -85,15 +85,12 @@ def normalized_ache():
             {
                 "name": "chromosome_location",
                 "value": {
-                    "_id": "ga4gh:VCL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
+                    "id": "ga4gh:CL.JSw-08GkF-7M-OQR-33MLLKQHSi7QJb5",
                     "type": "ChromosomeLocation",
                     "species_id": "taxonomy:9606",
                     "chr": "7",
-                    "interval": {
-                        "end": "q22.1",
-                        "start": "q22.1",
-                        "type": "CytobandInterval"
-                    }
+                    "end": "q22.1",
+                    "start": "q22.1"
                 },
                 "type": "Extension"
             },
@@ -170,15 +167,12 @@ def normalized_braf():
             {
                 "name": "chromosome_location",
                 "value": {
-                    "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
+                    "id": "ga4gh:CL.ZZZYpOwuW1BLLJXc_Dm4eVZ5E0smVYCc",
                     "type": "ChromosomeLocation",
                     "species_id": "taxonomy:9606",
                     "chr": "7",
-                    "interval": {
-                        "end": "q34",
-                        "start": "q34",
-                        "type": "CytobandInterval"
-                    }
+                    "end": "q34",
+                    "start": "q34",
                 },
                 "type": "Extension"
             },
@@ -269,15 +263,12 @@ def normalized_abl1():
             {
                 "name": "chromosome_location",
                 "value": {
-                    "_id": "ga4gh:VCL.WvMfE67KxSDAV8JaK593TI74yyJWIsMQ",
+                    "id": "ga4gh:CL.1vsxettosueUHyFIOoTPzwIFD1DodLuT",
                     "type": "ChromosomeLocation",
                     "species_id": "taxonomy:9606",
                     "chr": "9",
-                    "interval": {
-                        "end": "q34.12",
-                        "start": "q34.12",
-                        "type": "CytobandInterval"
-                    }
+                    "end": "q34.12",
+                    "start": "q34.12"
                 },
                 "type": "Extension"
             },
@@ -319,7 +310,8 @@ def normalized_p150():
             "CAF-1",
             "P150",
             "CAF1B",
-            "CAF1"
+            "CAF1",
+            "LOC107985297"
         ],
         "extensions": [
             {
@@ -349,15 +341,12 @@ def normalized_p150():
             {
                 "name": "chromosome_location",
                 "value": {
-                    "_id": "ga4gh:VCL.yF2TzeunqY92v3yhDsCR_t5X997mWriF",
+                    "id": "ga4gh:CL.kPEG2TGUPOAsAYK6HY0ukprQ-DR_IuMZ",
                     "type": "ChromosomeLocation",
                     "species_id": "taxonomy:9606",
                     "chr": "19",
-                    "interval": {
-                        "end": "p13.3",
-                        "start": "p13.3",
-                        "type": "CytobandInterval"
-                    }
+                    "end": "p13.3",
+                    "start": "p13.3"
                 },
                 "type": "Extension"
             },
@@ -375,6 +364,11 @@ def normalized_p150():
                 "name": "ensembl_biotype",
                 "type": "Extension",
                 "value": "protein_coding"
+            },
+            {
+                "name": "previous_symbols",
+                "type": "Extension",
+                "value": ["LOC107985297"]
             }
         ]
     }
@@ -399,21 +393,18 @@ def normalized_loc_653303():
             {
                 "type": "Extension",
                 "name": "approved_name",
-                "value": "proprotein convertase subtilisin/kexin type 7 pseudogene"  # noqa: E501
+                "value": "proprotein convertase subtilisin/kexin type 7 pseudogene"
             },
             {
                 "type": "Extension",
                 "name": "chromosome_location",
                 "value": {
-                    "_id": "ga4gh:VCL.WzURLvTklFI7K2GAP8gIw6vgWDWXMXuW",
+                    "id": "ga4gh:CL.82tL1yxucvwp5U2Yo4jNYX06pru8zZYl",
                     "type": "ChromosomeLocation",
                     "species_id": "taxonomy:9606",
                     "chr": "11",
-                    "interval": {
-                        "type": "CytobandInterval",
-                        "start": "q23.3",
-                        "end": "q23.3"
-                    }
+                    "start": "q23.3",
+                    "end": "q23.3"
                 }
             },
             {
@@ -456,29 +447,23 @@ def normalize_unmerged_loc_653303():
                         "locations": [
                             {
                                 "type": "ChromosomeLocation",
-                                "_id": "ga4gh:VCL.WzURLvTklFI7K2GAP8gIw6vgWDWXMXuW",
+                                "id": "ga4gh:CL.82tL1yxucvwp5U2Yo4jNYX06pru8zZYl",
                                 "species_id": "taxonomy:9606",
                                 "chr": "11",
-                                "interval": {
-                                    "type": "CytobandInterval",
-                                    "start": "q23.3",
-                                    "end": "q23.3"
-                                }
+                                "start": "q23.3",
+                                "end": "q23.3"
                             },
                             {
-                                "_id": "ga4gh:VSL.dhj3ZilmW0bmmUjUvrG7zCWwsPn-7XyB",
+                                "id": "ga4gh:SL.zfPjFTCoZIj-gz5tEBDQwKEOfGBxF9kF",
                                 "type": "SequenceLocation",
                                 "sequence_id": "ga4gh:SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1",  # noqa: E501
-                                "interval": {
-                                    "type": "SequenceInterval",
-                                    "start": {
-                                        "type": "Number",
-                                        "value": 117135528
-                                    },
-                                    "end": {
-                                        "type": "Number",
-                                        "value": 117138867
-                                    }
+                                "start": {
+                                    "type": "Number",
+                                    "value": 117135528
+                                },
+                                "end": {
+                                    "type": "Number",
+                                    "value": 117138867
                                 }
                             }
                         ],
@@ -516,14 +501,11 @@ def normalize_unmerged_chaf1a():
                         "locations": [
                             {
                                 "type": "ChromosomeLocation",
-                                "_id": "ga4gh:VCL.yF2TzeunqY92v3yhDsCR_t5X997mWriF",
+                                "id": "ga4gh:CL.kPEG2TGUPOAsAYK6HY0ukprQ-DR_IuMZ",
                                 "species_id": "taxonomy:9606",
                                 "chr": "19",
-                                "interval": {
-                                    "type": "CytobandInterval",
-                                    "start": "p13.3",
-                                    "end": "p13.3"
-                                }
+                                "start": "p13.3",
+                                "end": "p13.3"
                             }
                         ],
                         "aliases": [
@@ -564,19 +546,16 @@ def normalize_unmerged_chaf1a():
                         "location_annotations": [],
                         "locations": [
                             {
-                                "_id": "ga4gh:VSL.VVxEanUPWWMy_IChkj_kPIpRnYAatqrq",
+                                "id": "ga4gh:SL.kL2Hr6VSSiPQyjE_pJ1Ta5viB-yuJchF",
                                 "type": "SequenceLocation",
                                 "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",  # noqa: E501
-                                "interval": {
-                                    "type": "SequenceInterval",
-                                    "start": {
-                                        "type": "Number",
-                                        "value": 4402639
-                                    },
-                                    "end": {
-                                        "type": "Number",
-                                        "value": 4445018
-                                    }
+                                "start": {
+                                    "type": "Number",
+                                    "value": 4402639
+                                },
+                                "end": {
+                                    "type": "Number",
+                                    "value": 4445018
                                 }
                             }
                         ],
@@ -602,29 +581,23 @@ def normalize_unmerged_chaf1a():
                         "locations": [
                             {
                                 "type": "ChromosomeLocation",
-                                "_id": "ga4gh:VCL.yF2TzeunqY92v3yhDsCR_t5X997mWriF",
+                                "id": "ga4gh:CL.kPEG2TGUPOAsAYK6HY0ukprQ-DR_IuMZ",
                                 "species_id": "taxonomy:9606",
                                 "chr": "19",
-                                "interval": {
-                                    "type": "CytobandInterval",
-                                    "start": "p13.3",
-                                    "end": "p13.3"
-                                }
+                                "start": "p13.3",
+                                "end": "p13.3"
                             },
                             {
-                                "_id": "ga4gh:VSL.X4HEwp9RgFN5WpmJM4bWpcOcN9qHX-hj",
+                                "id": "ga4gh:SL.LTvvCAh9DqsH8G0A_rNgPafqvPmWk0tn",
                                 "type": "SequenceLocation",
                                 "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",  # noqa: E501
-                                "interval": {
-                                    "type": "SequenceInterval",
-                                    "start": {
-                                        "type": "Number",
-                                        "value": 4402595
-                                    },
-                                    "end": {
-                                        "type": "Number",
-                                        "value": 4448322
-                                    }
+                                "start": {
+                                    "type": "Number",
+                                    "value": 4402639
+                                },
+                                "end": {
+                                    "type": "Number",
+                                    "value": 4450830
                                 }
                             }
                         ],
@@ -635,7 +608,7 @@ def normalize_unmerged_chaf1a():
                             "CAF1B",
                             "CAF-1"
                         ],
-                        "previous_symbols": [],
+                        "previous_symbols": ["LOC107985297"],
                         "xrefs": [
                             "ensembl:ENSG00000167670",
                             "hgnc:1910"
@@ -669,29 +642,23 @@ def normalize_unmerged_ache():
                         "locations": [
                             {
                                 "type": "ChromosomeLocation",
-                                "_id": "ga4gh:VCL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
+                                "id": "ga4gh:CL.JSw-08GkF-7M-OQR-33MLLKQHSi7QJb5",
                                 "species_id": "taxonomy:9606",
                                 "chr": "7",
-                                "interval": {
-                                    "type": "CytobandInterval",
-                                    "start": "q22.1",
-                                    "end": "q22.1"
-                                }
+                                "start": "q22.1",
+                                "end": "q22.1"
                             },
                             {
-                                "_id": "ga4gh:VSL.EepkXho2doYcUT1DW54fT1a00_zkqrn0",
+                                "id": "ga4gh:SL.UZ4q9hFsiwhOMyB4nDftMupd-i0OVu4w",
                                 "type": "SequenceLocation",
                                 "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
-                                "interval": {
-                                    "type": "SequenceInterval",
-                                    "start": {
-                                        "type": "Number",
-                                        "value": 100889993
-                                    },
-                                    "end": {
-                                        "type": "Number",
-                                        "value": 100896994
-                                    }
+                                "start": {
+                                    "type": "Number",
+                                    "value": 100889993
+                                },
+                                "end": {
+                                    "type": "Number",
+                                    "value": 100896994
                                 }
                             }
                         ],
@@ -726,19 +693,16 @@ def normalize_unmerged_ache():
                         "location_annotations": [],
                         "locations": [
                             {
-                                "_id": "ga4gh:VSL.AF6wPZclBqTauGr3yx_CqmMndLKhq0Cm",
+                                "id": "ga4gh:SL.K5fLruGxiT-ls_GjUrNpNm3tV01hhlgQ",
                                 "type": "SequenceLocation",
                                 "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
-                                "interval": {
-                                    "type": "SequenceInterval",
-                                    "start": {
-                                        "type": "Number",
-                                        "value": 100889993
-                                    },
-                                    "end": {
-                                        "type": "Number",
-                                        "value": 100896974
-                                    }
+                                "start": {
+                                    "type": "Number",
+                                    "value": 100889993
+                                },
+                                "end": {
+                                    "type": "Number",
+                                    "value": 100896974
                                 }
                             }
                         ],
@@ -762,14 +726,11 @@ def normalize_unmerged_ache():
                         "locations": [
                             {
                                 "type": "ChromosomeLocation",
-                                "_id": "ga4gh:VCL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
+                                "id": "ga4gh:CL.JSw-08GkF-7M-OQR-33MLLKQHSi7QJb5",
                                 "species_id": "taxonomy:9606",
                                 "chr": "7",
-                                "interval": {
-                                    "type": "CytobandInterval",
-                                    "start": "q22.1",
-                                    "end": "q22.1"
-                                }
+                                "start": "q22.1",
+                                "end": "q22.1"
                             }
                         ],
                         "aliases": [
@@ -857,19 +818,15 @@ def compare_unmerged_record(gene, test_gene):
     assert gene.label == test_gene.label
     assert gene.concept_id == test_gene.concept_id
     assert set(gene.aliases) == set(test_gene.aliases)
-    assert set(gene.xrefs) == \
-           set(test_gene.xrefs)
+    assert set(gene.xrefs) == set(test_gene.xrefs)
     assert gene.symbol_status == test_gene.symbol_status
-    assert set(gene.previous_symbols) == \
-           set(test_gene.previous_symbols)
-    assert set(gene.associated_with) == \
-           set(test_gene.associated_with)
+    assert set(gene.previous_symbols) == set(test_gene.previous_symbols)
+    assert set(gene.associated_with) == set(test_gene.associated_with)
     assert gene.symbol == test_gene.symbol
     assert len(gene.locations) == len(test_gene.locations)
     for loc in gene.locations:
         assert loc in test_gene.locations
-    assert set(gene.location_annotations) == \
-           set(test_gene.location_annotations)
+    assert set(gene.location_annotations) == set(test_gene.location_annotations)
     assert gene.strand == test_gene.strand
     assert gene.gene_type == test_gene.gene_type
 
@@ -900,8 +857,7 @@ def compare_service_meta(service_meta):
     assert service_meta.name == "gene-normalizer"
     assert service_meta.version >= "0.1.0"
     assert isinstance(service_meta.response_datetime, str)
-    assert service_meta.url == \
-           'https://github.com/cancervariants/gene-normalization'
+    assert service_meta.url == 'https://github.com/cancervariants/gene-normalization'
 
 
 def compare_gene_descriptor(test, actual):
@@ -912,28 +868,24 @@ def compare_gene_descriptor(test, actual):
     assert actual.label == test.label
     if actual.xrefs or test.xrefs:
         assert set(actual.xrefs) == set(test.xrefs), "xrefs"
-    assert set(actual.alternate_labels) == set(test.alternate_labels), \
-        "alt labels"
+    assert set(actual.alternate_labels) == set(test.alternate_labels), "alt labels"
     extensions_present = "extensions" in test.__fields__.keys()
     assert ("extensions" in actual.__fields__.keys()) == extensions_present
     if extensions_present:
-        assert len(actual.extensions) == len(test.extensions), \
-            "len of extensions"
+        assert len(actual.extensions) == len(test.extensions), "len of extensions"
         n_ext_correct = 0
         for test_ext in test.extensions:
             for actual_ext in actual.extensions:
                 if actual_ext.name == test_ext.name:
-                    assert isinstance(actual_ext.value,
-                                      type(test_ext.value))
+                    assert isinstance(actual_ext.value, type(test_ext.value))
                     if isinstance(test_ext.value, list):
                         assert set(actual_ext.value) == \
-                               set(test_ext.value), f"{test_ext.value} value"  # noqa: E501
+                               set(test_ext.value), f"{test_ext.value} value"
                     else:
                         assert actual_ext.value == test_ext.value
                     assert actual_ext.type == test_ext.type
                     n_ext_correct += 1
-        assert n_ext_correct == len(test.extensions), \
-            "number of correct extensions"
+        assert n_ext_correct == len(test.extensions), "number of correct extensions"
 
 
 def test_search_query(query_handler, num_sources):
@@ -979,10 +931,10 @@ def test_search_query_inc_exc(query_handler, num_sources):
 def test_search_invalid_parameter_exception(query_handler):
     """Test that Invalid parameter exception works correctly."""
     with pytest.raises(InvalidParameterException):
-        resp = query_handler.search('BRAF', keyed=True, incl='hgn')  # noqa: F841, E501
+        resp = query_handler.search('BRAF', keyed=True, incl='hgn')  # noqa: F841
 
     with pytest.raises(InvalidParameterException):
-        resp = query_handler.search('BRAF', incl='hgnc', excl='hgnc')  # noqa: F841, E501
+        resp = query_handler.search('BRAF', incl='hgnc', excl='hgnc')  # noqa: F841
 
 
 def test_ache_query(query_handler, num_sources, normalized_ache, source_meta):
@@ -991,31 +943,24 @@ def test_ache_query(query_handler, num_sources, normalized_ache, source_meta):
     resp = query_handler.search('ncbigene:43', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == \
-        MatchType.XREF
+    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.XREF
     assert len(matches[SourceName.ENSEMBL.value].records) == 0
-    assert matches[SourceName.NCBI.value].records[0].match_type == \
-           MatchType.CONCEPT_ID
+    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.CONCEPT_ID
 
     resp = query_handler.search('hgnc:108', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == \
-           MatchType.CONCEPT_ID
-    assert matches[SourceName.ENSEMBL.value].records[0].match_type == \
-        MatchType.XREF
-    assert matches[SourceName.NCBI.value].records[0].match_type == \
-        MatchType.XREF
+    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.CONCEPT_ID
+    assert matches[SourceName.ENSEMBL.value].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.XREF
 
     resp = query_handler.search('ensembl:ENSG00000087085', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == \
-        MatchType.XREF
+    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.XREF
     assert matches[SourceName.ENSEMBL.value].records[0].match_type == \
            MatchType.CONCEPT_ID
-    assert matches[SourceName.NCBI.value].records[0].match_type == \
-        MatchType.XREF
+    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.XREF
 
     # Normalize
     q = "ACHE"
@@ -1086,31 +1031,24 @@ def test_braf_query(query_handler, num_sources, normalized_braf, source_meta):
     resp = query_handler.search('ncbigene:673', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == \
-        MatchType.XREF
+    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.XREF
     assert len(matches[SourceName.ENSEMBL.value].records) == 0
-    assert matches[SourceName.NCBI.value].records[0].match_type == \
-           MatchType.CONCEPT_ID
+    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.CONCEPT_ID
 
     resp = query_handler.search('hgnc:1097', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type ==\
-           MatchType.CONCEPT_ID
-    assert matches[SourceName.ENSEMBL.value].records[0].match_type == \
-        MatchType.XREF
-    assert matches[SourceName.NCBI.value].records[0].match_type == \
-        MatchType.XREF
+    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.CONCEPT_ID
+    assert matches[SourceName.ENSEMBL.value].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.XREF
 
     resp = query_handler.search('ensembl:ENSG00000157764', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == \
-        MatchType.XREF
+    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.XREF
     assert matches[SourceName.ENSEMBL.value].records[0].match_type == \
            MatchType.CONCEPT_ID
-    assert matches[SourceName.NCBI.value].records[0].match_type == \
-        MatchType.XREF
+    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.XREF
 
     # Normalize
     q = "BRAF"
@@ -1169,31 +1107,24 @@ def test_abl1_query(query_handler, num_sources, normalized_abl1, source_meta):
     resp = query_handler.search('ncbigene:25', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == \
-        MatchType.XREF
+    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.XREF
     assert len(matches[SourceName.ENSEMBL.value].records) == 0
-    assert matches[SourceName.NCBI.value].records[0].match_type == \
-           MatchType.CONCEPT_ID
+    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.CONCEPT_ID
 
     resp = query_handler.search('hgnc:76', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == \
-           MatchType.CONCEPT_ID
-    assert matches[SourceName.ENSEMBL.value].records[0].match_type == \
-        MatchType.XREF
-    assert matches[SourceName.NCBI.value].records[0].match_type == \
-        MatchType.XREF
+    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.CONCEPT_ID
+    assert matches[SourceName.ENSEMBL.value].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.XREF
 
     resp = query_handler.search('ensembl:ENSG00000097007', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == \
-        MatchType.XREF
+    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.XREF
     assert matches[SourceName.ENSEMBL.value].records[0].match_type == \
            MatchType.CONCEPT_ID
-    assert matches[SourceName.NCBI.value].records[0].match_type == \
-        MatchType.XREF
+    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.XREF
 
     # Normalize
     q = "ABL1"

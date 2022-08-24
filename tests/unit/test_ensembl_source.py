@@ -35,12 +35,9 @@ def ddx11l1():
         "location_annotations": [],
         "locations": [
             {
-                "_id": "ga4gh:VSL.naD2_Q0JKCEKkGj8FvMzerePKnNNcF5N",
-                "interval": {
-                    "end": {"value": 14409, "type": "Number"},
-                    "start": {"value": 11868, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "id": "ga4gh:SL.RjgWBC-z7VwJBq_PsWvHEtYXa8CYsN1m",
+                "end": {"value": 14409, "type": "Number"},
+                "start": {"value": 11868, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
                 "type": "SequenceLocation"
             }
@@ -67,12 +64,9 @@ def tp53():
         "location_annotations": [],
         "locations": [
             {
-                "_id": "ga4gh:VSL.7q-vAjxSYARaPbbUjhDng2oay795NfbE",
-                "interval": {
-                    "end": {"value": 7687538, "type": "Number"},
-                    "start": {"value": 7661778, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "id": "ga4gh:SL.fACfpMomyTUpCf5dm5NY3_V9Y-eI3RNJ",
+                "end": {"value": 7687538, "type": "Number"},
+                "start": {"value": 7661778, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7",
                 "type": "SequenceLocation"
             }
@@ -85,26 +79,23 @@ def tp53():
 
 
 @pytest.fixture(scope="module")
-def CH17_340M24_3():
-    """Create a CH17-340M24.3 test fixture."""
+def ATP6AP1_DT():
+    """Create a ATP6AP1-DT test fixture."""
     params = {
         "match_type": MatchType.NO_MATCH,
         "concept_id": "ensembl:ENSG00000197180",
-        "symbol": "CH17-340M24.3",
-        "label": "uncharacterized protein BC009467",
+        "symbol": "ATP6AP1-DT",
+        "label": "ATP6AP1 divergent transcript",
         "previous_symbols": [],
         "aliases": [],
-        "xrefs": ["ncbigene:158960"],
+        "xrefs": ["hgnc:25138"],
         "symbol_status": None,
         "location_annotations": [],
         "locations": [
             {
-                "_id": "ga4gh:VSL.Qgt1dnZLg46y-lkbsk2lCnlfose0VsFt",
-                "interval": {
-                    "end": {"value": 154428512, "type": "Number"},
-                    "start": {"value": 154424377, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "id": "ga4gh:SL.xFs-A2mSsCuLVdaRikxNgVnR4W3IUMom",
+                "end": {"value": 154428526, "type": "Number"},
+                "start": {"value": 154424377, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
                 "type": "SequenceLocation"
             }
@@ -131,12 +122,9 @@ def hsa_mir_1253():
         "location_annotations": [],
         "locations": [
             {
-                "_id": "ga4gh:VSL.goBvYPYef2mQildG6AiiRNVhTo-g4-1E",
-                "interval": {
-                    "end": {"value": 2748182, "type": "Number"},
-                    "start": {"value": 2748077, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "id": "ga4gh:SL.L55GGleEpudsf12fVDRqwG1X3R3mVTQW",
+                "end": {"value": 2748182, "type": "Number"},
+                "start": {"value": 2748077, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7",
                 "type": "SequenceLocation"
             }
@@ -163,12 +151,9 @@ def spry3():
         "location_annotations": [],
         "locations": [
             {
-                "_id": "ga4gh:VSL.7Jax3UNlW_EZrZ44U-R1eLe_OeCC71IR",
-                "interval": {
-                    "end": {"value": 155782459, "type": "Number"},
-                    "start": {"value": 155612571, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "id": "ga4gh:SL.w_6vBYiRzkypkRjnNKPKHs_g_NPiGT8n",
+                "end": {"value": 155782459, "type": "Number"},
+                "start": {"value": 155612571, "type": "Number"},
                 "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
                 "type": "SequenceLocation"
             }
@@ -220,21 +205,21 @@ def test_tp53(ensembl, tp53):
     check_resp_single_record(resp, tp53, MatchType.SYMBOL)
 
 
-def test_CH17_340M24_3(ensembl, CH17_340M24_3):
-    """Test that CH17-340M24.3 normalizes to correct gene concept."""
+def test_ATP6AP1_DT(ensembl, ATP6AP1_DT):
+    """Test that ATP6AP1-DT normalizes to correct gene concept."""
     # Concept ID
     resp = ensembl.search("ensembl:ENSG00000197180")
-    check_resp_single_record(resp, CH17_340M24_3, MatchType.CONCEPT_ID)
+    check_resp_single_record(resp, ATP6AP1_DT, MatchType.CONCEPT_ID)
 
     resp = ensembl.search("ENSEMBL:ENSG00000197180")
-    check_resp_single_record(resp, CH17_340M24_3, MatchType.CONCEPT_ID)
+    check_resp_single_record(resp, ATP6AP1_DT, MatchType.CONCEPT_ID)
 
     resp = ensembl.search("ENSG00000197180")
-    check_resp_single_record(resp, CH17_340M24_3, MatchType.CONCEPT_ID)
+    check_resp_single_record(resp, ATP6AP1_DT, MatchType.CONCEPT_ID)
 
     # Symbol
-    resp = ensembl.search("CH17-340M24.3")
-    check_resp_single_record(resp, CH17_340M24_3, MatchType.SYMBOL)
+    resp = ensembl.search("ATP6AP1-DT")
+    check_resp_single_record(resp, ATP6AP1_DT, MatchType.SYMBOL)
 
 
 def test_hsa_mir_1253(ensembl, hsa_mir_1253):
@@ -304,9 +289,9 @@ def test_meta_info(ensembl):
     assert resp.source_meta_.data_license == "custom"
     assert resp.source_meta_.data_license_url == \
         "https://useast.ensembl.org/info/about/legal/disclaimer.html"
-    assert resp.source_meta_.version == "106"
+    assert resp.source_meta_.version == "107"
     assert resp.source_meta_.data_url == \
-        "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.106.gff3.gz"  # noqa: E501
+        "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.107.gff3.gz"  # noqa: E501
     assert resp.source_meta_.rdp_url is None
     assert resp.source_meta_.genome_assemblies == ["GRCh38"]
     assert resp.source_meta_.data_license_attributes == {

@@ -251,66 +251,66 @@
                 "location_sortable": "22pter-q11"
             },
             {
-                "date_approved_reserved": "1999-09-29",
-                "alias_name": [
-                    "chromatin assembly factor I (150 kDa)"
-                ],
-                "vega_id": "OTTHUMG00000181922",
-                "locus_group": "protein-coding gene",
                 "mane_select": [
                     "ENST00000301280.10",
                     "NM_005483.3"
-                ],
-                "status": "Approved",
-                "alias_symbol": [
+                  ],
+                  "locus_group": "protein-coding gene",
+                  "alias_name": [
+                    "chromatin assembly factor I (150 kDa)"
+                  ],
+                  "status": "Approved",
+                  "vega_id": "OTTHUMG00000181922",
+                  "hgnc_id": "HGNC:1910",
+                  "location_sortable": "19p13.3",
+                  "uuid": "cacf6159-9c08-4ca4-a648-cb1895edee54",
+                  "date_name_changed": "2015-11-23",
+                  "entrez_id": "10036",
+                  "pubmed_id": [
+                    7600578
+                  ],
+                  "ccds_id": [
+                    "CCDS32875"
+                  ],
+                  "ucsc_id": "uc002mal.4",
+                  "name": "chromatin assembly factor 1 subunit A",
+                  "ena": [
+                    "U20979"
+                  ],
+                  "mgd_id": [
+                    "MGI:1351331"
+                  ],
+                  "date_modified": "2019-08-21",
+                  "rgd_id": [
+                    "RGD:1590865"
+                  ],
+                  "alias_symbol": [
                     "CAF1P150",
                     "CAF1B",
                     "CAF-1",
                     "CAF1",
                     "P150",
                     "MGC71229"
-                ],
-                "_version_": 1707696198253543425,
-                "uuid": "cbaac19b-6e86-4b58-9053-e34c3aa5d99e",
-                "prev_name": [
+                  ],
+                  "symbol": "CHAF1A",
+                  "date_approved_reserved": "1999-09-29",
+                  "prev_name": [
                     "chromatin assembly factor 1, subunit A (p150)"
-                ],
-                "refseq_accession": [
-                    "NM_005483"
-                ],
-                "locus_type": "gene with protein product",
-                "agr": "HGNC:1910",
-                "hgnc_id": "HGNC:1910",
-                "rgd_id": [
-                    "RGD:1590865"
-                ],
-                "ensembl_gene_id": "ENSG00000167670",
-                "entrez_id": "10036",
-                "omim_id": [
+                  ],
+                  "omim_id": [
                     "601246"
-                ],
-                "symbol": "CHAF1A",
-                "date_name_changed": "2015-11-23",
-                "location": "19p13.3",
-                "name": "chromatin assembly factor 1 subunit A",
-                "date_modified": "2019-08-21",
-                "mgd_id": [
-                    "MGI:1351331"
-                ],
-                "ucsc_id": "uc002mal.4",
-                "uniprot_ids": [
+                  ],
+                  "refseq_accession": [
+                    "NM_005483"
+                  ],
+                  "location": "19p13.3",
+                  "locus_type": "gene with protein product",
+                  "_version_": 1741469986589769728,
+                  "agr": "HGNC:1910",
+                  "ensembl_gene_id": "ENSG00000167670",
+                  "uniprot_ids": [
                     "Q13111"
-                ],
-                "ccds_id": [
-                    "CCDS32875"
-                ],
-                "ena": [
-                    "U20979"
-                ],
-                "pubmed_id": [
-                    7600578
-                ],
-                "location_sortable": "19p13.3"
+                  ]
             },
             {
                 "date_approved_reserved": "2003-11-13",
@@ -459,68 +459,71 @@
                 "location_sortable": "Xp22.32 and Yp11.3"
             },
             {
-                "date_approved_reserved": "2005-05-06",
-                "alias_name": [
-                    "iGb3 synthase",
-                    "isoglobotriaosylceramide synthase"
+                "prev_symbol": [
+                    "A3GALT2P"
                 ],
-                "vega_id": "OTTHUMG00000004125",
-                "locus_group": "protein-coding gene",
-                "mane_select": [
-                    "ENST00000442999.3",
-                    "NM_001080438.1"
-                ],
-                "status": "Approved",
-                "alias_symbol": [
-                    "IGBS3S",
-                    "IGB3S"
-                ],
-                "_version_": 1707696195380445184,
-                "uuid": "ec929101-693b-4afc-ae1b-bbe1d38f9c62",
-                "prev_name": [
-                    "alpha 1,3-galactosyltransferase 2, pseudogene"
-                ],
-                "refseq_accession": [
-                    "NM_001080438"
-                ],
-                "locus_type": "gene with protein product",
-                "agr": "HGNC:30005",
-                "hgnc_id": "HGNC:30005",
-                "rgd_id": [
-                    "RGD:727913"
-                ],
-                "ensembl_gene_id": "ENSG00000184389",
+                "date_symbol_changed": "2013-03-11",
                 "entrez_id": "127550",
-                "gene_group": [
-                    "Glycosyltransferase family 6"
-                ],
-                "symbol": "A3GALT2",
-                "date_name_changed": "2013-03-11",
-                "location": "1p35.1",
-                "name": "alpha 1,3-galactosyltransferase 2",
                 "date_modified": "2018-02-08",
                 "mgd_id": [
                     "MGI:2685279"
                 ],
-                "ucsc_id": "uc031plq.1",
-                "prev_symbol": [
-                    "A3GALT2P"
+                "location_sortable": "01p35.1",
+                "status": "Approved",
+                "vega_id": "OTTHUMG00000004125",
+                "date_name_changed": "2013-03-11",
+                "uuid": "68885c2c-4b8a-4001-a77e-41db23685bfe",
+                "alias_name": [
+                    "iGb3 synthase",
+                    "isoglobotriaosylceramide synthase"
                 ],
-                "uniprot_ids": [
-                    "U3KPV4"
+                "locus_group": "protein-coding gene",
+                "ensembl_gene_id": "ENSG00000184389",
+                "_version_": 1741469984037535744,
+                "locus_type": "gene with protein product",
+                "rgd_id": [
+                    "RGD:727913"
                 ],
+                "date_approved_reserved": "2005-05-06",
                 "ccds_id": [
                     "CCDS60080"
                 ],
-                "gene_group_id": [
-                    429
-                ],
-                "date_symbol_changed": "2013-03-11",
+                "ucsc_id": "uc031plq.1",
                 "pubmed_id": [
                     10854427,
                     18630988
                 ],
-                "location_sortable": "01p35.1"
+                "name": "alpha 1,3-galactosyltransferase 2",
+                "hgnc_id": "HGNC:30005",
+                "gene_group": [
+                    "Glycosyltransferase family 6"
+                ],
+                "mane_select": [
+                    "ENST00000442999.3",
+                    "NM_001080438.1"
+                ],
+                "gene_group_id": [
+                    429
+                ],
+                "uniprot_ids": [
+                    "U3KPV4"
+                ],
+                "agr": "HGNC:30005",
+                "location": "1p35.1",
+                "refseq_accession": [
+                    "NM_001080438"
+                ],
+                "omim_id": [
+                    "619850"
+                ],
+                "symbol": "A3GALT2",
+                "alias_symbol": [
+                    "IGBS3S",
+                    "IGB3S"
+                ],
+                "prev_name": [
+                    "alpha 1,3-galactosyltransferase 2, pseudogene"
+                ]
             },
             {
                 "date_approved_reserved": "2009-02-18",

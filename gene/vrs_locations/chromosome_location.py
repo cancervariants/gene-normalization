@@ -21,14 +21,11 @@ class ChromosomeLocation:
         chr_location = models.ChromosomeLocation(
             species_id="taxonomy:9606",
             chr=location['chr'],
-            interval=models.CytobandInterval(
-                start=location['start'],
-                end=location['end'],
-                type="CytobandInterval"
-            ),
+            start=location['start'],
+            end=location['end'],
             type="ChromosomeLocation"
         )
-        chr_location._id = ga4gh_identify(chr_location)
+        chr_location.id = ga4gh_identify(chr_location)
         return chr_location.as_dict()
 
     def get_location(self, location, gene):
@@ -40,21 +37,16 @@ class ChromosomeLocation:
          dictionary containing the ChromosomeLocation.
          Else, return None.
         """
-        if 'chr' in location and 'start' in location \
-                and 'end' in location:
+        if 'chr' in location and 'start' in location and 'end' in location:
             if location['start'] == 'p' and location['end'] == 'p':
                 location['start'] = 'pter'
                 location['end'] = 'cen'
-            elif location['start'] == 'q' and \
-                    location['end'] == 'q':
+            elif location['start'] == 'q' and location['end'] == 'q':
                 location['start'] = 'cen'
                 location['end'] = 'qter'
             try:
-                chr_location = \
-                    self.add_location(
-                        location)
-            except python_jsonschema_objects.validators. \
-                    ValidationError as e:
+                chr_location = self.add_location(location)
+            except python_jsonschema_objects.validators.ValidationError as e:
                 logger.info(f"{e} for {gene['symbol']}")
             else:
                 return chr_location

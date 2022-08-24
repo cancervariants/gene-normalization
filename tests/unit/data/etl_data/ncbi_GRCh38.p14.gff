@@ -49,7 +49,7 @@ NC_000011.10    Curated Genomic exon    117138227       117138867       .       
 ##sequence-region NC_000012.12 1 133275309
 ##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606
 NC_000012.12	RefSeq	region	1	133275309	.	+	.	ID=NC_000012.12:1..133275309;Dbxref=taxon:9606;Name=12;chromosome=12;gbkey=Src;genome=chromosome;mol_type=genomic DNA
-NC_000012.12	BestRefSeq%2CGnomon	gene	133037301	133063299	.	+	.	ID=gene-ZNF84;Dbxref=GeneID:7637,HGNC:HGNC:13159,MIM:618554;Name=ZNF84;description=zinc finger protein 84;gbkey=Gene;gene=ZNF84;gene_biotype=protein_coding;gene_synonym=HPF2
+NC_000012.12	BestRefSeq%2CGnomon	gene	133037509	133063299	.	+	.	ID=gene-ZNF84;Dbxref=GeneID:7637,HGNC:HGNC:13159,MIM:618554;Name=ZNF84;description=zinc finger protein 84;gbkey=Gene;gene=ZNF84;gene_biotype=protein_coding;gene_synonym=HPF2
 ##sequence-region NC_000015.10 1 101991189
 ##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606
 NC_000015.10	RefSeq	region	1	101991189	.	+	.	ID=NC_000015.10:1..101991189;Dbxref=taxon:9606;Name=15;chromosome=15;gbkey=Src;genome=chromosome;mol_type=genomic DNA
@@ -58,7 +58,7 @@ NC_000015.10	BestRefSeq	gene	89784895	89814852	.	-	.	ID=gene-ANPEP;Dbxref=GeneID
 ##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606
 NC_000019.10	RefSeq	region	1	58617616	.	+	.	ID=NC_000019.10:1..58617616;Dbxref=taxon:9606;Name=19;chromosome=19;gbkey=Src;genome=chromosome;mol_type=genomic DNA
 NC_000019.10	BestRefSeq%2CGnomon	gene	38211006	38229695	.	-	.	ID=gene-DPF1;Dbxref=GeneID:8193,HGNC:HGNC:20225,MIM:601670;Name=DPF1;description=double PHD fingers 1;gbkey=Gene;gene=DPF1;gene_biotype=protein_coding;gene_synonym=BAF45b,NEUD4,neuro-d4
-NC_000019.10	BestRefSeq%2CGnomon	gene	4402596	4448322	.	+	.	ID=gene-CHAF1A;Dbxref=GeneID:10036,HGNC:HGNC:1910,MIM:601246;Name=CHAF1A;description=chromatin assembly factor 1 subunit A;gbkey=Gene;gene=CHAF1A;gene_biotype=protein_coding;gene_synonym=CAF-1,CAF1,CAF1B,CAF1P150,P150
+NC_000019.10	BestRefSeq%2CGnomon	gene	4402640	4450830	.	+	.	ID=gene-CHAF1A;Dbxref=GeneID:10036,HGNC:HGNC:1910,MIM:601246;Name=CHAF1A;description=chromatin assembly factor 1 subunit A;gbkey=Gene;gene=CHAF1A;gene_biotype=protein_coding;gene_synonym=CAF-1,CAF1,CAF1B,CAF1P150,P150
 ##sequence-region NT_187390.1 1 42811
 ##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606
 NT_187390.1	RefSeq	region	1	42811	.	+	.	ID=NT_187390.1:1..42811;Dbxref=taxon:9606;Name=22;chromosome=22;gbkey=Src;genome=genomic;map=unlocalized;mol_type=genomic DNA
@@ -83,7 +83,7 @@ NC_000023.11	BestRefSeq	gene	155612586	155782459	.	+	.	ID=gene-SPRY3;Dbxref=Gene
 ##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606
 NC_000024.10	RefSeq	region	1	57227415	.	+	.	ID=NC_000024.10:1..57227415;Dbxref=taxon:9606;Name=Y;chromosome=Y;gbkey=Src;genome=chromosome;mol_type=genomic DNA
 NC_000024.10	BestRefSeq	gene	1386152	1392113	.	-	.	ID=gene-SLC25A6-2;Dbxref=GeneID:293,HGNC:HGNC:10992,MIM:403000;Name=SLC25A6;description=solute carrier family 25 member 6;gbkey=Gene;gene=SLC25A6;gene_biotype=protein_coding;gene_synonym=AAC3,ANT,ANT 2,ANT 3,ANT3,ANT3Y
-NC_000024.10	BestRefSeq	gene	56923423	56968979	.	+	.	ID=gene-SPRY3-2;Dbxref=GeneID:10251,HGNC:HGNC:11271,MIM:300531;Name=SPRY3;description=sprouty RTK signaling antagonist 3;gbkey=Gene;gene=SPRY3;gene_biotype=protein_coding;gene_synonym=spry-3;partial=true;start_range=.,56923423
+NC_000024.10	BestRefSeq	gene	56954316	56968979	.	+	.	ID=gene-SPRY3-2;Dbxref=GeneID:10251,HGNC:HGNC:11271,MIM:300531;Name=SPRY3;description=sprouty RTK signaling antagonist 3;gbkey=Gene;gene=SPRY3;gene_biotype=protein_coding;gene_synonym=spry-3
 ##sequence-region NT_167246.2 1 4677643
 ##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606
 NT_167246.2	RefSeq	region	1	4677643	.	+	.	ID=NT_167246.2:1..4677643;Dbxref=taxon:9606;Name=6;chromosome=6;gbkey=Src;genome=genomic;map=6p22.1-21.32;mol_type=genomic DNA
