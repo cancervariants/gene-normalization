@@ -44,8 +44,12 @@ class Database:
                 # EB Instance should not have to confirm.
                 # This is used only for updating production via CLI
                 confirm_aws_db_use("PROD")
+            else:
+                if 'EB_ENV_TYPE' in environ and environ['EB_ENV_TYPE'] != 'prod':
+                    gene_concepts_table = "gene_concepts_nonprod"
+                    gene_metadata_table = "gene_metadata_nonprod"
         elif "GENE_NORM_NONPROD" in environ:
-            # This is a nonprod table. Only to be used for creating backups which
+            # This is a nonprod table. Used for creating backups which
             # prod will restore. Will need to manually delete / create this table
             # on an as needed basis.
             gene_concepts_table = "gene_concepts_nonprod"
