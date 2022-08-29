@@ -33,7 +33,7 @@ def normalized_ache():
     params = {
         "id": "normalize.gene:ACHE",
         "type": "GeneDescriptor",
-        "gene_id": "hgnc:108",
+        "gene": "hgnc:108",
         "label": "ACHE",
         "xrefs": {
             "ensembl:ENSG00000087085",
@@ -120,7 +120,7 @@ def normalized_braf():
     params = {
         "id": "normalize.gene:BRAF",
         "type": "GeneDescriptor",
-        "gene_id": "hgnc:1097",
+        "gene": "hgnc:1097",
         "label": "BRAF",
         "xrefs": {
             "ensembl:ENSG00000157764",
@@ -202,7 +202,7 @@ def normalized_abl1():
     params = {
         "id": "normalize.gene:ABL1",
         "type": "GeneDescriptor",
-        "gene_id": "hgnc:76",
+        "gene": "hgnc:76",
         "label": "ABL1",
         "xrefs": {
             "ensembl:ENSG00000097007",
@@ -298,7 +298,7 @@ def normalized_p150():
     params = {
         "id": "normalize.gene:P150",
         "type": "GeneDescriptor",
-        "gene_id": "hgnc:1910",
+        "gene": "hgnc:1910",
         "label": "CHAF1A",
         "xrefs": {
             "ensembl:ENSG00000167670",
@@ -422,7 +422,7 @@ def normalized_loc_653303():
                 "value": "pseudo"
             }
         ],
-        "gene_id": "ncbigene:653303"
+        "gene": "ncbigene:653303"
     }
     return GeneDescriptor(**params)
 
@@ -864,7 +864,7 @@ def compare_gene_descriptor(test, actual):
     """Test that actual and expected gene descriptors match."""
     assert actual.id == test.id
     assert actual.type == test.type
-    assert actual.gene_id == test.gene_id
+    assert actual.gene == test.gene
     assert actual.label == test.label
     if actual.xrefs or test.xrefs:
         assert set(actual.xrefs) == set(test.xrefs), "xrefs"

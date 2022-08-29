@@ -334,7 +334,7 @@ class QueryHandler:
         sources_meta = {}
         gene_descr = response.gene_descriptor
         xrefs = gene_descr.xrefs or []  # type: ignore
-        ids = [gene_descr.gene_id] + xrefs  # type: ignore
+        ids = [gene_descr.gene] + xrefs  # type: ignore
         for concept_id in ids:
             prefix = concept_id.split(':')[0]
             src_name = PREFIX_LOOKUP[prefix.lower()]
@@ -382,7 +382,7 @@ class QueryHandler:
         params = {
             "id": f"normalize.gene:{quote(response.query)}",
             "label": record["symbol"],
-            "gene_id": record["concept_id"]
+            "gene": record["concept_id"]
         }
 
         # xrefs
