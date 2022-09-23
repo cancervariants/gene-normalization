@@ -458,7 +458,7 @@ class NormalizeService(BaseNormalizationService):
                 "gene_descriptor": {
                     "id": "normalize.gene:BRAF",
                     "type": "GeneDescriptor",
-                    "gene_id": "hgnc:1097",
+                    "gene": "hgnc:1097",
                     "label": "BRAF",
                     "xrefs": [
                         "ncbigene:673",
