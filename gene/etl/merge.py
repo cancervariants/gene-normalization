@@ -144,8 +144,9 @@ class Merge:
                 if field not in merged_attrs and field in record:
                     merged_attrs[field] = record[field]
 
-            merged_attrs[f"{record['src_name'].lower()}_locations"] = \
-                record["locations"]
+            locations = record.get("locations")
+            if locations:
+                merged_attrs[f"{record['src_name'].lower()}_locations"] = locations
 
             gene_type = record.get("gene_type")
             if gene_type:

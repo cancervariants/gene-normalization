@@ -968,6 +968,61 @@ def normalize_unmerged_ache():
     }
 
 
+@pytest.fixture(scope="module")
+def normalized_ifnr():
+    """Return normalized Gene Descriptor for IFNR."""
+    params = {
+        "id": "normalize.gene:IFNR",
+        "type": "GeneDescriptor",
+        "gene": "hgnc:5447",
+        "label": "IFNR",
+        "xrefs": {
+            "ncbigene:3466"
+        },
+        "alternate_labels": [
+            "IFNGM",
+            "IFNGM2"
+        ],
+        "extensions": [
+            {
+                "name": "approved_name",
+                "value": "interferon production regulator",
+                "type": "Extension"
+            },
+            {
+                "name": "symbol_status",
+                "value": "approved",
+                "type": "Extension"
+            },
+            {
+                "name": "associated_with",
+                "value": [
+                    "pubmed:1906174",
+                    "omim:147573",
+                    "pubmed:1193239"
+                ],
+                "type": "Extension"
+            },
+            {
+                "name": "ncbi_gene_type",
+                "type": "Extension",
+                "value": "unknown"
+            },
+            {
+                "name": "hgnc_locus_type",
+                "type": "Extension",
+                "value": "unknown"
+            },
+            {
+                "name": "location_annotations",
+                "type": "Extension",
+                "value": ["16"]
+            }
+        ]
+    }
+    return GeneDescriptor(**params)
+
+
 @pytest.fixture(scope='module')
 def num_sources():
     """Get the number of sources."""
@@ -1420,6 +1475,17 @@ def test_normalize_single_entry(query_handler, normalized_loc_653303):
     resp = query_handler.normalize(q)
     compare_normalize_resp(resp, q, MatchType.SYMBOL, normalized_loc_653303,
                            expected_source_meta=[SourceName.NCBI.value])
+
+
+def test_normalize_no_locations(query_handler, normalized_ifnr):
+    """Test that the normalized endpoint correcly shapes merged entity with no
+    locations
+    """
+    q = "IFNR"
+    resp = query_handler.normalize(q)
+    compare_normalize_resp(
+        resp, q, MatchType.SYMBOL, normalized_ifnr,
+        expected_source_meta=[SourceName.HGNC.value, SourceName.NCBI.value])
 
 
 def test_normalize_unmerged(query_handler, normalize_unmerged_loc_653303,

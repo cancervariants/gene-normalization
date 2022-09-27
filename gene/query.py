@@ -407,6 +407,7 @@ class QueryHandler:
             ("approved_name", "label"),
             ("associated_with", "associated_with"),
             ("previous_symbols", "previous_symbols"),
+            ("location_annotations", "location_annotations")
         ]
         for ext_label, record_label in extension_and_record_labels:
             if record_label in record and record[record_label]:
@@ -416,9 +417,10 @@ class QueryHandler:
                 ))
 
         if record["item_type"] == "identity":
-            extensions.append(Extension(
-                name=f"{record['src_name'].lower()}_locations",
-                value=record["locations"]))
+            loc = record.get("locations")
+            if loc:
+                extensions.append(Extension(
+                    name=f"{record['src_name'].lower()}_locations", value=loc))
         elif record["item_type"] == "merger":
             for k, v in record.items():
                 if k.endswith("locations") and v:
