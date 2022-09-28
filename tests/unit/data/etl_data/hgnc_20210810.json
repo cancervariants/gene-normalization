@@ -1172,7 +1172,32 @@
                 ],
                 "entrez_id": "109280162",
                 "location_sortable": "10q23.3 or 10q24.2"
-            }
+            },
+            {
+                "date_approved_reserved": "1986-01-01",
+                "symbol": "IFNR",
+                "locus_type": "unknown",
+                "location": "16",
+                "omim_id": [
+                  "147573"
+                ],
+                "_version_": 1741469995314970627,
+                "curator_notes": [
+                  "This gene has the locus type unknown because it has never been mapped to the human genome."
+                ],
+                "locus_group": "other",
+                "uuid": "6af5e088-63ac-4f7e-b1ce-3edb4fd551aa",
+                "location_sortable": "16",
+                "hgnc_id": "HGNC:5447",
+                "status": "Approved",
+                "date_modified": "2019-06-26",
+                "name": "interferon production regulator",
+                "pubmed_id": [
+                  1906174,
+                  1193239
+                ],
+                "entrez_id": "3466"
+              }
         ],
         "start": 0
     }

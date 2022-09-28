@@ -405,18 +405,27 @@ class QueryHandler:
         extension_and_record_labels = [
             ("symbol_status", "symbol_status"),
             ("approved_name", "label"),
-            ("chromosome_location", "locations"),
             ("associated_with", "associated_with"),
             ("previous_symbols", "previous_symbols"),
+            ("location_annotations", "location_annotations")
         ]
         for ext_label, record_label in extension_and_record_labels:
             if record_label in record and record[record_label]:
-                if ext_label == 'chromosome_location':
-                    record[record_label] = record[record_label][0]
                 extensions.append(Extension(
                     name=ext_label,
                     value=record[record_label]
                 ))
+
+        if record["item_type"] == "identity":
+            loc = record.get("locations")
+            if loc:
+                extensions.append(Extension(
+                    name=f"{record['src_name'].lower()}_locations", value=loc))
+        elif record["item_type"] == "merger":
+            for k, v in record.items():
+                if k.endswith("locations") and v:
+                    extensions.append(Extension(name=k, value=v))
+
         # handle gene types separately because they're wonky
         if record["item_type"] == "identity":
             gene_type = record.get("gene_type")
