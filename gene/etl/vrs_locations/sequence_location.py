@@ -1,8 +1,9 @@
 """This module defines GA4GH Sequence Location."""
 from typing import List
+import logging
+
 from ga4gh.vrs import models
 from ga4gh.core import ga4gh_identify
-import logging
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -18,7 +19,12 @@ class SequenceLocation:
         :param str seqid: Sequence ID accession
         :return: List of aliases for seqid
         """
-        return sr.translate_alias(seqid)
+        aliases = []
+        try:
+            aliases = sr.translate_alias(seqid)
+        except KeyError as e:
+            logger.warning(f"SeqRepo raised KeyError: {e}")
+        return aliases
 
     def add_location(self, seqid, gene, params, sr):
         """Get a gene's Sequence Location.
@@ -31,6 +37,9 @@ class SequenceLocation:
         """
         location = dict()
         aliases = self.get_aliases(sr, seqid)
+        if not aliases:
+            return location
+
         sequence_id = [a for a in aliases if a.startswith('ga4gh')][0]
 
         if gene.start != '.' and gene.end != '.' and sequence_id:
