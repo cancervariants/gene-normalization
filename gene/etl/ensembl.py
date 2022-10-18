@@ -9,7 +9,7 @@ from .base import Base
 from gene import APP_ROOT
 from gene.schemas import SourceName, NamespacePrefix, Strand, SourceMeta
 from gene.database import Database
-from gene.vrs_locations import SequenceLocation
+from gene.etl.vrs_locations import SequenceLocation
 
 
 logger = logging.getLogger("gene")

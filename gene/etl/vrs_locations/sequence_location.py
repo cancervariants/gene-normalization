@@ -1,8 +1,9 @@
 """This module defines GA4GH Sequence Location."""
 from typing import List
+import logging
+
 from ga4gh.vrs import models
 from ga4gh.core import ga4gh_identify
-import logging
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
