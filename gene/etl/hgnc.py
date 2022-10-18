@@ -1,14 +1,15 @@
 """This module defines the HGNC ETL methods."""
-from .base import Base
-from gene import APP_ROOT, PREFIX_LOOKUP
-from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, \
-    SourceMeta, Annotation, Chromosome
-from gene.database import Database
 import logging
 import json
 import shutil
 import re
-from gene.vrs_locations import ChromosomeLocation
+
+from gene import APP_ROOT, PREFIX_LOOKUP
+from gene.database import Database
+from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, \
+    SourceMeta, Annotation, Chromosome
+from gene.etl.base import Base
+from gene.etl.vrs_locations import ChromosomeLocation
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
