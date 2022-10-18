@@ -9,15 +9,14 @@ fastapi = "*"
 uvicorn = "*"
 click = "*"
 boto3 = "*"
-beautifulsoup4 = "*"
-gffutils = "*"
-requests = "*"
-"biocommons.seqrepo" = "*"
-"ga4gh.vrs" = {version = ">=0.8.7dev0", extras = ["extras"]}
 "ga4gh.vrsatile.pydantic" = ">=0.1.dev3"
 
 [dev-packages]
 gene = {editable = true, path = "."}
+gffutils = "*"
+"biocommons.seqrepo" = "*"
+"ga4gh.vrs" = {version = ">=0.8.7dev0", extras = ["extras"]}
+psycopg2-binary = "*"
 pytest = "*"
 pre-commit = "*"
 flake8 = "*"

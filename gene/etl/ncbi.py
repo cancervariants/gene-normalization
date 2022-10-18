@@ -1,17 +1,19 @@
 """This module defines ETL methods for the NCBI data source."""
-from .base import Base
-from gene import APP_ROOT, PREFIX_LOOKUP
-from gene.database import Database
-from gene.schemas import SourceMeta, SourceName, NamespacePrefix, Annotation, \
-    Chromosome, SymbolStatus
+from ftplib import FTP
 import logging
 from pathlib import Path
 import csv
 from datetime import datetime
 import re
+
 import gffutils
-from gene.vrs_locations import SequenceLocation, ChromosomeLocation
-from ftplib import FTP
+
+from gene import APP_ROOT, PREFIX_LOOKUP
+from gene.database import Database
+from gene.schemas import SourceMeta, SourceName, NamespacePrefix, Annotation, \
+    Chromosome, SymbolStatus
+from gene.etl.base import Base
+from gene.etl.vrs_locations import SequenceLocation, ChromosomeLocation
 
 
 logger = logging.getLogger('gene')
