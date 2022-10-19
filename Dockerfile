@@ -9,6 +9,9 @@
 # python image that has the "latest" tag (currently 3.10.8).
 FROM python
 
+# Resynchronize the package index files from their sources, and install
+# rsync, a dependency of SeqRepo. Assume "yes" to all prompts during
+# installation.
 RUN apt update ; apt install -y rsync
 
 # Install pipenv and uvicorn from PyPI into the container.
