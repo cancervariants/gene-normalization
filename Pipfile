@@ -13,11 +13,12 @@ beautifulsoup4 = "*"
 gffutils = "*"
 requests = "*"
 "biocommons.seqrepo" = "*"
-"ga4gh.vrs" = {version = ">=0.7.5.dev1", extras = ["extras"]}
-"ga4gh.vrsatile.pydantic" = ">=0.0.10"
+"ga4gh.vrs" = {version = "==0.8a0", extras = ["extras"]}
+"ga4gh.vrsatile.pydantic" = "==0.0.11"
 
 [dev-packages]
 gene = {editable = true, path = "."}
+psycopg2-binary = "*"
 pytest = "*"
 pre-commit = "*"
 flake8 = "*"
