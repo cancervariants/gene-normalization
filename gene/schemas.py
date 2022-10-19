@@ -1,14 +1,15 @@
 """This module contains data models for representing VICC normalized
 gene records.
 """
-from typing import Type, List, Optional, Dict, Union, Any
+from typing import Literal, Type, List, Optional, Dict, Union, Any
 from pydantic import BaseModel, StrictBool, validator
 from enum import Enum, IntEnum
 from ga4gh.vrsatile.pydantic import return_value
 from ga4gh.vrsatile.pydantic.core_models import CURIE
-from ga4gh.vrsatile.pydantic.vrs_models import SequenceLocation, ChromosomeLocation
+from ga4gh.vrsatile.pydantic.vrs_models import SequenceLocation, ChromosomeLocation,\
+    VRSTypes
 from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
-from pydantic.types import StrictStr
+from pydantic.types import StrictStr, StrictInt
 
 
 class SymbolStatus(str, Enum):
@@ -56,6 +57,25 @@ class MatchType(IntEnum):
     NO_MATCH = 0
 
 
+class GeneSequenceLocation(BaseModel):
+    """Sequence Location model when storing in DynamoDB."""
+
+    type: Literal[VRSTypes.SEQUENCE_LOCATION] = VRSTypes.SEQUENCE_LOCATION
+    start: StrictInt
+    end: StrictInt
+    sequence_id: CURIE
+
+
+class GeneChromosomeLocation(BaseModel):
+    """Chromosome Location model when storing in DynamDB."""
+
+    type: Literal[VRSTypes.CHROMOSOME_LOCATION] = VRSTypes.CHROMOSOME_LOCATION
+    species_id: Literal["taxonomy:9606"] = "taxonomy:9606"
+    chr: StrictStr
+    start: StrictStr
+    end: StrictStr
+
+
 class BaseGene(BaseModel):
     """Base gene model. Provide shared resources for records produced by
     /search and /normalize_unmerged.
@@ -67,7 +87,10 @@ class BaseGene(BaseModel):
     label: Optional[StrictStr]
     strand: Optional[Strand]
     location_annotations: Optional[List[StrictStr]] = []
-    locations: Optional[List[Union[SequenceLocation, ChromosomeLocation]]] = []
+    locations: Optional[Union[
+        List[Union[SequenceLocation, ChromosomeLocation]],
+        List[Union[GeneSequenceLocation, GeneChromosomeLocation]]  # dynamodb
+    ]] = [],
     aliases: Optional[List[StrictStr]] = []
     previous_symbols: Optional[List[StrictStr]] = []
     xrefs: Optional[List[CURIE]] = []

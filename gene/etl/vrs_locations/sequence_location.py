@@ -2,8 +2,7 @@
 from typing import List
 import logging
 
-from ga4gh.vrs import models
-from ga4gh.core import ga4gh_identify
+from gene.schemas import GeneSequenceLocation
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -44,14 +43,10 @@ class SequenceLocation:
 
         if gene.start != '.' and gene.end != '.' and sequence_id:
             if 0 <= gene.start <= gene.end:
-                seq_location = models.SequenceLocation(
-                    sequence_id=sequence_id,
-                    start=models.Number(value=gene.start - 1, type="Number"),
-                    end=models.Number(value=gene.end, type="Number"),
-                    type="SequenceLocation"
-                )
-                seq_location.id = ga4gh_identify(seq_location)
-                location = seq_location.as_dict()
+                location = GeneSequenceLocation(
+                    start=gene.start - 1,
+                    end=gene.end,
+                    sequence_id=sequence_id).dict()
             else:
                 logger.info(f"{params['concept_id']} has invalid interval:"
                             f"start={gene.start - 1} end={gene.end}")
