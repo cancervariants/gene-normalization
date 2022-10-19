@@ -10,12 +10,12 @@ uvicorn = "*"
 click = "*"
 boto3 = "*"
 "ga4gh.vrsatile.pydantic" = "==0.0.11"
+"ga4gh.vrs" = {version = "==0.8.0dev0"}
 
 [dev-packages]
 gene = {editable = true, path = "."}
 gffutils = "*"
 "biocommons.seqrepo" = "*"
-"ga4gh.vrs" = {version = "==0.8.0dev0", extras = ["extras"]}
 psycopg2-binary = "*"
 pytest = "*"
 pre-commit = "*"
