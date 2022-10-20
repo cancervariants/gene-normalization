@@ -1,9 +1,11 @@
 """This module defines GA4GH Chromosome Location."""
-from ga4gh.vrs import models
-from ga4gh.core import ga4gh_identify
 import re
 import logging
-import python_jsonschema_objects
+
+from pydantic.error_wrappers import ValidationError
+
+from gene.schemas import GeneChromosomeLocation
+
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -11,22 +13,6 @@ logger.setLevel(logging.DEBUG)
 
 class ChromosomeLocation:
     """The class for GA4GH Chromosome Location."""
-
-    def add_location(self, location):
-        """Get a gene's Chromosome Location.
-
-        :param dict location: A gene's location.
-        :return: A dictionary of a GA4GH VRS ChromosomeLocation.
-        """
-        chr_location = models.ChromosomeLocation(
-            species_id="taxonomy:9606",
-            chr=location['chr'],
-            start=location['start'],
-            end=location['end'],
-            type="ChromosomeLocation"
-        )
-        chr_location.id = ga4gh_identify(chr_location)
-        return chr_location.as_dict()
 
     def get_location(self, location, gene):
         """Transform a gene's location into a Chromosome Location.
@@ -45,8 +31,11 @@ class ChromosomeLocation:
                 location['start'] = 'cen'
                 location['end'] = 'qter'
             try:
-                chr_location = self.add_location(location)
-            except python_jsonschema_objects.validators.ValidationError as e:
+                chr_location = GeneChromosomeLocation(
+                    chr=location["chr"],
+                    start=location["start"],
+                    end=location["end"]).dict()
+            except ValidationError as e:
                 logger.info(f"{e} for {gene['symbol']}")
             else:
                 return chr_location
