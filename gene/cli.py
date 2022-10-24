@@ -1,14 +1,18 @@
 """This module provides a CLI util to make updates to normalizer database."""
+import logging
+from os import environ
+from timeit import default_timer as timer
+
 import click
 from botocore.exceptions import ClientError
-from gene import SOURCES_CLASS, SOURCES
-from gene.schemas import SourceName
-from gene.etl.merge import Merge
-from timeit import default_timer as timer
-from gene.database import Database, confirm_aws_db_use
 from boto3.dynamodb.conditions import Key
-from os import environ
-import logging
+
+from gene import SOURCES
+from gene.database import Database, confirm_aws_db_use
+from gene.etl import NCBI, HGNC, Ensembl  # noqa: F401
+from gene.etl.merge import Merge
+from gene.schemas import SourceName
+
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -124,6 +128,11 @@ class CLI:
         click.echo(msg)
         logger.info(msg)
         start_load = timer()
+
+        # used to get source class name from string
+        SOURCES_CLASS = \
+            {s.value.lower(): eval(s.value) for s in SourceName.__members__.values()}
+
         source = SOURCES_CLASS[n](database=db)
         processed_ids += source.perform_etl()
         end_load = timer()

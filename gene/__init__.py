@@ -64,8 +64,3 @@ PREFIX_LOOKUP = {v.value: SourceName[k].value
 NAMESPACE_LOOKUP = {v.value.lower(): NamespacePrefix[k].value
                     for k, v in SourceIDAfterNamespace.__members__.items()
                     if v.value != ""}
-
-from gene.etl import NCBI, HGNC, Ensembl  # noqa: E402, F401
-# used to get source class name from string
-SOURCES_CLASS = \
-    {s.value.lower(): eval(s.value) for s in SourceName.__members__.values()}
