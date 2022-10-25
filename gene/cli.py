@@ -8,7 +8,8 @@ from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 
 from gene import SOURCES
-from gene.database import Database, confirm_aws_db_use
+from gene.database import Database, confirm_aws_db_use, SKIP_AWS_DB_ENV_NAME, \
+    VALID_AWS_ENV_NAMES, AWS_ENV_VAR_NAME
 from gene.etl import NCBI, HGNC, Ensembl  # noqa: F401
 from gene.etl.merge import Merge
 from gene.schemas import SourceName
@@ -28,9 +29,9 @@ class CLI:
         help="The normalizer(s) you wish to update separated by spaces."
     )
     @click.option(
-        '--prod',
+        '--aws_instance',
         is_flag=True,
-        help="Working in production environment."
+        help="Using AWS DynamodDB instance."
     )
     @click.option(
         '--db_url',
@@ -46,16 +47,21 @@ class CLI:
         is_flag=True,
         help='Update concepts for normalize endpoint from accepted sources.'
     )
-    def update_normalizer_db(normalizer, prod, db_url, update_all,
+    def update_normalizer_db(normalizer, aws_instance, db_url, update_all,
                              update_merged):
         """Update selected normalizer source(s) in the gene database."""
-        # Sometimes GENE_NORM_EB_PROD is accidentally set. We should verify that
-        # it should actually be used in CLI
-        if "GENE_NORM_EB_PROD" in environ:
-            confirm_aws_db_use("PROD")
+        # If SKIP_AWS_CONFIRMATION is accidentally set, we should verify that the
+        # aws instance should actually be used
+        invalid_aws_msg = f"{AWS_ENV_VAR_NAME} must be set to one of {VALID_AWS_ENV_NAMES}"  # noqa: E501
+        aws_env_var_set = False
+        if AWS_ENV_VAR_NAME in environ:
+            aws_env_var_set = True
+            assert environ[AWS_ENV_VAR_NAME] in VALID_AWS_ENV_NAMES, invalid_aws_msg
+            confirm_aws_db_use(environ[AWS_ENV_VAR_NAME].upper())
 
-        if prod:
-            environ['GENE_NORM_PROD'] = "TRUE"
+        if aws_env_var_set or aws_instance:
+            assert AWS_ENV_VAR_NAME in environ, invalid_aws_msg
+            environ[SKIP_AWS_DB_ENV_NAME] = "true"  # this is already checked above
             db: Database = Database()
         else:
             if db_url:

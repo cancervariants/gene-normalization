@@ -1,18 +1,15 @@
 """The VICC library for normalizing genes."""
-from .version import __version__  # noqa: F401
 from pathlib import Path
 import logging
 from os import environ
 
+from .version import __version__  # noqa: F401
+
+
 APP_ROOT = Path(__file__).resolve().parents[0]
 
-if "GENE_NORM_EB_PROD" in environ:
-    LOG_FN = "/tmp/gene.log"
-else:
-    LOG_FN = "gene.log"
-
 logging.basicConfig(
-    filename=LOG_FN,
+    filename="gene.log",
     format="[%(asctime)s] - %(name)s - %(levelname)s : %(message)s")
 logger = logging.getLogger("gene")
 logger.setLevel(logging.DEBUG)
@@ -24,11 +21,6 @@ logging.getLogger("urllib3").setLevel(logging.INFO)
 logging.getLogger("python_jsonschema_objects").setLevel(logging.INFO)
 logging.getLogger("biocommons.seqrepo.seqaliasdb.seqaliasdb").setLevel(logging.INFO)
 logging.getLogger("biocommons.seqrepo.fastadir.fastadir").setLevel(logging.INFO)
-
-if "GENE_NORM_EB_PROD" in environ:
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    logger.addHandler(ch)
 
 
 SEQREPO_DATA_PATH = environ.get("SEQREPO_DATA_PATH",
