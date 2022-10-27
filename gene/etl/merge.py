@@ -135,7 +135,7 @@ class Merge:
         # merge from constituent records
         set_fields = ["aliases", "associated_with", "previous_symbols"]
         scalar_fields = ["symbol", "symbol_status", "label", "strand",
-                         "location_annotations", "locations"]
+                         "location_annotations"]
         for record in records:
             for field in set_fields:
                 merged_attrs[field] |= set(record.get(field, set()))
@@ -143,6 +143,10 @@ class Merge:
             for field in scalar_fields:
                 if field not in merged_attrs and field in record:
                     merged_attrs[field] = record[field]
+
+            locations = record.get("locations")
+            if locations:
+                merged_attrs[f"{record['src_name'].lower()}_locations"] = locations
 
             gene_type = record.get("gene_type")
             if gene_type:
