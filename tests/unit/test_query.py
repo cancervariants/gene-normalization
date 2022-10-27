@@ -83,19 +83,62 @@ def normalized_ache():
                 "type": "Extension"
             },
             {
-                "name": "chromosome_location",
-                "value": {
-                    "_id": "ga4gh:VCL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
-                    "type": "ChromosomeLocation",
-                    "species_id": "taxonomy:9606",
-                    "chr": "7",
-                    "interval": {
-                        "end": "q22.1",
-                        "start": "q22.1",
-                        "type": "CytobandInterval"
+                "name": "hgnc_locations",
+                "value": [
+                    {
+                        "_id": "ga4gh:VCL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
+                        "type": "ChromosomeLocation",
+                        "species_id": "taxonomy:9606",
+                        "chr": "7",
+                        "interval": {
+                            "end": "q22.1",
+                            "start": "q22.1",
+                            "type": "CytobandInterval"
+                        }
                     }
-                },
+                ],
                 "type": "Extension"
+            },
+            {
+                "name": "ensembl_locations",
+                "value": [
+                    {
+                        "_id": "ga4gh:VSL.AF6wPZclBqTauGr3yx_CqmMndLKhq0Cm",
+                        "type": "SequenceLocation",
+                        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+                        "interval": {
+                            "type": "SequenceInterval",
+                            "start": {"type": "Number", "value": 100889993},
+                            "end": {"type": "Number", "value": 100896974}
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "ncbi_locations",
+                "value": [
+                    {
+                        "_id": "ga4gh:VCL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
+                        "type": "ChromosomeLocation",
+                        "species_id": "taxonomy:9606",
+                        "chr": "7",
+                        "interval": {
+                            "end": "q22.1",
+                            "start": "q22.1",
+                            "type": "CytobandInterval"
+                        }
+                    },
+                    {
+                        "_id": "ga4gh:VSL.EepkXho2doYcUT1DW54fT1a00_zkqrn0",
+                        "type": "SequenceLocation",
+                        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+                        "interval": {
+                            "type": "SequenceInterval",
+                            "start": {"type": "Number", "value": 100889993},
+                            "end": {"type": "Number", "value": 100896994}
+                        }
+                    }
+                ]
             },
             {
                 "name": "ncbi_gene_type",
@@ -168,19 +211,62 @@ def normalized_braf():
                 "type": "Extension"
             },
             {
-                "name": "chromosome_location",
-                "value": {
-                    "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
-                    "type": "ChromosomeLocation",
-                    "species_id": "taxonomy:9606",
-                    "chr": "7",
-                    "interval": {
-                        "end": "q34",
-                        "start": "q34",
-                        "type": "CytobandInterval"
+                "name": "hgnc_locations",
+                "value": [
+                    {
+                        "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
+                        "type": "ChromosomeLocation",
+                        "species_id": "taxonomy:9606",
+                        "chr": "7",
+                        "interval": {
+                            "end": "q34",
+                            "start": "q34",
+                            "type": "CytobandInterval"
+                        }
                     }
-                },
+                ],
                 "type": "Extension"
+            },
+            {
+                "name": "ensembl_locations",
+                "value": [
+                    {
+                        "_id": "ga4gh:VSL.amNWL6i7F2nbSZAf2QLTRTujxuDrd0pR",
+                        "type": "SequenceLocation",
+                        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+                        "interval": {
+                            "type": "SequenceInterval",
+                            "start": {"type": "Number", "value": 140719326},
+                            "end": {"type": "Number", "value": 140924929}
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "ncbi_locations",
+                "value": [
+                    {
+                        "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
+                        "type": "ChromosomeLocation",
+                        "species_id": "taxonomy:9606",
+                        "chr": "7",
+                        "interval": {
+                            "end": "q34",
+                            "start": "q34",
+                            "type": "CytobandInterval"
+                        }
+                    },
+                    {
+                        "_id": "ga4gh:VSL.xZU3kL8F6t2ca6WH_26CWKfNW9-owhR4",
+                        "type": "SequenceLocation",
+                        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+                        "interval": {
+                            "type": "SequenceInterval",
+                            "start": {"type": "Number", "value": 140713327},
+                            "end": {"type": "Number", "value": 140924929}
+                        }
+                    }
+                ]
             },
             {
                 "name": "ncbi_gene_type",
@@ -267,19 +353,62 @@ def normalized_abl1():
                 "type": "Extension"
             },
             {
-                "name": "chromosome_location",
-                "value": {
-                    "_id": "ga4gh:VCL.WvMfE67KxSDAV8JaK593TI74yyJWIsMQ",
-                    "type": "ChromosomeLocation",
-                    "species_id": "taxonomy:9606",
-                    "chr": "9",
-                    "interval": {
-                        "end": "q34.12",
-                        "start": "q34.12",
-                        "type": "CytobandInterval"
+                "name": "hgnc_locations",
+                "value": [
+                    {
+                        "_id": "ga4gh:VCL.WvMfE67KxSDAV8JaK593TI74yyJWIsMQ",
+                        "type": "ChromosomeLocation",
+                        "species_id": "taxonomy:9606",
+                        "chr": "9",
+                        "interval": {
+                            "end": "q34.12",
+                            "start": "q34.12",
+                            "type": "CytobandInterval"
+                        }
                     }
-                },
+                ],
                 "type": "Extension"
+            },
+            {
+                "name": "ensembl_locations",
+                "value": [
+                    {
+                        "_id": "ga4gh:VSL.4Zvsf29k0Kp3GLIQBLSakWuOF9zyy61c",
+                        "type": "SequenceLocation",
+                        "sequence_id": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
+                        "interval": {
+                            "type": "SequenceInterval",
+                            "start": {"type": "Number", "value": 130713042},
+                            "end": {"type": "Number", "value": 130887675}
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "ncbi_locations",
+                "value": [
+                    {
+                        "_id": "ga4gh:VCL.WvMfE67KxSDAV8JaK593TI74yyJWIsMQ",
+                        "type": "ChromosomeLocation",
+                        "species_id": "taxonomy:9606",
+                        "chr": "9",
+                        "interval": {
+                            "end": "q34.12",
+                            "start": "q34.12",
+                            "type": "CytobandInterval"
+                        }
+                    },
+                    {
+                        "_id": "ga4gh:VSL.4Zvsf29k0Kp3GLIQBLSakWuOF9zyy61c",
+                        "type": "SequenceLocation",
+                        "sequence_id": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
+                        "interval": {
+                            "type": "SequenceInterval",
+                            "start": {"type": "Number", "value": 130713042},
+                            "end": {"type": "Number", "value": 130887675}
+                        }
+                    }
+                ]
             },
             {
                 "name": "ncbi_gene_type",
@@ -319,7 +448,8 @@ def normalized_p150():
             "CAF-1",
             "P150",
             "CAF1B",
-            "CAF1"
+            "CAF1",
+            "LOC107985297"
         ],
         "extensions": [
             {
@@ -347,19 +477,62 @@ def normalized_p150():
                 "type": "Extension"
             },
             {
-                "name": "chromosome_location",
-                "value": {
-                    "_id": "ga4gh:VCL.yF2TzeunqY92v3yhDsCR_t5X997mWriF",
-                    "type": "ChromosomeLocation",
-                    "species_id": "taxonomy:9606",
-                    "chr": "19",
-                    "interval": {
-                        "end": "p13.3",
-                        "start": "p13.3",
-                        "type": "CytobandInterval"
+                "name": "hgnc_locations",
+                "value": [
+                    {
+                        "_id": "ga4gh:VCL.yF2TzeunqY92v3yhDsCR_t5X997mWriF",
+                        "type": "ChromosomeLocation",
+                        "species_id": "taxonomy:9606",
+                        "chr": "19",
+                        "interval": {
+                            "end": "p13.3",
+                            "start": "p13.3",
+                            "type": "CytobandInterval"
+                        }
                     }
-                },
+                ],
                 "type": "Extension"
+            },
+            {
+                "name": "ensembl_locations",
+                "value": [
+                    {
+                        "_id": "ga4gh:VSL.VVxEanUPWWMy_IChkj_kPIpRnYAatqrq",
+                        "type": "SequenceLocation",
+                        "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
+                        "interval": {
+                            "type": "SequenceInterval",
+                            "start": {"type": "Number", "value": 4402639},
+                            "end": {"type": "Number", "value": 4445018}
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "ncbi_locations",
+                "value": [
+                    {
+                        "_id": "ga4gh:VCL.yF2TzeunqY92v3yhDsCR_t5X997mWriF",
+                        "type": "ChromosomeLocation",
+                        "species_id": "taxonomy:9606",
+                        "chr": "19",
+                        "interval": {
+                            "end": "p13.3",
+                            "start": "p13.3",
+                            "type": "CytobandInterval"
+                        }
+                    },
+                    {
+                        "_id": "ga4gh:VSL.w4vjQaVy5L6oCfsQrNfOpeHjV4_EimQ1",
+                        "type": "SequenceLocation",
+                        "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
+                        "interval": {
+                            "type": "SequenceInterval",
+                            "start": {"type": "Number", "value": 4402639},
+                            "end": {"type": "Number", "value": 4450830}
+                        }
+                    }
+                ]
             },
             {
                 "name": "ncbi_gene_type",
@@ -375,6 +548,10 @@ def normalized_p150():
                 "name": "ensembl_biotype",
                 "type": "Extension",
                 "value": "protein_coding"
+            },
+            {
+                "name": "previous_symbols",
+                "value": ["LOC107985297"]
             }
         ]
     }
@@ -403,18 +580,30 @@ def normalized_loc_653303():
             },
             {
                 "type": "Extension",
-                "name": "chromosome_location",
-                "value": {
-                    "_id": "ga4gh:VCL.WzURLvTklFI7K2GAP8gIw6vgWDWXMXuW",
-                    "type": "ChromosomeLocation",
-                    "species_id": "taxonomy:9606",
-                    "chr": "11",
-                    "interval": {
-                        "type": "CytobandInterval",
-                        "start": "q23.3",
-                        "end": "q23.3"
+                "name": "ncbi_locations",
+                "value": [
+                    {
+                        "_id": "ga4gh:VCL.WzURLvTklFI7K2GAP8gIw6vgWDWXMXuW",
+                        "type": "ChromosomeLocation",
+                        "species_id": "taxonomy:9606",
+                        "chr": "11",
+                        "interval": {
+                            "type": "CytobandInterval",
+                            "start": "q23.3",
+                            "end": "q23.3"
+                        }
+                    },
+                    {
+                        "_id": "ga4gh:VSL.dhj3ZilmW0bmmUjUvrG7zCWwsPn-7XyB",
+                        "type": "SequenceLocation",
+                        "sequence_id": "ga4gh:SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1",
+                        "interval": {
+                            "type": "SequenceInterval",
+                            "start": {"type": "Number", "value": 117135528},
+                            "end": {"type": "Number", "value": 117138867}
+                        }
                     }
-                }
+                ]
             },
             {
                 "type": "Extension",
@@ -612,18 +801,18 @@ def normalize_unmerged_chaf1a():
                                 }
                             },
                             {
-                                "_id": "ga4gh:VSL.X4HEwp9RgFN5WpmJM4bWpcOcN9qHX-hj",
+                                "_id": "ga4gh:VSL.w4vjQaVy5L6oCfsQrNfOpeHjV4_EimQ1",
                                 "type": "SequenceLocation",
                                 "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",  # noqa: E501
                                 "interval": {
                                     "type": "SequenceInterval",
                                     "start": {
                                         "type": "Number",
-                                        "value": 4402595
+                                        "value": 4402639
                                     },
                                     "end": {
                                         "type": "Number",
-                                        "value": 4448322
+                                        "value": 4450830
                                     }
                                 }
                             }
@@ -635,7 +824,7 @@ def normalize_unmerged_chaf1a():
                             "CAF1B",
                             "CAF-1"
                         ],
-                        "previous_symbols": [],
+                        "previous_symbols": ["LOC107985297"],
                         "xrefs": [
                             "ensembl:ENSG00000167670",
                             "hgnc:1910"
@@ -803,6 +992,61 @@ def normalize_unmerged_ache():
     }
 
 
+@pytest.fixture(scope="module")
+def normalized_ifnr():
+    """Return normalized Gene Descriptor for IFNR."""
+    params = {
+        "id": "normalize.gene:IFNR",
+        "type": "GeneDescriptor",
+        "gene_id": "hgnc:5447",
+        "label": "IFNR",
+        "xrefs": {
+            "ncbigene:3466"
+        },
+        "alternate_labels": [
+            "IFNGM",
+            "IFNGM2"
+        ],
+        "extensions": [
+            {
+                "name": "approved_name",
+                "value": "interferon production regulator",
+                "type": "Extension"
+            },
+            {
+                "name": "symbol_status",
+                "value": "approved",
+                "type": "Extension"
+            },
+            {
+                "name": "associated_with",
+                "value": [
+                    "pubmed:1906174",
+                    "omim:147573",
+                    "pubmed:1193239"
+                ],
+                "type": "Extension"
+            },
+            {
+                "name": "ncbi_gene_type",
+                "type": "Extension",
+                "value": "unknown"
+            },
+            {
+                "name": "hgnc_locus_type",
+                "type": "Extension",
+                "value": "unknown"
+            },
+            {
+                "name": "location_annotations",
+                "type": "Extension",
+                "value": ["16"]
+            }
+        ]
+    }
+    return GeneDescriptor(**params)
+
+
 @pytest.fixture(scope='module')
 def num_sources():
     """Get the number of sources."""
@@ -917,17 +1161,21 @@ def compare_gene_descriptor(test, actual):
     extensions_present = "extensions" in test.__fields__.keys()
     assert ("extensions" in actual.__fields__.keys()) == extensions_present
     if extensions_present:
-        assert len(actual.extensions) == len(test.extensions), \
-            "len of extensions"
+        assert len(actual.extensions) == len(test.extensions), "len of extensions"
         n_ext_correct = 0
         for test_ext in test.extensions:
             for actual_ext in actual.extensions:
                 if actual_ext.name == test_ext.name:
-                    assert isinstance(actual_ext.value,
-                                      type(test_ext.value))
+                    assert isinstance(actual_ext.value, type(test_ext.value))
                     if isinstance(test_ext.value, list):
-                        assert set(actual_ext.value) == \
-                               set(test_ext.value), f"{test_ext.value} value"  # noqa: E501
+                        if test_ext.value:
+                            if isinstance(test_ext.value[0], dict):
+                                assert actual_ext.value == test_ext.value
+                            else:
+                                assert set(actual_ext.value) == \
+                                    set(test_ext.value), f"{test_ext.value} value"
+                        else:
+                            assert actual_ext.value == test_ext.value
                     else:
                         assert actual_ext.value == test_ext.value
                     assert actual_ext.type == test_ext.type
@@ -1279,6 +1527,17 @@ def test_normalize_single_entry(query_handler, normalized_loc_653303):
     resp = query_handler.normalize(q)
     compare_normalize_resp(resp, q, MatchType.SYMBOL, normalized_loc_653303,
                            expected_source_meta=[SourceName.NCBI.value])
+
+
+def test_normalize_no_locations(query_handler, normalized_ifnr):
+    """Test that the normalized endpoint correcly shapes merged entity with no
+    locations
+    """
+    q = "IFNR"
+    resp = query_handler.normalize(q)
+    compare_normalize_resp(
+        resp, q, MatchType.SYMBOL, normalized_ifnr,
+        expected_source_meta=[SourceName.HGNC.value, SourceName.NCBI.value])
 
 
 def test_normalize_unmerged(query_handler, normalize_unmerged_loc_653303,

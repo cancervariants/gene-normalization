@@ -82,6 +82,20 @@ class QueryHandler:
                 logger.error(e.response['Error']['Message'])
 
     @staticmethod
+    def _transform_sequence_location(loc: Dict) -> models.SequenceLocation:
+        """Transform a sequence location to VRS sequence location
+        :param Dict loc: Sequence location
+        :return: VRS sequence location
+        """
+        return models.SequenceLocation(
+            type="SequenceLocation",
+            sequence_id=loc["sequence_id"],
+            interval=models.SequenceInterval(
+                type="SequenceInterval",
+                start=models.Number(value=int(loc["start"]), type="Number"),
+                end=models.Number(value=int(loc["end"]), type="Number")))
+
+    @staticmethod
     def _transform_chromosome_location(loc: Dict) -> models.ChromosomeLocation:
         """Transform a chromosome location to VRS chromosome location
 
@@ -98,6 +112,18 @@ class QueryHandler:
                 end=loc["end"]))
         return transformed_loc
 
+    def _transform_location(self, loc: Dict) -> Dict:
+        """Transform a sequence/chromosome location to VRS sequence/chromosome location
+        :param Dict loc: Sequence or Chromosome location
+        :return: VRS sequence or chromosome location represented as a dictionary
+        """
+        if loc["type"] == VRSTypes.SEQUENCE_LOCATION:
+            loc = self._transform_sequence_location(loc)
+        else:
+            loc = self._transform_chromosome_location(loc)
+        loc._id = ga4gh_identify(loc)
+        return loc.as_dict()
+
     def _transform_locations(self, record: Dict) -> Dict:
         """Transform gene locations to VRS Chromosome/Sequence Locations
 
@@ -107,21 +133,7 @@ class QueryHandler:
         record_locations = list()
         if "locations" in record:
             for loc in record["locations"]:
-                if loc["type"] == VRSTypes.SEQUENCE_LOCATION:
-                    transformed_loc = models.SequenceLocation(
-                        type="SequenceLocation",
-                        sequence_id=loc["sequence_id"],
-                        interval=models.SequenceInterval(
-                            type="SequenceInterval",
-                            start=models.Number(value=int(loc["start"]), type="Number"),
-                            end=models.Number(value=int(loc["end"]), type="Number")))
-                else:
-                    transformed_loc = self._transform_chromosome_location(loc)
-
-                transformed_loc._id = ga4gh_identify(transformed_loc)
-                transformed_loc = transformed_loc.as_dict()
-                record_locations.append(transformed_loc)
-
+                record_locations.append(self._transform_location(loc))
         record["locations"] = record_locations
         return record
 
@@ -437,20 +449,33 @@ class QueryHandler:
         extension_and_record_labels = [
             ("symbol_status", "symbol_status"),
             ("approved_name", "label"),
-            ("chromosome_location", "locations"),
             ("associated_with", "associated_with"),
             ("previous_symbols", "previous_symbols"),
+            ("location_annotations", "location_annotations")
         ]
         for ext_label, record_label in extension_and_record_labels:
             if record_label in record and record[record_label]:
-                if ext_label == 'chromosome_location':
-                    loc = self._transform_chromosome_location(record[record_label][0])
-                    loc._id = ga4gh_identify(loc)
-                    record[record_label] = loc.as_dict()
                 extensions.append(Extension(
                     name=ext_label,
                     value=record[record_label]
                 ))
+
+        record_locations = dict()
+        if record["item_type"] == "identity":
+            locs = record.get("locations")
+            if locs:
+                record_locations[f"{record['src_name'].lower()}_locations"] = locs
+        elif record["item_type"] == "merger":
+            for k, v in record.items():
+                if k.endswith("locations") and v:
+                    record_locations[k] = v
+
+        for loc_name, locations in record_locations.items():
+            transformed_locs = list()
+            for loc in locations:
+                transformed_locs.append(self._transform_location(loc))
+            extensions.append(Extension(name=loc_name, value=transformed_locs))
+
         # handle gene types separately because they're wonky
         if record["item_type"] == "identity":
             gene_type = record.get("gene_type")

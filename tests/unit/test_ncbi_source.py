@@ -202,10 +202,10 @@ def spry3():
                 "type": "SequenceLocation"
             },
             {
-                "_id": "ga4gh:VSL.Cr_HtUTpUe6KB37Y7zOTDbx9JglIzE1O",
+                "_id": "ga4gh:VSL.SvfaYotp4SHyoacjNXRqdIE1AZPCx_SI",
                 "interval": {
                     "end": {"value": 56968979, "type": "Number"},
-                    "start": {"value": 56923422, "type": "Number"},
+                    "start": {"value": 56954315, "type": "Number"},
                     "type": "SequenceInterval"
                 },
                 "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
@@ -290,10 +290,10 @@ def znf84():
                 "type": "ChromosomeLocation"
             },
             {
-                "_id": "ga4gh:VSL.w5FE3al-0SUkARxk_RdCD5ypYIh_WtSM",
+                "_id": "ga4gh:VSL.pT54XeMRdsoRFulVQU4wxmTcLR0jHbuu",
                 "interval": {
                     "end": {"value": 133063299, "type": "Number"},
-                    "start": {"value": 133037300, "type": "Number"},
+                    "start": {"value": 133037508, "type": "Number"},
                     "type": "SequenceInterval"
                 },
                 "sequence_id": "ga4gh:SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl",

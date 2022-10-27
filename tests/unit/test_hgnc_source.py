@@ -175,6 +175,7 @@ def a3galt2():
             "ucsc:uc031plq.1",
             "uniprot:U3KPV4",
             "ccds:CCDS60080",
+            "omim:619850",
             "pubmed:10854427",
             "pubmed:18630988",
             "refseq:NM_001080438"

@@ -251,17 +251,10 @@
                 "location_sortable": "22pter-q11"
             },
             {
-                "date_approved_reserved": "1999-09-29",
-                "alias_name": [
-                    "chromatin assembly factor I (150 kDa)"
-                ],
                 "vega_id": "OTTHUMG00000181922",
-                "locus_group": "protein-coding gene",
-                "mane_select": [
-                    "ENST00000301280.10",
-                    "NM_005483.3"
-                ],
-                "status": "Approved",
+                "ucsc_id": "uc002mal.4",
+                "name": "chromatin assembly factor 1 subunit A",
+                "entrez_id": "10036",
                 "alias_symbol": [
                     "CAF1P150",
                     "CAF1B",
@@ -270,47 +263,54 @@
                     "P150",
                     "MGC71229"
                 ],
-                "_version_": 1707696198253543425,
-                "uuid": "cbaac19b-6e86-4b58-9053-e34c3aa5d99e",
                 "prev_name": [
                     "chromatin assembly factor 1, subunit A (p150)"
                 ],
-                "refseq_accession": [
-                    "NM_005483"
+                "mane_select": [
+                    "ENST00000301280.10",
+                    "NM_005483.3"
                 ],
-                "locus_type": "gene with protein product",
-                "agr": "HGNC:1910",
+                "locus_group": "protein-coding gene",
                 "hgnc_id": "HGNC:1910",
-                "rgd_id": [
-                    "RGD:1590865"
-                ],
-                "ensembl_gene_id": "ENSG00000167670",
-                "entrez_id": "10036",
-                "omim_id": [
-                    "601246"
+                "pubmed_id": [
+                    7600578
                 ],
                 "symbol": "CHAF1A",
-                "date_name_changed": "2015-11-23",
-                "location": "19p13.3",
-                "name": "chromatin assembly factor 1 subunit A",
-                "date_modified": "2019-08-21",
+                "locus_type": "gene with protein product",
+                "status": "Approved",
                 "mgd_id": [
                     "MGI:1351331"
-                ],
-                "ucsc_id": "uc002mal.4",
-                "uniprot_ids": [
-                    "Q13111"
                 ],
                 "ccds_id": [
                     "CCDS32875"
                 ],
+                "ensembl_gene_id": "ENSG00000167670",
+                "uuid": "61416b73-dffa-4eb9-9af7-a82d97a84e77",
+                "date_name_changed": "2015-11-23",
+                "omim_id": [
+                    "601246"
+                ],
+                "rgd_id": [
+                    "RGD:1590865"
+                ],
+                "agr": "HGNC:1910",
+                "location_sortable": "19p13.3",
+                "date_modified": "2019-08-21",
+                "uniprot_ids": [
+                    "Q13111"
+                ],
+                "date_approved_reserved": "1999-09-29",
+                "refseq_accession": [
+                    "NM_005483"
+                ],
+                "alias_name": [
+                    "chromatin assembly factor I (150 kDa)"
+                ],
                 "ena": [
                     "U20979"
                 ],
-                "pubmed_id": [
-                    7600578
-                ],
-                "location_sortable": "19p13.3"
+                "_version_": 1747674142400839680,
+                "location": "19p13.3"
             },
             {
                 "date_approved_reserved": "2003-11-13",
@@ -459,68 +459,71 @@
                 "location_sortable": "Xp22.32 and Yp11.3"
             },
             {
-                "date_approved_reserved": "2005-05-06",
-                "alias_name": [
-                    "iGb3 synthase",
-                    "isoglobotriaosylceramide synthase"
+                "status": "Approved",
+                "mgd_id": [
+                    "MGI:2685279"
                 ],
-                "vega_id": "OTTHUMG00000004125",
-                "locus_group": "protein-coding gene",
+                "hgnc_id": "HGNC:30005",
+                "symbol": "A3GALT2",
+                "entrez_id": "127550",
                 "mane_select": [
                     "ENST00000442999.3",
                     "NM_001080438.1"
                 ],
-                "status": "Approved",
-                "alias_symbol": [
-                    "IGBS3S",
-                    "IGB3S"
-                ],
-                "_version_": 1707696195380445184,
-                "uuid": "ec929101-693b-4afc-ae1b-bbe1d38f9c62",
                 "prev_name": [
                     "alpha 1,3-galactosyltransferase 2, pseudogene"
                 ],
-                "refseq_accession": [
-                    "NM_001080438"
-                ],
-                "locus_type": "gene with protein product",
-                "agr": "HGNC:30005",
-                "hgnc_id": "HGNC:30005",
-                "rgd_id": [
-                    "RGD:727913"
-                ],
-                "ensembl_gene_id": "ENSG00000184389",
-                "entrez_id": "127550",
-                "gene_group": [
-                    "Glycosyltransferase family 6"
-                ],
-                "symbol": "A3GALT2",
-                "date_name_changed": "2013-03-11",
-                "location": "1p35.1",
-                "name": "alpha 1,3-galactosyltransferase 2",
-                "date_modified": "2018-02-08",
-                "mgd_id": [
-                    "MGI:2685279"
-                ],
-                "ucsc_id": "uc031plq.1",
                 "prev_symbol": [
                     "A3GALT2P"
                 ],
+                "gene_group": [
+                    "Glycosyltransferase family 6"
+                ],
+                "name": "alpha 1,3-galactosyltransferase 2",
+                "alias_name": [
+                    "iGb3 synthase",
+                    "isoglobotriaosylceramide synthase"
+                ],
+                "_version_": 1747674139854897153,
                 "uniprot_ids": [
                     "U3KPV4"
                 ],
+                "rgd_id": [
+                    "RGD:727913"
+                ],
+                "agr": "HGNC:30005",
+                "date_modified": "2018-02-08",
+                "ensembl_gene_id": "ENSG00000184389",
+                "date_name_changed": "2013-03-11",
+                "locus_type": "gene with protein product",
                 "ccds_id": [
                     "CCDS60080"
                 ],
-                "gene_group_id": [
-                    429
-                ],
-                "date_symbol_changed": "2013-03-11",
                 "pubmed_id": [
                     10854427,
                     18630988
                 ],
-                "location_sortable": "01p35.1"
+                "alias_symbol": [
+                    "IGBS3S",
+                    "IGB3S"
+                ],
+                "date_symbol_changed": "2013-03-11",
+                "locus_group": "protein-coding gene",
+                "vega_id": "OTTHUMG00000004125",
+                "ucsc_id": "uc031plq.1",
+                "gene_group_id": [
+                    429
+                ],
+                "location": "1p35.1",
+                "date_approved_reserved": "2005-05-06",
+                "refseq_accession": [
+                    "NM_001080438"
+                ],
+                "omim_id": [
+                    "619850"
+                ],
+                "location_sortable": "01p35.1",
+                "uuid": "2192efcd-2c34-43b1-aca0-2fc9f72ced47"
             },
             {
                 "date_approved_reserved": "2009-02-18",
@@ -1169,7 +1172,32 @@
                 ],
                 "entrez_id": "109280162",
                 "location_sortable": "10q23.3 or 10q24.2"
-            }
+            },
+            {
+                "name": "interferon production regulator",
+                "locus_group": "other",
+                "entrez_id": "3466",
+                "symbol": "IFNR",
+                "pubmed_id": [
+                  1906174,
+                  1193239
+                ],
+                "hgnc_id": "HGNC:5447",
+                "status": "Approved",
+                "locus_type": "unknown",
+                "uuid": "58487ff1-1a71-435a-89b2-02f7e275b3af",
+                "location_sortable": "16",
+                "date_modified": "2019-06-26",
+                "omim_id": [
+                  "147573"
+                ],
+                "curator_notes": [
+                  "This gene has the locus type unknown because it has never been mapped to the human genome."
+                ],
+                "date_approved_reserved": "1986-01-01",
+                "location": "16",
+                "_version_": 1747674151184760833
+              }
         ],
         "start": 0
     }

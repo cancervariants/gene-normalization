@@ -35,10 +35,10 @@ def ddx11l1():
         "location_annotations": [],
         "locations": [
             {
-                "_id": "ga4gh:VSL.naD2_Q0JKCEKkGj8FvMzerePKnNNcF5N",
+                "_id": "ga4gh:VSL.dJvg-3cfkRkZEOuAmJ9xbkTBrTCea2VP",
                 "interval": {
-                    "end": {"value": 14409, "type": "Number"},
-                    "start": {"value": 11868, "type": "Number"},
+                    "end": {"value": 13670, "type": "Number"},
+                    "start": {"value": 12009, "type": "Number"},
                     "type": "SequenceInterval"
                 },
                 "sequence_id": "ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
@@ -85,23 +85,23 @@ def tp53():
 
 
 @pytest.fixture(scope="module")
-def CH17_340M24_3():
-    """Create a CH17-340M24.3 test fixture."""
+def ATP6AP1_DT():
+    """Create a ATP6AP1-DT test fixture."""
     params = {
         "match_type": MatchType.NO_MATCH,
         "concept_id": "ensembl:ENSG00000197180",
-        "symbol": "CH17-340M24.3",
-        "label": "uncharacterized protein BC009467",
+        "symbol": "ATP6AP1-DT",
+        "label": "ATP6AP1 divergent transcript",
         "previous_symbols": [],
         "aliases": [],
-        "xrefs": ["ncbigene:158960"],
+        "xrefs": ["hgnc:25138"],
         "symbol_status": None,
         "location_annotations": [],
         "locations": [
             {
-                "_id": "ga4gh:VSL.Qgt1dnZLg46y-lkbsk2lCnlfose0VsFt",
+                "_id": "ga4gh:VSL.GPNFtIoo1cr6b_wQSk7xP2wzncSyXgSx",
                 "interval": {
-                    "end": {"value": 154428512, "type": "Number"},
+                    "end": {"value": 154428526, "type": "Number"},
                     "start": {"value": 154424377, "type": "Number"},
                     "type": "SequenceInterval"
                 },
@@ -220,21 +220,21 @@ def test_tp53(ensembl, tp53):
     check_resp_single_record(resp, tp53, MatchType.SYMBOL)
 
 
-def test_CH17_340M24_3(ensembl, CH17_340M24_3):
-    """Test that CH17-340M24.3 normalizes to correct gene concept."""
+def test_ATP6AP1_DT(ensembl, ATP6AP1_DT):
+    """Test that ATP6AP1-DT normalizes to correct gene concept."""
     # Concept ID
     resp = ensembl.search("ensembl:ENSG00000197180")
-    check_resp_single_record(resp, CH17_340M24_3, MatchType.CONCEPT_ID)
+    check_resp_single_record(resp, ATP6AP1_DT, MatchType.CONCEPT_ID)
 
     resp = ensembl.search("ENSEMBL:ENSG00000197180")
-    check_resp_single_record(resp, CH17_340M24_3, MatchType.CONCEPT_ID)
+    check_resp_single_record(resp, ATP6AP1_DT, MatchType.CONCEPT_ID)
 
     resp = ensembl.search("ENSG00000197180")
-    check_resp_single_record(resp, CH17_340M24_3, MatchType.CONCEPT_ID)
+    check_resp_single_record(resp, ATP6AP1_DT, MatchType.CONCEPT_ID)
 
     # Symbol
-    resp = ensembl.search("CH17-340M24.3")
-    check_resp_single_record(resp, CH17_340M24_3, MatchType.SYMBOL)
+    resp = ensembl.search("ATP6AP1-DT")
+    check_resp_single_record(resp, ATP6AP1_DT, MatchType.SYMBOL)
 
 
 def test_hsa_mir_1253(ensembl, hsa_mir_1253):
