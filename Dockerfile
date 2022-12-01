@@ -1,4 +1,4 @@
-# A simple container for gene-service.
+# A simple container for gene normalizer.
 
 # The commands following all RUN instructions are run in a shell, which
 # by default is /bin/sh -c on Linux or cmd /S /C on Windows.
