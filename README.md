@@ -75,6 +75,12 @@ pre-commit install
 
 ### Running unit tests
 
+By default, tests will employ an existing DynamoDB database. For test environments where this is unavailable (e.g. in CI), the `GENE_TEST` environment variable can be set to initialize a local DynamoDB instance with miniature versions of input data files before tests are executed.
+
+```commandline
+export GENE_TEST=true
+```
+
 Running unit tests is as easy as pytest.
 
 ```commandline

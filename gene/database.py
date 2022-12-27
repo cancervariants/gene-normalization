@@ -46,6 +46,12 @@ def confirm_aws_db_use(env_name: str) -> None:
         sys.exit()
 
 
+class DatabaseException(Exception):
+    """Create custom class for handling database exceptions"""
+
+    pass
+
+
 class Database:
     """The database class."""
 
@@ -58,8 +64,12 @@ class Database:
         gene_concepts_table = "gene_concepts"  # default
         gene_metadata_table = "gene_metadata"  # default
         if AWS_ENV_VAR_NAME in environ:
+            if "GENE_TEST" in environ:
+                raise DatabaseException(f"Cannot have both GENE_TEST and {AWS_ENV_VAR_NAME} set.")  # noqa: E501
+
             aws_env = environ[AWS_ENV_VAR_NAME]
-            assert aws_env in VALID_AWS_ENV_NAMES, f"{AWS_ENV_VAR_NAME} must be one of {VALID_AWS_ENV_NAMES}"  # noqa: E501
+            if aws_env not in VALID_AWS_ENV_NAMES:
+                raise DatabaseException(f"{AWS_ENV_VAR_NAME} must be one of {VALID_AWS_ENV_NAMES}")  # noqa: E501
 
             skip_confirmation = environ.get(SKIP_AWS_DB_ENV_NAME)
             if (not skip_confirmation) or (skip_confirmation and skip_confirmation != "true"):  # noqa: E501
@@ -89,7 +99,7 @@ class Database:
         self.dynamodb_client = boto3.client('dynamodb', **boto_params)
 
         # Only create tables for local instance
-        envs_do_not_create_tables = {AWS_ENV_VAR_NAME, "TEST"}
+        envs_do_not_create_tables = {AWS_ENV_VAR_NAME, "GENE_TEST"}
         if not set(envs_do_not_create_tables) & set(environ):
             self.create_db_tables()
 
