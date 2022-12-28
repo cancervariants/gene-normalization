@@ -1,13 +1,16 @@
 """Test DynamoDB and ETL methods."""
-import pytest
-from gene.etl import Ensembl, HGNC, NCBI
-from gene.etl.merge import Merge
-from gene.database import Database
-import os
+import shutil
+from os import environ
 from pathlib import Path
+
+import pytest
 from boto3.dynamodb.conditions import Key
 from mock import patch
-import shutil
+
+from gene.etl import Ensembl, HGNC, NCBI
+from gene.etl.merge import Merge
+from gene.database import Database, AWS_ENV_VAR_NAME
+
 
 ALIASES = {
     "NC_000001.11": ["ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO"],
@@ -31,7 +34,7 @@ ALIASES = {
 @pytest.fixture(scope='module')
 def is_test_env():
     """Test fixture to determine whether or not using test environment."""
-    return os.environ.get('TEST') is not None
+    return environ.get("GENE_TEST", "").lower() == "true"
 
 
 @pytest.fixture(scope='module')
@@ -41,7 +44,7 @@ def dynamodb(is_test_env):
         def __init__(self):
             self.db = Database()
             self.merge = Merge(database=self.db)
-            if is_test_env:
+            if is_test_env and AWS_ENV_VAR_NAME not in environ:
                 self.db.delete_all_db_tables()
                 self.db.create_db_tables()
     return DB()
