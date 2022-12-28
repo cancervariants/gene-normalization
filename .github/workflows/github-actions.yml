@@ -9,12 +9,12 @@ jobs:
             AWS_DEFAULT_REGION: us-east-2
             AWS_DEFAULT_OUTPUT: text
             GENE_NORM_DB_URL: http://localhost:8000
-            TEST: GENE_TEST
+            GENE_TEST: true
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
 
             - name: Setup Python
-              uses: actions/setup-python@v1
+              uses: actions/setup-python@v4
               with:
                   python-version: 3.8
 
