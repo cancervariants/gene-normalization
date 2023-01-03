@@ -1,27 +1,55 @@
 """This module creates the database."""
-from gene import PREFIX_LOOKUP
-from boto3.dynamodb.conditions import Key
-from botocore.exceptions import ClientError
-from os import environ
-from typing import List, Optional, Dict, Any, Set
-import boto3
-import click
+from enum import Enum
 import sys
 import logging
+from os import environ
+from typing import List, Optional, Dict, Any, Set
+
+import boto3
+import click
+from boto3.dynamodb.conditions import Key
+from botocore.exceptions import ClientError
+
+from gene import PREFIX_LOOKUP
 
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
+
+# can be set to either `Dev`, `Staging`, or `Prod`
+# ONLY set when wanting to access aws instance
+AWS_ENV_VAR_NAME = "GENE_NORM_ENV"
+
+# Set to "true" if want to skip db confirmation check. Should ONLY be used for
+# deployment needs
+SKIP_AWS_DB_ENV_NAME = "SKIP_AWS_CONFIRMATION"
+
+
+class AwsEnvName(str, Enum):
+    """AWS environment name that is being used"""
+
+    DEVELOPMENT = "Dev"
+    STAGING = "Staging"
+    PRODUCTION = "Prod"
+
+
+VALID_AWS_ENV_NAMES = {v.value for v in AwsEnvName.__members__.values()}
 
 
 def confirm_aws_db_use(env_name: str) -> None:
     """Check to ensure that AWS instance should actually be used."""
     if click.confirm(f"Are you sure you want to use the AWS {env_name} database?",
                      default=False):
-        click.echo(f"***GENE {env_name.upper()} DATABASE IN USE***")
+        click.echo(f"***GENE AWS {env_name.upper()} DATABASE IN USE***")
     else:
         click.echo("Exiting.")
         sys.exit()
+
+
+class DatabaseException(Exception):
+    """Create custom class for handling database exceptions"""
+
+    pass
 
 
 class Database:
@@ -35,32 +63,25 @@ class Database:
         """
         gene_concepts_table = "gene_concepts"  # default
         gene_metadata_table = "gene_metadata"  # default
+        if AWS_ENV_VAR_NAME in environ:
+            if "GENE_TEST" in environ:
+                raise DatabaseException(f"Cannot have both GENE_TEST and {AWS_ENV_VAR_NAME} set.")  # noqa: E501
 
-        if 'GENE_NORM_PROD' in environ or 'GENE_NORM_EB_PROD' in environ:
-            boto_params = {
-                'region_name': region_name
-            }
-            if 'GENE_NORM_EB_PROD' not in environ:
-                # EB Instance should not have to confirm.
-                # This is used only for updating production via CLI
-                confirm_aws_db_use("PROD")
-            else:
-                if 'EB_ENV_TYPE' in environ and environ['EB_ENV_TYPE'] != 'prod':
-                    gene_concepts_table = "gene_concepts_nonprod"
-                    gene_metadata_table = "gene_metadata_nonprod"
-        elif "GENE_NORM_NONPROD" in environ:
-            # This is a nonprod table. Used for creating backups which
-            # prod will restore. Will need to manually delete / create this table
-            # on an as needed basis.
-            gene_concepts_table = "gene_concepts_nonprod"
-            gene_metadata_table = "gene_metadata_nonprod"
+            aws_env = environ[AWS_ENV_VAR_NAME]
+            if aws_env not in VALID_AWS_ENV_NAMES:
+                raise DatabaseException(f"{AWS_ENV_VAR_NAME} must be one of {VALID_AWS_ENV_NAMES}")  # noqa: E501
+
+            skip_confirmation = environ.get(SKIP_AWS_DB_ENV_NAME)
+            if (not skip_confirmation) or (skip_confirmation and skip_confirmation != "true"):  # noqa: E501
+                confirm_aws_db_use(environ[AWS_ENV_VAR_NAME])
 
             boto_params = {
                 "region_name": region_name
             }
 
-            # This is used only for updating nonprod via CLI
-            confirm_aws_db_use("NONPROD")
+            if aws_env == AwsEnvName.DEVELOPMENT:
+                gene_concepts_table = "gene_concepts_nonprod"
+                gene_metadata_table = "gene_metadata_nonprod"
         else:
             if db_url:
                 endpoint_url = db_url
@@ -78,8 +99,7 @@ class Database:
         self.dynamodb_client = boto3.client('dynamodb', **boto_params)
 
         # Only create tables for local instance
-        envs_do_not_create_tables = {"GENE_NORM_PROD", "GENE_NORM_EB_PROD",
-                                     "GENE_NORM_NONPROD", "TEST"}
+        envs_do_not_create_tables = {AWS_ENV_VAR_NAME, "GENE_TEST"}
         if not set(envs_do_not_create_tables) & set(environ):
             self.create_db_tables()
 

@@ -3,6 +3,14 @@
 # Gene Normalization
 Services and guidelines for normalizing gene terms
 
+Installing with pip:
+
+```commandline
+pip install gene[dev]
+```
+
+The `[dev]` argument tells pip to install packages to fulfill the dependencies of the `gene.etl` package.
+
 ## Developer instructions
 Following are sections include instructions specifically for developers.
 
@@ -16,16 +24,29 @@ Once installed, from the project root dir, just run:
 ```commandline
 pipenv shell
 pipenv lock && pipenv sync
+pipenv install --dev
 ```
 
-Gene Normalization relies on [SeqRepo](https://github.com/biocommons/biocommons.seqrepo) data.
+Gene Normalization relies on [SeqRepo](https://github.com/biocommons/biocommons.seqrepo) data, which you must download yourself.
 
 From the _root_ directory:
 ```
 pip install seqrepo
 sudo mkdir /usr/local/share/seqrepo
 sudo chown $USER /usr/local/share/seqrepo
-seqrepo pull -i 2021-01-29
+seqrepo pull -i 2021-01-29  # Replace with latest version using `seqrepo list-remote-instances` if outdated
+```
+
+If you get an error similar to the one below:
+```
+PermissionError: [Error 13] Permission denied: '/usr/local/share/seqrepo/2021-01-29._fkuefgd' -> '/usr/local/share/seqrepo/2021-01-29'
+```
+
+You will want to do the following:\
+(*Might not be ._fkuefgd, so replace with your error message path*)
+```console
+sudo mv /usr/local/share/seqrepo/2021-01-29._fkuefgd /usr/local/share/seqrepo/2021-01-29
+exit
 ```
 
 ### Deploying DynamoDB Locally
@@ -53,6 +74,12 @@ pre-commit install
 
 
 ### Running unit tests
+
+By default, tests will employ an existing DynamoDB database. For test environments where this is unavailable (e.g. in CI), the `GENE_TEST` environment variable can be set to initialize a local DynamoDB instance with miniature versions of input data files before tests are executed.
+
+```commandline
+export GENE_TEST=true
+```
 
 Running unit tests is as easy as pytest.
 

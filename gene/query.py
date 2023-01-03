@@ -2,19 +2,24 @@
 import re
 from typing import List, Dict, Set, Any, TypeVar, Callable, Optional
 from urllib.parse import quote
-from .version import __version__
+from datetime import datetime
+
+from ga4gh.vrsatile.pydantic.core_models import Extension
+from ga4gh.vrsatile.pydantic.vrs_models import VRSTypes
+from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
+from botocore.exceptions import ClientError
+from boto3.dynamodb.conditions import Key
+from ga4gh.vrs import models
+from ga4gh.core import ga4gh_identify
+
+from gene import logger
 from gene import NAMESPACE_LOOKUP, PREFIX_LOOKUP, ITEM_TYPES
+from gene.version import __version__
 from gene.database import Database
 from gene.schemas import BaseGene, Gene, SourceMeta, MatchType, SourceName, \
     ServiceMeta, SourcePriority, NormalizeService, SearchService, \
     GeneTypeFieldName, UnmergedNormalizationService, MatchesNormalized, \
     BaseNormalizationService
-from ga4gh.vrsatile.pydantic.core_models import Extension
-from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
-from botocore.exceptions import ClientError
-from boto3.dynamodb.conditions import Key
-from datetime import datetime
-from gene import logger
 
 
 NormService = TypeVar("NormService", bound=BaseNormalizationService)
@@ -79,18 +84,55 @@ class QueryHandler:
                 logger.error(e.response['Error']['Message'])
 
     @staticmethod
-    def _cast_location_ints(record: Dict) -> Dict:
-        """Ensure Locations are formatted correctly -- interval start and end need to
-        be recast to ints from how they're structured in DynamoDB
+    def _transform_sequence_location(loc: Dict) -> models.SequenceLocation:
+        """Transform a sequence location to VRS sequence location
+
+        :param Dict loc: Sequence location
+        :return: VRS sequence location
+        """
+        return models.SequenceLocation(
+            sequence_id=loc["sequence_id"],
+            start=models.Number(value=int(loc["start"])),
+            end=models.Number(value=int(loc["end"])))
+
+    @staticmethod
+    def _transform_chromosome_location(loc: Dict) -> models.ChromosomeLocation:
+        """Transform a chromosome location to VRS chromosome location
+
+        :param Dict loc: Chromosome location
+        :return: VRS chromosome location
+        """
+        return models.ChromosomeLocation(
+            type="ChromosomeLocation",
+            species_id=loc["species_id"],
+            chr=loc["chr"],
+            start=loc["start"],
+            end=loc["end"])
+
+    def _transform_location(self, loc: Dict) -> Dict:
+        """Transform a sequence/chromosome location to VRS sequence/chromosome location
+
+        :param Dict loc: Sequence or Chromosome location
+        :return: VRS sequence or chromosome location represented as a dictionary
+        """
+        if loc["type"] == VRSTypes.SEQUENCE_LOCATION:
+            loc = self._transform_sequence_location(loc)
+        else:
+            loc = self._transform_chromosome_location(loc)
+        loc.id = ga4gh_identify(loc)
+        return loc.as_dict()
+
+    def _transform_locations(self, record: Dict) -> Dict:
+        """Transform gene locations to VRS Chromosome/Sequence Locations
 
         :param Dict record: original record
-        :return: record with corrected locations attributes, if applicable
+        :return: record with transformed locations attributes, if applicable
         """
-        if 'locations' in record:
-            for loc in record['locations']:
-                if loc['type'] == 'SequenceLocation':
-                    loc['start']['value'] = int(loc['start']['value'])
-                    loc['end']['value'] = int(loc['end']['value'])
+        record_locations = list()
+        if "locations" in record:
+            for loc in record["locations"]:
+                record_locations.append(self._transform_location(loc))
+        record["locations"] = record_locations
         return record
 
     def add_record(self,
@@ -108,7 +150,7 @@ class QueryHandler:
         """
         del item['label_and_type']
         # DynamoDB Numbers get converted to Decimal
-        item = self._cast_location_ints(item)
+        item = self._transform_locations(item)
         item["match_type"] = match_type
         gene = Gene(**item)
         src_name = item['src_name']
@@ -416,15 +458,21 @@ class QueryHandler:
                     value=record[record_label]
                 ))
 
+        record_locations = dict()
         if record["item_type"] == "identity":
-            loc = record.get("locations")
-            if loc:
-                extensions.append(Extension(
-                    name=f"{record['src_name'].lower()}_locations", value=loc))
+            locs = record.get("locations")
+            if locs:
+                record_locations[f"{record['src_name'].lower()}_locations"] = locs
         elif record["item_type"] == "merger":
             for k, v in record.items():
                 if k.endswith("locations") and v:
-                    extensions.append(Extension(name=k, value=v))
+                    record_locations[k] = v
+
+        for loc_name, locations in record_locations.items():
+            transformed_locs = list()
+            for loc in locations:
+                transformed_locs.append(self._transform_location(loc))
+            extensions.append(Extension(name=loc_name, value=transformed_locs))
 
         # handle gene types separately because they're wonky
         if record["item_type"] == "identity":
@@ -615,7 +663,7 @@ class QueryHandler:
         if normalized_record["item_type"] == "identity":
             record_source = SourceName[normalized_record["src_name"].upper()]
             response.source_matches[record_source] = MatchesNormalized(
-                records=[BaseGene(**self._cast_location_ints(normalized_record))],
+                records=[BaseGene(**self._transform_locations(normalized_record))],
                 source_meta_=self.fetch_meta(record_source.value)
             )
         else:
@@ -626,7 +674,7 @@ class QueryHandler:
                 if not record:
                     continue
                 record_source = SourceName[record["src_name"].upper()]
-                gene = BaseGene(**self._cast_location_ints(record))
+                gene = BaseGene(**self._transform_locations(record))
                 if record_source in response.source_matches:
                     response.source_matches[record_source].records.append(gene)
                 else:
