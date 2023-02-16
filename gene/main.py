@@ -9,7 +9,13 @@ from gene.schemas import SearchService, NormalizeService, \
 import html
 
 
-query_handler = QueryHandler()
+# TODO working ################################################################
+from gene.database import PostgresDatabase
+# db = DynamoDbDatabase()
+db = PostgresDatabase()
+query_handler = QueryHandler(db)
+# TODO end working ############################################################
+
 app = FastAPI(
     docs_url="/gene",
     openapi_url="/gene/openapi.json",

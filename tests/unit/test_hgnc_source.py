@@ -1,5 +1,6 @@
 """Test that the gene normalizer works as intended for the HGNC source."""
 import pytest
+from gene.database import DynamoDbDatabase
 from gene.schemas import Gene, MatchType, SourceName
 from gene.query import QueryHandler
 from datetime import datetime
@@ -11,7 +12,8 @@ def hgnc():
     """Build hgnc test fixture."""
     class QueryGetter:
         def __init__(self):
-            self.query_handler = QueryHandler()
+            db = DynamoDbDatabase()  # TODO
+            self.query_handler = QueryHandler(db)
 
         def search(self, query_str, incl="hgnc"):
             resp = self.query_handler.search(query_str, keyed=True, incl=incl)

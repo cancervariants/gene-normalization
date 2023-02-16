@@ -1,15 +1,16 @@
 """This module provides a CLI util to make updates to normalizer database."""
+from collections.abc import Collection
 import logging
 from os import environ
 from timeit import default_timer as timer
+from typing import List
 
 import click
-from botocore.exceptions import ClientError
-from boto3.dynamodb.conditions import Key
 
 from gene import SOURCES
-from gene.database import Database, confirm_aws_db_use, SKIP_AWS_DB_ENV_NAME, \
-    VALID_AWS_ENV_NAMES, AWS_ENV_VAR_NAME
+from gene.database import AbstractDatabase, DatabaseReadException, \
+    DatabaseWriteException, DynamoDbDatabase, PostgresDatabase, confirm_aws_db_use, \
+    SKIP_AWS_DB_ENV_NAME, VALID_AWS_ENV_NAMES, AWS_ENV_VAR_NAME
 from gene.etl import NCBI, HGNC, Ensembl  # noqa: F401
 from gene.etl.merge import Merge
 from gene.schemas import SourceName
@@ -62,7 +63,7 @@ class CLI:
         if aws_env_var_set or aws_instance:
             assert AWS_ENV_VAR_NAME in environ, invalid_aws_msg
             environ[SKIP_AWS_DB_ENV_NAME] = "true"  # this is already checked above
-            db: Database = Database()
+            db: DynamoDbDatabase = DynamoDbDatabase()
         else:
             if db_url:
                 endpoint_url = db_url
@@ -70,11 +71,13 @@ class CLI:
                 endpoint_url = environ['GENE_NORM_DB_URL']
             else:
                 endpoint_url = 'http://localhost:8000'
-            db: Database = Database(db_url=endpoint_url)
+            # TODO how to initialize?
+            # db: DynamoDbDatabase = DynamoDbDatabase(db_url=endpoint_url)
+            print(endpoint_url)
+            db: PostgresDatabase = PostgresDatabase()
 
         if update_all:
-            normalizers = [src for src in SOURCES]
-            CLI()._update_normalizers(normalizers, db, update_merged)
+            CLI()._update_normalizers(SOURCES.values(), db, update_merged)
         elif not normalizer:
             if update_merged:
                 CLI()._load_merge(db, [])
@@ -86,12 +89,13 @@ class CLI:
             if len(normalizers) == 0:
                 raise Exception("Must enter a normalizer")
 
-            non_sources = set(normalizers) - {src for src in SOURCES}
+            non_sources = set(normalizers) - set(SOURCES)
 
             if len(non_sources) != 0:
                 raise Exception(f"Not valid source(s): {non_sources}")
 
-            CLI()._update_normalizers(normalizers, db, update_merged)
+            sources_to_update = {SourceName(SOURCES[s]) for s in normalizers}
+            CLI()._update_normalizers(sources_to_update, db, update_merged)
 
     @staticmethod
     def _help_msg():
@@ -102,7 +106,9 @@ class CLI:
         ctx.exit()
 
     @staticmethod
-    def _update_normalizers(normalizers, db, update_merged):
+    def _update_normalizers(
+        normalizers: Collection[SourceName], db: AbstractDatabase, update_merged: bool
+    ) -> None:
         """Update selected normalizer sources."""
         processed_ids = list()
         for n in normalizers:
@@ -113,33 +119,38 @@ class CLI:
             CLI()._load_merge(db, processed_ids)
 
     @staticmethod
-    def _delete_source(n, db):
+    def _delete_source(n: SourceName, db: AbstractDatabase) -> float:
         """Delete individual source data."""
-        msg = f"Deleting {n}..."
+        msg = f"Deleting {n.value}..."
         click.echo(f"\n{msg}")
         logger.info(msg)
         start_delete = timer()
-        CLI()._delete_data(n, db)
+        db.delete_source(n)
         end_delete = timer()
         delete_time = end_delete - start_delete
-        msg = f"Deleted {n} in {delete_time:.5f} seconds."
+        msg = f"Deleted {n.value} in {delete_time:.5f} seconds."
         click.echo(f"{msg}\n")
         logger.info(msg)
         return delete_time
 
     @staticmethod
-    def _load_source(n, db, delete_time, processed_ids):
+    def _load_source(
+        n: SourceName, db: AbstractDatabase, delete_time: float,
+        processed_ids: List[str]
+    ) -> None:
         """Load individual source data."""
-        msg = f"Loading {n}..."
+        msg = f"Loading {n.value}..."
         click.echo(msg)
         logger.info(msg)
         start_load = timer()
 
         # used to get source class name from string
-        SOURCES_CLASS = \
-            {s.value.lower(): eval(s.value) for s in SourceName.__members__.values()}
+        # TODO hm
+        SourceClass = eval(n.value)
+        # SOURCES_CLASS = \
+        #     {s.value.lower(): eval(s.value) for s in SourceName.__members__.values()}
 
-        source = SOURCES_CLASS[n](database=db)
+        source = SourceClass(database=db)
         processed_ids += source.perform_etl()
         end_load = timer()
         load_time = end_load - start_load
@@ -156,7 +167,7 @@ class CLI:
         start = timer()
         if not processed_ids:
             CLI()._delete_normalized_data(db)
-            processed_ids = db.get_ids_for_merge()
+            processed_ids = db.get_all_concept_ids()
         merge = Merge(database=db)
         click.echo("Constructing normalized records...")
         merge.create_merged_concepts(processed_ids)
@@ -170,73 +181,12 @@ class CLI:
         click.echo("\nDeleting normalized records...")
         start_delete = timer()
         try:
-            while True:
-                with database.genes.batch_writer(
-                        overwrite_by_pkeys=['label_and_type', 'concept_id']) \
-                        as batch:
-                    response = database.genes.query(
-                        IndexName='item_type_index',
-                        KeyConditionExpression=Key('item_type').eq('merger'),
-                    )
-                    records = response['Items']
-                    if not records:
-                        break
-                    for record in records:
-                        batch.delete_item(Key={
-                            'label_and_type': record['label_and_type'],
-                            'concept_id': record['concept_id']
-                        })
-        except ClientError as e:
-            click.echo(e.response['Error']['Message'])
+            database.delete_normalized_concepts()
+        except (DatabaseReadException, DatabaseWriteException) as e:
+            click.echo(f"Encountered exception during normalized data deletion: {e}")
         end_delete = timer()
         delete_time = end_delete - start_delete
         click.echo(f"Deleted normalized records in {delete_time:.5f} seconds.")
-
-    @staticmethod
-    def _delete_data(source, database):
-        """Delete a source's data from dynamodb table."""
-        # Delete source's metadata
-        try:
-            metadata = database.metadata.query(
-                KeyConditionExpression=Key(
-                    'src_name').eq(SourceName[f"{source.upper()}"].value)
-            )
-            if metadata['Items']:
-                database.metadata.delete_item(
-                    Key={'src_name': metadata['Items'][0]['src_name']},
-                    ConditionExpression="src_name = :src",
-                    ExpressionAttributeValues={
-                        ':src': SourceName[f"{source.upper()}"].value}
-                )
-        except ClientError as e:
-            click.echo(e.response['Error']['Message'])
-
-        # Delete source's data from genes table
-        try:
-            while True:
-                response = database.genes.query(
-                    IndexName='src_index',
-                    KeyConditionExpression=Key('src_name').eq(
-                        SourceName[f"{source.upper()}"].value)
-                )
-
-                records = response['Items']
-                if not records:
-                    break
-
-                with database.genes.batch_writer(
-                        overwrite_by_pkeys=['label_and_type', 'concept_id']) \
-                        as batch:
-
-                    for record in records:
-                        batch.delete_item(
-                            Key={
-                                'label_and_type': record['label_and_type'],
-                                'concept_id': record['concept_id']
-                            }
-                        )
-        except ClientError as e:
-            click.echo(e.response['Error']['Message'])
 
 
 if __name__ == '__main__':

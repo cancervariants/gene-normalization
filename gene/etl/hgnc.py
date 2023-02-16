@@ -5,7 +5,7 @@ import shutil
 import re
 
 from gene import APP_ROOT, PREFIX_LOOKUP
-from gene.database import Database
+from gene.database import AbstractDatabase
 from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, \
     SourceMeta, Annotation, Chromosome
 from gene.etl.base import Base
@@ -19,8 +19,8 @@ class HGNC(Base):
     """ETL the HGNC source into the normalized database."""
 
     def __init__(self,
-                 database: Database,
-                 host='ftp.ebi.ac.uk',
+                 database: AbstractDatabase,
+                 data_host='ftp.ebi.ac.uk',
                  data_dir='pub/databases/genenames/hgnc/json/',
                  src_data_dir=APP_ROOT / 'data' / 'hgnc',
                  fn='hgnc_complete_set.json'
@@ -33,9 +33,9 @@ class HGNC(Base):
         :param Path src_data_dir: Data directory for HGNC
         :param str fn: Data file to download
         """
-        super().__init__(database, host, data_dir, src_data_dir)
+        super().__init__(database, data_host, data_dir, src_data_dir)
         self._chromosome_location = ChromosomeLocation()
-        self._data_url = f"ftp://{host}/{data_dir}{fn}"
+        self._data_url = f"ftp://{data_host}/{data_dir}{fn}"
         self._fn = fn
         self._version = None
 
@@ -45,7 +45,7 @@ class HGNC(Base):
         self._create_data_directory()
         tmp_fn = 'hgnc_version.json'
         self._version = \
-            self._ftp_download(self._host, self._data_dir, tmp_fn,
+            self._ftp_download(self._data_host, self._data_dir, tmp_fn,
                                self.src_data_dir, self._fn)
         shutil.move(f"{self.src_data_dir}/{tmp_fn}",
                     f"{self.src_data_dir}/hgnc_{self._version}.json")
@@ -66,35 +66,34 @@ class HGNC(Base):
 
         records = data['response']['docs']
 
-        with self._database.genes.batch_writer() as batch:
-            for r in records:
-                gene = dict()
-                gene['concept_id'] = r['hgnc_id'].lower()
-                gene['label_and_type'] = \
-                    f"{gene['concept_id']}##identity"
-                gene['item_type'] = 'identity'
-                gene['symbol'] = r['symbol']
-                gene['label'] = r['name']
-                gene['src_name'] = SourceName.HGNC.value
-                if r['status']:
-                    if r['status'] == 'Approved':
-                        gene['symbol_status'] = \
-                            SymbolStatus.APPROVED.value
-                    elif r['status'] == 'Entry Withdrawn':
-                        gene['symbol_status'] =\
-                            SymbolStatus.WITHDRAWN.value
-                gene['src_name'] = SourceName.HGNC.value
+        for r in records:
+            gene = dict()
+            gene['concept_id'] = r['hgnc_id'].lower()
+            gene['label_and_type'] = \
+                f"{gene['concept_id']}##identity"
+            gene['item_type'] = 'identity'
+            gene['symbol'] = r['symbol']
+            gene['label'] = r['name']
+            gene['src_name'] = SourceName.HGNC.value
+            if r['status']:
+                if r['status'] == 'Approved':
+                    gene['symbol_status'] = \
+                        SymbolStatus.APPROVED.value
+                elif r['status'] == 'Entry Withdrawn':
+                    gene['symbol_status'] =\
+                        SymbolStatus.WITHDRAWN.value
+            gene['src_name'] = SourceName.HGNC.value
 
-                # store alias, xref, associated_with, prev_symbols, location
-                self._get_aliases(r, gene)
-                self._get_xrefs_associated_with(r, gene)
-                if 'prev_symbol' in r:
-                    self._get_previous_symbols(r, gene)
-                if 'location' in r:
-                    self._get_location(r, gene)
-                if "locus_type" in r:
-                    gene["gene_type"] = r["locus_type"]
-                self._load_gene(gene, batch)
+            # store alias, xref, associated_with, prev_symbols, location
+            self._get_aliases(r, gene)
+            self._get_xrefs_associated_with(r, gene)
+            if 'prev_symbol' in r:
+                self._get_previous_symbols(r, gene)
+            if 'location' in r:
+                self._get_location(r, gene)
+            if "locus_type" in r:
+                gene["gene_type"] = r["locus_type"]
+                self._load_gene(gene)
         logger.info('Successfully transformed HGNC.')
 
     def _get_aliases(self, r, gene):
@@ -276,10 +275,10 @@ class HGNC(Base):
         self._extract_data()
         self._add_meta()
         self._transform_data()
-        self._database.flush_batch()
+        self._database.complete_transaction()
         return self._processed_ids
 
-    def _add_meta(self, *args, **kwargs):
+    def _add_meta(self) -> None:
         """Add HGNC metadata to the gene_metadata table."""
         metadata = SourceMeta(
             data_license='custom',
@@ -294,5 +293,4 @@ class HGNC(Base):
             },
             genome_assemblies=[]
         )
-
-        self._load_meta(self._database, metadata, SourceName.HGNC.value)
+        self._database.add_source_metadata(SourceName.HGNC, metadata)

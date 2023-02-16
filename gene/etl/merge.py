@@ -1,5 +1,5 @@
 """Create concept groups and merged records."""
-from gene.database import Database
+from gene.database import AbstractDatabase
 from gene.schemas import SourcePriority, GeneTypeFieldName
 from typing import Set, Dict
 from timeit import default_timer as timer
@@ -13,7 +13,7 @@ logger.setLevel(logging.DEBUG)
 class Merge:
     """Handles record merging."""
 
-    def __init__(self, database: Database):
+    def __init__(self, database: AbstractDatabase):
         """Initialize Merge instance.
         :param Database database: db instance to use for record retrieval
             and creation.
