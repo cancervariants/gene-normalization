@@ -68,33 +68,32 @@ class HGNC(Base):
 
         for r in records:
             gene = dict()
-            gene['concept_id'] = r['hgnc_id'].lower()
-            gene['label_and_type'] = \
-                f"{gene['concept_id']}##identity"
-            gene['item_type'] = 'identity'
-            gene['symbol'] = r['symbol']
-            gene['label'] = r['name']
-            gene['src_name'] = SourceName.HGNC.value
-            if r['status']:
-                if r['status'] == 'Approved':
-                    gene['symbol_status'] = \
+            gene["concept_id"] = r["hgnc_id"].lower()
+            gene["label_and_type"] = f"{gene['concept_id']}##identity"
+            gene["item_type"] = "identity"
+            gene["symbol"] = r["symbol"]
+            gene["label"] = r["name"]
+            gene["src_name"] = SourceName.HGNC.value
+            if r["status"]:
+                if r["status"] == "Approved":
+                    gene["symbol_status"] = \
                         SymbolStatus.APPROVED.value
-                elif r['status'] == 'Entry Withdrawn':
-                    gene['symbol_status'] =\
+                elif r["status"] == "Entry Withdrawn":
+                    gene["symbol_status"] =\
                         SymbolStatus.WITHDRAWN.value
-            gene['src_name'] = SourceName.HGNC.value
+            gene["src_name"] = SourceName.HGNC.value
 
             # store alias, xref, associated_with, prev_symbols, location
             self._get_aliases(r, gene)
             self._get_xrefs_associated_with(r, gene)
-            if 'prev_symbol' in r:
+            if "prev_symbol" in r:
                 self._get_previous_symbols(r, gene)
-            if 'location' in r:
+            if "location" in r:
                 self._get_location(r, gene)
             if "locus_type" in r:
                 gene["gene_type"] = r["locus_type"]
                 self._load_gene(gene)
-        logger.info('Successfully transformed HGNC.')
+        logger.info("Successfully transformed HGNC.")
 
     def _get_aliases(self, r, gene):
         """Store aliases in a gene record.

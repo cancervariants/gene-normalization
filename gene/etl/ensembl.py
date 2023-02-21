@@ -232,4 +232,4 @@ class Ensembl(Base):
             genome_assemblies=[self._assembly]
         )
 
-        self._database.add_source_metadata(self._src_name.value, metadata)
+        self._database.add_source_metadata(self._src_name, metadata)

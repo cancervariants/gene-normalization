@@ -151,8 +151,8 @@ class NCBI(Base):
         prev_symbols = {}
         for row in history:
             # Only interested in rows that have homo sapiens tax id
-            if row[0] == '9606':
-                if row[1] != '-':
+            if row[0] == "9606":
+                if row[1] != "-":
                     gene_id = row[1]
                     if gene_id in prev_symbols.keys():
                         prev_symbols[gene_id].append(row[3])
@@ -161,11 +161,9 @@ class NCBI(Base):
                 else:
                     # Load discontinued genes
                     params = {
-                        'concept_id':
-                            f'{NamespacePrefix.NCBI.value.lower()}:'
-                            f'{row[2]}',
-                        'symbol': row[3],
-                        'symbol_status': SymbolStatus.DISCONTINUED.value
+                        "concept_id": f"{NamespacePrefix.NCBI.value}:{row[2]}",
+                        "symbol": row[3],
+                        "symbol_status": SymbolStatus.DISCONTINUED.value
                     }
                     self._load_gene(params)
         history_file.close()
