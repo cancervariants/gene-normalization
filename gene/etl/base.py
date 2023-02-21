@@ -69,16 +69,6 @@ class Base(ABC):
         """Create data directory for source."""
         self.src_data_dir.mkdir(exist_ok=True, parents=True)
 
-    # def _load_meta(self, db: AbstractDatabase, metadata: SourceMeta,
-    #                source_name: SourceName) -> None:
-    #     """Load source metadata into database.
-    #
-    #     :param Database db: DynamoDB Database
-    #     :param SourceMeta metadata: Source's metadata
-    #     :param str source_name: Source to load metadata for
-    #     """
-    #     db.add_source_metadata(source_name, metadata)
-
     def _load_gene(self, gene) -> None:
         """Load a gene record into database. This method takes responsibility for:
          * validating structure correctness
