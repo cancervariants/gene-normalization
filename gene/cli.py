@@ -9,7 +9,7 @@ import click
 
 from gene import SOURCES
 from gene.database import AbstractDatabase, DatabaseReadException, \
-    DatabaseWriteException, DynamoDbDatabase, PostgresDatabase, confirm_aws_db_use, \
+    DatabaseWriteException, confirm_aws_db_use, \
     SKIP_AWS_DB_ENV_NAME, VALID_AWS_ENV_NAMES, AWS_ENV_VAR_NAME
 from gene.etl import NCBI, HGNC, Ensembl  # noqa: F401
 from gene.etl.merge import Merge
@@ -63,7 +63,9 @@ class CLI:
         if aws_env_var_set or aws_instance:
             assert AWS_ENV_VAR_NAME in environ, invalid_aws_msg
             environ[SKIP_AWS_DB_ENV_NAME] = "true"  # this is already checked above
-            db: DynamoDbDatabase = DynamoDbDatabase()
+
+            from gene.database.dynamodb import DynamoDbDatabase
+            db = DynamoDbDatabase()
         else:
             if db_url:
                 endpoint_url = db_url
@@ -71,13 +73,17 @@ class CLI:
                 endpoint_url = environ['GENE_NORM_DB_URL']
             else:
                 endpoint_url = 'http://localhost:8000'
-            # TODO how to initialize?
-            # db: DynamoDbDatabase = DynamoDbDatabase(db_url=endpoint_url)
-            print(endpoint_url)
-            db: PostgresDatabase = PostgresDatabase()
+
+            # prefer DynamoDB unless connection explicitly reads like a libpq URI
+            if endpoint_url.startswith("postgres"):
+                from gene.database.postgresql import PostgresDatabase
+                db = PostgresDatabase(endpoint_url)
+            else:
+                from gene.database.dynamodb import DynamoDbDatabase
+                db = DynamoDbDatabase(endpoint_url)
 
         if update_all:
-            CLI()._update_normalizers(SOURCES.values(), db, update_merged)
+            CLI()._update_normalizers(list(SourceName), db, update_merged)
         elif not normalizer:
             if update_merged:
                 CLI()._load_merge(db, [])

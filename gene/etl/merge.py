@@ -1,5 +1,6 @@
 """Create concept groups and merged records."""
 from gene.database import AbstractDatabase
+from gene.database.database import DatabaseWriteException
 from gene.schemas import SourcePriority, GeneTypeFieldName
 from typing import Set, Dict
 from timeit import default_timer as timer
@@ -53,13 +54,15 @@ class Merge:
 
             # add updated references
             for concept_id in group:
-                if not self._database.get_record_by_id(concept_id, False):
-                    logger.error(f"Updating nonexistent record: {concept_id} "
-                                 f"for {merged_record['label_and_type']}")
-                else:
-                    merge_ref = merged_record['concept_id'].lower()
-                    self._database.update_record(concept_id, 'merge_ref',
-                                                 merge_ref)
+                merge_ref = merged_record["concept_id"]
+                try:
+                    self._database.update_record(concept_id, "merge_ref", merge_ref)
+                except DatabaseWriteException as dw:
+                    if str(dw).startswith("No such record exists"):
+                        logger.error(f"Updating nonexistent record: {concept_id} "
+                                     f"for merge ref to {merge_ref}")
+                    else:
+                        logger.error(str(dw))
             uploaded_ids |= group
         logger.info('Merged concept generation successful.')
         end = timer()
@@ -81,9 +84,11 @@ class Merge:
                                f"{observed_id_set}")
                 return observed_id_set - {record_id}
 
-            local_id_set = set(db_record.get('xrefs', []))
-            if not local_id_set:
-                return observed_id_set | {db_record['concept_id']}
+            record_xrefs = db_record.get("xrefs")
+            if not record_xrefs:
+                return observed_id_set | {db_record["concept_id"]}
+            else:
+                local_id_set = set(record_xrefs)
             merged_id_set = {record_id} | observed_id_set
             for local_record_id in local_id_set - observed_id_set:
                 merged_id_set |= self._create_record_id_set(local_record_id,
@@ -161,7 +166,5 @@ class Merge:
             else:
                 del merged_attrs[field]
 
-        merged_attrs['label_and_type'] = \
-            f'{merged_attrs["concept_id"].lower()}##merger'
         merged_attrs['item_type'] = 'merger'
         return merged_attrs
