@@ -82,9 +82,6 @@ class AbstractDatabase(abc.ABC):
         """Retrieve concept IDs for records matching the user's query. Other methods
         are responsible for actually retrieving full records.
 
-        TODO
-        * do we want different return type?
-
         :param query: string to match against
         :param match_type: type of match to look for. Should be one of {"symbol",
             "prev_symbol", "alias", "xref", "associated_with"} (use `get_record_by_id`
