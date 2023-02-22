@@ -1,4 +1,5 @@
 """Test the emit_warnings function."""
+from gene.database.dynamodb import DynamoDbDatabase
 from gene.query import QueryHandler
 
 
@@ -10,7 +11,8 @@ def test_emit_warnings():
                 "Query contains non-breaking space characters"
         }
     ]
-    query_handler = QueryHandler()
+    db = DynamoDbDatabase()  # TODO
+    query_handler = QueryHandler(db)
 
     # Test emit no warnings
     actual_warnings = query_handler.emit_warnings('spry3')

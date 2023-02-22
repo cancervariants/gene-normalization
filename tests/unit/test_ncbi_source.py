@@ -1,5 +1,6 @@
 """Test import of NCBI source data"""
 import pytest
+from gene.database.dynamodb import DynamoDbDatabase
 from gene.schemas import Gene, MatchType, SourceName
 from gene.query import QueryHandler
 from datetime import datetime
@@ -12,7 +13,8 @@ def ncbi():
     """Build ncbi test fixture."""
     class QueryGetter:
         def __init__(self):
-            self.query_handler = QueryHandler()
+            db = DynamoDbDatabase()  # TODO
+            self.query_handler = QueryHandler(db)
 
         def search(self, query_str, incl="ncbi"):
             resp = self.query_handler.search(query_str, keyed=True, incl=incl)

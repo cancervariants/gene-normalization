@@ -258,7 +258,7 @@ class DynamoDbDatabase(AbstractDatabase):
         :param match_type: type of match to look for. Should be one of {"symbol",
             "prev_symbol", "alias", "xref", "associated_with"} (use `get_record_by_id`
             for concept ID lookup)
-        :return: list of matching records. Empty if lookup fails.
+        :return: list of associated concept IDs. Empty if lookup fails.
         """
         pk = f"{query}##{match_type.lower()}"
         filter_exp = Key("label_and_type").eq(pk)

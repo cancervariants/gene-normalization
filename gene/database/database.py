@@ -107,15 +107,18 @@ class AbstractDatabase(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_refs_by_type(self, query: str, match_type: str) -> List[Dict]:
+    def get_refs_by_type(self, query: str, match_type: str) -> List[str]:
         """Retrieve concept IDs for records matching the user's query. Other methods
         are responsible for actually retrieving full records.
+
+        TODO
+        * do we want different return type?
 
         :param query: string to match against
         :param match_type: type of match to look for. Should be one of {"symbol",
             "prev_symbol", "alias", "xref", "associated_with"} (use `get_record_by_id`
             for concept ID lookup)
-        :return: list of matching records. Empty if lookup fails.
+        :return: list of associated concept IDs. Empty if lookup fails.
         """
         pass
 

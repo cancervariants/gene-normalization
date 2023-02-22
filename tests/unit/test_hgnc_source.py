@@ -1,6 +1,6 @@
 """Test that the gene normalizer works as intended for the HGNC source."""
 import pytest
-from gene.database import DynamoDbDatabase
+from gene.database.dynamodb import DynamoDbDatabase
 from gene.schemas import Gene, MatchType, SourceName
 from gene.query import QueryHandler
 from datetime import datetime

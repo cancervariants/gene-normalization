@@ -9,7 +9,8 @@ from mock import patch
 
 from gene.etl import Ensembl, HGNC, NCBI
 from gene.etl.merge import Merge
-from gene.database import Database, AWS_ENV_VAR_NAME
+from gene.database import AWS_ENV_VAR_NAME
+from gene.database.dynamodb import DynamoDbDatabase
 
 
 ALIASES = {
@@ -42,11 +43,11 @@ def dynamodb(is_test_env):
     """Create a DynamoDB test fixture."""
     class DB:
         def __init__(self):
-            self.db = Database()
+            self.db = DynamoDbDatabase()
             self.merge = Merge(database=self.db)
             if is_test_env and AWS_ENV_VAR_NAME not in environ:
-                self.db.delete_all_db_tables()
-                self.db.create_db_tables()
+                self.db.drop_db()
+                self.db.initialize_db()
     return DB()
 
 

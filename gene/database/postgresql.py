@@ -6,6 +6,7 @@ TODO
  * AWS environment stuff? Not sure if necessary at this juncture
  * properly close connection? seems to be closing correctly here but idk
  * materialized view for _get_record calls
+ * this should work: get record ID for ensembl:ensg00000290825
 """
 
 import atexit
@@ -414,7 +415,7 @@ class PostgresDatabase(AbstractDatabase):
         else:
             return self._get_record(concept_id, case_sensitive)
 
-    def get_refs_by_type(self, query: str, match_type: str) -> List[Dict]:
+    def get_refs_by_type(self, query: str, match_type: str) -> List[str]:
         """Retrieve concept IDs for records matching the user's query. Other methods
         are responsible for actually retrieving full records.
 
@@ -422,7 +423,7 @@ class PostgresDatabase(AbstractDatabase):
         :param match_type: type of match to look for. Should be one of {"symbol",
             "prev_symbol", "alias", "xref", "associated_with"} (use `get_record_by_id`
             for concept ID lookup)
-        :return: list of matching records. Empty if lookup fails.
+        :return: list of associated concept IDs. Empty if lookup fails.
         """
         if match_type == "symbol":
             table = "gene_symbols"

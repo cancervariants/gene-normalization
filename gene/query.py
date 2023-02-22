@@ -226,24 +226,34 @@ class QueryHandler:
             queries.append((query_l, match))
 
         matched_concept_ids = list()
+        print(queries)  # TODO ???
         for term, item_type in queries:
             try:
-                query_resp = self.db.get_records_by_type(term, item_type)
+                if item_type == "identity":
+                    record = self.db.get_record_by_id(term, False)
+                    if record and record['concept_id'] not in matched_concept_ids:
+                        self.add_record(resp, record, MatchType.CONCEPT_ID)
+                else:
+                    refs = self.db.get_refs_by_type(term, item_type)
+                    for ref in refs:
+                        if ref not in matched_concept_ids:
+                            self.fetch_record(resp, ref, MatchType[item_type.upper()])
+                            matched_concept_ids.append(ref)
                 # query_resp = self.db.genes.query(
                 #     KeyConditionExpression=Key('label_and_type').eq(q)
                 # )
-                for record in query_resp:
-                    concept_id = record["concept_id"]
-                    if concept_id in matched_concept_ids:
-                        continue
-                    else:
-                        if record["item_type"] == "identity":
-                            self.add_record(resp, record, MatchType.CONCEPT_ID)
-                        else:
-                            self.fetch_record(
-                                resp, concept_id,
-                                MatchType[record['item_type'].upper()])
-                        matched_concept_ids.append(concept_id)
+                # for record in query_resp:
+                #     concept_id = record["concept_id"]
+                #     if concept_id in matched_concept_ids:
+                #         continue
+                #     else:
+                #         if record["item_type"] == "identity":
+                #             self.add_record(resp, record, MatchType.CONCEPT_ID)
+                #         else:
+                #             self.fetch_record(
+                #                 resp, concept_id,
+                #                 MatchType[record['item_type'].upper()])
+                #         matched_concept_ids.append(concept_id)
 
             except DatabaseReadException as e:
                 logger.error(
