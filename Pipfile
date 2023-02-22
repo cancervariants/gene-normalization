@@ -9,8 +9,8 @@ fastapi = "*"
 uvicorn = "*"
 click = "*"
 boto3 = "*"
-"ga4gh.vrsatile.pydantic" = ">=0.1.dev3"
-"ga4gh.vrs" = {version = ">=0.8.7dev0"}
+"ga4gh.vrsatile.pydantic" = ">=0.1.0.dev7"
+"ga4gh.vrs" = {version = ">=0.9.0.dev0"}
 
 [dev-packages]
 gene = {editable = true, path = "."}
@@ -21,8 +21,6 @@ pytest = "*"
 pre-commit = "*"
 flake8 = "*"
 flake8-docstrings = "*"
-coverage = "*"
-coveralls = "*"
 pytest-cov = "*"
-jupyterlab = "*"
 mock = "*"
+ipykernel = "*"
