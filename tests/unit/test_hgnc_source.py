@@ -503,7 +503,6 @@ def csf2ra():
             "ccds:CCDS35190",
             "ccds:CCDS55360",
             "ccds:CCDS35191",
-            "ccds:CCDS55361",
             "ccds:CCDS55359",
             "ccds:CCDS35192",
             "ccds:CCDS35193",
