@@ -160,10 +160,10 @@ class CLI:
         processed_ids += source.perform_etl()
         end_load = timer()
         load_time = end_load - start_load
-        msg = f"Loaded {n} in {load_time:.5f} seconds."
+        msg = f"Loaded {n.value} in {load_time:.5f} seconds."
         click.echo(msg)
         logger.info(msg)
-        msg = f"Total time for {n}: {(delete_time + load_time):.5f} seconds."
+        msg = f"Total time for {n.value}: {(delete_time + load_time):.5f} seconds."
         click.echo(msg)
         logger.info(msg)
 
@@ -171,8 +171,8 @@ class CLI:
     def _load_merge(db, processed_ids):
         """Load merged concepts"""
         start = timer()
+        CLI()._delete_normalized_data(db)
         if not processed_ids:
-            CLI()._delete_normalized_data(db)
             processed_ids = db.get_all_concept_ids()
         merge = Merge(database=db)
         click.echo("Constructing normalized records...")

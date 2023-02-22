@@ -17,6 +17,7 @@ from typing import Any, Dict, List, Optional, Set
 import tempfile
 
 import psycopg
+from psycopg.errors import UniqueViolation
 import requests
 
 from gene.database.database import AbstractDatabase, DatabaseException, \
@@ -474,7 +475,8 @@ class PostgresDatabase(AbstractDatabase):
                 VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s );
                 """,
                 [
-                    src_name, meta.data_license, meta.data_license_url, meta.version,
+                    src_name.value,
+                    meta.data_license, meta.data_license_url, meta.version,
                     meta.data_url, meta.rdp_url,
                     meta.data_license_attributes["non_commercial"],
                     meta.data_license_attributes["attribution"],
@@ -508,24 +510,30 @@ class PostgresDatabase(AbstractDatabase):
         if not locations:
             locations = None
         with self.conn.cursor() as cur:
-            cur.execute(record_query, [
-                concept_id, record["src_name"], record.get("symbol_status"),
-                record.get("label"), record.get("strand"),
-                record.get("location_annotations"),
-                locations,
-                record.get("gene_type")
-            ])
-            for a in record.get("aliases", []):
-                cur.execute(insert_alias, [a, concept_id])
-            for x in record.get("xrefs", []):
-                cur.execute(insert_xref, [x, concept_id])
-            for a in record.get("associated_with", []):
-                cur.execute(insert_assoc, [a, concept_id])
-            for p in record.get("previous_symbols", []):
-                cur.execute(insert_prev_symbol, [p, concept_id])
-            if record.get("symbol"):
-                cur.execute(insert_symbol, [record["symbol"], concept_id])
-            self.conn.commit()
+            try:
+                cur.execute(record_query, [
+                    concept_id, record["src_name"], record.get("symbol_status"),
+                    record.get("label"), record.get("strand"),
+                    record.get("location_annotations"),
+                    locations,
+                    record.get("gene_type")
+                ])
+                for a in record.get("aliases", []):
+                    cur.execute(insert_alias, [a, concept_id])
+                for x in record.get("xrefs", []):
+                    cur.execute(insert_xref, [x, concept_id])
+                for a in record.get("associated_with", []):
+                    cur.execute(insert_assoc, [a, concept_id])
+                for p in record.get("previous_symbols", []):
+                    cur.execute(insert_prev_symbol, [p, concept_id])
+                if record.get("symbol"):
+                    cur.execute(insert_symbol, [record["symbol"], concept_id])
+                self.conn.commit()
+            except UniqueViolation:
+                logger.error(
+                    f"Record with ID {concept_id} already exists"
+                )
+                self.conn.rollback()
 
     def _add_merged_record(self, record: Dict) -> None:
         """Add merged record to database.
