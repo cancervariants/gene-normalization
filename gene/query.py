@@ -157,20 +157,16 @@ class QueryHandler:
         :param MatchType match_type: match type for record
         """
         try:
-            match = self.db.get_record_by_id(concept_id)  # TODO case sensitive?
+            match = self.db.get_record_by_id(concept_id, case_sensitive=False)
         except DatabaseReadException as e:
             logger.error(
                 f"Encountered DatabaseReadException looking up {concept_id}: {e}"
             )
         else:
             if match:
-                # pk = f'{concept_id}##identity'
-                # filter_exp = Key('label_and_type').eq(pk)
-                # result = self.db.genes.query(KeyConditionExpression=filter_exp)
-                # match = result['Items'][0]
                 self.add_record(response, match, match_type)
             else:
-                pass  # TODO handle lookup fail
+                logger.error(f"Unable to find expected record for {concept_id} matching as {match_type}")  # noqa: E501
 
     def post_process_resp(self, resp: Dict) -> Dict:
         """Fill all empty source_matches slots with NO_MATCH results and
@@ -226,7 +222,6 @@ class QueryHandler:
             queries.append((query_l, match))
 
         matched_concept_ids = list()
-        print(queries)  # TODO ???
         for term, item_type in queries:
             try:
                 if item_type == "identity":
@@ -239,21 +234,6 @@ class QueryHandler:
                         if ref not in matched_concept_ids:
                             self.fetch_record(resp, ref, MatchType[item_type.upper()])
                             matched_concept_ids.append(ref)
-                # query_resp = self.db.genes.query(
-                #     KeyConditionExpression=Key('label_and_type').eq(q)
-                # )
-                # for record in query_resp:
-                #     concept_id = record["concept_id"]
-                #     if concept_id in matched_concept_ids:
-                #         continue
-                #     else:
-                #         if record["item_type"] == "identity":
-                #             self.add_record(resp, record, MatchType.CONCEPT_ID)
-                #         else:
-                #             self.fetch_record(
-                #                 resp, concept_id,
-                #                 MatchType[record['item_type'].upper()])
-                #         matched_concept_ids.append(concept_id)
 
             except DatabaseReadException as e:
                 logger.error(

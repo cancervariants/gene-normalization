@@ -21,10 +21,9 @@ import psycopg
 from psycopg.errors import UniqueViolation
 import requests
 
-from gene.database.database import AbstractDatabase, DatabaseException, \
-    DatabaseReadException
+from gene.database import AbstractDatabase, DatabaseException, \
+    DatabaseReadException, DatabaseWriteException
 from gene.schemas import SourceMeta, SourceName
-from old_db import DatabaseWriteException
 
 
 logger = logging.getLogger()
