@@ -198,6 +198,8 @@ def normalized_braf():
                     "ucsc:uc003vwc.5",
                     "ccds:CCDS5863",
                     "ccds:CCDS87555",
+                    "ccds:CCDS94218",
+                    "ccds:CCDS94219",
                     "uniprot:P15056",
                     "pubmed:2284096",
                     "pubmed:1565476",
