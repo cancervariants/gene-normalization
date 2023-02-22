@@ -1,7 +1,6 @@
 """This module provides a CLI util to make updates to normalizer database."""
 from collections.abc import Collection
 import logging
-from os import environ
 from timeit import default_timer as timer
 from typing import List
 
@@ -9,8 +8,8 @@ import click
 
 from gene import SOURCES
 from gene.database import AbstractDatabase, DatabaseReadException, \
-    DatabaseWriteException, confirm_aws_db_use, \
-    SKIP_AWS_DB_ENV_NAME, VALID_AWS_ENV_NAMES, AWS_ENV_VAR_NAME
+    DatabaseWriteException
+from gene.database import create_db
 from gene.etl import NCBI, HGNC, Ensembl  # noqa: F401
 from gene.etl.merge import Merge
 from gene.schemas import SourceName
@@ -51,36 +50,7 @@ class CLI:
     def update_normalizer_db(normalizer, aws_instance, db_url, update_all,
                              update_merged):
         """Update selected normalizer source(s) in the gene database."""
-        # If SKIP_AWS_CONFIRMATION is accidentally set, we should verify that the
-        # aws instance should actually be used
-        invalid_aws_msg = f"{AWS_ENV_VAR_NAME} must be set to one of {VALID_AWS_ENV_NAMES}"  # noqa: E501
-        aws_env_var_set = False
-        if AWS_ENV_VAR_NAME in environ:
-            aws_env_var_set = True
-            assert environ[AWS_ENV_VAR_NAME] in VALID_AWS_ENV_NAMES, invalid_aws_msg
-            confirm_aws_db_use(environ[AWS_ENV_VAR_NAME].upper())
-
-        if aws_env_var_set or aws_instance:
-            assert AWS_ENV_VAR_NAME in environ, invalid_aws_msg
-            environ[SKIP_AWS_DB_ENV_NAME] = "true"  # this is already checked above
-
-            from gene.database.dynamodb import DynamoDbDatabase
-            db = DynamoDbDatabase()
-        else:
-            if db_url:
-                endpoint_url = db_url
-            elif 'GENE_NORM_DB_URL' in environ.keys():
-                endpoint_url = environ['GENE_NORM_DB_URL']
-            else:
-                endpoint_url = 'http://localhost:8000'
-
-            # prefer DynamoDB unless connection explicitly reads like a libpq URI
-            if endpoint_url.startswith("postgres"):
-                from gene.database.postgresql import PostgresDatabase
-                db = PostgresDatabase(endpoint_url)
-            else:
-                from gene.database.dynamodb import DynamoDbDatabase
-                db = DynamoDbDatabase(endpoint_url)
+        db = create_db(db_url, aws_instance)
 
         if update_all:
             CLI()._update_normalizers(list(SourceName), db, update_merged)
