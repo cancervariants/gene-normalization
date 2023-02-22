@@ -587,9 +587,9 @@ class QueryHandler:
         :param str match_type: keyword of match type to check
         :return: List of records matching the query and match level
         """
-        matching_refs = self.db.get_records_by_type(query, match_type)
-        matching_records = [self.db.get_record_by_id(m["concept_id"], False)
-                            for m in matching_refs]
+        matching_refs = self.db.get_refs_by_type(query, match_type)
+        matching_records = [self.db.get_record_by_id(ref, False)
+                            for ref in matching_refs]
         return sorted(matching_records, key=self._record_order)  # type: ignore
 
     def _perform_normalized_lookup(
@@ -618,15 +618,13 @@ class QueryHandler:
 
         for match_type in ITEM_TYPES.values():
             # get matches list for match tier
-            matching_refs = self.db.get_records_by_type(query_str, match_type)
+            matching_refs = self.db.get_refs_by_type(query_str, match_type)
             matching_records = \
-                [self.db.get_record_by_id(m['concept_id'], False)
-                 for m in matching_refs]
+                [self.db.get_record_by_id(ref, False) for ref in matching_refs]
             matching_records.sort(key=self._record_order)  # type: ignore
 
             if len(matching_refs) > 1:
-                possible_concepts = \
-                    [ref["concept_id"] for ref in matching_refs]
+                possible_concepts = [ref for ref in matching_refs]
             else:
                 possible_concepts = None
 
