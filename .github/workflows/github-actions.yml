@@ -27,7 +27,7 @@ jobs:
                   pipenv install --dev
 
             - name: Build local DynamoDB
-              if: ${{ env.GENE_NORM_DB_URL == "http://localhost:8000" }}
+              if: ${{ env.GENE_NORM_DB_URL == 'http://localhost:8000' }}
               run: |
                 chmod +x ./tests/unit/dynamodb_build.bash
                 ./tests/unit/dynamodb_build.bash
