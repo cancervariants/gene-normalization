@@ -13,7 +13,7 @@ jobs:
               POSTGRES_USER: 'postgres'
               POSTGRES_DB: 'gene_normalizer'
               POSTGRES_PASSWORD: ''
-            posts:
+            ports:
               - 5432: 5432
         env:
             AWS_ACCESS_KEY_ID: ${{ secrets.DUMMY_AWS_ACCESS_KEY_ID }}
