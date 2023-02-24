@@ -1,45 +1,45 @@
 name: github-actions
 on: [push, pull_request]
 jobs:
-    test:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                db_url: ["http://localhost:8000", "postgres://postgres@localhost:5432/gene_normalizer"]
-        services:
-          postgres:
-            image: postgres:14
-            env:
-              POSTGRES_USER: 'postgres'
-              POSTGRES_DB: 'gene_normalizer'
-              POSTGRES_PASSWORD: ''
-            ports:
-              - 5432:5432
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        db_url: ["http://localhost:8000", "postgres://postgres:postgres@localhost:5432/gene_normalizer"]
+    services:
+      postgres:
+        image: postgres:14
         env:
-            AWS_ACCESS_KEY_ID: ${{ secrets.DUMMY_AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY: ${{ secrets.DUMMY_AWS_SECRET_ACCESS_KEY }}
-            AWS_DEFAULT_REGION: us-east-2
-            AWS_DEFAULT_OUTPUT: text
-            GENE_NORM_DB_URL: ${{ matrix.db_url }}
-            GENE_TEST: true
-        steps:
-            - uses: actions/checkout@v3
+          POSTGRES_USER: 'postgres'
+          POSTGRES_DB: 'gene_normalizer'
+          POSTGRES_PASSWORD: 'postgres'
+        ports:
+          - 5432:5432
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.DUMMY_AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.DUMMY_AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: us-east-2
+      AWS_DEFAULT_OUTPUT: text
+      GENE_NORM_DB_URL: ${{ matrix.db_url }}
+      GENE_TEST: true
+    steps:
+      - uses: actions/checkout@v3
 
-            - name: Setup Python
-              uses: actions/setup-python@v4
-              with:
-                  python-version: 3.8
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+            python-version: 3.8
 
-            - name: Install dependencies
-              run: |
-                  python3 -m pip install pipenv
-                  pipenv install --dev
+      - name: Install dependencies
+        run: |
+          python3 -m pip install pipenv
+          pipenv install --dev
 
-            - name: Build local DynamoDB
-              if: ${{ env.GENE_NORM_DB_URL == 'http://localhost:8000' }}
-              run: |
-                chmod +x ./tests/unit/dynamodb_build.bash
-                ./tests/unit/dynamodb_build.bash
+      - name: Build local DynamoDB
+        if: ${{ env.GENE_NORM_DB_URL == 'http://localhost:8000' }}
+        run: |
+          chmod +x ./tests/unit/dynamodb_build.bash
+          ./tests/unit/dynamodb_build.bash
 
-            - run: pipenv run flake8
-            - run: pipenv run pytest tests/
+      - run: pipenv run flake8
+      - run: pipenv run pytest tests/
