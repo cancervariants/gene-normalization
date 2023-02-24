@@ -6,6 +6,15 @@ jobs:
         strategy:
             matrix:
                 db_url: ["http://localhost:8000", "postgres://postgres@localhost:5432/gene_normalizer"]
+        servvices:
+          postgres:
+            image: postgres:14
+            env:
+              POSTGRES_USER: 'postgres'
+              POSTGRES_DB: 'gene_normalizer'
+              POSTGRES_PASSWORD: ''
+            posts:
+              - 5432: 5432
         env:
             AWS_ACCESS_KEY_ID: ${{ secrets.DUMMY_AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.DUMMY_AWS_SECRET_ACCESS_KEY }}
