@@ -3,12 +3,15 @@ on: [push, pull_request]
 jobs:
     test:
         runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                db_url: ["http://localhost:8000", "postgres://postgres@localhost:5432/gene_normalizer"]
         env:
             AWS_ACCESS_KEY_ID: ${{ secrets.DUMMY_AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.DUMMY_AWS_SECRET_ACCESS_KEY }}
             AWS_DEFAULT_REGION: us-east-2
             AWS_DEFAULT_OUTPUT: text
-            GENE_NORM_DB_URL: http://localhost:8000
+            GENE_NORM_DB_URL: ${{ matrix.db_url }}
             GENE_TEST: true
         steps:
             - uses: actions/checkout@v3
@@ -24,6 +27,7 @@ jobs:
                   pipenv install --dev
 
             - name: Build local DynamoDB
+              if: ${{ env.GENE_NORM_DB_URL == "http://localhost:8000" }}
               run: |
                 chmod +x ./tests/unit/dynamodb_build.bash
                 ./tests/unit/dynamodb_build.bash

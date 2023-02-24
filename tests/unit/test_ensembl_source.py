@@ -1,6 +1,6 @@
 """Test that the gene normalizer works as intended for the Ensembl source."""
 import pytest
-from gene.database.dynamodb import DynamoDbDatabase
+from gene.database import create_db
 from gene.schemas import Gene, MatchType, SourceName
 from gene.query import QueryHandler
 from tests.conftest import check_resp_single_record
@@ -11,7 +11,7 @@ def ensembl():
     """Build ensembl test fixture."""
     class QueryGetter:
         def __init__(self):
-            db = DynamoDbDatabase()  # TODO
+            db = create_db()
             self.query_handler = QueryHandler(db)
 
         def search(self, query_str, incl="ensembl"):
