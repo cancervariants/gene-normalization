@@ -1,6 +1,5 @@
 """Test import of NCBI source data"""
 import pytest
-from gene.database import create_db
 from gene.schemas import Gene, MatchType, SourceName
 from gene.query import QueryHandler
 from datetime import datetime
@@ -9,12 +8,11 @@ from tests.conftest import assertion_checks, check_ncbi_discontinued_gene, \
 
 
 @pytest.fixture(scope="module")
-def ncbi():
+def ncbi(database):
     """Build ncbi test fixture."""
     class QueryGetter:
         def __init__(self):
-            db = create_db()
-            self.query_handler = QueryHandler(db)
+            self.query_handler = QueryHandler(database)
 
         def search(self, query_str, incl="ncbi"):
             resp = self.query_handler.search(query_str, keyed=True, incl=incl)

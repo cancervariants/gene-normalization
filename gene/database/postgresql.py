@@ -65,6 +65,21 @@ class PostgresDatabase(AbstractDatabase):
 
         atexit.register(self.complete_transaction)
 
+    def list_tables(self) -> List[str]:
+        """Return names of tables in database.
+
+        :return: Table names in database
+        """
+        with self.conn.cursor() as cur:
+            cur.execute(
+                """SELECT table_name FROM information_schema.tables
+                WHERE table_schema = 'public'
+                AND table_type = 'BASE TABLE';
+                """
+            )
+            tables = cur.fetchall()
+        return [t[0] for t in tables]
+
     def drop_db(self) -> None:
         """Perform complete teardown of DB. Useful for quickly resetting all data or
         reconstructing after apparent schema error.
@@ -255,15 +270,18 @@ class PostgresDatabase(AbstractDatabase):
 
         :param SourceName: name of the source to get data for
         """
+        if isinstance(src_name, SourceName):
+            src_name = src_name.value
+
         if src_name in self._cached_sources:
             return self._cached_sources[src_name]
 
         metadata_query = "SELECT * FROM gene_sources WHERE name = %s;"
         with self.conn.cursor() as cur:
-            cur.execute(metadata_query, [src_name.value])
+            cur.execute(metadata_query, [src_name])
             metadata_result = cur.fetchone()
             if not metadata_result:
-                raise DatabaseReadException(f"{src_name.value} metadata lookup failed")
+                raise DatabaseReadException(f"{src_name} metadata lookup failed")
             metadata = {
                 "data_license": metadata_result[1],
                 "data_license_url": metadata_result[2],
@@ -354,6 +372,7 @@ class PostgresDatabase(AbstractDatabase):
             "symbol": result[10],
             "xrefs": result[11],
             "src_name": result[12],
+            "item_type": "identity",
         }
         return {k: v for k, v in gene_record.items() if v}
 
@@ -395,6 +414,7 @@ class PostgresDatabase(AbstractDatabase):
             "aliases": result[14],
             "associated_with": result[15],
             "xrefs": result[16],
+            "item_type": "merger",
         }
         return merged_record
 
@@ -437,9 +457,11 @@ class PostgresDatabase(AbstractDatabase):
         else:
             raise ValueError
 
-        lookup_query = "SELECT concept_id FROM %s WHERE lower(%s) = %s;"
         with self.conn.cursor() as cur:
-            cur.execute(lookup_query, (table, match_type, query.lower()))
+            cur.execute(
+                f"SELECT concept_id FROM {table} WHERE lower({match_type}) = %s;",
+                (query.lower(), )
+            )
             concept_ids = cur.fetchall()
         if concept_ids:
             return [i[0] for i in concept_ids]

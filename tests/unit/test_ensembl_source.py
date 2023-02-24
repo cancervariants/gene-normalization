@@ -1,18 +1,16 @@
 """Test that the gene normalizer works as intended for the Ensembl source."""
 import pytest
-from gene.database import create_db
 from gene.schemas import Gene, MatchType, SourceName
 from gene.query import QueryHandler
 from tests.conftest import check_resp_single_record
 
 
 @pytest.fixture(scope="module")
-def ensembl():
+def ensembl(database):
     """Build ensembl test fixture."""
     class QueryGetter:
         def __init__(self):
-            db = create_db()
-            self.query_handler = QueryHandler(db)
+            self.query_handler = QueryHandler(database)
 
         def search(self, query_str, incl="ensembl"):
             resp = self.query_handler.search(query_str, keyed=True, incl=incl)

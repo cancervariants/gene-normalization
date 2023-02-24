@@ -1,5 +1,14 @@
 """Provide utilities for test cases."""
+import pytest
+from gene.database import AbstractDatabase, create_db
+
 from gene.schemas import SymbolStatus
+
+
+@pytest.fixture(scope="session")
+def database() -> AbstractDatabase:
+    """Create database instance."""
+    return create_db()
 
 
 def assertion_checks(normalized_gene, test_gene, match_type):

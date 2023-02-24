@@ -3,7 +3,7 @@ import atexit
 import logging
 from os import environ
 import sys
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Union
 import boto3
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
@@ -79,7 +79,7 @@ class DynamoDbDatabase(AbstractDatabase):
         self._cached_sources = {}
         atexit.register(self.complete_transaction)
 
-    def _get_table_names(self) -> List[str]:
+    def list_tables(self) -> List[str]:
         """Return names of tables in database.
 
         :return: Table names in DynamoDB
@@ -88,8 +88,7 @@ class DynamoDbDatabase(AbstractDatabase):
 
     def drop_db(self) -> None:
         """Delete all tables from database."""
-        print("dropping db")
-        existing_tables = self._get_table_names()
+        existing_tables = self.list_tables()
         for table_name in existing_tables:
             self.dynamodb.Table(table_name).delete()
 
@@ -200,15 +199,17 @@ class DynamoDbDatabase(AbstractDatabase):
 
     def initialize_db(self) -> None:
         """Create gene_concepts and gene_metadata tables."""
-        existing_tables = self._get_table_names()
+        existing_tables = self.list_tables()
         self._create_genes_table(existing_tables)
         self._create_meta_data_table(existing_tables)
 
-    def get_source_metadata(self, src_name: SourceName) -> Dict:
+    def get_source_metadata(self, src_name: Union[str, SourceName]) -> Dict:
         """Get license, versioning, data lookup, etc information for a source.
 
         :param SourceName: name of the source to get data for
         """
+        if isinstance(src_name, SourceName):
+            src_name = src_name.value
         if src_name in self._cached_sources:
             return self._cached_sources[src_name]
         else:
@@ -242,7 +243,9 @@ class DynamoDbDatabase(AbstractDatabase):
             else:
                 exp = Key('label_and_type').eq(pk)
                 response = self.genes.query(KeyConditionExpression=exp)
-                return response['Items'][0]
+                record = response['Items'][0]
+                del record["label_and_type"]
+                return record
         except ClientError as e:
             logger.error(f"boto3 client error on get_records_by_id for "
                          f"search term {concept_id}: "

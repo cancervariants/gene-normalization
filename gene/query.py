@@ -94,11 +94,11 @@ class QueryHandler:
         :return: VRS sequence or chromosome location represented as a dictionary
         """
         if loc["type"] == VRSTypes.SEQUENCE_LOCATION:
-            loc = self._transform_sequence_location(loc)
+            transformed_loc = self._transform_sequence_location(loc)
         else:
-            loc = self._transform_chromosome_location(loc)
-        loc._id = ga4gh_identify(loc)
-        return loc.as_dict()
+            transformed_loc = self._transform_chromosome_location(loc)
+        transformed_loc._id = ga4gh_identify(transformed_loc)
+        return transformed_loc.as_dict()
 
     def _transform_locations(self, record: Dict) -> Dict:
         """Transform gene locations to VRS Chromosome/Sequence Locations
@@ -113,25 +113,36 @@ class QueryHandler:
         record["locations"] = record_locations
         return record
 
+    def _get_src_name(self, concept_id: str) -> SourceName:
+        """Get source name enum from ID.
+        :return: SourceName option
+        :raise: ValueError if unrecognized ID provided
+        """
+        if concept_id.startswith("ensembl"):
+            return SourceName.ENSEMBL
+        elif concept_id.startswith("ncbigene"):
+            return SourceName.NCBI
+        elif concept_id.startswith("hgnc"):
+            return SourceName.HGNC
+        else:
+            raise ValueError
+
     def add_record(self,
                    response: Dict[str, Dict],
                    item: Dict,
-                   match_type: MatchType) -> Tuple[Dict, str]:
+                   match_type: MatchType):
         """Add individual record (i.e. Item in DynamoDB) to response object
 
         :param Dict[str, Dict] response: in-progress response object to return
             to client
         :param Dict item: Item retrieved from DynamoDB
         :param MatchType match_type: match type for query
-        :return: Tuple containing updated response object, and string
-            containing name of the source of the match
         """
-        del item['label_and_type']
-        # DynamoDB Numbers get converted to Decimal
+        # DynamoDB Numbers get converted to Decimal  # TODO < -- ?
         item = self._transform_locations(item)
         item["match_type"] = match_type
         gene = Gene(**item)
-        src_name = item['src_name']
+        src_name = item["src_name"]
 
         matches = response['source_matches']
         if src_name not in matches.keys():
@@ -143,8 +154,6 @@ class QueryHandler:
             }
         else:
             matches[src_name]['records'].append(gene)
-
-        return response, src_name
 
     def fetch_record(self, response: Dict[str, Dict], concept_id: str,
                      match_type: MatchType) -> None:

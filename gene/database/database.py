@@ -2,7 +2,7 @@
 import abc
 from enum import Enum
 from os import environ
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, Union
 import click
 import sys
 
@@ -41,6 +41,14 @@ class AbstractDatabase(abc.ABC):
         pass
 
     @abc.abstractmethod
+    def list_tables(self) -> List[str]:
+        """Return names of tables in database.
+
+        :return: Table names in database
+        """
+        pass
+
+    @abc.abstractmethod
     def drop_db(self) -> None:
         """Initiate total teardown of DB. Useful for quickly resetting the entirety of
         the data.
@@ -56,7 +64,7 @@ class AbstractDatabase(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_source_metadata(self, src_name: SourceName) -> Dict:
+    def get_source_metadata(self, src_name: Union[str, SourceName]) -> Dict:
         """Get license, versioning, data lookup, etc information for a source.
 
         :param SourceName: name of the source to get data for

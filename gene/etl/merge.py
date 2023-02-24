@@ -171,6 +171,4 @@ class Merge:
                 del merged_attrs[field]
 
         merged_attrs['item_type'] = 'merger'
-        if 'ncbigene:3466' in record_id_set:
-            print(merged_attrs)
         return merged_attrs
