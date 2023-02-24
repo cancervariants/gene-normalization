@@ -98,6 +98,7 @@ def test_ensembl_etl(test_get_seqrepo, processed_ids, dynamodb, etl_data_path,
         e._data_src = etl_data_path / 'ensembl_109.gff3'
         e._transform_data()
         e._add_meta()
+        dynamodb.db.complete_transaction()
         processed_ids += e._processed_ids
 
 
@@ -118,6 +119,7 @@ def test_hgnc_etl(test_get_seqrepo, processed_ids, dynamodb, etl_data_path,
         h._version = '20210810'
         h._transform_data()
         h._add_meta()
+        dynamodb.db.complete_transaction()
         processed_ids += h._processed_ids
 
 
@@ -140,6 +142,7 @@ def test_ncbi_etl(test_get_seqrepo, processed_ids, dynamodb, etl_data_path,
         n._version = n._info_src.stem.split('_')[-1]
         n._transform_data()
         n._add_meta()
+        dynamodb.db.complete_transaction()
         processed_ids += n._processed_ids
 
 

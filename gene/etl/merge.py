@@ -2,7 +2,7 @@
 from gene.database import AbstractDatabase
 from gene.database.database import DatabaseWriteException
 from gene.schemas import SourcePriority, GeneTypeFieldName
-from typing import Set, Dict
+from typing import Optional, Set, Dict
 from timeit import default_timer as timer
 import logging
 
@@ -64,16 +64,20 @@ class Merge:
                     else:
                         logger.error(str(dw))
             uploaded_ids |= group
+        self._database.complete_transaction()
         logger.info('Merged concept generation successful.')
         end = timer()
         logger.debug(f'Generated and added concepts in {end - start} seconds')
 
     def _create_record_id_set(self, record_id: str,
-                              observed_id_set: Set = set()) -> Set[str]:
+                              observed_id_set: Optional[Set] = None) -> Set[str]:
         """Create concept ID group for an individual record ID.
         :param str record_id: concept ID for record to build group from
         :return: set of related identifiers pertaining to a common concept.
         """
+        if observed_id_set is None:
+            observed_id_set = set()
+
         if record_id in self._groups:
             return self._groups[record_id]
         else:
@@ -167,4 +171,6 @@ class Merge:
                 del merged_attrs[field]
 
         merged_attrs['item_type'] = 'merger'
+        if 'ncbigene:3466' in record_id_set:
+            print(merged_attrs)
         return merged_attrs

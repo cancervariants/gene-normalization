@@ -88,6 +88,7 @@ class DynamoDbDatabase(AbstractDatabase):
 
     def drop_db(self) -> None:
         """Delete all tables from database."""
+        print("dropping db")
         existing_tables = self._get_table_names()
         for table_name in existing_tables:
             self.dynamodb.Table(table_name).delete()
