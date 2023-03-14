@@ -1,6 +1,5 @@
 """Module to test the query module."""
 from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
-from gene.database.dynamodb import DynamoDbDatabase
 from gene.query import QueryHandler, InvalidParameterException
 from gene.schemas import BaseGene, SourceName, MatchType
 import copy
@@ -8,13 +7,12 @@ import pytest
 
 
 @pytest.fixture(scope='module')
-def query_handler():
+def query_handler(database):
     """Build query_handler test fixture."""
     class QueryGetter:
 
         def __init__(self):
-            db = DynamoDbDatabase()  # TODO
-            self.query_handler = QueryHandler(db)
+            self.query_handler = QueryHandler(database)
 
         def search(self, query_str, keyed=False, incl='', excl=''):
             return self.query_handler.search(query_str=query_str, keyed=keyed,

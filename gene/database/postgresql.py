@@ -23,6 +23,7 @@ import requests
 
 from gene.database import AbstractDatabase, DatabaseException, \
     DatabaseReadException, DatabaseWriteException
+from gene.database.database import time_function
 from gene.schemas import SourceMeta, SourceName
 
 
@@ -85,6 +86,7 @@ class PostgresDatabase(AbstractDatabase):
         reconstructing after apparent schema error.
         """
         drop_query = """
+        DROP MATERIALIZED VIEW IF EXISTS record_lookup_view;
         DROP TABLE IF EXISTS
             gene_associations,
             gene_symbols,
@@ -102,12 +104,7 @@ class PostgresDatabase(AbstractDatabase):
 
     def initialize_db(self) -> None:
         """Check if DB is set up. If not, create tables/indexes/views."""
-        with self.conn.cursor() as cur:
-            cur.execute(
-                "SELECT table_name FROM information_schema.tables "
-                "WHERE table_type = 'BASE TABLE' AND table_schema = 'public'"
-            )
-            tables = {t[0] for t in cur.fetchall()}
+        tables = self.list_tables()
 
         expected_tables = ["gene_associations", "gene_sources", "gene_concepts",
                            "gene_symbols", "gene_previous_symbols", "gene_aliases",
@@ -123,13 +120,16 @@ class PostgresDatabase(AbstractDatabase):
     def _create_indexes(self) -> None:
         """Create all indexes."""
         query = """
+        CREATE INDEX IF NOT EXISTS idx_g_concept_id ON gene_concepts (concept_id);
+        CREATE INDEX IF NOT EXISTS idx_g_concept_id_low
+            ON gene_concepts (lower(concept_id));
         CREATE INDEX IF NOT EXISTS idx_gm_concept_id ON gene_merged (concept_id);
         CREATE INDEX IF NOT EXISTS idx_gm_concept_id_low
-            ON gene_merged ((lower(concept_id)));
+            ON gene_merged (lower(concept_id));
 
         CREATE INDEX IF NOT EXISTS idx_gc_source ON gene_concepts (source);
         CREATE INDEX IF NOT EXISTS idx_gc_source_low
-            ON gene_concepts ((lower(concept_id)));
+            ON gene_concepts (lower(source));
         CREATE INDEX IF NOT EXISTS idx_gc_merged ON gene_concepts (merge_ref);
 
         CREATE INDEX IF NOT EXISTS idx_gs_concept ON gene_symbols (concept_id);
@@ -142,6 +142,48 @@ class PostgresDatabase(AbstractDatabase):
         CREATE INDEX IF NOT EXISTS idx_gx_concept ON gene_xrefs (concept_id);
 
         CREATE INDEX IF NOT EXISTS idx_g_as_concept ON gene_associations (concept_id);
+
+        CREATE MATERIALIZED VIEW IF NOT EXISTS record_lookup_view AS
+        SELECT gc.concept_id,
+               gc.symbol_status,
+               gc.label,
+               gc.strand,
+               gc.location_annotations,
+               gc.locations,
+               gc.gene_type,
+               ga.aliases,
+               gas.associated_with,
+               gps.previous_symbols,
+               gs.symbol,
+               gx.xrefs,
+               gc.source,
+               gc.merge_ref
+        FROM gene_concepts gc
+
+        FULL JOIN (
+            SELECT ga_1.concept_id, array_agg(ga_1.alias) AS aliases
+            FROM gene_aliases ga_1
+            GROUP BY ga_1.concept_id
+        ) ga ON gc.concept_id::text = ga.concept_id::text
+        FULL JOIN (
+            SELECT gas_1.concept_id, array_agg(gas_1.associated_with) AS associated_with
+            FROM gene_associations gas_1
+            GROUP BY gas_1.concept_id
+        ) gas ON gc.concept_id::text = gas.concept_id::text
+        FULL JOIN (
+            SELECT gps_1.concept_id, array_agg(gps_1.prev_symbol) AS previous_symbols
+            FROM gene_previous_symbols gps_1
+            GROUP BY gps_1.concept_id
+        ) gps ON gc.concept_id::text = gps.concept_id::text
+        FULL JOIN gene_symbols gs ON gc.concept_id::text = gs.concept_id::text
+        FULL JOIN (
+            SELECT gx_1.concept_id, array_agg(gx_1.xref) AS xrefs
+            FROM gene_xrefs gx_1
+            GROUP BY gx_1.concept_id
+        ) gx ON gc.concept_id::text = gx.concept_id::text;
+
+        CREATE INDEX IF NOT EXISTS idx_rlv_concept_id
+            ON record_lookup_view (concept_id);
         """
         with self.conn.cursor() as cur:
             cur.execute(query)
@@ -183,9 +225,9 @@ class PostgresDatabase(AbstractDatabase):
             hgnc_locations JSON [],
             ncbi_locations JSON [],
             location_annotations TEXT [],
-            ensembl_biotype TEXT,
-            hgnc_locus_type TEXT,
-            ncbi_gene_type TEXT,
+            ensembl_biotype TEXT [],
+            hgnc_locus_type TEXT [],
+            ncbi_gene_type TEXT [],
             aliases TEXT [],
             associated_with TEXT [],
             xrefs TEXT []
@@ -306,50 +348,11 @@ class PostgresDatabase(AbstractDatabase):
         :param case_sensitive:
         :return: complete record object if successful
         """
-        query = """
-        SELECT
-            gc.concept_id,
-            gc.symbol_status,
-            gc.label,
-            gc.strand,
-            gc.location_annotations,
-            gc.locations,
-            gc.gene_type,
-            ga.aliases,
-            gas.associated_with,
-            gps.previous_symbols,
-            gs.symbol,
-            gx.xrefs,
-            gc.source
-        FROM gene_concepts gc
-        FULL OUTER JOIN (
-            SELECT ga.concept_id, ARRAY_AGG(ga.alias) AS aliases
-            FROM gene_aliases ga
-            GROUP BY ga.concept_id
-        ) ga ON gc.concept_id = ga.concept_id
-        FULL OUTER JOIN (
-            SELECT gas.concept_id, ARRAY_AGG(gas.associated_with) AS associated_with
-            FROM gene_associations gas
-            GROUP BY gas.concept_id
-        ) gas ON gc.concept_id = gas.concept_id
-        FULL OUTER JOIN (
-            SELECT gps.concept_id, ARRAY_AGG(gps.prev_symbol)
-                AS previous_symbols
-            FROM gene_previous_symbols gps
-            GROUP BY gps.concept_id
-        ) gps ON gc.concept_id = gps.concept_id
-        FULL OUTER JOIN gene_symbols gs ON gc.concept_id = gs.concept_id
-        FULL OUTER JOIN (
-            SELECT gx.concept_id, ARRAY_AGG(gx.xref) AS xrefs
-            FROM gene_xrefs gx
-            GROUP BY gx.concept_id
-        ) gx ON gc.concept_id = gx.concept_id
-        """
         if case_sensitive:
-            query += "WHERE gc.concept_id = %s;"
+            query = "SELECT * FROM record_lookup_view WHERE concept_id = %s;"
             concept_id_param = concept_id
         else:
-            query += "WHERE lower(gc.concept_id) = %s;"
+            query = "SELECT * FROM record_lookup_view WHERE lower(concept_id) = %s;"
             concept_id_param = concept_id.lower()
 
         with self.conn.cursor() as cur:
@@ -372,6 +375,7 @@ class PostgresDatabase(AbstractDatabase):
             "symbol": result[10],
             "xrefs": result[11],
             "src_name": result[12],
+            "merge_ref": result[13],
             "item_type": "identity",
         }
         return {k: v for k, v in gene_record.items() if v}
@@ -404,20 +408,21 @@ class PostgresDatabase(AbstractDatabase):
             "previous_symbols": result[3],
             "label": result[4],
             "strand": result[5],
-            "location_annotations": result[6],
-            "ensembl_locations": json.loads(result[8]),
-            "hgnc_locations": json.loads(result[9]),
-            "ncbi_locations": json.loads(result[10]),
-            "ensembl_biotype": result[11],
-            "hgnc_locus_type": result[12],
-            "ncbi_gene_type": result[13],
-            "aliases": result[14],
-            "associated_with": result[15],
-            "xrefs": result[16],
+            "ensembl_locations": result[6],
+            "hgnc_locations": result[7],
+            "ncbi_locations": result[8],
+            "location_annotations": result[9],
+            "ensembl_biotype": result[10],
+            "hgnc_locus_type": result[11],
+            "ncbi_gene_type": result[12],
+            "aliases": result[13],
+            "associated_with": result[14],
+            "xrefs": result[15],
             "item_type": "merger",
         }
-        return merged_record
+        return {k: v for k, v in merged_record.items() if v}
 
+    @time_function
     def get_record_by_id(self, concept_id: str, case_sensitive: bool = True,
                          merge: bool = False) -> Optional[Dict]:
         """Fetch record corresponding to provided concept ID
@@ -434,6 +439,7 @@ class PostgresDatabase(AbstractDatabase):
         else:
             return self._get_record(concept_id, case_sensitive)
 
+    @time_function
     def get_refs_by_type(self, query: str, match_type: str) -> List[str]:
         """Retrieve concept IDs for records matching the user's query. Other methods
         are responsible for actually retrieving full records.
@@ -444,6 +450,7 @@ class PostgresDatabase(AbstractDatabase):
             for concept ID lookup)
         :return: list of associated concept IDs. Empty if lookup fails.
         """
+        print(f"get refs for {query} {match_type}")
         if match_type == "symbol":
             table = "gene_symbols"
         elif match_type == "prev_symbol":
@@ -712,6 +719,9 @@ class PostgresDatabase(AbstractDatabase):
     def complete_transaction(self) -> None:
         """Conclude transaction or batch writing if relevant."""
         if not self.conn.closed:
+            with self.conn.cursor() as cur:
+                cur.execute("REFRESH MATERIALIZED VIEW record_lookup_view;")
+                self.conn.commit()  # TODO necessary?
             self.conn.commit()
 
     def load_from_remote(self, url: Optional[str]) -> None:

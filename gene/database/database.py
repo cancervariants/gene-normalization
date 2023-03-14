@@ -3,8 +3,9 @@ import abc
 from enum import Enum
 from os import environ
 from typing import Any, Dict, List, Optional, Set, Union
-import click
 import sys
+
+import click
 
 from gene.schemas import SourceMeta, SourceName
 
