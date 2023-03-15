@@ -145,7 +145,7 @@ class PostgresDatabase(AbstractDatabase):
         -- CREATE INDEX IF NOT EXISTS idx_gx_concept ON gene_xrefs (concept_id);
 
         -- CREATE INDEX IF NOT EXISTS idx_g_as_concept
-            ON gene_associations (concept_id);
+        --     ON gene_associations (concept_id);
 
         -- I think we need these
         CREATE INDEX IF NOT EXISTS idx_gs_symbol ON gene_symbols (symbol);
