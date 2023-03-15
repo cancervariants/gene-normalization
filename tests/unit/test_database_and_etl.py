@@ -31,11 +31,12 @@ ALIASES = {
 }
 
 IS_TEST_ENV = environ.get("GENE_TEST", "").lower() == "true"
+IS_DDB_TEST = not environ.get("GENE_NORM_DB_URL", "").lower().startswith("postgres")
 
 
 @pytest.fixture(scope="module")
 def db_fixture(database):
-    """Create a DynamoDB test fixture."""
+    """Create a database test fixture."""
     class DB:
         def __init__(self):
             self.db = database
@@ -151,16 +152,16 @@ def test_ncbi_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     processed_ids += n._processed_ids
 
 
-@pytest.mark.skipif(not IS_TEST_ENV, reason="not in test environment")
-def test_merged_concepts(processed_ids, dynamodb):
-    """Create merged concepts and load to db."""
-    dynamodb.merge.create_merged_concepts(processed_ids)
-
-
 @pytest.mark.skipif(
-    environ.get("GENE_NORM_DB_URL", "").startswith("postgres"),
-    reason="only applies to DynamoDB"
+    not IS_TEST_ENV,
+    reason="not in test environment"
 )
+def test_merged_concepts(processed_ids, db_fixture):
+    """Create merged concepts and load to db."""
+    db_fixture.merge.create_merged_concepts(processed_ids)
+
+
+@pytest.mark.skipif(not IS_DDB_TEST, reason="only applies to DynamoDB in test env")
 def test_item_type(db_fixture):
     """Check that items are tagged with item_type attribute."""
     filter_exp = Key('label_and_type').eq('ncbigene:8193##identity')
