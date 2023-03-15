@@ -5,8 +5,8 @@ TODO
  * async?
  * AWS environment stuff? Not sure if necessary at this juncture
  * properly close connection? seems to be closing correctly here but idk
- * materialized view for _get_record calls
- * this should work: get record ID for ensembl:ensg00000290825
+ * something weird is happening during merges where it's looking for lower case
+    record IDs?
 """
 
 import atexit
@@ -117,31 +117,58 @@ class PostgresDatabase(AbstractDatabase):
         # TODO check indexes as well?
 
     def _create_indexes(self) -> None:
-        """Create all indexes."""
+        """Create all indexes and views."""
         query = """
+        -- might be able to remove these
         CREATE INDEX IF NOT EXISTS idx_g_concept_id ON gene_concepts (concept_id);
         CREATE INDEX IF NOT EXISTS idx_g_concept_id_low
             ON gene_concepts (lower(concept_id));
+
+        -- definitely need these
         CREATE INDEX IF NOT EXISTS idx_gm_concept_id ON gene_merged (concept_id);
         CREATE INDEX IF NOT EXISTS idx_gm_concept_id_low
             ON gene_merged (lower(concept_id));
 
-        CREATE INDEX IF NOT EXISTS idx_gc_source ON gene_concepts (source);
-        CREATE INDEX IF NOT EXISTS idx_gc_source_low
-            ON gene_concepts (lower(source));
-        CREATE INDEX IF NOT EXISTS idx_gc_merged ON gene_concepts (merge_ref);
+        -- might be able to remove all of these
+        -- CREATE INDEX IF NOT EXISTS idx_gc_source ON gene_concepts (source);
+        -- CREATE INDEX IF NOT EXISTS idx_gc_source_low
+        --     ON gene_concepts (lower(source));
+        -- CREATE INDEX IF NOT EXISTS idx_gc_merged ON gene_concepts (merge_ref);
 
-        CREATE INDEX IF NOT EXISTS idx_gs_concept ON gene_symbols (concept_id);
+        -- CREATE INDEX IF NOT EXISTS idx_gs_concept ON gene_symbols (concept_id);
 
-        CREATE INDEX IF NOT EXISTS idx_gps_concept
-            ON gene_previous_symbols (concept_id);
+        -- CREATE INDEX IF NOT EXISTS idx_gps_concept
+        --     ON gene_previous_symbols (concept_id);
 
-        CREATE INDEX IF NOT EXISTS idx_ga_concept ON gene_aliases (concept_id);
+        -- CREATE INDEX IF NOT EXISTS idx_ga_concept ON gene_aliases (concept_id);
 
-        CREATE INDEX IF NOT EXISTS idx_gx_concept ON gene_xrefs (concept_id);
+        -- CREATE INDEX IF NOT EXISTS idx_gx_concept ON gene_xrefs (concept_id);
 
-        CREATE INDEX IF NOT EXISTS idx_g_as_concept ON gene_associations (concept_id);
+        -- CREATE INDEX IF NOT EXISTS idx_g_as_concept
+            ON gene_associations (concept_id);
 
+        -- I think we need these
+        CREATE INDEX IF NOT EXISTS idx_gs_symbol ON gene_symbols (symbol);
+        CREATE INDEX IF NOT EXISTS idx_gs_symbol_low ON gene_symbols (lower(symbol));
+
+        CREATE INDEX IF NOT EXISTS idx_gps_symbol
+            ON gene_previous_symbols (prev_symbol);
+        CREATE INDEX IF NOT EXISTS idx_gps_symbol_low
+            ON gene_previous_symbols (lower(prev_symbol));
+
+        CREATE INDEX IF NOT EXISTS idx_ga_alias ON gene_aliases (alias);
+        CREATE INDEX IF NOT EXISTS idx_ga_alias_low ON gene_aliases (lower(alias));
+
+        CREATE INDEX IF NOT EXISTS idx_gx_xref ON gene_xrefs (xref);
+        CREATE INDEX IF NOT EXISTS idx_gx_xref_low ON gene_xrefs (lower(xref));
+
+        CREATE INDEX IF NOT EXISTS ids_g_as_association
+            ON gene_associations (associated_with);
+        CREATE INDEX IF NOT EXISTS ids_g_as_association_low
+            ON gene_associations (lower(associated_with));
+
+
+        -- definitely need this
         CREATE MATERIALIZED VIEW IF NOT EXISTS record_lookup_view AS
         SELECT gc.concept_id,
                gc.symbol_status,
@@ -156,9 +183,9 @@ class PostgresDatabase(AbstractDatabase):
                gs.symbol,
                gx.xrefs,
                gc.source,
-               gc.merge_ref
+               gc.merge_ref,
+               lower(gc.concept_id) AS concept_id_lowercase
         FROM gene_concepts gc
-
         FULL JOIN (
             SELECT ga_1.concept_id, array_agg(ga_1.alias) AS aliases
             FROM gene_aliases ga_1
@@ -183,6 +210,8 @@ class PostgresDatabase(AbstractDatabase):
 
         CREATE INDEX IF NOT EXISTS idx_rlv_concept_id
             ON record_lookup_view (concept_id);
+        CREATE INDEX IF NOT EXISTS idx_rlv_concept_id_low
+            ON record_lookup_view (lower(concept_id));
         """
         with self.conn.cursor() as cur:
             cur.execute(query)
@@ -192,7 +221,6 @@ class PostgresDatabase(AbstractDatabase):
         """Create all tables, indexes, and views.
 
         TODO
-         * materialized view for record lookups/joins?
          * if writes are too slow, could drop indexes before refreshing a source
            and then re-add them after
         """
@@ -447,7 +475,6 @@ class PostgresDatabase(AbstractDatabase):
             for concept ID lookup)
         :return: list of associated concept IDs. Empty if lookup fails.
         """
-        print(f"get refs for {query} {match_type}")
         if match_type == "symbol":
             table = "gene_symbols"
         elif match_type == "prev_symbol":
@@ -462,6 +489,10 @@ class PostgresDatabase(AbstractDatabase):
             raise ValueError
 
         with self.conn.cursor() as cur:
+            print((
+                f"SELECT concept_id FROM {table} WHERE lower({match_type}) = %s;",
+                (query.lower(),))
+            )
             cur.execute(
                 f"SELECT concept_id FROM {table} WHERE lower({match_type}) = %s;",
                 (query.lower(), )
