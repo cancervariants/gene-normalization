@@ -23,7 +23,6 @@ import requests
 
 from gene.database import AbstractDatabase, DatabaseException, \
     DatabaseReadException, DatabaseWriteException
-from gene.database.database import time_function
 from gene.schemas import SourceMeta, SourceName
 
 
@@ -422,7 +421,6 @@ class PostgresDatabase(AbstractDatabase):
         }
         return {k: v for k, v in merged_record.items() if v}
 
-    @time_function
     def get_record_by_id(self, concept_id: str, case_sensitive: bool = True,
                          merge: bool = False) -> Optional[Dict]:
         """Fetch record corresponding to provided concept ID
@@ -439,7 +437,6 @@ class PostgresDatabase(AbstractDatabase):
         else:
             return self._get_record(concept_id, case_sensitive)
 
-    @time_function
     def get_refs_by_type(self, query: str, match_type: str) -> List[str]:
         """Retrieve concept IDs for records matching the user's query. Other methods
         are responsible for actually retrieving full records.

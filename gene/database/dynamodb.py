@@ -12,7 +12,7 @@ import click
 from gene import PREFIX_LOOKUP
 from gene.database.database import AWS_ENV_VAR_NAME, SKIP_AWS_DB_ENV_NAME, \
     VALID_AWS_ENV_NAMES, AbstractDatabase, AwsEnvName, DatabaseException, \
-    DatabaseReadException, DatabaseWriteException, confirm_aws_db_use, time_function
+    DatabaseReadException, DatabaseWriteException, confirm_aws_db_use
 from gene.schemas import SourceMeta, SourceName
 
 logger = logging.getLogger()
@@ -217,7 +217,6 @@ class DynamoDbDatabase(AbstractDatabase):
             self._cached_sources[src_name] = metadata
             return metadata
 
-    @time_function
     def get_record_by_id(self, concept_id: str,
                          case_sensitive: bool = True,
                          merge: bool = False) -> Optional[Dict]:
@@ -255,7 +254,6 @@ class DynamoDbDatabase(AbstractDatabase):
         except (KeyError, IndexError):  # record doesn't exist
             return None
 
-    @time_function
     def get_refs_by_type(self, query: str, match_type: str) -> List[str]:
         """Retrieve concept IDs for records matching the user's query. Other methods
         are responsible for actually retrieving full records.
