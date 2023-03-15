@@ -48,6 +48,7 @@ class NCBI(Base):
         :return: Concept IDs of concepts successfully loaded
         """
         self._extract_data()
+        self._add_meta()
         self._transform_data()
         self._database.complete_transaction()
         return self._processed_ids
@@ -527,7 +528,6 @@ class NCBI(Base):
     def _transform_data(self):
         """Modify data and pass to loading functions."""
         logger.info('Transforming NCBI...')
-        self._add_meta()
         prev_symbols = self._get_prev_symbols()
         info_genes = self._get_gene_info(prev_symbols)
 

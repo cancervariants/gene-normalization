@@ -104,8 +104,8 @@ def test_ensembl_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path)
 
     e._sequence_location.get_aliases = _get_aliases
     e._data_src = etl_data_path / 'ensembl_109.gff3'
-    e._transform_data()
     e._add_meta()
+    e._transform_data()
     db_fixture.db.complete_transaction()
     processed_ids += e._processed_ids
 
@@ -124,8 +124,8 @@ def test_hgnc_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
 
     h._data_src = etl_data_path / 'hgnc_20210810.json'
     h._version = '20210810'
-    h._transform_data()
     h._add_meta()
+    h._transform_data()
     db_fixture.db.complete_transaction()
     processed_ids += h._processed_ids
 
@@ -146,8 +146,8 @@ def test_ncbi_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     n._history_src = etl_data_path / 'ncbi_history_20210813.tsv'
     n._gff_src = etl_data_path / 'ncbi_GRCh38.p14.gff'
     n._version = n._info_src.stem.split('_')[-1]
-    n._transform_data()
     n._add_meta()
+    n._transform_data()
     db_fixture.db.complete_transaction()
     processed_ids += n._processed_ids
 
