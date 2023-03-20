@@ -138,7 +138,6 @@ class QueryHandler:
         :param Dict item: Item retrieved from DynamoDB
         :param MatchType match_type: match type for query
         """
-        # DynamoDB Numbers get converted to Decimal  # TODO < -- ?
         item = self._transform_locations(item)
         item["match_type"] = match_type
         gene = Gene(**item)

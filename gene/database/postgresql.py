@@ -8,7 +8,7 @@ TODO
  * something weird is happening during merges where it's looking for lower case
     record IDs?
 """
-
+import tarfile
 import atexit
 import json
 import logging
@@ -16,9 +16,10 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
 import tempfile
+from datetime import datetime
 
 import psycopg
-from psycopg.errors import UniqueViolation
+from psycopg.errors import UndefinedTable, UniqueViolation
 import requests
 
 from gene.database import AbstractDatabase, DatabaseException, \
@@ -748,46 +749,76 @@ class PostgresDatabase(AbstractDatabase):
         """Conclude transaction or batch writing if relevant."""
         if not self.conn.closed:
             with self.conn.cursor() as cur:
-                cur.execute("REFRESH MATERIALIZED VIEW record_lookup_view;")
+                try:
+                    cur.execute("REFRESH MATERIALIZED VIEW record_lookup_view;")
+                except UndefinedTable:
+                    self.conn.rollback()
                 self.conn.commit()  # TODO necessary?
             self.conn.commit()
 
     def load_from_remote(self, url: Optional[str]) -> None:
         """Load DB from remote dump. Warning: Deletes all existing data. If not
-        passed as an argument, will try to grab from GENE_NORM_POSTGRES_DUMP_URL
-        environment variable.
+        passed as an argument, will try to grab latest release from VICC S3 bucket.
 
-        TODO:
-        * prompt to okay data delete?
-        * test it
-        * assume the file is gzipped?
-
-        :param url: location of pg_dump file
+        :param url: location of .tar.gz file created from output of pg_dump
+        :raise DatabaseException: if unable to retrieve file from URL
         """
         if not url:
-            url = os.environ.get(
-                "GENE_NORM_POSTGRES_DUMP_URL",
-                "https://vicc-normalizers.s3.us-east-2.amazonaws.com/gene_normalization/postgresql/gene_norm_latest.sql"  # noqa: E501
+            url = "https://vicc-normalizers.s3.us-east-2.amazonaws.com/gene_normalization/postgresql/gene_norm_latest.sql.tar.gz"  # noqa: E501
+        with tempfile.TemporaryDirectory() as tempdir:
+            tempdir_path = Path(tempdir)
+            temp_tarfile = tempdir_path / "gene_norm_latest.tar.gz"
+            with requests.get(url, stream=True) as r:
+                try:
+                    r.raise_for_status()
+                except requests.HTTPError:
+                    raise DatabaseException(
+                        f"Unable to retrieve PostgreSQL dump file from {url}"
+                    )
+                with open(temp_tarfile, "wb") as h:
+                    for chunk in r.iter_content(chunk_size=8192):
+                        if chunk:
+                            h.write(chunk)
+            tar = tarfile.open(temp_tarfile, "r:gz")
+            tar_dump_file = [
+                f for f in tar.getmembers() if f.name.startswith("gene_norm_")
+            ][0]
+            tar.extractall(path=tempdir_path, members=[tar_dump_file])
+            dump_file = tempdir_path / tar_dump_file.name
+
+            if self.conn.info.password:
+                pw_param = f"-W {self.conn.info.password}"
+            else:
+                pw_param = "-w"
+
+            self.drop_db()
+            system_call = f"psql -d {self.conn.info.dbname} -U {self.conn.info.user} {pw_param} -f {dump_file.absolute()}"  # noqa: E501
+            result = os.system(system_call)
+        if result != 0:
+            raise DatabaseException(
+                f"System call '{result}' returned failing exit code."
             )
-        if not url:
-            raise DatabaseException("Must provide URL to pg_dump file")
-        self.drop_db()
-        file = Path(tempfile.NamedTemporaryFile().name)
-        with requests.get(url, stream=True) as r:
-            try:
-                r.raise_for_status()
-            except requests.HTTPError:
-                raise DatabaseException(
-                    f"Unable to retrieve PostgreSQL dump file from {url}"
-                )
-            with open(file, "wb") as h:
-                for chunk in r.iter_content(chunk_size=8192):
-                    if chunk:
-                        h.write(chunk)
-        if self.conn.info.password:
-            pw_param = f"-W {self.conn.info.password}"
-        else:
-            pw_param = "-w"
-        os.system(
-            f"psql -d {self.conn.info.dbname} -U {self.conn.info.user} {pw_param} -f {file.absolute()}"  # noqa: E501
-        )
+
+    def export_db(self, output_directory: Path) -> None:
+        """Dump DB to specified location.
+
+        :param export_location: path to directory to save DB dump in
+        :return: Nothing, but saves results of pg_dump to file named
+            `gene_norm_<date and time>.sql`
+        :raise ValueError: if output directory isn't a directory or doesn't exist
+        """
+        if not output_directory.is_dir() or not output_directory.exists():
+            raise ValueError(f"Output location {output_directory} isn't a directory or doesn't exist")  # noqa: E501
+        now = datetime.now().strftime("%Y%m%d%H%M%S")
+        output_location = output_directory / f"gene_norm_{now}.sql"
+        user = self.conn.info.user
+        host = self.conn.info.host
+        port = self.conn.info.port
+        database_name = self.conn.info.dbname
+
+        system_call = f"pg_dump -E UTF8 -f {output_location} -U {user} -h {host} -p {port} {database_name}"  # noqa: E501
+        result = os.system(system_call)
+        if result != 0:
+            raise DatabaseException(
+                f"System call '{system_call}' returned failing exit code."
+            )

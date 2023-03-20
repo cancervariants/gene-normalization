@@ -2,6 +2,7 @@
 import atexit
 import logging
 from os import environ
+from pathlib import Path
 import sys
 from typing import Any, Dict, List, Optional, Set, Union
 import boto3
@@ -462,3 +463,17 @@ class DynamoDbDatabase(AbstractDatabase):
         """Flush internal batch_writer."""
         self.batch.__exit__(*sys.exc_info())
         self.batch = self.genes.batch_writer()
+
+    def load_from_remote(self, url: Optional[str] = None) -> None:
+        """Load DB from remote dump. Not available for DynamoDB database backend.
+
+        :param url: remote location to retrieve gzipped dump file from
+        """
+        raise NotImplementedError
+
+    def export_db(self, export_location: Path) -> None:
+        """Dump DB to specified location. Not available for DynamoDB database backend.
+
+        :param export_location: path to save DB dump at
+        """
+        raise NotImplementedError

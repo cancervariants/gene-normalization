@@ -2,6 +2,7 @@
 import abc
 from enum import Enum
 from os import environ
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Union
 import sys
 
@@ -175,6 +176,24 @@ class AbstractDatabase(abc.ABC):
     @abc.abstractmethod
     def complete_transaction(self) -> None:
         """Conclude transaction or batch writing if relevant."""
+        pass
+
+    @abc.abstractmethod
+    def load_from_remote(self, url: Optional[str] = None) -> None:
+        """Load DB from remote dump. Warning: Deletes all existing data.
+
+        :param url: remote location to retrieve gzipped dump file from
+        :raise: NotImplementedError if not supported by DB
+        """
+        pass
+
+    @abc.abstractmethod
+    def export_db(self, export_location: Path) -> None:
+        """Dump DB to specified location.
+
+        :param export_location: path to save DB dump at
+        :raise: NotImplementedError if not supported by DB
+        """
         pass
 
 
