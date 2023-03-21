@@ -49,7 +49,7 @@ By default, the Gene Normalizer expects to find a DynamoDB instance listening at
 The first way is to set the `--db_url` option to the URL endpoint.
 
 ```commandline
-python3 -m gene.cli --update_all --db_url="http://localhost:8001"
+gene_update --update_all --db_url="http://localhost:8001"
 ```
 
 The second way is to set the `GENE_NORM_DB_URL` environment variable to the URL endpoint.
@@ -73,12 +73,12 @@ Use the `gene_update` command in a shell to update the database.
 
 The normalizer currently pulls data from [HGNC](https://www.genenames.org/), [Ensembl](https://useast.ensembl.org/index.html), and [NCBI](https://www.ncbi.nlm.nih.gov/gene/).
 
-To update one source, simply set `--normalizer` to the source you wish to update.
+To update one source, simply set `--normalizer` to the source you wish to update. The normalizer will check to see if local source data is up-to-date, acquire the most recent data if not, and use it to populate the database.
 
-For example, run the following to update the HGNC source:
+For example, run the following to acquire the latest HGNC data if necessary, and update the HGNC gene records in the normalizer database:
 
 ```commandline
-python3 -m gene.cli --normalizer="hgnc"
+gene_update --normalizer="hgnc"
 ```
 
 To update multiple sources, you can use the `--normalizer` option with the source names separated by spaces.
@@ -88,7 +88,7 @@ To update multiple sources, you can use the `--normalizer` option with the sourc
 To update all sources, use the `--update_all` flag:
 
 ```commandline
-python3 -m gene.cli --update_all
+gene_update --update_all
 ```
 
 ### Starting the gene normalization service
