@@ -328,6 +328,7 @@ class DynamoDbDatabase(AbstractDatabase):
         try:
             self.batch.put_item(
                 Item=record,
+                # TODO i commented this out -- why
                 # ConditionExpression='attribute_not_exists(concept_id) AND attribute_not_exists(label_and_type)'  # noqa: E501
             )
         except ClientError as e:

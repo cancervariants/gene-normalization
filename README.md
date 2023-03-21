@@ -63,7 +63,6 @@ To use a PostgreSQL instance instead of DynamoDB, provide a PostgreSQL connectio
 export GENE_NORM_DB_URL="postgresql://postgres@localhost:5432/gene_normalizer"
 ```
 
-
 ### Adding and refreshing data
 
 Use the `gene_update` command in a shell to update the database.

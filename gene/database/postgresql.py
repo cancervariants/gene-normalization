@@ -1,13 +1,4 @@
-"""Provide PostgreSQL client.
-
-TODO
- * use connection pool? https://www.psycopg.org/psycopg3/docs/advanced/pool.html
- * async?
- * AWS environment stuff? Not sure if necessary at this juncture
- * properly close connection? seems to be closing correctly here but idk
- * something weird is happening during merges where it's looking for lower case
-    record IDs?
-"""
+"""Provide PostgreSQL client."""
 import tarfile
 import atexit
 import json
@@ -115,40 +106,18 @@ class PostgresDatabase(AbstractDatabase):
                 self.drop_db()
                 self._create_tables()
                 break
-        # TODO check indexes as well?
 
     def _create_indexes(self) -> None:
         """Create all indexes and views."""
         query = """
-        -- might be able to remove these
         CREATE INDEX IF NOT EXISTS idx_g_concept_id ON gene_concepts (concept_id);
         CREATE INDEX IF NOT EXISTS idx_g_concept_id_low
             ON gene_concepts (lower(concept_id));
 
-        -- definitely need these
         CREATE INDEX IF NOT EXISTS idx_gm_concept_id ON gene_merged (concept_id);
         CREATE INDEX IF NOT EXISTS idx_gm_concept_id_low
             ON gene_merged (lower(concept_id));
 
-        -- might be able to remove all of these
-        -- CREATE INDEX IF NOT EXISTS idx_gc_source ON gene_concepts (source);
-        -- CREATE INDEX IF NOT EXISTS idx_gc_source_low
-        --     ON gene_concepts (lower(source));
-        -- CREATE INDEX IF NOT EXISTS idx_gc_merged ON gene_concepts (merge_ref);
-
-        -- CREATE INDEX IF NOT EXISTS idx_gs_concept ON gene_symbols (concept_id);
-
-        -- CREATE INDEX IF NOT EXISTS idx_gps_concept
-        --     ON gene_previous_symbols (concept_id);
-
-        -- CREATE INDEX IF NOT EXISTS idx_ga_concept ON gene_aliases (concept_id);
-
-        -- CREATE INDEX IF NOT EXISTS idx_gx_concept ON gene_xrefs (concept_id);
-
-        -- CREATE INDEX IF NOT EXISTS idx_g_as_concept
-        --     ON gene_associations (concept_id);
-
-        -- I think we need these
         CREATE INDEX IF NOT EXISTS idx_gs_symbol ON gene_symbols (symbol);
         CREATE INDEX IF NOT EXISTS idx_gs_symbol_low ON gene_symbols (lower(symbol));
 
@@ -168,8 +137,6 @@ class PostgresDatabase(AbstractDatabase):
         CREATE INDEX IF NOT EXISTS ids_g_as_association_low
             ON gene_associations (lower(associated_with));
 
-
-        -- definitely need this
         CREATE MATERIALIZED VIEW IF NOT EXISTS record_lookup_view AS
         SELECT gc.concept_id,
                gc.symbol_status,
@@ -219,12 +186,7 @@ class PostgresDatabase(AbstractDatabase):
             self.conn.commit()
 
     def _create_tables(self) -> None:
-        """Create all tables, indexes, and views.
-
-        TODO
-         * if writes are too slow, could drop indexes before refreshing a source
-           and then re-add them after
-        """
+        """Create all tables, indexes, and views."""
         logger.debug("Creating new gene normalizer tables.")
         sources_table = """
         CREATE TABLE IF NOT EXISTS gene_sources (
@@ -750,6 +712,7 @@ class PostgresDatabase(AbstractDatabase):
         if not self.conn.closed:
             with self.conn.cursor() as cur:
                 try:
+                    # TODO don't do this every time!
                     cur.execute("REFRESH MATERIALIZED VIEW record_lookup_view;")
                 except UndefinedTable:
                     self.conn.rollback()
