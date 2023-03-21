@@ -42,7 +42,7 @@ sudo mv /usr/local/share/seqrepo/2021-01-29._fkuefgd /usr/local/share/seqrepo/20
 The Normalizer supports two data storage options:
 
 * [DynamoDB](https://aws.amazon.com/dynamodb), a NoSQL service provided by AWS. This is our preferred storage solution. In addition to cloud deployment, Amazon also provides a tool for local service, which can be installed [here](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html). Once downloaded, you can start service by running `java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb` in a terminal (add a `-port <VALUE>` option to use a different port)
-* [PostgreSQL](https://www.postgresql.org/), a well-known relational database technology.
+* [PostgreSQL](https://www.postgresql.org/), a well-known relational database technology. Once starting the Postgres server process, [ensure that a database is created](https://www.postgresql.org/docs/current/sql-createdatabase.html) (we typically name ours `gene_normalizer`).
 
 By default, the Gene Normalizer expects to find a DynamoDB instance listening at `http://localhost:8000`. Alternative locations can be specified in two ways:
 
@@ -63,7 +63,6 @@ To use a PostgreSQL instance instead of DynamoDB, provide a PostgreSQL connectio
 export GENE_NORM_DB_URL="postgresql://postgres@localhost:5432/gene_normalizer"
 ```
 
-TODO create db?
 
 ### Adding and refreshing data
 
