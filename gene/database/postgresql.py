@@ -718,6 +718,15 @@ class PostgresDatabase(AbstractDatabase):
     def delete_source(self, src_name: SourceName) -> None:
         """Delete all data for a source. Use when updating source data.
 
+        All of the foreign key relations make deletes *extremely* slow, so this method
+        drops and then re-adds them once deletes are finished. This makes it a little
+        brittle, and it'd be nice to revisit in the future to perform as a single
+        atomic transaction.
+
+        Refreshing the materialized view at the end is probably redundant, because
+        this method will almost always be called right before more data is written,
+        but it's probably necessary just in case that doesn't happen.
+
         :param src_name: name of source to delete
         :raise DatabaseWriteException: if deletion call fails
         """
@@ -770,7 +779,7 @@ class PostgresDatabase(AbstractDatabase):
 
         self._add_fkeys()
         self._add_indexes()
-        self._refresh_views()  # TODO i think we need this here
+        self._refresh_views()
 
     def prepare_write(self) -> None:
         """Prepare database for writes. Drop indexes, views, etc."""
