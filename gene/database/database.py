@@ -28,7 +28,7 @@ class DatabaseWriteException(DatabaseException):
 
 
 class AbstractDatabase(abc.ABC):
-    """A database abstraction."""
+    """Define a database interface."""
 
     @abc.abstractmethod
     def __init__(self, db_url: Optional[str] = None, **db_args):
