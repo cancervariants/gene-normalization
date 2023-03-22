@@ -96,7 +96,6 @@ class PostgresDatabase(AbstractDatabase):
     def initialize_db(self) -> None:
         """Check if DB is set up. If not, create tables/indexes/views."""
         tables = self.list_tables()
-
         expected_tables = ["gene_associations", "gene_sources", "gene_concepts",
                            "gene_symbols", "gene_previous_symbols", "gene_aliases",
                            "gene_merged"]
@@ -105,38 +104,13 @@ class PostgresDatabase(AbstractDatabase):
                 logger.info(f"{table} was missing -- resetting gene normalizer tables")
                 self.drop_db()
                 self._create_tables()
+                self._create_views()
+                self._add_indexes()
                 break
 
-    def _create_indexes(self) -> None:
-        """Create all indexes and views."""
-        query = """
-        CREATE INDEX IF NOT EXISTS idx_g_concept_id ON gene_concepts (concept_id);
-        CREATE INDEX IF NOT EXISTS idx_g_concept_id_low
-            ON gene_concepts (lower(concept_id));
-
-        CREATE INDEX IF NOT EXISTS idx_gm_concept_id ON gene_merged (concept_id);
-        CREATE INDEX IF NOT EXISTS idx_gm_concept_id_low
-            ON gene_merged (lower(concept_id));
-
-        CREATE INDEX IF NOT EXISTS idx_gs_symbol ON gene_symbols (symbol);
-        CREATE INDEX IF NOT EXISTS idx_gs_symbol_low ON gene_symbols (lower(symbol));
-
-        CREATE INDEX IF NOT EXISTS idx_gps_symbol
-            ON gene_previous_symbols (prev_symbol);
-        CREATE INDEX IF NOT EXISTS idx_gps_symbol_low
-            ON gene_previous_symbols (lower(prev_symbol));
-
-        CREATE INDEX IF NOT EXISTS idx_ga_alias ON gene_aliases (alias);
-        CREATE INDEX IF NOT EXISTS idx_ga_alias_low ON gene_aliases (lower(alias));
-
-        CREATE INDEX IF NOT EXISTS idx_gx_xref ON gene_xrefs (xref);
-        CREATE INDEX IF NOT EXISTS idx_gx_xref_low ON gene_xrefs (lower(xref));
-
-        CREATE INDEX IF NOT EXISTS ids_g_as_association
-            ON gene_associations (associated_with);
-        CREATE INDEX IF NOT EXISTS ids_g_as_association_low
-            ON gene_associations (lower(associated_with));
-
+    def _create_views(self) -> None:
+        """Create materialized views."""
+        create_view_query = """
         CREATE MATERIALIZED VIEW IF NOT EXISTS record_lookup_view AS
         SELECT gc.concept_id,
                gc.symbol_status,
@@ -175,9 +149,91 @@ class PostgresDatabase(AbstractDatabase):
             FROM gene_xrefs gx_1
             GROUP BY gx_1.concept_id
         ) gx ON gc.concept_id::text = gx.concept_id::text;
+        """
+        with self.conn.cursor() as cur:
+            cur.execute(create_view_query)
+            self.conn.commit()
 
-        CREATE INDEX IF NOT EXISTS idx_rlv_concept_id
-            ON record_lookup_view (concept_id);
+    def _refresh_views(self) -> None:
+        """Update materialized views.
+
+        Not responsible for ensuring existence of views. Calling functions should
+        either check beforehand or catch psycopg.UndefinedTable.
+        """
+        with self.conn.cursor() as cur:
+            cur.execute("REFRESH MATERIALIZED VIEW record_lookup_view;")
+            self.conn.commit()
+
+    def _add_fkeys(self) -> None:
+        """Add fkey relationships."""
+        add_fkey_query = """
+        ALTER TABLE gene_aliases ADD CONSTRAINT gene_aliases_concept_id_fkey
+            FOREIGN KEY (concept_id) REFERENCES gene_concepts (concept_id);
+        ALTER TABLE gene_associations ADD CONSTRAINT gene_associations_concept_id_fkey
+            FOREIGN KEY (concept_id) REFERENCES gene_concepts (concept_id);
+        ALTER TABLE gene_previous_symbols
+            ADD CONSTRAINT gene_previous_symbols_concept_id_fkey
+            FOREIGN KEY (concept_id) REFERENCES gene_concepts (concept_id);
+        ALTER TABLE gene_symbols ADD CONSTRAINT gene_symbols_concept_id_fkey
+            FOREIGN KEY (concept_id) REFERENCES gene_concepts (concept_id);
+        ALTER TABLE gene_xrefs ADD CONSTRAINT gene_xrefs_concept_id_fkey
+            FOREIGN KEY (concept_id) REFERENCES gene_concepts (concept_id);
+        """
+        with self.conn.cursor() as cur:
+            cur.execute(add_fkey_query)
+            self.conn.commit()
+
+    def _drop_fkeys(self) -> None:
+        """Drop fkey relationships."""
+        drop_fkey_query = """
+        ALTER TABLE gene_aliases DROP CONSTRAINT gene_aliases_concept_id_fkey;
+        ALTER TABLE gene_associations DROP CONSTRAINT gene_associations_concept_id_fkey;
+        ALTER TABLE gene_previous_symbols
+            DROP CONSTRAINT gene_previous_symbols_concept_id_fkey;
+        ALTER TABLE gene_symbols DROP CONSTRAINT gene_symbols_concept_id_fkey;
+        ALTER TABLE gene_xrefs DROP CONSTRAINT gene_xrefs_concept_id_fkey;
+        """
+        with self.conn.cursor() as cur:
+            cur.execute(drop_fkey_query)
+            self.conn.commit()
+
+    def _drop_indexes(self) -> None:
+        """Drop all custom indexes."""
+        drop_indexes_query = """
+        DROP INDEX IF EXISTS idx_g_concept_id_low;
+        DROP INDEX IF EXISTS idx_gm_concept_id_low;
+        DROP INDEX IF EXISTS idx_gs_symbol_low;
+        DROP INDEX IF EXISTS idx_gps_symbol_low;
+        DROP INDEX IF EXISTS idx_gx_xref_low;
+        DROP INDEX IF EXISTS idx_ga_alias_low;
+        DROP INDEX IF EXISTS idx_g_as_association_low;
+        DROP INDEX IF EXISTS idx_rlv_concept_id_low;
+        """
+        with self.conn.cursor() as cur:
+            cur.execute(drop_indexes_query)
+            self.conn.commit()
+
+    def _add_indexes(self) -> None:
+        """Create core search indexes."""
+        query = """
+        CREATE INDEX IF NOT EXISTS idx_g_concept_id_low
+            ON gene_concepts (lower(concept_id));
+
+        CREATE INDEX IF NOT EXISTS idx_gm_concept_id_low
+            ON gene_merged (lower(concept_id));
+
+        CREATE INDEX IF NOT EXISTS idx_gs_symbol_low ON gene_symbols (lower(symbol));
+
+        CREATE INDEX IF NOT EXISTS idx_gps_symbol_low
+            ON gene_previous_symbols (lower(prev_symbol));
+
+        CREATE INDEX IF NOT EXISTS idx_ga_alias_low ON gene_aliases (lower(alias));
+
+        CREATE INDEX IF NOT EXISTS idx_gx_xref_low ON gene_xrefs (lower(xref));
+
+        CREATE INDEX IF NOT EXISTS idx_g_as_association_low
+            ON gene_associations (lower(associated_with));
+
         CREATE INDEX IF NOT EXISTS idx_rlv_concept_id_low
             ON record_lookup_view (lower(concept_id));
         """
@@ -227,8 +283,7 @@ class PostgresDatabase(AbstractDatabase):
         concepts_table = """
         CREATE TABLE IF NOT EXISTS gene_concepts (
             concept_id VARCHAR(127) PRIMARY KEY,
-            source VARCHAR(127) NOT NULL REFERENCES gene_sources (name)
-                ON DELETE CASCADE,
+            source VARCHAR(127) NOT NULL REFERENCES gene_sources (name),
             symbol_status VARCHAR(127),
             label TEXT,
             strand VARCHAR(1),
@@ -236,7 +291,6 @@ class PostgresDatabase(AbstractDatabase):
             locations JSON [],
             gene_type TEXT,
             merge_ref VARCHAR(127) REFERENCES gene_merged (concept_id)
-                ON DELETE CASCADE
         );
         """
 
@@ -245,7 +299,6 @@ class PostgresDatabase(AbstractDatabase):
             id SERIAL PRIMARY KEY,
             symbol TEXT NOT NULL,
             concept_id VARCHAR(127) REFERENCES gene_concepts (concept_id)
-                ON DELETE CASCADE
         );
         """
 
@@ -254,7 +307,6 @@ class PostgresDatabase(AbstractDatabase):
             id SERIAL PRIMARY KEY,
             prev_symbol TEXT NOT NULL,
             concept_id VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
-                ON DELETE CASCADE
         );
         """
 
@@ -263,7 +315,6 @@ class PostgresDatabase(AbstractDatabase):
             id SERIAL PRIMARY KEY,
             alias TEXT NOT NULL,
             concept_id VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
-                ON DELETE CASCADE
         );
         """
 
@@ -272,7 +323,6 @@ class PostgresDatabase(AbstractDatabase):
             id SERIAL PRIMARY KEY,
             xref TEXT NOT NULL,
             concept_id VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
-                ON DELETE CASCADE
         );
         """
 
@@ -281,7 +331,6 @@ class PostgresDatabase(AbstractDatabase):
             id SERIAL PRIMARY KEY,
             associated_with TEXT NOT NULL,
             concept_ID VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
-                ON DELETE CASCADE
         );
         """
 
@@ -295,7 +344,6 @@ class PostgresDatabase(AbstractDatabase):
             cur.execute(xrefs_table)
             cur.execute(assoc_table)
             self.conn.commit()
-        self._create_indexes()
 
     def get_source_metadata(self, src_name: SourceName) -> Dict:
         """Get license, versioning, data lookup, etc information for a source.
@@ -338,12 +386,8 @@ class PostgresDatabase(AbstractDatabase):
         :param case_sensitive:
         :return: complete record object if successful
         """
-        if case_sensitive:
-            query = "SELECT * FROM record_lookup_view WHERE concept_id = %s;"
-            concept_id_param = concept_id
-        else:
-            query = "SELECT * FROM record_lookup_view WHERE lower(concept_id) = %s;"
-            concept_id_param = concept_id.lower()
+        query = "SELECT * FROM record_lookup_view WHERE lower(concept_id) = %s;"
+        concept_id_param = concept_id.lower()
 
         with self.conn.cursor() as cur:
             cur.execute(query, [concept_id_param])
@@ -376,15 +420,11 @@ class PostgresDatabase(AbstractDatabase):
         """Retrieve normalized record from DB.
 
         :param concept_id: normalized ID for the merged record
-        :param case_sensitive: True if `concept_id` is correctly cased (enables
-            faster lookup)
+        :param case_sensitive:
         :return: normalized record if successful
         """
-        if case_sensitive:
-            query = "SELECT * FROM gene_merged WHERE concept_id = %s;"
-        else:
-            concept_id = concept_id.lower()
-            query = "SELECT * FROM gene_merged WHERE lower(concept_id) = %s;"
+        concept_id = concept_id.lower()
+        query = "SELECT * FROM gene_merged WHERE lower(concept_id) = %s;"
         with self.conn.cursor() as cur:
             cur.execute(query, [concept_id])
             result = cur.fetchone()
@@ -416,9 +456,7 @@ class PostgresDatabase(AbstractDatabase):
                          merge: bool = False) -> Optional[Dict]:
         """Fetch record corresponding to provided concept ID
         :param str concept_id: concept ID for gene record
-        :param bool case_sensitive: if true, performs exact lookup, which is
-            more efficient. Otherwise, performs filter operation, which
-            doesn't require correct casing.
+        :param bool case_sensitive:
         :param bool merge: if true, look for merged record; look for identity
             record otherwise.
         :return: complete gene record, if match is found; None otherwise
@@ -452,10 +490,6 @@ class PostgresDatabase(AbstractDatabase):
             raise ValueError
 
         with self.conn.cursor() as cur:
-            print((
-                f"SELECT concept_id FROM {table} WHERE lower({match_type}) = %s;",
-                (query.lower(),))
-            )
             cur.execute(
                 f"SELECT concept_id FROM {table} WHERE lower({match_type}) = %s;",
                 (query.lower(), )
@@ -701,22 +735,68 @@ class PostgresDatabase(AbstractDatabase):
         :param src_name: name of source to delete
         :raise DatabaseWriteException: if deletion call fails
         """
-        drop_source_query = "DELETE FROM gene_sources gs WHERE gs.name = %s;"
-
+        drop_aliases_query = """
+        DELETE FROM gene_aliases WHERE id IN (
+            SELECT ga.id FROM gene_aliases ga LEFT JOIN gene_concepts gc
+                ON gc.concept_id = ga.concept_id
+            WHERE gc.source = %s
+        );"""
+        drop_associations_query = """
+        DELETE FROM gene_associations WHERE id IN (
+            SELECT ga.id FROM gene_associations ga LEFT JOIN gene_concepts gc
+                ON gc.concept_id = ga.concept_id
+            WHERE gc.source = %s
+        );"""
+        drop_prev_symbols_query = """
+        DELETE FROM gene_previous_symbols WHERE id IN (
+            SELECT gps.id FROM gene_previous_symbols gps LEFT JOIN gene_concepts gc
+                ON gc.concept_id = gps.concept_id
+            WHERE gc.source = %s
+        );"""
+        drop_symbols_query = """
+        DELETE FROM gene_symbols WHERE id IN (
+            SELECT gs.id FROM gene_symbols gs LEFT JOIN gene_concepts gc
+                ON gc.concept_id = gs.concept_id
+            WHERE gc.source = %s
+        );"""
+        drop_xrefs_query = """
+        DELETE FROM gene_xrefs WHERE id IN (
+            SELECT gx.id FROM gene_xrefs gx LEFT JOIN gene_concepts gc
+                ON gc.concept_id = gx.concept_id
+            WHERE gc.source = %s
+        );
+        """
         with self.conn.cursor() as cur:
+            cur.execute(drop_aliases_query, [src_name.value])
+            cur.execute(drop_associations_query, [src_name.value])
+            cur.execute(drop_prev_symbols_query, [src_name.value])
+            cur.execute(drop_symbols_query, [src_name.value])
+            cur.execute(drop_xrefs_query, [src_name.value])
+        self._drop_fkeys()
+        self._drop_indexes()
+
+        drop_concepts_query = "DELETE FROM gene_concepts WHERE source = %s;"
+        drop_source_query = "DELETE FROM gene_sources gs WHERE gs.name = %s;"
+        with self.conn.cursor() as cur:
+            cur.execute(drop_concepts_query, [src_name.value])
             cur.execute(drop_source_query, [src_name.value])
             self.conn.commit()
+
+        self._add_fkeys()
+        self._add_indexes()
+        self._refresh_views()  # TODO i think we need this here
+
+    def prepare_write(self) -> None:
+        """Prepare database for writes. Drop indexes, views, etc."""
+        pass
 
     def complete_write_transaction(self) -> None:
         """Conclude transaction or batch writing if relevant."""
         if not self.conn.closed:
-            with self.conn.cursor() as cur:
-                try:
-                    cur.execute("REFRESH MATERIALIZED VIEW record_lookup_view;")
-                except UndefinedTable:
-                    self.conn.rollback()
-                # self.conn.commit()  # TODO necessary?
-            self.conn.commit()
+            try:
+                self._refresh_views()
+            except UndefinedTable:
+                self.conn.rollback()
 
     def close_connection(self) -> None:
         """Perform any manual connection closure procedures if necessary."""

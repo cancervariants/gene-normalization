@@ -78,9 +78,8 @@ class AbstractDatabase(abc.ABC):
                          merge: bool = False) -> Optional[Dict]:
         """Fetch record corresponding to provided concept ID
         :param concept_id: concept ID for gene record
-        :param case_sensitive: if true, performs exact lookup, which is probably more
-            efficient. Otherwise, performs filter operation, which doesn't require
-            correct casing.
+        :param case_sensitive: if true, performs exact lookup, which is may be quicker.
+            Otherwise, performs filter operation, which doesn't require correct casing.
         :param merge: if true, look for merged record; look for identity
             record otherwise.
         :return: complete gene record, if match is found; None otherwise
