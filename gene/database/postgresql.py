@@ -218,22 +218,15 @@ class PostgresDatabase(AbstractDatabase):
         query = """
         CREATE INDEX IF NOT EXISTS idx_g_concept_id_low
             ON gene_concepts (lower(concept_id));
-
         CREATE INDEX IF NOT EXISTS idx_gm_concept_id_low
             ON gene_merged (lower(concept_id));
-
         CREATE INDEX IF NOT EXISTS idx_gs_symbol_low ON gene_symbols (lower(symbol));
-
         CREATE INDEX IF NOT EXISTS idx_gps_symbol_low
             ON gene_previous_symbols (lower(prev_symbol));
-
         CREATE INDEX IF NOT EXISTS idx_ga_alias_low ON gene_aliases (lower(alias));
-
         CREATE INDEX IF NOT EXISTS idx_gx_xref_low ON gene_xrefs (lower(xref));
-
         CREATE INDEX IF NOT EXISTS idx_g_as_association_low
             ON gene_associations (lower(associated_with));
-
         CREATE INDEX IF NOT EXISTS idx_rlv_concept_id_low
             ON record_lookup_view (lower(concept_id));
         """
@@ -258,7 +251,6 @@ class PostgresDatabase(AbstractDatabase):
             genome_assemblies TEXT [] NOT NULL
         );
         """
-
         merged_table = """
         CREATE TABLE IF NOT EXISTS gene_merged (
             concept_id VARCHAR(127) PRIMARY KEY,
@@ -279,7 +271,6 @@ class PostgresDatabase(AbstractDatabase):
             xrefs TEXT []
         )
         """
-
         concepts_table = """
         CREATE TABLE IF NOT EXISTS gene_concepts (
             concept_id VARCHAR(127) PRIMARY KEY,
@@ -293,7 +284,6 @@ class PostgresDatabase(AbstractDatabase):
             merge_ref VARCHAR(127) REFERENCES gene_merged (concept_id)
         );
         """
-
         symbols_table = """
         CREATE TABLE IF NOT EXISTS gene_symbols (
             id SERIAL PRIMARY KEY,
@@ -301,7 +291,6 @@ class PostgresDatabase(AbstractDatabase):
             concept_id VARCHAR(127) REFERENCES gene_concepts (concept_id)
         );
         """
-
         previous_symbols_table = """
         CREATE TABLE IF NOT EXISTS gene_previous_symbols (
             id SERIAL PRIMARY KEY,
@@ -309,7 +298,6 @@ class PostgresDatabase(AbstractDatabase):
             concept_id VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
         );
         """
-
         aliases_table = """
         CREATE TABLE IF NOT EXISTS gene_aliases (
             id SERIAL PRIMARY KEY,
@@ -317,7 +305,6 @@ class PostgresDatabase(AbstractDatabase):
             concept_id VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
         );
         """
-
         xrefs_table = """
         CREATE TABLE IF NOT EXISTS gene_xrefs (
             id SERIAL PRIMARY KEY,
@@ -325,7 +312,6 @@ class PostgresDatabase(AbstractDatabase):
             concept_id VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
         );
         """
-
         assoc_table = """
         CREATE TABLE IF NOT EXISTS gene_associations (
             id SERIAL PRIMARY KEY,
