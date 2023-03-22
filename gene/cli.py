@@ -26,13 +26,13 @@ logger.setLevel(logging.DEBUG)
 @click.option("--data_url", help="URL to data dump")
 @click.option("--db_url", help="URL endpoint for the application database.")
 def update_from_remote(data_url: Optional[str], db_url: str) -> None:
-    r"""Update data from remotely-hosted DB dump. By default, fetches from latest
+    """Update data from remotely-hosted DB dump. By default, fetches from latest
     available dump on VICC S3 bucket; specific URLs can be provided instead by
     command line option or GENE_NORM_REMOTE_DB_URL environment variable.
 
     \f
     :param data_url: user-specified location to pull DB dump from
-    """
+    """  # noqa: D301
     if not click.confirm("Are you sure you want to overwrite existing data?"):
         click.get_current_context().exit()
     if not data_url:
@@ -56,11 +56,11 @@ def update_from_remote(data_url: Optional[str], db_url: str) -> None:
 )
 @click.option("--db_url", help="URL endpoint for the application database.")
 def dump_database(output_directory: Path, db_url: str):
-    r"""Dump data from database into file.
+    """Dump data from database into file.
 
     \f
     :param output_directory: path to existing directory
-    """
+    """  # noqa: D301
     if not output_directory:
         output_directory = Path(".")
 
