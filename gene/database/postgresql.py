@@ -55,7 +55,7 @@ class PostgresDatabase(AbstractDatabase):
         self.initialize_db()
         self._cached_sources = {}
 
-        atexit.register(self.complete_transaction)
+        atexit.register(self.close_connection)
 
     def list_tables(self) -> List[str]:
         """Return names of tables in database.
@@ -707,17 +707,22 @@ class PostgresDatabase(AbstractDatabase):
             cur.execute(drop_source_query, [src_name.value])
             self.conn.commit()
 
-    def complete_transaction(self) -> None:
+    def complete_write_transaction(self) -> None:
         """Conclude transaction or batch writing if relevant."""
         if not self.conn.closed:
             with self.conn.cursor() as cur:
                 try:
-                    # TODO don't do this every time!
                     cur.execute("REFRESH MATERIALIZED VIEW record_lookup_view;")
                 except UndefinedTable:
                     self.conn.rollback()
-                self.conn.commit()  # TODO necessary?
+                # self.conn.commit()  # TODO necessary?
             self.conn.commit()
+
+    def close_connection(self) -> None:
+        """Perform any manual connection closure procedures if necessary."""
+        if not self.conn.closed:
+            self.conn.commit()
+            self.conn.close()
 
     def load_from_remote(self, url: Optional[str]) -> None:
         """Load DB from remote dump. Warning: Deletes all existing data. If not

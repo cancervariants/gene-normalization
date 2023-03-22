@@ -254,8 +254,7 @@ class HGNC(Base):
 
             if '-' in loc:
                 # Location gives both start and end
-                self._chromosome_location.set_interval_range(loc,
-                                                             arm_ix, location)
+                self._chromosome_location.set_interval_range(loc, arm_ix, location)
             else:
                 # Location only gives start
                 start = loc[arm_ix:]
@@ -274,7 +273,7 @@ class HGNC(Base):
         self._extract_data()
         self._add_meta()
         self._transform_data()
-        self._database.complete_transaction()
+        self._database.complete_write_transaction()
         return self._processed_ids
 
     def _add_meta(self) -> None:

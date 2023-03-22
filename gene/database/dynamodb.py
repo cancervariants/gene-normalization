@@ -78,7 +78,7 @@ class DynamoDbDatabase(AbstractDatabase):
         self.metadata = self.dynamodb.Table(gene_metadata_table)
         self.batch = self.genes.batch_writer()
         self._cached_sources = {}
-        atexit.register(self.complete_transaction)
+        atexit.register(self.close_connection)
 
     def list_tables(self) -> List[str]:
         """Return names of tables in database.
@@ -460,10 +460,14 @@ class DynamoDbDatabase(AbstractDatabase):
         except ClientError as e:
             raise DatabaseWriteException(e)
 
-    def complete_transaction(self):
-        """Flush internal batch_writer."""
+    def complete_write_transaction(self) -> None:
+        """Conclude transaction or batch writing if relevant."""
         self.batch.__exit__(*sys.exc_info())
         self.batch = self.genes.batch_writer()
+
+    def close_connection(self) -> None:
+        """Perform any manual connection closure procedures if necessary."""
+        self.batch.__exit__(*sys.exc_info())
 
     def load_from_remote(self, url: Optional[str] = None) -> None:
         """Load DB from remote dump. Not available for DynamoDB database backend.

@@ -64,7 +64,7 @@ class Merge:
                     else:
                         logger.error(str(dw))
             uploaded_ids |= group
-        self._database.complete_transaction()
+        self._database.complete_write_transaction()
         logger.info('Merged concept generation successful.')
         end = timer()
         logger.debug(f'Generated and added concepts in {end - start} seconds')

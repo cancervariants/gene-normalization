@@ -50,7 +50,7 @@ class NCBI(Base):
         self._extract_data()
         self._add_meta()
         self._transform_data()
-        self._database.complete_transaction()
+        self._database.complete_write_transaction()
         return self._processed_ids
 
     def _download_data(self):

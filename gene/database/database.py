@@ -174,8 +174,13 @@ class AbstractDatabase(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def complete_transaction(self) -> None:
+    def complete_write_transaction(self) -> None:
         """Conclude transaction or batch writing if relevant."""
+        pass
+
+    @abc.abstractmethod
+    def close_connection(self) -> None:
+        """Perform any manual connection closure procedures if necessary."""
         pass
 
     @abc.abstractmethod
