@@ -25,7 +25,7 @@ class NCBI(Base):
 
     def __init__(self,
                  database: AbstractDatabase,
-                 data_host='ftp.ncbi.nlm.nih.gov',
+                 host='ftp.ncbi.nlm.nih.gov',
                  data_dir='gene/DATA/',
                  src_data_dir=APP_ROOT / 'data' / 'ncbi'):
         """Construct the NCBI ETL instance.
@@ -35,10 +35,10 @@ class NCBI(Base):
         :param str data_dir: FTP data directory to use
         :param Path src_data_dir: Data directory for NCBI
         """
-        super().__init__(database, data_host, data_dir, src_data_dir)
+        super().__init__(database, host, data_dir, src_data_dir)
         self._sequence_location = SequenceLocation()
         self._chromosome_location = ChromosomeLocation()
-        self._data_url = f"ftp://{data_host}"
+        self._data_url = f"ftp://{host}"
         self._assembly = None
         self._date_today = datetime.today().strftime('%Y%m%d')
 
@@ -63,14 +63,14 @@ class NCBI(Base):
         fn = f'ncbi_info_{self._date_today}.tsv'
         data_fn = 'Homo_sapiens.gene_info.gz'
         logger.info('Downloading NCBI gene_info....')
-        self._ftp_download(self._data_host, data_dir, fn, self.src_data_dir, data_fn)
+        self._ftp_download(self._host, data_dir, fn, self.src_data_dir, data_fn)
         logger.info('Successfully downloaded NCBI gene_info.')
 
         # Download history
         fn = f'ncbi_history_{self._date_today}.tsv'
         data_fn = 'gene_history.gz'
         logger.info('Downloading NCBI gene_history...')
-        self._ftp_download(self._data_host, self._data_dir, fn, self.src_data_dir,
+        self._ftp_download(self._host, self._data_dir, fn, self.src_data_dir,
                            data_fn)
         logger.info('Successfully downloaded NCBI gene_history.')
 
@@ -81,7 +81,7 @@ class NCBI(Base):
         """Download latest gff data"""
         regex_patern = r"GCF_\d+\.\d+_(?P<assembly>GRCh\d+\.\S+)_genomic.gff.gz"
         regex = re.compile(regex_patern)
-        with FTP(self._data_host) as ftp:
+        with FTP(self._host) as ftp:
             ftp.login()
             ftp.cwd("genomes/refseq/vertebrate_mammalian/Homo_sapiens/"
                     "latest_assembly_versions")

@@ -22,7 +22,7 @@ logger.setLevel(logging.DEBUG)
 class Base(ABC):
     """The ETL base class."""
 
-    def __init__(self, database: AbstractDatabase, data_host: str, data_dir: str,
+    def __init__(self, database: AbstractDatabase, host: str, data_dir: str,
                  src_data_dir: Path,
                  seqrepo_dir=SEQREPO_DATA_PATH,
                  *args, **kwargs) -> None:
@@ -36,7 +36,7 @@ class Base(ABC):
         """
         self._src_name = SourceName(self.__class__.__name__)
         self._database = database
-        self._data_host = data_host
+        self._host = host
         self._data_dir = data_dir
         self.src_data_dir = src_data_dir
         self._processed_ids = list()

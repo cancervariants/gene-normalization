@@ -20,7 +20,7 @@ class HGNC(Base):
 
     def __init__(self,
                  database: AbstractDatabase,
-                 data_host='ftp.ebi.ac.uk',
+                 host='ftp.ebi.ac.uk',
                  data_dir='pub/databases/genenames/hgnc/json/',
                  src_data_dir=APP_ROOT / 'data' / 'hgnc',
                  fn='hgnc_complete_set.json'
@@ -33,9 +33,9 @@ class HGNC(Base):
         :param Path src_data_dir: Data directory for HGNC
         :param str fn: Data file to download
         """
-        super().__init__(database, data_host, data_dir, src_data_dir)
+        super().__init__(database, host, data_dir, src_data_dir)
         self._chromosome_location = ChromosomeLocation()
-        self._data_url = f"ftp://{data_host}/{data_dir}{fn}"
+        self._data_url = f"ftp://{host}/{data_dir}{fn}"
         self._fn = fn
         self._version = None
 
@@ -45,7 +45,7 @@ class HGNC(Base):
         self._create_data_directory()
         tmp_fn = 'hgnc_version.json'
         self._version = \
-            self._ftp_download(self._data_host, self._data_dir, tmp_fn,
+            self._ftp_download(self._host, self._data_dir, tmp_fn,
                                self.src_data_dir, self._fn)
         shutil.move(f"{self.src_data_dir}/{tmp_fn}",
                     f"{self.src_data_dir}/hgnc_{self._version}.json")

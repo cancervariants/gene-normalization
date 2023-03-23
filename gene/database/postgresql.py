@@ -645,7 +645,6 @@ class PostgresDatabase(AbstractDatabase):
         :param ref_type: one of {'alias', 'label', 'xref', 'associated_with'}
         :param src_name: name of source that concept ID belongs to
         """
-        pass
 
     def update_record(self, concept_id: str, field: str, new_value: Any,
                       item_type: str = "identity") -> None:
@@ -723,7 +722,7 @@ class PostgresDatabase(AbstractDatabase):
         brittle, and it'd be nice to revisit in the future to perform as a single
         atomic transaction.
 
-        Refreshing the materialized view at the end is probably redundant, because
+        Refreshing the materialized view at the end might be redundant, because
         this method will almost always be called right before more data is written,
         but it's probably necessary just in case that doesn't happen.
 
@@ -781,10 +780,6 @@ class PostgresDatabase(AbstractDatabase):
         self._add_indexes()
         self._refresh_views()
 
-    def prepare_write(self) -> None:
-        """Prepare database for writes. Drop indexes, views, etc."""
-        pass
-
     def complete_write_transaction(self) -> None:
         """Conclude transaction or batch writing if relevant."""
         if not self.conn.closed:
@@ -804,7 +799,8 @@ class PostgresDatabase(AbstractDatabase):
         passed as an argument, will try to grab latest release from VICC S3 bucket.
 
         :param url: location of .tar.gz file created from output of pg_dump
-        :raise DatabaseException: if unable to retrieve file from URL
+        :raise DatabaseException: if unable to retrieve file from URL or if psql
+            command fails
         """
         if not url:
             url = "https://vicc-normalizers.s3.us-east-2.amazonaws.com/gene_normalization/postgresql/gene_norm_latest.sql.tar.gz"  # noqa: E501
@@ -849,6 +845,7 @@ class PostgresDatabase(AbstractDatabase):
         :return: Nothing, but saves results of pg_dump to file named
             `gene_norm_<date and time>.sql`
         :raise ValueError: if output directory isn't a directory or doesn't exist
+        :raise DatabaseException: if psql call fails
         """
         if not output_directory.is_dir() or not output_directory.exists():
             raise ValueError(f"Output location {output_directory} isn't a directory or doesn't exist")  # noqa: E501
@@ -858,8 +855,12 @@ class PostgresDatabase(AbstractDatabase):
         host = self.conn.info.host
         port = self.conn.info.port
         database_name = self.conn.info.dbname
+        if self.conn.info.password:
+            pw_param = f"-W {self.conn.info.password}"
+        else:
+            pw_param = "-w"
 
-        system_call = f"pg_dump -E UTF8 -f {output_location} -U {user} -h {host} -p {port} {database_name}"  # noqa: E501
+        system_call = f"pg_dump -E UTF8 -f {output_location} -U {user} {pw_param} -h {host} -p {port} {database_name}"  # noqa: E501
         result = os.system(system_call)
         if result != 0:
             raise DatabaseException(

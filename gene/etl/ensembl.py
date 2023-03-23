@@ -19,7 +19,7 @@ logger.setLevel(logging.DEBUG)
 class Ensembl(Base):
     """ETL the Ensembl source into the normalized database."""
 
-    def __init__(self, database: AbstractDatabase, data_host="ftp.ensembl.org",
+    def __init__(self, database: AbstractDatabase, host="ftp.ensembl.org",
                  data_dir="pub/current_gff3/homo_sapiens/",
                  src_data_dir=APP_ROOT / "data" / "ensembl") -> None:
         """Initialize Ensembl ETL class.
@@ -29,7 +29,7 @@ class Ensembl(Base):
         :param str data_dir: FTP data directory to use
         :param Path src_data_dir: Data directory for Ensembl
         """
-        super().__init__(database, data_host, data_dir, src_data_dir)
+        super().__init__(database, host, data_dir, src_data_dir)
         self._sequence_location = SequenceLocation()
         self._version = None
         self._fn = None
@@ -42,7 +42,7 @@ class Ensembl(Base):
         self._create_data_directory()
         regex_pattern = r"Homo_sapiens\.(?P<assembly>GRCh\d+)\.(?P<version>\d+)\.gff3\.gz"  # noqa: E501
         regex = re.compile(regex_pattern)
-        with FTP(self._data_host) as ftp:
+        with FTP(self._host) as ftp:
             ftp.login()
             ftp.cwd(self._data_dir)
             files = ftp.nlst()
@@ -53,7 +53,7 @@ class Ensembl(Base):
                     self._assembly = resp["assembly"]
                     self._version = resp["version"]
                     self._fn = f
-                    self._data_url = f"ftp://{self._data_host}/{self._data_dir}{self._fn}"  # noqa: E501
+                    self._data_url = f"ftp://{self._host}/{self._data_dir}{self._fn}"  # noqa: E501
                     new_fn = f"ensembl_{self._version}.gff3"
                     if not (self.src_data_dir / new_fn).exists():
                         self._ftp_download_file(ftp, self._fn, self.src_data_dir,
