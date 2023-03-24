@@ -32,6 +32,7 @@ def update_from_remote(data_url: Optional[str], db_url: str) -> None:
 
     \f
     :param data_url: user-specified location to pull DB dump from
+    :param db_url: URL to normalizer database
     """  # noqa: D301
     if not click.confirm("Are you sure you want to overwrite existing data?"):
         click.get_current_context().exit()
@@ -60,6 +61,7 @@ def dump_database(output_directory: Path, db_url: str):
 
     \f
     :param output_directory: path to existing directory
+    :param db_url: URL to normalizer database
     """  # noqa: D301
     if not output_directory:
         output_directory = Path(".")
@@ -73,14 +75,6 @@ def dump_database(output_directory: Path, db_url: str):
     except DatabaseException as e:
         click.echo(f"Encountered exception during update: {str(e)}")
         click.get_current_context().exit(1)
-
-
-def _help_msg():
-    """Display help message."""
-    ctx = click.get_current_context()
-    click.echo("Must either enter 1 or more sources, or use `--update_all` parameter")  # noqa: E501
-    click.echo(ctx.get_help())
-    ctx.exit()
 
 
 def _update_normalizers(
@@ -121,10 +115,7 @@ def _load_source(
     start_load = timer()
 
     # used to get source class name from string
-    # TODO hm
     SourceClass = eval(n.value)
-    # SOURCES_CLASS = \
-    #     {s.value.lower(): eval(s.value) for s in SourceName.__members__.values()}
 
     source = SourceClass(database=db)
     processed_ids += source.perform_etl()
@@ -200,7 +191,10 @@ def update_normalizer_db(normalizer, aws_instance, db_url, update_all,
         if update_merged:
             _load_merge(db, [])
         else:
-            _help_msg()
+            ctx = click.get_current_context()
+            click.echo("Must either enter 1 or more sources, or use `--update_all` parameter")  # noqa: E501
+            click.echo(ctx.get_help())
+            ctx.exit()
     else:
         normalizers = normalizer.lower().split()
 

@@ -27,7 +27,8 @@ class DynamoDbDatabase(AbstractDatabase):
         """Initialize Database class.
 
         :param str db_url: URL endpoint for DynamoDB source
-        :param str region_name: default AWS region
+        :Keyword Arguments:
+            * region_name: AWS region (defaults to "us-east-2")
         """
         gene_concepts_table = "gene_concepts"  # default
         gene_metadata_table = "gene_metadata"  # default
@@ -207,7 +208,7 @@ class DynamoDbDatabase(AbstractDatabase):
     def get_source_metadata(self, src_name: Union[str, SourceName]) -> Dict:
         """Get license, versioning, data lookup, etc information for a source.
 
-        :param SourceName: name of the source to get data for
+        :param src_name: name of the source to get data for
         """
         if isinstance(src_name, SourceName):
             src_name = src_name.value

@@ -334,7 +334,7 @@ class PostgresDatabase(AbstractDatabase):
     def get_source_metadata(self, src_name: SourceName) -> Dict:
         """Get license, versioning, data lookup, etc information for a source.
 
-        :param SourceName: name of the source to get data for
+        :param src_name: name of the source to get data for
         """
         if isinstance(src_name, SourceName):
             src_name = src_name.value

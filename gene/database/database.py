@@ -40,7 +40,6 @@ class AbstractDatabase(abc.ABC):
 
         :raise DatabaseInitializationException: if initial setup fails
         """
-        pass
 
     @abc.abstractmethod
     def list_tables(self) -> List[str]:
@@ -48,14 +47,12 @@ class AbstractDatabase(abc.ABC):
 
         :return: Table names in database
         """
-        pass
 
     @abc.abstractmethod
     def drop_db(self) -> None:
         """Initiate total teardown of DB. Useful for quickly resetting the entirety of
         the data.
         """
-        pass
 
     @abc.abstractmethod
     def initialize_db(self) -> None:
@@ -63,28 +60,26 @@ class AbstractDatabase(abc.ABC):
         existing content -- ie, this method is also responsible for checking whether
         the DB is already set up.
         """
-        pass
 
     @abc.abstractmethod
     def get_source_metadata(self, src_name: Union[str, SourceName]) -> Dict:
         """Get license, versioning, data lookup, etc information for a source.
 
-        :param SourceName: name of the source to get data for
+        :param src_name: name of the source to get data for
         """
-        pass
 
     @abc.abstractmethod
     def get_record_by_id(self, concept_id: str, case_sensitive: bool = True,
                          merge: bool = False) -> Optional[Dict]:
         """Fetch record corresponding to provided concept ID
+
         :param concept_id: concept ID for gene record
-        :param case_sensitive: if true, performs exact lookup, which is may be quicker.
+        :param case_sensitive: if true, performs exact lookup, which may be quicker.
             Otherwise, performs filter operation, which doesn't require correct casing.
         :param merge: if true, look for merged record; look for identity
             record otherwise.
         :return: complete gene record, if match is found; None otherwise
         """
-        pass
 
     @abc.abstractmethod
     def get_refs_by_type(self, query: str, match_type: str) -> List[str]:
@@ -97,7 +92,6 @@ class AbstractDatabase(abc.ABC):
             for concept ID lookup)
         :return: list of associated concept IDs. Empty if lookup fails.
         """
-        pass
 
     @abc.abstractmethod
     def get_all_concept_ids(self) -> Set[str]:
@@ -105,7 +99,6 @@ class AbstractDatabase(abc.ABC):
 
         :return: List of concept IDs as strings.
         """
-        pass
 
     @abc.abstractmethod
     def add_source_metadata(self, src_name: SourceName, data: SourceMeta) -> None:
@@ -115,7 +108,6 @@ class AbstractDatabase(abc.ABC):
         :param data: known source attributes
         :raise DatabaseWriteException: if write fails
         """
-        pass
 
     @abc.abstractmethod
     def add_record(self, record: Dict, record_type: str = "identity") -> None:
@@ -124,7 +116,6 @@ class AbstractDatabase(abc.ABC):
         :param Dict record: record to upload
         :param str record_type: type of record (either 'identity' or 'merger')
         """
-        pass
 
     @abc.abstractmethod
     def add_ref_record(self, term: str, concept_id: str, ref_type: str,
@@ -136,19 +127,18 @@ class AbstractDatabase(abc.ABC):
         :param ref_type: one of {'alias', 'label', 'xref', 'associated_with'}
         :param src_name: name of source that concept ID belongs to
         """
-        pass
 
     @abc.abstractmethod
     def update_record(self, concept_id: str, field: str, new_value: Any,
                       item_type: str = "identity") -> None:
         """Update the field of an individual record to a new value.
+
         :param concept_id: record to update
         :param field: name of field to update
         :param new_value: new value
         :param item_type: record type, one of {'identity', 'merger'}
         :raise DatabaseWriteException: if attempting to update non-existent record
         """
-        pass
 
     @abc.abstractmethod
     def delete_normalized_concepts(self) -> None:
@@ -159,7 +149,6 @@ class AbstractDatabase(abc.ABC):
             encounters a failure in the process
         :raise DatabaseWriteException: if deletion call fails
         """
-        pass
 
     @abc.abstractmethod
     def delete_source(self, src_name: SourceName) -> None:
@@ -170,17 +159,14 @@ class AbstractDatabase(abc.ABC):
             encounters a failure in the process
         :raise DatabaseWriteException: if deletion call fails
         """
-        pass
 
     @abc.abstractmethod
     def complete_write_transaction(self) -> None:
         """Conclude transaction or batch writing if relevant."""
-        pass
 
     @abc.abstractmethod
     def close_connection(self) -> None:
         """Perform any manual connection closure procedures if necessary."""
-        pass
 
     @abc.abstractmethod
     def load_from_remote(self, url: Optional[str] = None) -> None:
@@ -189,7 +175,6 @@ class AbstractDatabase(abc.ABC):
         :param url: remote location to retrieve gzipped dump file from
         :raise: NotImplementedError if not supported by DB
         """
-        pass
 
     @abc.abstractmethod
     def export_db(self, export_location: Path) -> None:
@@ -198,7 +183,6 @@ class AbstractDatabase(abc.ABC):
         :param export_location: path to save DB dump at
         :raise: NotImplementedError if not supported by DB
         """
-        pass
 
 
 # can be set to either `Dev`, `Staging`, or `Prod`
@@ -232,7 +216,7 @@ def confirm_aws_db_use(env_name: str) -> None:
 
 
 def create_db(
-    db_url: Optional[str] = None, aws_instance: Optional[bool] = None
+    db_url: Optional[str] = None, aws_instance: bool = False
 ) -> AbstractDatabase:
     """Database factory method. Checks environment variables and provided parameters
     and creates a DB instance.
