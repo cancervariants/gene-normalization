@@ -372,7 +372,7 @@ class DynamoDbDatabase(AbstractDatabase):
             "label_and_type": label_and_type,
             "concept_id": concept_id
         }
-        update_expression = f"set {merge_ref}=:r"
+        update_expression = "set merge_ref=:r"
         update_values = {':r': merge_ref.lower()}
         condition_expression = "attribute_exists(label_and_type)"
         try:
