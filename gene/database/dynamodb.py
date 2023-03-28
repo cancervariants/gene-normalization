@@ -10,7 +10,7 @@ from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
 import click
-from gene import PREFIX_LOOKUP
+from gene import ITEM_TYPES, PREFIX_LOOKUP
 from gene.database.database import AWS_ENV_VAR_NAME, SKIP_AWS_DB_ENV_NAME, \
     VALID_AWS_ENV_NAMES, AbstractDatabase, AwsEnvName, DatabaseException, \
     DatabaseReadException, DatabaseWriteException, confirm_aws_db_use
@@ -316,16 +316,17 @@ class DynamoDbDatabase(AbstractDatabase):
         except ClientError as e:
             raise DatabaseWriteException(e)
 
-    def add_record(self, record: Dict, record_type: str = "identity"):
+    def add_record(self, record: Dict, src_name: SourceName) -> None:
         """Add new record to database.
+
         :param Dict record: record to upload
-        :param str record_type: type of record (either 'identity' or 'merger')
+        :param SourceName src_name: name of source for record
         """
-        id_prefix = record['concept_id'].split(':')[0].lower()
-        record['src_name'] = PREFIX_LOOKUP[id_prefix]
-        label_and_type = f'{record["concept_id"].lower()}##{record_type}'
-        record['label_and_type'] = label_and_type
-        record['item_type'] = record_type
+        concept_id = record["concept_id"]
+        record["src_name"] = src_name.value
+        label_and_type = f"{concept_id.lower()}##identity"
+        record["label_and_type"] = label_and_type
+        record["item_type"] = "identity"
         try:
             self.batch.put_item(
                 Item=record,
@@ -334,12 +335,45 @@ class DynamoDbDatabase(AbstractDatabase):
             )
         except ClientError as e:
             logger.error("boto3 client error on add_record for "
-                         f"{record['concept_id']}: "
-                         f"{e.response['Error']['Message']}")
+                         f"{concept_id}: {e.response['Error']['Message']}")
+        for attr_type, item_type in ITEM_TYPES.items():
+            if attr_type in record:
+                value = record.get(attr_type)
+                if not value:
+                    continue
+                if isinstance(value, str):
+                    items = [value.lower()]
+                else:
+                    items = {item.lower() for item in value}
+                for item in items:
+                    self._add_ref_record(
+                        item, record["concept_id"], item_type, src_name
+                    )
 
-    def add_ref_record(self, term: str, concept_id: str, ref_type: str,
-                       src_name: SourceName) -> None:
+    def add_merged_record(self, record: Dict) -> None:
+        """Add merged record to database.
+
+        :param record: merged record to add
+        """
+        concept_id = record["concept_id"]
+        id_prefix = concept_id.split(":")[0].lower()
+        record["src_name"] = PREFIX_LOOKUP[id_prefix]
+        label_and_type = f"{concept_id.lower()}##merger"
+        record["label_and_type"] = label_and_type
+        record["item_type"] = "merger"
+        try:
+            self.batch.put_item(
+                Item=record,
+                ConditionExpression="attribute_not_exists(concept_id) AND attribute_not_exists(label_and_type)"  # noqa: E501
+            )
+        except ClientError as e:
+            logger.error("boto3 client error on add_record for "
+                         f"{concept_id}: {e.response['Error']['Message']}")
+
+    def _add_ref_record(self, term: str, concept_id: str, ref_type: str,
+                        src_name: SourceName) -> None:
         """Add auxiliary/reference record to database.
+
         :param str term: referent term
         :param str concept_id: concept ID to refer to
         :param str ref_type: one of {'alias', 'label', 'xref',

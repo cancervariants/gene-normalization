@@ -88,21 +88,16 @@ class Base(ABC):
             gene["src_name"] = self._src_name.value
             gene['item_type'] = 'identity'
 
-            for attr_type, item_type in ITEM_TYPES.items():
+            for attr_type in ITEM_TYPES:
                 if attr_type in gene:
                     value = gene[attr_type]
-                    if value is not None and value != []:
-                        if isinstance(value, str):
-                            items = [value.lower()]
-                        else:
-                            gene[attr_type] = list(set(value))
-                            items = {item.lower() for item in value}
-                        for item in items:
-                            self._database.add_ref_record(item, concept_id, item_type,
-                                                          self._src_name)
-                    else:
+                    if value is None or value == []:
                         del gene[attr_type]
-            self._database.add_record(gene)
+                    elif isinstance(value, str):
+                        continue
+                    gene[attr_type] = list(set(value))
+
+            self._database.add_record(gene, self._src_name)
             self._processed_ids.append(concept_id)
 
     def _ftp_download(self, host: str, data_dir: str, fn: str,

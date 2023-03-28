@@ -50,7 +50,7 @@ class Merge:
             merged_record = self._generate_merged_record(group)
 
             # add group merger item to DB
-            self._database.add_record(merged_record, 'merger')
+            self._database.add_merged_record(merged_record)
 
             # add updated references
             for concept_id in group:

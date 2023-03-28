@@ -110,22 +110,18 @@ class AbstractDatabase(abc.ABC):
         """
 
     @abc.abstractmethod
-    def add_record(self, record: Dict, record_type: str = "identity") -> None:
+    def add_record(self, record: Dict, src_name: SourceName) -> None:
         """Add new record to database.
 
-        :param Dict record: record to upload
-        :param str record_type: type of record (either 'identity' or 'merger')
+        :param record: record to upload
+        :param src_name: name of source for record.
         """
 
     @abc.abstractmethod
-    def add_ref_record(self, term: str, concept_id: str, ref_type: str,
-                       src_name: SourceName) -> None:
-        """Add auxiliary/reference record, like an xref or alias, to the database.
+    def add_merged_record(self, record: Dict) -> None:
+        """Add merged record to database.
 
-        :param term: referent term
-        :param concept_id: concept ID to refer to
-        :param ref_type: one of {'alias', 'label', 'xref', 'associated_with'}
-        :param src_name: name of source that concept ID belongs to
+        :param record: merged record to add
         """
 
     @abc.abstractmethod

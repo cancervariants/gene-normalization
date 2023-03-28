@@ -359,10 +359,11 @@ class PostgresDatabase(AbstractDatabase):
             )
         self.conn.commit()
 
-    def _add_identity_record(self, record: Dict) -> None:
-        """Add source record into database.
+    def add_record(self, record: Dict, src_name: SourceName) -> None:
+        """Add new record to database.
 
-        :param record: prepared data to add
+        :param record: record to upload
+        :param src_name: name of source for record. Not used by PostgreSQL instance.
         """
         record_query = """
             INSERT INTO gene_concepts (
@@ -408,10 +409,10 @@ class PostgresDatabase(AbstractDatabase):
                 )
                 self.conn.rollback()
 
-    def _add_merged_record(self, record: Dict) -> None:
+    def add_merged_record(self, record: Dict) -> None:
         """Add merged record to database.
 
-        :param record: merged data to add
+        :param record: merged record to add
         """
         record_query = """
         INSERT INTO gene_merged (
@@ -451,34 +452,6 @@ class PostgresDatabase(AbstractDatabase):
                 record.get("xrefs"),
             ])
             self.conn.commit()
-
-    def add_record(self, record: Dict, record_type: str = "identity") -> None:
-        """Add new record to database.
-
-        :param Dict record: record to upload
-        :param str record_type: type of record (either 'identity' or 'merger')
-        :raise ValueError: if invalid record type param provided
-        """
-        if record_type == "identity":
-            self._add_identity_record(record)
-        elif record_type == "merger":
-            self._add_merged_record(record)
-        else:
-            raise ValueError("Invalid record type")
-
-    def add_ref_record(self, term: str, concept_id: str, ref_type: str,
-                       src_name: SourceName) -> None:
-        """Add auxiliary/reference record, like an xref or alias, to the database.
-        PostgreSQL requires that we write the main concept record first, so
-        we actually perform the reference writing in that method, and this is
-        just a stub. A minor refactor of the base ETL method could clean that up for
-        gene, but might not work in other normalizers.
-
-        :param term: referent term
-        :param concept_id: concept ID to refer to
-        :param ref_type: one of {'alias', 'label', 'xref', 'associated_with'}
-        :param src_name: name of source that concept ID belongs to
-        """
 
     def update_merge_ref(self, concept_id: str, merge_ref: Any) -> None:
         """Update the merged record reference of an individual record to a new value.
