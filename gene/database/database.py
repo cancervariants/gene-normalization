@@ -129,14 +129,11 @@ class AbstractDatabase(abc.ABC):
         """
 
     @abc.abstractmethod
-    def update_record(self, concept_id: str, field: str, new_value: Any,
-                      item_type: str = "identity") -> None:
-        """Update the field of an individual record to a new value.
+    def update_merge_ref(self, concept_id: str, merge_ref: Any) -> None:
+        """Update the merged record reference of an individual record to a new value.
 
         :param concept_id: record to update
-        :param field: name of field to update
-        :param new_value: new value
-        :param item_type: record type, one of {'identity', 'merger'}
+        :param merge: new ref value
         :raise DatabaseWriteException: if attempting to update non-existent record
         """
 

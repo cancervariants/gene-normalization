@@ -344,6 +344,7 @@ class DynamoDbDatabase(AbstractDatabase):
         :param str concept_id: concept ID to refer to
         :param str ref_type: one of {'alias', 'label', 'xref',
             'associated_with'}
+        :param src_name: name of source for record
         """
         label_and_type = f"{term.lower()}##{ref_type}"
         record = {
@@ -359,24 +360,20 @@ class DynamoDbDatabase(AbstractDatabase):
                          f"{concept_id} with match type {ref_type}: "
                          f"{e.response['Error']['Message']}")
 
-    def update_record(self, concept_id: str, field: str, new_value: Any,
-                      item_type: str = 'identity'):
-        """Update the field of an individual record to a new value.
-        :param str concept_id: record to update
-        :param str field: name of field to update
-        :param str new_value: new value
-        :param str item_type: record type, one of {'identity', 'merger'}
+    def update_merge_ref(self, concept_id: str, merge_ref: Any) -> None:
+        """Update the merged record reference of an individual record to a new value.
+
+        :param concept_id: record to update
+        :param merge: new ref value
         :raise DatabaseWriteException: if attempting to update non-existent record
         """
-        if field == "merge_ref":
-            new_value = new_value.lower()
-        label_and_type = f"{concept_id.lower()}##{item_type}"
+        label_and_type = f"{concept_id.lower()}##identity"
         key = {
             "label_and_type": label_and_type,
             "concept_id": concept_id
         }
-        update_expression = f"set {field}=:r"
-        update_values = {':r': new_value}
+        update_expression = f"set {merge_ref}=:r"
+        update_values = {':r': merge_ref.lower()}
         condition_expression = "attribute_exists(label_and_type)"
         try:
             self.genes.update_item(Key=key,

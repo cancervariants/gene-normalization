@@ -27,7 +27,7 @@ class HGNC(Base):
                  ):
         """Initialize HGNC ETL class.
 
-        :param Database database: DynamoDB database
+        :param AbstractDatabase database: DynamoDB database
         :param str host: FTP host name
         :param str data_dir: FTP data directory to use
         :param Path src_data_dir: Data directory for HGNC

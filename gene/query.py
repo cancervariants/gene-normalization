@@ -60,6 +60,7 @@ class QueryHandler:
     @staticmethod
     def _transform_sequence_location(loc: Dict) -> models.SequenceLocation:
         """Transform a sequence location to VRS sequence location
+
         :param Dict loc: Sequence location
         :return: VRS sequence location
         """
@@ -90,6 +91,7 @@ class QueryHandler:
 
     def _transform_location(self, loc: Dict) -> Dict:
         """Transform a sequence/chromosome location to VRS sequence/chromosome location
+
         :param Dict loc: Sequence or Chromosome location
         :return: VRS sequence or chromosome location represented as a dictionary
         """
@@ -115,6 +117,8 @@ class QueryHandler:
 
     def _get_src_name(self, concept_id: str) -> SourceName:
         """Get source name enum from ID.
+
+        :param concept_id: candidate concept ID string to check
         :return: SourceName option
         :raise: ValueError if unrecognized ID provided
         """
@@ -125,7 +129,7 @@ class QueryHandler:
         elif concept_id.startswith("hgnc"):
             return SourceName.HGNC
         else:
-            raise ValueError
+            raise ValueError("Invalid or unrecognized concept ID provided")
 
     def add_record(self,
                    response: Dict[str, Dict],

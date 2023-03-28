@@ -24,7 +24,7 @@ class Ensembl(Base):
                  src_data_dir=APP_ROOT / "data" / "ensembl") -> None:
         """Initialize Ensembl ETL class.
 
-        :param Database database: DynamoDB database
+        :param AbstractDatabase database: DynamoDB database
         :param str host: FTP host name
         :param str data_dir: FTP data directory to use
         :param Path src_data_dir: Data directory for Ensembl

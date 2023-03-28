@@ -56,7 +56,7 @@ class Merge:
             for concept_id in group:
                 merge_ref = merged_record["concept_id"]
                 try:
-                    self._database.update_record(concept_id, "merge_ref", merge_ref)
+                    self._database.update_merge_ref(concept_id, merge_ref)
                 except DatabaseWriteException as dw:
                     if str(dw).startswith("No such record exists"):
                         logger.error(f"Updating nonexistent record: {concept_id} "

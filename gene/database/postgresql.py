@@ -13,13 +13,16 @@ import psycopg
 from psycopg.errors import UndefinedTable, UniqueViolation
 import requests
 
-from gene.database import AbstractDatabase, DatabaseException, \
-    DatabaseReadException, DatabaseWriteException
-from gene.schemas import SourceMeta, SourceName
+from gene.database import AbstractDatabase, DatabaseException, DatabaseReadException, \
+    DatabaseWriteException
+from gene.schemas import ItemTypes, SourceMeta, SourceName
 
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
+
+
+SCRIPTS_DIR = Path(__file__).parent / "postgresql"
 
 
 class PostgresDatabase(AbstractDatabase):
@@ -110,46 +113,7 @@ class PostgresDatabase(AbstractDatabase):
 
     def _create_views(self) -> None:
         """Create materialized views."""
-        create_view_query = """
-        CREATE MATERIALIZED VIEW IF NOT EXISTS record_lookup_view AS
-        SELECT gc.concept_id,
-               gc.symbol_status,
-               gc.label,
-               gc.strand,
-               gc.location_annotations,
-               gc.locations,
-               gc.gene_type,
-               ga.aliases,
-               gas.associated_with,
-               gps.previous_symbols,
-               gs.symbol,
-               gx.xrefs,
-               gc.source,
-               gc.merge_ref,
-               lower(gc.concept_id) AS concept_id_lowercase
-        FROM gene_concepts gc
-        FULL JOIN (
-            SELECT ga_1.concept_id, array_agg(ga_1.alias) AS aliases
-            FROM gene_aliases ga_1
-            GROUP BY ga_1.concept_id
-        ) ga ON gc.concept_id::text = ga.concept_id::text
-        FULL JOIN (
-            SELECT gas_1.concept_id, array_agg(gas_1.associated_with) AS associated_with
-            FROM gene_associations gas_1
-            GROUP BY gas_1.concept_id
-        ) gas ON gc.concept_id::text = gas.concept_id::text
-        FULL JOIN (
-            SELECT gps_1.concept_id, array_agg(gps_1.prev_symbol) AS previous_symbols
-            FROM gene_previous_symbols gps_1
-            GROUP BY gps_1.concept_id
-        ) gps ON gc.concept_id::text = gps.concept_id::text
-        FULL JOIN gene_symbols gs ON gc.concept_id::text = gs.concept_id::text
-        FULL JOIN (
-            SELECT gx_1.concept_id, array_agg(gx_1.xref) AS xrefs
-            FROM gene_xrefs gx_1
-            GROUP BY gx_1.concept_id
-        ) gx ON gc.concept_id::text = gx.concept_id::text;
-        """
+        create_view_query = (SCRIPTS_DIR / "create_record_lookup_view.sql").read_bytes()
         with self.conn.cursor() as cur:
             cur.execute(create_view_query)
             self.conn.commit()
@@ -166,169 +130,39 @@ class PostgresDatabase(AbstractDatabase):
 
     def _add_fkeys(self) -> None:
         """Add fkey relationships."""
-        add_fkey_query = """
-        ALTER TABLE gene_aliases ADD CONSTRAINT gene_aliases_concept_id_fkey
-            FOREIGN KEY (concept_id) REFERENCES gene_concepts (concept_id);
-        ALTER TABLE gene_associations ADD CONSTRAINT gene_associations_concept_id_fkey
-            FOREIGN KEY (concept_id) REFERENCES gene_concepts (concept_id);
-        ALTER TABLE gene_previous_symbols
-            ADD CONSTRAINT gene_previous_symbols_concept_id_fkey
-            FOREIGN KEY (concept_id) REFERENCES gene_concepts (concept_id);
-        ALTER TABLE gene_symbols ADD CONSTRAINT gene_symbols_concept_id_fkey
-            FOREIGN KEY (concept_id) REFERENCES gene_concepts (concept_id);
-        ALTER TABLE gene_xrefs ADD CONSTRAINT gene_xrefs_concept_id_fkey
-            FOREIGN KEY (concept_id) REFERENCES gene_concepts (concept_id);
-        """
+        add_fkey_query = (SCRIPTS_DIR / "add_fkeys.sql").read_bytes()
         with self.conn.cursor() as cur:
             cur.execute(add_fkey_query)
             self.conn.commit()
 
     def _drop_fkeys(self) -> None:
         """Drop fkey relationships."""
-        drop_fkey_query = """
-        ALTER TABLE gene_aliases DROP CONSTRAINT gene_aliases_concept_id_fkey;
-        ALTER TABLE gene_associations DROP CONSTRAINT gene_associations_concept_id_fkey;
-        ALTER TABLE gene_previous_symbols
-            DROP CONSTRAINT gene_previous_symbols_concept_id_fkey;
-        ALTER TABLE gene_symbols DROP CONSTRAINT gene_symbols_concept_id_fkey;
-        ALTER TABLE gene_xrefs DROP CONSTRAINT gene_xrefs_concept_id_fkey;
-        """
+        drop_fkey_query = (SCRIPTS_DIR / "drop_fkeys.sql").read_bytes()
         with self.conn.cursor() as cur:
             cur.execute(drop_fkey_query)
             self.conn.commit()
 
-    def _drop_indexes(self) -> None:
-        """Drop all custom indexes."""
-        drop_indexes_query = """
-        DROP INDEX IF EXISTS idx_g_concept_id_low;
-        DROP INDEX IF EXISTS idx_gm_concept_id_low;
-        DROP INDEX IF EXISTS idx_gs_symbol_low;
-        DROP INDEX IF EXISTS idx_gps_symbol_low;
-        DROP INDEX IF EXISTS idx_gx_xref_low;
-        DROP INDEX IF EXISTS idx_ga_alias_low;
-        DROP INDEX IF EXISTS idx_g_as_association_low;
-        DROP INDEX IF EXISTS idx_rlv_concept_id_low;
-        """
-        with self.conn.cursor() as cur:
-            cur.execute(drop_indexes_query)
-            self.conn.commit()
-
     def _add_indexes(self) -> None:
         """Create core search indexes."""
-        query = """
-        CREATE INDEX IF NOT EXISTS idx_g_concept_id_low
-            ON gene_concepts (lower(concept_id));
-        CREATE INDEX IF NOT EXISTS idx_gm_concept_id_low
-            ON gene_merged (lower(concept_id));
-        CREATE INDEX IF NOT EXISTS idx_gs_symbol_low ON gene_symbols (lower(symbol));
-        CREATE INDEX IF NOT EXISTS idx_gps_symbol_low
-            ON gene_previous_symbols (lower(prev_symbol));
-        CREATE INDEX IF NOT EXISTS idx_ga_alias_low ON gene_aliases (lower(alias));
-        CREATE INDEX IF NOT EXISTS idx_gx_xref_low ON gene_xrefs (lower(xref));
-        CREATE INDEX IF NOT EXISTS idx_g_as_association_low
-            ON gene_associations (lower(associated_with));
-        CREATE INDEX IF NOT EXISTS idx_rlv_concept_id_low
-            ON record_lookup_view (lower(concept_id));
-        """
+        add_indexes_query = (SCRIPTS_DIR / "add_indexes.sql").read_bytes()
         with self.conn.cursor() as cur:
-            cur.execute(query)
+            cur.execute(add_indexes_query)
+            self.conn.commit()
+
+    def _drop_indexes(self) -> None:
+        """Drop all custom indexes."""
+        drop_indexes_query = (SCRIPTS_DIR / "drop_indexes.sql").read_bytes()
+        with self.conn.cursor() as cur:
+            cur.execute(drop_indexes_query)
             self.conn.commit()
 
     def _create_tables(self) -> None:
         """Create all tables, indexes, and views."""
         logger.debug("Creating new gene normalizer tables.")
-        sources_table = """
-        CREATE TABLE IF NOT EXISTS gene_sources (
-            name VARCHAR(127) PRIMARY KEY,
-            data_license TEXT NOT NULL,
-            data_license_url TEXT NOT NULL,
-            version TEXT NOT NULL,
-            data_url TEXT NOT NULL,
-            rdp_url TEXT,
-            data_license_nc BOOLEAN NOT NULL,
-            data_license_attr BOOLEAN NOT NULL,
-            data_license_sa BOOLEAN NOT NULL,
-            genome_assemblies TEXT [] NOT NULL
-        );
-        """
-        merged_table = """
-        CREATE TABLE IF NOT EXISTS gene_merged (
-            concept_id VARCHAR(127) PRIMARY KEY,
-            symbol TEXT,
-            symbol_status VARCHAR(127),
-            previous_symbols TEXT [],
-            label TEXT,
-            strand VARCHAR(1),
-            ensembl_locations JSON [],
-            hgnc_locations JSON [],
-            ncbi_locations JSON [],
-            location_annotations TEXT [],
-            ensembl_biotype TEXT [],
-            hgnc_locus_type TEXT [],
-            ncbi_gene_type TEXT [],
-            aliases TEXT [],
-            associated_with TEXT [],
-            xrefs TEXT []
-        )
-        """
-        concepts_table = """
-        CREATE TABLE IF NOT EXISTS gene_concepts (
-            concept_id VARCHAR(127) PRIMARY KEY,
-            source VARCHAR(127) NOT NULL REFERENCES gene_sources (name),
-            symbol_status VARCHAR(127),
-            label TEXT,
-            strand VARCHAR(1),
-            location_annotations TEXT [],
-            locations JSON [],
-            gene_type TEXT,
-            merge_ref VARCHAR(127) REFERENCES gene_merged (concept_id)
-        );
-        """
-        symbols_table = """
-        CREATE TABLE IF NOT EXISTS gene_symbols (
-            id SERIAL PRIMARY KEY,
-            symbol TEXT NOT NULL,
-            concept_id VARCHAR(127) REFERENCES gene_concepts (concept_id)
-        );
-        """
-        previous_symbols_table = """
-        CREATE TABLE IF NOT EXISTS gene_previous_symbols (
-            id SERIAL PRIMARY KEY,
-            prev_symbol TEXT NOT NULL,
-            concept_id VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
-        );
-        """
-        aliases_table = """
-        CREATE TABLE IF NOT EXISTS gene_aliases (
-            id SERIAL PRIMARY KEY,
-            alias TEXT NOT NULL,
-            concept_id VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
-        );
-        """
-        xrefs_table = """
-        CREATE TABLE IF NOT EXISTS gene_xrefs (
-            id SERIAL PRIMARY KEY,
-            xref TEXT NOT NULL,
-            concept_id VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
-        );
-        """
-        assoc_table = """
-        CREATE TABLE IF NOT EXISTS gene_associations (
-            id SERIAL PRIMARY KEY,
-            associated_with TEXT NOT NULL,
-            concept_ID VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
-        );
-        """
+        tables_query = (SCRIPTS_DIR / "create_tables_query.sql").read_bytes()
 
         with self.conn.cursor() as cur:
-            cur.execute(sources_table)
-            cur.execute(merged_table)
-            cur.execute(concepts_table)
-            cur.execute(symbols_table)
-            cur.execute(previous_symbols_table)
-            cur.execute(aliases_table)
-            cur.execute(xrefs_table)
-            cur.execute(assoc_table)
+            cur.execute(tables_query)
             self.conn.commit()
 
     def get_source_metadata(self, src_name: SourceName) -> Dict:
@@ -369,7 +203,8 @@ class PostgresDatabase(AbstractDatabase):
         is broken out for PostgreSQL.
 
         :param concept_id: ID of concept to get
-        :param case_sensitive:
+        :param case_sensitive: record lookups are performed using a case-insensitive
+            index, so this parameter isn't used by Postgres
         :return: complete record object if successful
         """
         query = "SELECT * FROM record_lookup_view WHERE lower(concept_id) = %s;"
@@ -406,7 +241,8 @@ class PostgresDatabase(AbstractDatabase):
         """Retrieve normalized record from DB.
 
         :param concept_id: normalized ID for the merged record
-        :param case_sensitive:
+        :param case_sensitive: record lookups are performed using a case-insensitive
+            index, so this parameter isn't used by Postgres
         :return: normalized record if successful
         """
         concept_id = concept_id.lower()
@@ -452,34 +288,31 @@ class PostgresDatabase(AbstractDatabase):
         else:
             return self._get_record(concept_id, case_sensitive)
 
-    def get_refs_by_type(self, query: str, match_type: str) -> List[str]:
+    def get_refs_by_type(self, search_term: str, match_type: str) -> List[str]:
         """Retrieve concept IDs for records matching the user's query. Other methods
         are responsible for actually retrieving full records.
 
-        :param query: string to match against
+        :param search_term: string to match against
         :param match_type: type of match to look for. Should be one of {"symbol",
             "prev_symbol", "alias", "xref", "associated_with"} (use `get_record_by_id`
             for concept ID lookup)
         :return: list of associated concept IDs. Empty if lookup fails.
         """
-        if match_type == "symbol":
-            table = "gene_symbols"
-        elif match_type == "prev_symbol":
-            table = "gene_previous_symbols"
-        elif match_type == "alias":
-            table = "gene_aliases"
-        elif match_type == "xref":
-            table = "gene_xrefs"
-        elif match_type == "associated_with":
-            table = "gene_associations"
+        if match_type == ItemTypes.SYMBOL:
+            query = "SELECT concept_id FROM gene_symbols WHERE lower(symbol) = %s;"
+        elif match_type == ItemTypes.PREVIOUS_SYMBOLS:
+            query = "SELECT concept_id FROM gene_previous_symbols WHERE lower(prev_symbol) = %s;"  # noqa: E501
+        elif match_type == ItemTypes.ALIASES:
+            query = "SELECT concept_id FROM gene_aliases WHERE lower(alias) = %s;"
+        elif match_type == ItemTypes.XREFS:
+            query = "SELECT concept_id FROM gene_xrefs WHERE lower(xref) = %s;"
+        elif match_type == ItemTypes.ASSOCIATED_WITH:
+            query = "SELECT concept_id FROM gene_associations WHERE lower(associated_with) = %s;"  # noqa: E501
         else:
-            raise ValueError
+            raise ValueError("invalid reference type")
 
         with self.conn.cursor() as cur:
-            cur.execute(
-                f"SELECT concept_id FROM {table} WHERE lower({match_type}) = %s;",
-                (query.lower(), )
-            )
+            cur.execute(query, (search_term.lower(), ))
             concept_ids = cur.fetchall()
         if concept_ids:
             return [i[0] for i in concept_ids]
@@ -489,7 +322,7 @@ class PostgresDatabase(AbstractDatabase):
     def get_all_concept_ids(self) -> Set[str]:
         """Retrieve concept IDs for use in generating normalized records.
 
-        :return: List of concept IDs as strings.
+        :return: Set of concept IDs as strings.
         """
         ids_query = "SELECT concept_id FROM gene_concepts;"
         with self.conn.cursor() as cur:
@@ -501,7 +334,7 @@ class PostgresDatabase(AbstractDatabase):
         """Add new source metadata entry.
 
         :param src_name: name of source
-        :param data: known source attributes
+        :param meta: known source attributes
         :raise DatabaseWriteException: if write fails
         """
         with self.conn.cursor() as cur:
@@ -624,13 +457,14 @@ class PostgresDatabase(AbstractDatabase):
 
         :param Dict record: record to upload
         :param str record_type: type of record (either 'identity' or 'merger')
+        :raise ValueError: if invalid record type param provided
         """
         if record_type == "identity":
             self._add_identity_record(record)
         elif record_type == "merger":
             self._add_merged_record(record)
         else:
-            raise ValueError
+            raise ValueError("Invalid record type")
 
     def add_ref_record(self, term: str, concept_id: str, ref_type: str,
                        src_name: SourceName) -> None:
@@ -646,43 +480,23 @@ class PostgresDatabase(AbstractDatabase):
         :param src_name: name of source that concept ID belongs to
         """
 
-    def update_record(self, concept_id: str, field: str, new_value: Any,
-                      item_type: str = "identity") -> None:
-        """Update the field of an individual record to a new value.
-
-        It's technically a major anti-pattern to use string formatting to build queries
-        (the psycopg docs have an extended rant about it) but here we're using preset
-        options only and raising a ValueError for anything tricky, so it shouldn't be a
-        huge deal.
+    def update_merge_ref(self, concept_id: str, merge_ref: Any) -> None:
+        """Update the merged record reference of an individual record to a new value.
 
         :param concept_id: record to update
-        :param field: name of field to update
-        :param new_value: new value
-        :param item_type: record type, one of {'identity', 'merger'}
+        :param merge: new ref value
         :raise DatabaseWriteException: if attempting to update non-existent record
         """
-        if item_type != "identity":
-            raise NotImplementedError
-        elif field in {"symbol_status", "label", "strand", "location_annotations",
-                       "locations", "gene_type", "merge_ref"}:
-            update_query = f"""
-                UPDATE gene_concepts
-                SET {field} = %(new_value)s
-                WHERE concept_id = %(concept_id)s;
-            """
-        elif field in {"xrefs", "aliases", "associated_with", "previous_symbols"}:
-            raise NotImplementedError
-        elif field == "symbol":
-            raise NotImplementedError
-        else:
-            raise ValueError
-
+        update_query = """
+            UPDATE gene_concepts
+            SET merge_ref = %(merge_ref)s
+            WHERE concept_id = %(concept_id)s;
+        """
         with self.conn.cursor() as cur:
-            cur.execute(update_query, {  # type: ignore
-                "field": field,
-                "new_value": new_value,
-                "concept_id": concept_id
-            })
+            cur.execute(
+                update_query,
+                {"merge_ref": merge_ref, "concept_id": concept_id}
+            )
             row_count = cur.rowcount
             self.conn.commit()
 
@@ -734,25 +548,29 @@ class PostgresDatabase(AbstractDatabase):
             SELECT ga.id FROM gene_aliases ga LEFT JOIN gene_concepts gc
                 ON gc.concept_id = ga.concept_id
             WHERE gc.source = %s
-        );"""
+        );
+        """
         drop_associations_query = """
         DELETE FROM gene_associations WHERE id IN (
             SELECT ga.id FROM gene_associations ga LEFT JOIN gene_concepts gc
                 ON gc.concept_id = ga.concept_id
             WHERE gc.source = %s
-        );"""
+        );
+        """
         drop_prev_symbols_query = """
         DELETE FROM gene_previous_symbols WHERE id IN (
             SELECT gps.id FROM gene_previous_symbols gps LEFT JOIN gene_concepts gc
                 ON gc.concept_id = gps.concept_id
             WHERE gc.source = %s
-        );"""
+        );
+        """
         drop_symbols_query = """
         DELETE FROM gene_symbols WHERE id IN (
             SELECT gs.id FROM gene_symbols gs LEFT JOIN gene_concepts gc
                 ON gc.concept_id = gs.concept_id
             WHERE gc.source = %s
-        );"""
+        );
+        """
         drop_xrefs_query = """
         DELETE FROM gene_xrefs WHERE id IN (
             SELECT gx.id FROM gene_xrefs gx LEFT JOIN gene_concepts gc

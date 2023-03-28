@@ -30,7 +30,7 @@ class NCBI(Base):
                  src_data_dir=APP_ROOT / 'data' / 'ncbi'):
         """Construct the NCBI ETL instance.
 
-        :param Database database: gene database for adding new data
+        :param AbstractDatabase database: gene database for adding new data
         :param str host: FTP host name
         :param str data_dir: FTP data directory to use
         :param Path src_data_dir: Data directory for NCBI
