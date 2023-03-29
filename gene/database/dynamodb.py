@@ -328,11 +328,7 @@ class DynamoDbDatabase(AbstractDatabase):
         record["label_and_type"] = label_and_type
         record["item_type"] = "identity"
         try:
-            self.batch.put_item(
-                Item=record,
-                # TODO i commented this out -- why
-                # ConditionExpression='attribute_not_exists(concept_id) AND attribute_not_exists(label_and_type)'  # noqa: E501
-            )
+            self.batch.put_item(Item=record)
         except ClientError as e:
             logger.error("boto3 client error on add_record for "
                          f"{concept_id}: {e.response['Error']['Message']}")
@@ -362,10 +358,7 @@ class DynamoDbDatabase(AbstractDatabase):
         record["label_and_type"] = label_and_type
         record["item_type"] = "merger"
         try:
-            self.batch.put_item(
-                Item=record,
-                ConditionExpression="attribute_not_exists(concept_id) AND attribute_not_exists(label_and_type)"  # noqa: E501
-            )
+            self.batch.put_item(Item=record)
         except ClientError as e:
             logger.error("boto3 client error on add_record for "
                          f"{concept_id}: {e.response['Error']['Message']}")
