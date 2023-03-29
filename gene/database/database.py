@@ -8,7 +8,7 @@ import sys
 
 import click
 
-from gene.schemas import SourceMeta, SourceName
+from gene.schemas import RefType, SourceMeta, SourceName
 
 
 class DatabaseException(Exception):
@@ -38,6 +38,8 @@ class AbstractDatabase(abc.ABC):
         something like a libpq URL. Any additional arguments or DB-specific parameters
         can be passed as keywords.
 
+        :param db_url: address/connection description for database
+        :param db_args: any DB implementation-specific parameters
         :raise DatabaseInitializationException: if initial setup fails
         """
 
@@ -82,14 +84,12 @@ class AbstractDatabase(abc.ABC):
         """
 
     @abc.abstractmethod
-    def get_refs_by_type(self, query: str, match_type: str) -> List[str]:
+    def get_refs_by_type(self, search_term: str, ref_type: RefType) -> List[str]:
         """Retrieve concept IDs for records matching the user's query. Other methods
         are responsible for actually retrieving full records.
 
-        :param query: string to match against
-        :param match_type: type of match to look for. Should be one of {"symbol",
-            "prev_symbol", "alias", "xref", "associated_with"} (use `get_record_by_id`
-            for concept ID lookup)
+        :param search_term: string to match against
+        :param match_type: type of match to look for.
         :return: list of associated concept IDs. Empty if lookup fails.
         """
 

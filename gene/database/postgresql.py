@@ -15,7 +15,7 @@ import requests
 
 from gene.database import AbstractDatabase, DatabaseException, DatabaseReadException, \
     DatabaseWriteException
-from gene.schemas import ItemTypes, SourceMeta, SourceName
+from gene.schemas import RefType, SourceMeta, SourceName
 
 
 logger = logging.getLogger()
@@ -288,25 +288,23 @@ class PostgresDatabase(AbstractDatabase):
         else:
             return self._get_record(concept_id, case_sensitive)
 
-    def get_refs_by_type(self, search_term: str, match_type: str) -> List[str]:
+    def get_refs_by_type(self, search_term: str, ref_type: RefType) -> List[str]:
         """Retrieve concept IDs for records matching the user's query. Other methods
         are responsible for actually retrieving full records.
 
         :param search_term: string to match against
-        :param match_type: type of match to look for. Should be one of {"symbol",
-            "prev_symbol", "alias", "xref", "associated_with"} (use `get_record_by_id`
-            for concept ID lookup)
+        :param match_type: type of match to look for.
         :return: list of associated concept IDs. Empty if lookup fails.
         """
-        if match_type == ItemTypes.SYMBOL:
+        if ref_type == RefType.SYMBOL:
             query = "SELECT concept_id FROM gene_symbols WHERE lower(symbol) = %s;"
-        elif match_type == ItemTypes.PREVIOUS_SYMBOLS:
+        elif ref_type == RefType.PREVIOUS_SYMBOLS:
             query = "SELECT concept_id FROM gene_previous_symbols WHERE lower(prev_symbol) = %s;"  # noqa: E501
-        elif match_type == ItemTypes.ALIASES:
+        elif ref_type == RefType.ALIASES:
             query = "SELECT concept_id FROM gene_aliases WHERE lower(alias) = %s;"
-        elif match_type == ItemTypes.XREFS:
+        elif ref_type == RefType.XREFS:
             query = "SELECT concept_id FROM gene_xrefs WHERE lower(xref) = %s;"
-        elif match_type == ItemTypes.ASSOCIATED_WITH:
+        elif ref_type == RefType.ASSOCIATED_WITH:
             query = "SELECT concept_id FROM gene_associations WHERE lower(associated_with) = %s;"  # noqa: E501
         else:
             raise ValueError("invalid reference type")

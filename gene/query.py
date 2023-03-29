@@ -12,7 +12,7 @@ from ga4gh.core import ga4gh_identify
 from gene import logger
 from gene import NAMESPACE_LOOKUP, PREFIX_LOOKUP, ITEM_TYPES
 from gene.database import AbstractDatabase, DatabaseReadException
-from gene.schemas import BaseGene, Gene, MatchType, SourceName, \
+from gene.schemas import BaseGene, Gene, RefType, MatchType, SourceName, \
     ServiceMeta, SourcePriority, NormalizeService, SearchService, \
     GeneTypeFieldName, UnmergedNormalizationService, MatchesNormalized, \
     BaseNormalizationService
@@ -241,7 +241,7 @@ class QueryHandler:
                     if record and record['concept_id'] not in matched_concept_ids:
                         self.add_record(resp, record, MatchType.CONCEPT_ID)
                 else:
-                    refs = self.db.get_refs_by_type(term, item_type)
+                    refs = self.db.get_refs_by_type(term, RefType(item_type))
                     for ref in refs:
                         if ref not in matched_concept_ids:
                             self.fetch_record(resp, ref, MatchType[item_type.upper()])
@@ -573,21 +573,11 @@ class QueryHandler:
             # record is sole member of concept group
             return callback(response, record, match_type, possible_concepts)
 
-    def _get_matches_by_type(self, query: str, match_type: str) -> List[Dict]:
-        """Get matches list for match tier.
-        :param str query: user-provided query
-        :param str match_type: keyword of match type to check
-        :return: List of records matching the query and match level
-        """
-        matching_refs = self.db.get_refs_by_type(query, match_type)
-        matching_records = [self.db.get_record_by_id(ref, False)
-                            for ref in matching_refs]
-        return sorted(matching_records, key=self._record_order)  # type: ignore
-
     def _perform_normalized_lookup(
         self, response: NormService, query: str, response_builder: Callable
     ) -> NormService:
         """Retrieve normalized concept, for use in normalization endpoints
+
         :param NormService response: in-progress response object
         :param str query: user-provided query
         :param Callable response_builder: response constructor callback method
@@ -608,7 +598,7 @@ class QueryHandler:
             return self._resolve_merge(response, record, MatchType.CONCEPT_ID,
                                        response_builder)
 
-        for match_type in ITEM_TYPES.values():
+        for match_type in RefType:
             # get matches list for match tier
             matching_refs = self.db.get_refs_by_type(query_str, match_type)
             matching_records = \
@@ -625,7 +615,7 @@ class QueryHandler:
                 assert match is not None
                 record = self.db.get_record_by_id(match["concept_id"], False)
                 if record:
-                    match_type_value = MatchType[match_type.upper()]
+                    match_type_value = MatchType[match_type.value.upper()]
                     return self._resolve_merge(
                         response, record, match_type_value,
                         response_builder, possible_concepts
