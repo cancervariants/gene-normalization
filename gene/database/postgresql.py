@@ -77,8 +77,18 @@ class PostgresDatabase(AbstractDatabase):
 
     def drop_db(self) -> None:
         """Perform complete teardown of DB. Useful for quickly resetting all data or
-        reconstructing after apparent schema error.
+        reconstructing after apparent schema error. If in a protected environment,
+        require confirmation.
+
+        :raise DatabaseWriteException: if called in a protected setting with
+            confirmation silenced.
         """
+        try:
+            if not self._check_delete_okay():
+                return
+        except DatabaseWriteException as e:
+            raise e
+
         drop_query = """
         DROP MATERIALIZED VIEW IF EXISTS record_lookup_view;
         DROP TABLE IF EXISTS

@@ -12,8 +12,8 @@ from ga4gh.core import ga4gh_identify
 from gene import logger
 from gene import NAMESPACE_LOOKUP, PREFIX_LOOKUP, ITEM_TYPES
 from gene.database import AbstractDatabase, DatabaseReadException
-from gene.schemas import BaseGene, Gene, RefType, MatchType, SourceName, \
-    ServiceMeta, SourcePriority, NormalizeService, SearchService, \
+from gene.schemas import BaseGene, Gene, NamespacePrefix, RefType, MatchType, \
+    SourceName, ServiceMeta, SourcePriority, NormalizeService, SearchService, \
     GeneTypeFieldName, UnmergedNormalizationService, MatchesNormalized, \
     BaseNormalizationService
 from gene.version import __version__
@@ -122,11 +122,11 @@ class QueryHandler:
         :return: SourceName option
         :raise: ValueError if unrecognized ID provided
         """
-        if concept_id.startswith("ensembl"):
+        if concept_id.startswith(NamespacePrefix.ENSEMBL.value):
             return SourceName.ENSEMBL
-        elif concept_id.startswith("ncbigene"):
+        elif concept_id.startswith(NamespacePrefix.NCBI.value):
             return SourceName.NCBI
-        elif concept_id.startswith("hgnc"):
+        elif concept_id.startswith(NamespacePrefix.HGNC.value):
             return SourceName.HGNC
         else:
             raise ValueError("Invalid or unrecognized concept ID provided")

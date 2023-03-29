@@ -50,10 +50,30 @@ class AbstractDatabase(abc.ABC):
         :return: Table names in database
         """
 
+    @staticmethod
+    def _check_delete_okay() -> bool:
+        """Check that environmental conditions permit DB deletion, and require
+        confirmation.
+
+        :raise DatabaseWriteException: if skip confirmation variable is set -- manual
+        approval is required.
+        """
+        if environ.get(AWS_ENV_VAR_NAME, "") == AwsEnvName.PRODUCTION:
+            if environ.get(SKIP_AWS_DB_ENV_NAME, "") == "true":
+                raise DatabaseWriteException(
+                    f"Must unset {SKIP_AWS_DB_ENV_NAME} env variable to enable drop_db()"  # noqa: E501
+                )
+            return click.confirm("Are you sure you want to delete existing data?")
+        else:
+            return True
+
     @abc.abstractmethod
     def drop_db(self) -> None:
         """Initiate total teardown of DB. Useful for quickly resetting the entirety of
-        the data.
+        the data. Requires manual confirmation.
+
+        :raise DatabaseWriteException: if called in a protected setting with
+            confirmation silenced.
         """
 
     @abc.abstractmethod

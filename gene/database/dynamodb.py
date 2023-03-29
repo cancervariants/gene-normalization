@@ -89,7 +89,17 @@ class DynamoDbDatabase(AbstractDatabase):
         return self.dynamodb_client.list_tables()['TableNames']
 
     def drop_db(self) -> None:
-        """Delete all tables from database."""
+        """Delete all tables from database. Requires manual confirmation.
+
+        :raise DatabaseWriteException: if called in a protected setting with
+            confirmation silenced.
+        """
+        try:
+            if not self._check_delete_okay():
+                return
+        except DatabaseWriteException as e:
+            raise e
+
         existing_tables = self.list_tables()
         for table_name in existing_tables:
             self.dynamodb.Table(table_name).delete()
