@@ -1,5 +1,5 @@
-Information model and concept normalization
-===========================================
+Normalization
+=============
 
 Overview
 --------
@@ -21,6 +21,7 @@ The `gene.etl` package contains classes for extracting relevant data for each so
    :undoc-members:
    :show-inheritance:
 
+.. _build_normalization:
 
 Building normalized concepts and records
 ----------------------------------------

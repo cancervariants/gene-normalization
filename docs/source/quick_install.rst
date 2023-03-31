@@ -29,7 +29,7 @@ Use the `gene_norm_update_remote` shell command to load data from the most recen
 
     gene_norm_update_remote
 
-Finally, start an instance of the gene normalizer API, defaulting to port 5000: ::
+Finally, start an instance of the gene normalizer API on port 5000: ::
 
     uvicorn gene.main:app --port=5000
 

@@ -1,8 +1,13 @@
 Contributing to the Gene Normalizer
 ===================================
 
-Prerequisites
--------------
+Bug reports and feature requests
+--------------------------------
+
+Bugs and new feature requests can be submitted to the Gene Normalizer `issue tracker on GitHub <https://github.com/cancervariants/gene-normalization/issues>`_. See `this StackOverflow post <https://stackoverflow.com/help/minimal-reproducible-example>`_ for tips on how to craft a helpful bug report.
+
+Development prerequisites
+-------------------------
 For a development install, we recommend using Pipenv. See the `pipenv docs <https://pipenv-fork.readthedocs.io/en/latest/#install-pipenv-today>`_ for direction on installing Pipenv in your environment.
 
 Setup
