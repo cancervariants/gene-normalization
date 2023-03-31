@@ -28,7 +28,7 @@ class Base(ABC):
                  *args, **kwargs) -> None:
         """Instantiate Base class.
 
-        :param Database database: DynamoDB database
+        :param AbstractDatabase database: database instance
         :param str host: Hostname of FTP site
         :param str data_dir: Data directory of FTP site to look at
         :param Path src_data_dir: Data directory for source
@@ -44,7 +44,7 @@ class Base(ABC):
 
     @abstractmethod
     def perform_etl(self) -> List[str]:
-        """Extract, Transform, and Load data into DynamoDB database.
+        """Extract, Transform, and Load data into database.
 
         :return: Concept IDs of concepts successfully loaded
         """
@@ -62,7 +62,7 @@ class Base(ABC):
 
     @abstractmethod
     def _add_meta(self, *args, **kwargs) -> None:
-        """Add source meta to DynamoDB table."""
+        """Add source meta to database source info."""
         raise NotImplementedError
 
     def _create_data_directory(self):

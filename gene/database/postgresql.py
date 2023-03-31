@@ -289,8 +289,8 @@ class PostgresDatabase(AbstractDatabase):
         """Fetch record corresponding to provided concept ID
         :param str concept_id: concept ID for gene record
         :param bool case_sensitive:
-        :param bool merge: if true, look for merged record; look for identity
-            record otherwise.
+        :param bool merge: if true, look for merged record; look for identity record
+        otherwise.
         :return: complete gene record, if match is found; None otherwise
         """
         if merge:
