@@ -1,3 +1,5 @@
+.. _full_install:
+
 Full Installation
 =================
 

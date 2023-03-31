@@ -48,10 +48,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v4
-
-      - run: python3 -m pip install ".[dev]"
-
       - uses: ammaraskar/sphinx-action@master
         with:
           docs-folder: "docs/"

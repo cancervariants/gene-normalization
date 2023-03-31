@@ -10,9 +10,6 @@ project = 'Gene Normalizer'
 copyright = '2023, VICC'
 author = 'VICC'
 
-from gene import __version__  # noqa: E402
-version = __version__
-release = version
 
 
 # -- General configuration ---------------------------------------------------
@@ -36,3 +33,7 @@ extensions = ["sphinx.ext.autodoc", "sphinx_autodoc_typehints"]
 import os
 import sys
 sys.path.insert(0, os.path.abspath("../gene"))
+
+from gene import __version__  # noqa: E402
+version = __version__
+release = version

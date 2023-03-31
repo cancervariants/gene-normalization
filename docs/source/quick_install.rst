@@ -1,7 +1,7 @@
 Quick Installation
 ==================
 
-These instructions describe installation of a static (i.e., non-updateable) version of the Gene Normalizer using a PostgreSQL database. To use another database backend, or to enable data updates, see the full installation instructions.
+These instructions describe installation of a static (i.e., non-updateable) version of the Gene Normalizer using a PostgreSQL database. To use another database backend, or to enable data updates, see the :ref:`full_install` instructions.
 
 Requirements
 ------------
