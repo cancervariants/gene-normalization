@@ -32,7 +32,7 @@ html_static_path = ['_static']
 extensions = ["sphinx.ext.autodoc", "sphinx_autodoc_typehints"]
 import os
 import sys
-sys.path.insert(0, os.path.abspath("../gene"))
+sys.path.insert(0, os.path.abspath("../../gene"))
 
 
 # -- get version -------------------------------------------------------------
