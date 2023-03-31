@@ -34,6 +34,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath("../gene"))
 
+sys.path.append(os.path.abspath("../"))
 from gene import __version__  # noqa: E402
 version = __version__
 release = version
