@@ -50,5 +50,5 @@ jobs:
 
       - uses: ammaraskar/sphinx-action@master
         with:
-          pre-build-command: "python3 -m pip install ."
+          pre-build-command: "python3 -m pip install .; python3 -m pip install sphinx_autodoc_typehints"
           docs-folder: "docs/"
