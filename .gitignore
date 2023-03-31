@@ -162,6 +162,3 @@ dynamodb_local_latest/*
 Pipfile.lock
 *.toml
 *.zip
-
-# docs
-docs/build/
