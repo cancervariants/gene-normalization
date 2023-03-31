@@ -91,7 +91,7 @@ gene_update --update_all
 
 ### Starting the gene normalization service
 
-From the project root, run the following:
+Once the Gene Normalizer database has been loaded, from the project root, run the following:
 
 ```commandline
 uvicorn gene.main:app --reload
@@ -109,11 +109,13 @@ For a development install, we recommend using Pipenv. See the
 [pipenv docs](https://pipenv-fork.readthedocs.io/en/latest/#install-pipenv-today)
 for direction on installing pipenv in your compute environment.
 
-Once installed, from the project root dir, just run:
+Once installed, clone the repo and initialize the environment:
 
 ```commandline
+git clone https://github.com/cancervariants/gene-normalization
+cd gene-normalization
 pipenv shell
-pipenv lock && pipenv sync
+pipenv update
 pipenv install --dev
 ```
 
