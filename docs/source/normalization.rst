@@ -9,7 +9,7 @@ The Gene Normalizer extracts gene descriptions and related metadata from curated
 Basic information model
 -----------------------
 
-Data resources, such as NCBI Gene, HGNC, and Ensembl, provide descriptions of individual genes, which we refer to as *records*. Our normalization routines construct mappings between those records and individual normalized concepts. Those concepts are abstract representations of "true", unique entities that exist on the genome. By combining the normalized concept with its associated source records, we are able to provide a more comprehensive description of individual genes.
+Data resources, such as NCBI Gene, HGNC, and Ensembl, provide descriptions of individual genes, which we refer to as *records*. Our normalization routines construct mappings between those records and individual normalized concepts. Those concepts are abstract representations of "true" unique entities that exist on the genome. By combining the normalized concept with its associated source records, we are able to provide a more comprehensive description of individual genes.
 
 The gene record
 ---------------
@@ -35,4 +35,4 @@ Once all source records have been loaded into the database, normalized concept c
 
 Normalized gene records are constructed by merging known data from all associated gene records. For array-like fields (e.g. aliases, cross-references to entries in other data sources), data from all sources are simply combined. For scalar-like fields (e.g. the gene's symbol), the value is selected from an individual source record according to the priority assigned to the source.
 
-Normalized records are structured as `Gene Descriptors <https://vrsatile.readthedocs.io/en/latest/>`_ in conformance with the `GA4GH VRSATILE Standard <https://vrsatile.readthedocs.io/en/latest/>`_. The normalized gene concept is provided as a value object, and additional metadata is deposited as a label, xrefs, alternate labels, as well as Extensions for more complex data (such as loci and gene type).
+Normalized records are structured as `Gene Descriptors <https://vrsatile.readthedocs.io/en/latest/>`_ in conformance with the `GA4GH VRSATILE Standard <https://vrsatile.readthedocs.io/en/latest/>`_. The normalized gene concept is provided as a value object, and additional metadata is deposited as a label, xrefs, alternate labels, as well as Extensions for more complex information (such as loci and gene type).
