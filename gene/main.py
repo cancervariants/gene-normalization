@@ -3,13 +3,16 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.openapi.utils import get_openapi
 from typing import Optional
 from gene import __version__
+from gene.database import create_db
 from gene.query import QueryHandler, InvalidParameterException
 from gene.schemas import SearchService, NormalizeService, \
     UnmergedNormalizationService
 import html
 
 
-query_handler = QueryHandler()
+db = create_db()
+query_handler = QueryHandler(db)
+
 app = FastAPI(
     docs_url="/gene",
     openapi_url="/gene/openapi.json",

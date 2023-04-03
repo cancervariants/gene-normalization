@@ -34,8 +34,8 @@ class DownloadException(Exception):
         super().__init__(*args, **kwargs)
 
 
-from gene.schemas import SourceName, NamespacePrefix, SourceIDAfterNamespace, ItemTypes  # noqa: E402, E501
-ITEM_TYPES = {k.lower(): v.value for k, v in ItemTypes.__members__.items()}
+from gene.schemas import SourceName, NamespacePrefix, SourceIDAfterNamespace, RefType  # noqa: E402, E501
+ITEM_TYPES = {k.lower(): v.value for k, v in RefType.__members__.items()}
 
 # Sources we import directly (HGNC, Ensembl, NCBI)
 SOURCES = {source.value.lower(): source.value

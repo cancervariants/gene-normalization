@@ -207,8 +207,8 @@ class DataLicenseAttributes(BaseModel):
     attribution: StrictBool
 
 
-class ItemTypes(str, Enum):
-    """Item types used in DynamoDB."""
+class RefType(str, Enum):
+    """Reference item types."""
 
     # Must be in descending MatchType order.
     SYMBOL = 'symbol'

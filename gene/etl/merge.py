@@ -1,7 +1,8 @@
 """Create concept groups and merged records."""
-from gene.database import Database
+from gene.database import AbstractDatabase
+from gene.database.database import DatabaseWriteException
 from gene.schemas import SourcePriority, GeneTypeFieldName
-from typing import Set, Dict
+from typing import Optional, Set, Dict
 from timeit import default_timer as timer
 import logging
 
@@ -13,7 +14,7 @@ logger.setLevel(logging.DEBUG)
 class Merge:
     """Handles record merging."""
 
-    def __init__(self, database: Database):
+    def __init__(self, database: AbstractDatabase):
         """Initialize Merge instance.
         :param Database database: db instance to use for record retrieval
             and creation.
@@ -49,28 +50,34 @@ class Merge:
             merged_record = self._generate_merged_record(group)
 
             # add group merger item to DB
-            self._database.add_record(merged_record, 'merger')
+            self._database.add_merged_record(merged_record)
 
             # add updated references
             for concept_id in group:
-                if not self._database.get_record_by_id(concept_id, False):
-                    logger.error(f"Updating nonexistent record: {concept_id} "
-                                 f"for {merged_record['label_and_type']}")
-                else:
-                    merge_ref = merged_record['concept_id'].lower()
-                    self._database.update_record(concept_id, 'merge_ref',
-                                                 merge_ref)
+                merge_ref = merged_record["concept_id"]
+                try:
+                    self._database.update_merge_ref(concept_id, merge_ref)
+                except DatabaseWriteException as dw:
+                    if str(dw).startswith("No such record exists"):
+                        logger.error(f"Updating nonexistent record: {concept_id} "
+                                     f"for merge ref to {merge_ref}")
+                    else:
+                        logger.error(str(dw))
             uploaded_ids |= group
+        self._database.complete_write_transaction()
         logger.info('Merged concept generation successful.')
         end = timer()
         logger.debug(f'Generated and added concepts in {end - start} seconds')
 
     def _create_record_id_set(self, record_id: str,
-                              observed_id_set: Set = set()) -> Set[str]:
+                              observed_id_set: Optional[Set] = None) -> Set[str]:
         """Create concept ID group for an individual record ID.
         :param str record_id: concept ID for record to build group from
         :return: set of related identifiers pertaining to a common concept.
         """
+        if observed_id_set is None:
+            observed_id_set = set()
+
         if record_id in self._groups:
             return self._groups[record_id]
         else:
@@ -81,9 +88,11 @@ class Merge:
                                f"{observed_id_set}")
                 return observed_id_set - {record_id}
 
-            local_id_set = set(db_record.get('xrefs', []))
-            if not local_id_set:
-                return observed_id_set | {db_record['concept_id']}
+            record_xrefs = db_record.get("xrefs")
+            if not record_xrefs:
+                return observed_id_set | {db_record["concept_id"]}
+            else:
+                local_id_set = set(record_xrefs)
             merged_id_set = {record_id} | observed_id_set
             for local_record_id in local_id_set - observed_id_set:
                 merged_id_set |= self._create_record_id_set(local_record_id,
@@ -161,7 +170,5 @@ class Merge:
             else:
                 del merged_attrs[field]
 
-        merged_attrs['label_and_type'] = \
-            f'{merged_attrs["concept_id"].lower()}##merger'
         merged_attrs['item_type'] = 'merger'
         return merged_attrs

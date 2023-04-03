@@ -8,7 +8,7 @@ import gffutils
 from .base import Base
 from gene import APP_ROOT
 from gene.schemas import SourceName, NamespacePrefix, Strand, SourceMeta
-from gene.database import Database
+from gene.database import AbstractDatabase
 from gene.etl.vrs_locations import SequenceLocation
 
 
@@ -19,20 +19,18 @@ logger.setLevel(logging.DEBUG)
 class Ensembl(Base):
     """ETL the Ensembl source into the normalized database."""
 
-    def __init__(self, database: Database, host="ftp.ensembl.org",
+    def __init__(self, database: AbstractDatabase, host="ftp.ensembl.org",
                  data_dir="pub/current_gff3/homo_sapiens/",
                  src_data_dir=APP_ROOT / "data" / "ensembl") -> None:
         """Initialize Ensembl ETL class.
 
-        :param Database database: DynamoDB database
+        :param AbstractDatabase database: DynamoDB database
         :param str host: FTP host name
         :param str data_dir: FTP data directory to use
         :param Path src_data_dir: Data directory for Ensembl
         """
         super().__init__(database, host, data_dir, src_data_dir)
         self._sequence_location = SequenceLocation()
-        self._host = host
-        self._data_dir = data_dir
         self._version = None
         self._fn = None
         self._data_url = None
@@ -55,7 +53,7 @@ class Ensembl(Base):
                     self._assembly = resp["assembly"]
                     self._version = resp["version"]
                     self._fn = f
-                    self._data_url = f"ftp://{self._host}/{self._data_dir}{self._fn}"
+                    self._data_url = f"ftp://{self._host}/{self._data_dir}{self._fn}"  # noqa: E501
                     new_fn = f"ensembl_{self._version}.gff3"
                     if not (self.src_data_dir / new_fn).exists():
                         self._ftp_download_file(ftp, self._fn, self.src_data_dir,
@@ -89,15 +87,14 @@ class Ensembl(Base):
         for item in db.features_of_type("chromosome"):
             accession_numbers[item[0]] = item[8]["Alias"][-1]
 
-        with self._database.genes.batch_writer() as batch:
-            for f in db.all_features():
-                if f.attributes.get("ID"):
-                    f_id = f.attributes.get("ID")[0].split(":")[0]
-                    if f_id == "gene":
-                        gene = \
-                            self._add_gene(f, self.seqrepo, accession_numbers)
-                        if gene:
-                            self._load_gene(gene, batch)
+        for f in db.all_features():
+            if f.attributes.get("ID"):
+                f_id = f.attributes.get("ID")[0].split(":")[0]
+                if f_id == "gene":
+                    gene = \
+                        self._add_gene(f, self.seqrepo, accession_numbers)
+                    if gene:
+                        self._load_gene(gene)
         logger.info("Successfully transformed Ensembl.")
 
     def _add_gene(self, f, sr, accession_numbers):
@@ -215,7 +212,7 @@ class Ensembl(Base):
         self._extract_data()
         self._add_meta()
         self._transform_data()
-        self._database.flush_batch()
+        self._database.complete_write_transaction()
         return self._processed_ids
 
     def _add_meta(self, *args, **kwargs):
@@ -235,17 +232,4 @@ class Ensembl(Base):
             genome_assemblies=[self._assembly]
         )
 
-        self._database.metadata.put_item(
-            Item={
-                "src_name": SourceName.ENSEMBL.value,
-                "data_license": metadata.data_license,
-                "data_license_url": metadata.data_license_url,
-                "version": metadata.version,
-                "data_url": metadata.data_url,
-                "rdp_url": metadata.rdp_url,
-                "data_license_attributes": metadata.data_license_attributes,
-                "genome_assemblies": metadata.genome_assemblies
-            }
-        )
-
-        self._load_meta(self._database, metadata, SourceName.ENSEMBL.value)
+        self._database.add_source_metadata(self._src_name, metadata)
