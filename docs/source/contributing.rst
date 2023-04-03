@@ -57,3 +57,14 @@ By default, tests will utilize an existing database, and won't load any new data
     export GENE_TEST=true
 
 This does overwrite existing data, so be sure to use a separate database instance from your main working environment.
+
+
+Documentation
+-------------
+
+The documentation is built with Sphinx, which is included as part of the developer dependencies. To build a local copy, navigate to the `docs/` subdirectory and use `make` to build the HTML version: ::
+
+    cd docs
+    make html
+
+See the `Sphinx documentation <https://www.sphinx-doc.org/en/master/>`_ for more information.
