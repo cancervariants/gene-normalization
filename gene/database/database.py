@@ -109,7 +109,7 @@ class AbstractDatabase(abc.ABC):
         are responsible for actually retrieving full records.
 
         :param search_term: string to match against
-        :param match_type: type of match to look for.
+        :param ref_type: type of match to look for.
         :return: list of associated concept IDs. Empty if lookup fails.
         """
 
@@ -149,7 +149,7 @@ class AbstractDatabase(abc.ABC):
         """Update the merged record reference of an individual record to a new value.
 
         :param concept_id: record to update
-        :param merge: new ref value
+        :param merge_ref: new ref value
         :raise DatabaseWriteException: if attempting to update non-existent record
         """
 
