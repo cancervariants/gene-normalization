@@ -1,9 +1,11 @@
 [![DOI](https://zenodo.org/badge/309797998.svg)](https://zenodo.org/badge/latestdoi/309797998)
 
-# Gene Normalization
+# Gene Normalizer
 Services and guidelines for normalizing gene terms
 
-Installing with pip:
+## Installation
+
+The Normalizer is available via PyPI:
 
 ```commandline
 pip install gene[dev]
@@ -11,21 +13,7 @@ pip install gene[dev]
 
 The `[dev]` argument tells pip to install packages to fulfill the dependencies of the `gene.etl` package.
 
-## Developer instructions
-Following are sections include instructions specifically for developers.
-
-### Installation
-For a development install, we recommend using Pipenv. See the
-[pipenv docs](https://pipenv-fork.readthedocs.io/en/latest/#install-pipenv-today)
-for direction on installing pipenv in your compute environment.
-
-Once installed, from the project root dir, just run:
-
-```commandline
-pipenv shell
-pipenv lock && pipenv sync
-pipenv install --dev
-```
+### External requirements
 
 Gene Normalization relies on [SeqRepo](https://github.com/biocommons/biocommons.seqrepo) data, which you must download yourself.
 
@@ -44,14 +32,92 @@ PermissionError: [Error 13] Permission denied: '/usr/local/share/seqrepo/2021-01
 
 You will want to do the following:\
 (*Might not be ._fkuefgd, so replace with your error message path*)
+
 ```console
 sudo mv /usr/local/share/seqrepo/2021-01-29._fkuefgd /usr/local/share/seqrepo/2021-01-29
-exit
 ```
 
-### Deploying DynamoDB Locally
+### Database Initialization
 
-We use Amazon DynamoDB for our database. To deploy locally, follow [these instructions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html).
+The Normalizer supports two data storage options:
+
+* [DynamoDB](https://aws.amazon.com/dynamodb), a NoSQL service provided by AWS. This is our preferred storage solution. In addition to cloud deployment, Amazon also provides a tool for local service, which can be installed [here](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html). Once downloaded, you can start service by running `java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb` in a terminal (add a `-port <VALUE>` option to use a different port)
+* [PostgreSQL](https://www.postgresql.org/), a well-known relational database technology. Once starting the Postgres server process, [ensure that a database is created](https://www.postgresql.org/docs/current/sql-createdatabase.html) (we typically name ours `gene_normalizer`).
+
+By default, the Gene Normalizer expects to find a DynamoDB instance listening at `http://localhost:8000`. Alternative locations can be specified in two ways:
+
+The first way is to set the `--db_url` option to the URL endpoint.
+
+```commandline
+gene_update --update_all --db_url="http://localhost:8001"
+```
+
+The second way is to set the `GENE_NORM_DB_URL` environment variable to the URL endpoint.
+```commandline
+export GENE_NORM_DB_URL="http://localhost:8001"
+```
+
+To use a PostgreSQL instance instead of DynamoDB, provide a PostgreSQL connection URL instead, e.g.
+
+```commandline
+export GENE_NORM_DB_URL="postgresql://postgres@localhost:5432/gene_normalizer"
+```
+
+### Adding and refreshing data
+
+Use the `gene_update` command in a shell to update the database.
+
+#### Update source(s)
+
+The normalizer currently pulls data from [HGNC](https://www.genenames.org/), [Ensembl](https://useast.ensembl.org/index.html), and [NCBI](https://www.ncbi.nlm.nih.gov/gene/).
+
+To update one source, simply set `--normalizer` to the source you wish to update. The normalizer will check to see if local source data is up-to-date, acquire the most recent data if not, and use it to populate the database.
+
+For example, run the following to acquire the latest HGNC data if necessary, and update the HGNC gene records in the normalizer database:
+
+```commandline
+gene_update --normalizer="hgnc"
+```
+
+To update multiple sources, you can use the `--normalizer` option with the source names separated by spaces.
+
+#### Update all sources
+
+To update all sources, use the `--update_all` flag:
+
+```commandline
+gene_update --update_all
+```
+
+### Starting the gene normalization service
+
+Once the Gene Normalizer database has been loaded, from the project root, run the following:
+
+```commandline
+uvicorn gene.main:app --reload
+```
+
+Next, view the OpenAPI docs on your local machine:
+
+http://127.0.0.1:8000/gene
+
+## Developer instructions
+The following sections include instructions specifically for developers.
+
+### Installation
+For a development install, we recommend using Pipenv. See the
+[pipenv docs](https://pipenv-fork.readthedocs.io/en/latest/#install-pipenv-today)
+for direction on installing pipenv in your compute environment.
+
+Once installed, clone the repo and initialize the environment:
+
+```commandline
+git clone https://github.com/cancervariants/gene-normalization
+cd gene-normalization
+pipenv shell
+pipenv update
+pipenv install --dev
+```
 
 ### Init coding style tests
 
@@ -72,10 +138,9 @@ Before first commit run:
 pre-commit install
 ```
 
-
 ### Running unit tests
 
-By default, tests will employ an existing DynamoDB database. For test environments where this is unavailable (e.g. in CI), the `GENE_TEST` environment variable can be set to initialize a local DynamoDB instance with miniature versions of input data files before tests are executed.
+By default, tests will employ an existing database. For test environments where this is unavailable (e.g. in CI), the `GENE_TEST` environment variable can be set to initialize a local DynamoDB instance with miniature versions of input data files before tests are executed.
 
 ```commandline
 export GENE_TEST=true
@@ -86,61 +151,3 @@ Running unit tests is as easy as pytest.
 ```commandline
 pipenv run pytest
 ```
-
-### Updating the gene normalization database
-
-Before you use the CLI to update the database, run the following in a separate terminal to start a local DynamoDB service on `port 8000`:
-
-```
-java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
-```
-
-To change the port, simply add `-port value`.
-
-#### Update source(s)
-The sources we currently use are: HGNC, Ensembl, and NCBI.
-
-To update one source, simply set `--normalizer` to the source you wish to update.
-
-From the project root, run the following to update the HGNC source:
-
-```commandline
-python3 -m gene.cli --normalizer="hgnc"
-```
-
-To update multiple sources, you can use the `--normalizer` flag with the source names separated by spaces.
-
-#### Update all sources
-
-To update all sources, use the `--update_all` flag.
-
-From the project root, run the following to update all sources:
-
-```commandline
-python3 -m gene.cli --update_all
-```
-
-#### Specifying the database URL endpoint
-The default URL endpoint is `http://localhost:8000`.
-There are two different ways to specify the database URL endpoint.
-
-The first way is to set the `--db_url` flag to the URL endpoint.
-```commandline
-python3 -m gene.cli --update_all --db_url="http://localhost:8001"
-```
-
-The second way is to set the `GENE_NORM_DB_URL` to the URL endpoint.
-```commandline
-export GENE_NORM_DB_URL="http://localhost:8001"
-python3 -m gene.cli --update_all
-```
-
-### Starting the gene normalization service
-From the project root, run the following:
-```commandline
- uvicorn gene.main:app --reload
-```
-
-Next, view the OpenAPI docs on your local machine:
-
-http://127.0.0.1:8000/gene

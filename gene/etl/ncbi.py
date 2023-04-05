@@ -9,7 +9,7 @@ import re
 import gffutils
 
 from gene import APP_ROOT, PREFIX_LOOKUP
-from gene.database import Database
+from gene.database import AbstractDatabase
 from gene.schemas import SourceMeta, SourceName, NamespacePrefix, Annotation, \
     Chromosome, SymbolStatus
 from gene.etl.base import Base
@@ -24,13 +24,13 @@ class NCBI(Base):
     """ETL class for NCBI source"""
 
     def __init__(self,
-                 database: Database,
+                 database: AbstractDatabase,
                  host='ftp.ncbi.nlm.nih.gov',
                  data_dir='gene/DATA/',
                  src_data_dir=APP_ROOT / 'data' / 'ncbi'):
         """Construct the NCBI ETL instance.
 
-        :param Database database: gene database for adding new data
+        :param AbstractDatabase database: gene database for adding new data
         :param str host: FTP host name
         :param str data_dir: FTP data directory to use
         :param Path src_data_dir: Data directory for NCBI
@@ -48,8 +48,9 @@ class NCBI(Base):
         :return: Concept IDs of concepts successfully loaded
         """
         self._extract_data()
+        self._add_meta()
         self._transform_data()
-        self._database.flush_batch()
+        self._database.complete_write_transaction()
         return self._processed_ids
 
     def _download_data(self):
@@ -69,7 +70,8 @@ class NCBI(Base):
         fn = f'ncbi_history_{self._date_today}.tsv'
         data_fn = 'gene_history.gz'
         logger.info('Downloading NCBI gene_history...')
-        self._ftp_download(self._host, self._data_dir, fn, self.src_data_dir, data_fn)
+        self._ftp_download(self._host, self._data_dir, fn, self.src_data_dir,
+                           data_fn)
         logger.info('Successfully downloaded NCBI gene_history.')
 
         # Download gff
@@ -148,26 +150,23 @@ class NCBI(Base):
         history = csv.reader(history_file, delimiter='\t')
         next(history)
         prev_symbols = {}
-        with self._database.genes.batch_writer() as batch:
-            for row in history:
-                # Only interested in rows that have homo sapiens tax id
-                if row[0] == '9606':
-                    if row[1] != '-':
-                        gene_id = row[1]
-                        if gene_id in prev_symbols.keys():
-                            prev_symbols[gene_id].append(row[3])
-                        else:
-                            prev_symbols[gene_id] = [row[3]]
+        for row in history:
+            # Only interested in rows that have homo sapiens tax id
+            if row[0] == "9606":
+                if row[1] != "-":
+                    gene_id = row[1]
+                    if gene_id in prev_symbols.keys():
+                        prev_symbols[gene_id].append(row[3])
                     else:
-                        # Load discontinued genes
-                        params = {
-                            'concept_id':
-                                f'{NamespacePrefix.NCBI.value.lower()}:'
-                                f'{row[2]}',
-                            'symbol': row[3],
-                            'symbol_status': SymbolStatus.DISCONTINUED.value
-                        }
-                        self._load_gene(params, batch)
+                        prev_symbols[gene_id] = [row[3]]
+                else:
+                    # Load discontinued genes
+                    params = {
+                        "concept_id": f"{NamespacePrefix.NCBI.value}:{row[2]}",
+                        "symbol": row[3],
+                        "symbol_status": SymbolStatus.DISCONTINUED.value
+                    }
+                    self._load_gene(params)
         history_file.close()
         return prev_symbols
 
@@ -529,7 +528,6 @@ class NCBI(Base):
     def _transform_data(self):
         """Modify data and pass to loading functions."""
         logger.info('Transforming NCBI...')
-        self._add_meta()
         prev_symbols = self._get_prev_symbols()
         info_genes = self._get_gene_info(prev_symbols)
 
@@ -542,9 +540,8 @@ class NCBI(Base):
 
         self._get_gene_gff(db, info_genes, self.seqrepo)
 
-        with self._database.genes.batch_writer() as batch:
-            for gene in info_genes.keys():
-                self._load_gene(info_genes[gene], batch)
+        for gene in info_genes.keys():
+            self._load_gene(info_genes[gene])
         logger.info('Successfully transformed NCBI.')
 
     def _add_meta(self):
@@ -564,4 +561,4 @@ class NCBI(Base):
             genome_assemblies=[self._assembly]
         )
 
-        self._load_meta(self._database, metadata, SourceName.NCBI.value)
+        self._database.add_source_metadata(SourceName.NCBI, metadata)
