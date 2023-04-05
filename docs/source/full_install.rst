@@ -16,7 +16,7 @@ Package installation
 
 First, install the Gene Normalizer from PyPI: ::
 
-    pip install gene[dev]
+    pip install gene-normalizer[dev]
 
 The `[dev]` option installs dependencies necessary for using the `gene.etl` package, which performs data loading operations.
 
