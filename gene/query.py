@@ -95,7 +95,7 @@ class QueryHandler:
             transformed_loc = self._transform_sequence_location(loc)
         else:
             transformed_loc = self._transform_chromosome_location(loc)
-        transformed_loc._id = ga4gh_identify(transformed_loc)
+        transformed_loc.id = ga4gh_identify(transformed_loc)
         return transformed_loc.as_dict()
 
     def _transform_locations(self, record: Dict) -> Dict:
