@@ -83,8 +83,8 @@ class Base(ABC):
             logger.warning(f"Unable to load {gene} due to validation error: "
                            f"{e}")
         else:
-            concept_id = gene['concept_id'].lower()
-            gene['label_and_type'] = f"{concept_id}##identity"
+            concept_id = gene['concept_id']
+            gene['label_and_type'] = f"{concept_id.lower()}##identity"
             gene["src_name"] = self._src_name.value
             gene['item_type'] = 'identity'
 
