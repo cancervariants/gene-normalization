@@ -4,7 +4,7 @@ import logging
 import os
 from pathlib import Path
 from timeit import default_timer as timer
-from typing import List, Optional
+from typing import List, Optional, Set
 
 import click
 
@@ -80,7 +80,13 @@ def dump_database(output_directory: Path, db_url: str):
 def _update_normalizers(
     normalizers: Collection[SourceName], db: AbstractDatabase, update_merged: bool
 ) -> None:
-    """Update selected normalizer sources."""
+    """Update selected normalizer sources.
+
+    :param normalizers: names of sources to update
+    :param db: database instance
+    :param update_merged: if true, retain processed records to use in updating merged
+        records
+    """
     processed_ids = list()
     for n in normalizers:
         delete_time = _delete_source(n, db)
@@ -91,7 +97,12 @@ def _update_normalizers(
 
 
 def _delete_source(n: SourceName, db: AbstractDatabase) -> float:
-    """Delete individual source data."""
+    """Delete individual source data.
+
+    :param n: name of source to delete
+    :param db: database instance
+    :return: time taken (in seconds) to delete
+    """
     msg = f"Deleting {n.value}..."
     click.echo(f"\n{msg}")
     logger.info(msg)
@@ -108,7 +119,13 @@ def _delete_source(n: SourceName, db: AbstractDatabase) -> float:
 def _load_source(
     n: SourceName, db: AbstractDatabase, delete_time: float, processed_ids: List[str]
 ) -> None:
-    """Load individual source data."""
+    """Load individual source data.
+
+    :param n: name of source
+    :param db: database instance
+    :param delete_time: time taken (in seconds) to run deletion
+    :param processed_ids: in-progress list of processed gene IDs
+    """
     msg = f"Loading {n.value}..."
     click.echo(msg)
     logger.info(msg)
@@ -129,8 +146,11 @@ def _load_source(
     logger.info(msg)
 
 
-def _delete_normalized_data(database):
-    """Delete normalized concepts"""
+def _delete_normalized_data(database: AbstractDatabase) -> None:
+    """Delete normalized concepts
+
+    :param database: DB instance
+    """
     click.echo("\nDeleting normalized records...")
     start_delete = timer()
     try:
@@ -142,8 +162,12 @@ def _delete_normalized_data(database):
     click.echo(f"Deleted normalized records in {delete_time:.5f} seconds.")
 
 
-def _load_merge(db, processed_ids):
-    """Load merged concepts"""
+def _load_merge(db: AbstractDatabase, processed_ids: Set[str]) -> None:
+    """Load merged concepts
+
+    :param db: database instance
+    :param processed_ids: in-progress list of processed gene IDs
+    """
     start = timer()
     _delete_normalized_data(db)
     if not processed_ids:
@@ -180,16 +204,23 @@ def _load_merge(db, processed_ids):
     is_flag=True,
     help='Update concepts for normalize endpoint from accepted sources.'
 )
-def update_normalizer_db(normalizer, aws_instance, db_url, update_all,
-                         update_merged):
-    """Update selected normalizer source(s) in the gene database."""
+def update_normalizer_db(normalizer: str, aws_instance: bool, db_url: str,
+                         update_all: bool, update_merged: bool) -> None:
+    """Update selected normalizer source(s) in the gene database.
+
+    :param normalizer: names of sources to update, comma-separated
+    :param aws_instance: if true, use cloud instance
+    :param db_url: URI pointing to database
+    :param update_all: if true, update all sources (ignore `normalizer` parameter)
+    :param update_merged: if true, update normalized records
+    """
     db = create_db(db_url, aws_instance)
 
     if update_all:
         _update_normalizers(list(SourceName), db, update_merged)
     elif not normalizer:
         if update_merged:
-            _load_merge(db, [])
+            _load_merge(db, set())
         else:
             ctx = click.get_current_context()
             click.echo("Must either enter 1 or more sources, or use `--update_all` parameter")  # noqa: E501

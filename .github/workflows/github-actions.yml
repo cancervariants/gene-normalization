@@ -43,3 +43,13 @@ jobs:
 
       - run: pipenv run flake8
       - run: pipenv run pytest tests/
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: ammaraskar/sphinx-action@master
+        with:
+          pre-build-command: "python3 -m pip install .; python3 -m pip install sphinx_autodoc_typehints"
+          docs-folder: "docs/"
+

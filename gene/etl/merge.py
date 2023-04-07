@@ -14,20 +14,19 @@ logger.setLevel(logging.DEBUG)
 class Merge:
     """Handles record merging."""
 
-    def __init__(self, database: AbstractDatabase):
+    def __init__(self, database: AbstractDatabase) -> None:
         """Initialize Merge instance.
-        :param Database database: db instance to use for record retrieval
-            and creation.
+
+        :param database: db instance to use for record retrieval and creation.
         """
         self._database = database
         self._groups = {}  # dict keying concept IDs to group Sets
 
-    def create_merged_concepts(self, record_ids: Set[str]):
-        """Create concept groups, generate merged concept records, and
-        update database.
-        :param Set[str] record_ids: concept identifiers from which groups
-            should be generated. Should *not* include any records from
-            excluded sources.
+    def create_merged_concepts(self, record_ids: Set[str]) -> None:
+        """Create concept groups, generate merged concept records, and update database.
+
+        :param record_ids: concept identifiers from which groups should be generated.
+            Should *not* include any records from excluded sources.
         """
         logger.info('Generating record ID sets...')
         start = timer()
@@ -71,8 +70,11 @@ class Merge:
 
     def _create_record_id_set(self, record_id: str,
                               observed_id_set: Optional[Set] = None) -> Set[str]:
-        """Create concept ID group for an individual record ID.
-        :param str record_id: concept ID for record to build group from
+        """Recursively create concept ID group for an individual record ID.
+
+        :param record_id: concept ID for record to build group from
+        :param observed_id_set: container with all already-searched-for IDs. Provided
+        to avoid repeating work.
         :return: set of related identifiers pertaining to a common concept.
         """
         if observed_id_set is None:
@@ -104,8 +106,10 @@ class Merge:
         Where attributes are sets, they should be merged, and where they are
         scalars, assign from the highest-priority source where that attribute
         is non-null.
+
         Priority is: HGNC > NCBI > Ensembl
-        :param Set record_id_set: group of concept IDs
+
+        :param record_id_set: group of concept IDs
         :return: completed merged drug object to be stored in DB
         """
         records = []
