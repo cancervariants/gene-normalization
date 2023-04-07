@@ -13,7 +13,7 @@ The Gene Normalizer provides three different search modes:
 REST endpoints
 --------------
 
-Once :ref:`HTTP service is activated<starting-service>`, OpenAPI documentation for the REST endpoints is available at the ``/genes`` subdirectory (e.g., with default service parameters, at ``http://localhost:8000/genes``). This documentation describes endpoint parameters and response objects, and provides some minimal example queries.
+Once :ref:`HTTP service is activated<starting-service>`, OpenAPI documentation for the REST endpoints is available at the ``/genes`` endpoint (e.g., with default service parameters, at ``http://localhost:8000/genes``). This documentation describes endpoint parameters and response objects, and provides some minimal example queries.
 
 The individual endpoints are:
 
