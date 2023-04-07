@@ -56,7 +56,9 @@ By default, tests will utilize an existing database, and won't load any new data
 
     export GENE_TEST=true
 
-This does overwrite existing data, so be sure to use a separate database instance from your main working environment.
+.. warning::
+
+    Tests executed under the GENE_TEST environment will overwrite existing data. It is recommend that a database instance separate from the main working environment is used.
 
 
 Documentation

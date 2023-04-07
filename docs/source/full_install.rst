@@ -18,7 +18,7 @@ First, install the Gene Normalizer from PyPI: ::
 
     pip install gene-normalizer[dev]
 
-The `[dev]` option installs dependencies necessary for using the `gene.etl` package, which performs data loading operations.
+The ``[dev]`` option installs dependencies necessary for using the ``gene.etl`` package, which performs data loading operations.
 
 
 SeqRepo
@@ -42,7 +42,10 @@ You may need to manually finish moving sequence files (replace the `XXXXXX` char
 Database setup
 --------------
 
-The Gene Normalizer requires a separate database process for data storage and retrieval. See the documentation entries for :ref:`dynamodb` and :ref:`postgres` for instructions on database setup and initialization.
+The Gene Normalizer requires a separate database process for data storage and retrieval. See the instructions on database setup and initialization for the available database options:
+
+* :ref:`dynamodb`
+* :ref:`postgres`
 
 
 Loading data
@@ -53,6 +56,8 @@ To load all source data, and then generate normalized records, use the following
     gene_norm_update --update_all --update_merged
 
 This will download the latest available versions of all source data files, extract and transform recognized gene concepts, load them into the database, and construct normalized concept groups. For more specific update commands, see the TODO SECTION ON THAT REF OUT
+
+.. _starting-service:
 
 Starting service
 ----------------

@@ -5,6 +5,8 @@ from pathlib import Path
 import csv
 from datetime import datetime
 import re
+from typing import Dict, List, Optional
+from biocommons.seqrepo import SeqRepo
 
 import gffutils
 
@@ -25,15 +27,15 @@ class NCBI(Base):
 
     def __init__(self,
                  database: AbstractDatabase,
-                 host='ftp.ncbi.nlm.nih.gov',
-                 data_dir='gene/DATA/',
-                 src_data_dir=APP_ROOT / 'data' / 'ncbi'):
+                 host: str = 'ftp.ncbi.nlm.nih.gov',
+                 data_dir: str = 'gene/DATA/',
+                 src_data_dir: Path = APP_ROOT / 'data' / 'ncbi') -> None:
         """Construct the NCBI ETL instance.
 
-        :param AbstractDatabase database: gene database for adding new data
-        :param str host: FTP host name
-        :param str data_dir: FTP data directory to use
-        :param Path src_data_dir: Data directory for NCBI
+        :param database: gene database for adding new data
+        :param host: FTP host name
+        :param data_dir: FTP data directory to use
+        :param src_data_dir: Data directory for NCBI
         """
         super().__init__(database, host, data_dir, src_data_dir)
         self._sequence_location = SequenceLocation()
@@ -42,7 +44,7 @@ class NCBI(Base):
         self._assembly = None
         self._date_today = datetime.today().strftime('%Y%m%d')
 
-    def perform_etl(self):
+    def perform_etl(self) -> List[str]:
         """Perform ETL methods.
 
         :return: Concept IDs of concepts successfully loaded
@@ -53,11 +55,8 @@ class NCBI(Base):
         self._database.complete_write_transaction()
         return self._processed_ids
 
-    def _download_data(self):
-        """Download NCBI info, history, and GRCh38 files.
-
-        :param str ncbi_dir: The NCBI data directory
-        """
+    def _download_data(self) -> None:
+        """Download NCBI info, history, and GRCh38 files."""
         # Download info
         data_dir = f'{self._data_dir}GENE_INFO/Mammalia/'
         fn = f'ncbi_info_{self._date_today}.tsv'
@@ -103,7 +102,7 @@ class NCBI(Base):
     def _files_downloaded(self, data_dir: Path) -> bool:
         """Check whether needed source files exist.
 
-        :param Path data_dir: source data directory
+        :param data_dir: source data directory
         :return: true if all needed files exist, false otherwise
         """
         files = data_dir.iterdir()
@@ -140,7 +139,7 @@ class NCBI(Base):
                          if f.name.startswith('ncbi_GRCh')][0]
         self._version = self._info_src.stem.split('_')[-1]
 
-    def _get_prev_symbols(self):
+    def _get_prev_symbols(self) -> Dict[str, str]:
         """Store a gene's symbol history.
 
         :return: A dictionary of a gene's previous symbols
@@ -170,11 +169,11 @@ class NCBI(Base):
         history_file.close()
         return prev_symbols
 
-    def _add_xrefs_associated_with(self, val, params):
+    def _add_xrefs_associated_with(self, val: List[str], params: Dict) -> None:
         """Add xrefs and associated_with refs to a transformed gene.
 
-        :param list val: A list of source ids for a given gene
-        :param dict params: A transformed gene record
+        :param val: A list of source ids for a given gene
+        :param params: A transformed gene record
         """
         params['xrefs'] = []
         params['associated_with'] = []
@@ -206,10 +205,10 @@ class NCBI(Base):
         if not params['associated_with']:
             del params['associated_with']
 
-    def _get_gene_info(self, prev_symbols):
+    def _get_gene_info(self, prev_symbols: Dict[str, str]) -> Dict[str, str]:
         """Store genes from NCBI info file.
 
-        :param dict prev_symbols: A dictionary of a gene's previous symbols
+        :param prev_symbols: A dictionary of a gene's previous symbols
         :return: A dictionary of gene's from the NCBI info file.
         """
         # open info file, skip headers
@@ -251,12 +250,14 @@ class NCBI(Base):
             params['gene_type'] = row[9]
         return info_genes
 
-    def _get_gene_gff(self, db, info_genes, sr):
+    def _get_gene_gff(
+        self, db: gffutils.FeatureDB, info_genes: Dict, sr: SeqRepo
+    ) -> None:
         """Store genes from NCBI gff file.
 
-        :param FeatureDB db: GFF database
-        :param dict info_genes: A dictionary of gene's from the NCBI info file.
-        :param SeqRepo sr: Access to the seqrepo
+        :param db: GFF database
+        :param info_genes: A dictionary of gene's from the NCBI info file.
+        :param sr: Access to the seqrepo
         """
         for f in db.all_features():
             if f.attributes.get('ID'):
@@ -269,21 +270,22 @@ class NCBI(Base):
                         vrs_sq_location = \
                             self._get_vrs_sq_location(db, sr, params, f_id)
                         if vrs_sq_location:
-                            params['locations'].append(vrs_sq_location)
+                            params['locations'].append(vrs_sq_location)  # type: ignore
                     else:
                         # Need to add entire gene
                         gene = self._add_gff_gene(db, f, sr, f_id)
                         info_genes[gene['symbol']] = gene
 
-    def _add_gff_gene(self, db, f, sr, f_id):
+    def _add_gff_gene(
+        self, db: gffutils.FeatureDB, f: gffutils.Feature, sr: SeqRepo, f_id: str
+    ) -> Optional[Dict]:
         """Create a transformed gene recor from NCBI gff file.
 
-        :param FeatureDB db: GFF database
-        :param Feature f: A gene from the gff data file
-        :param SeqRepo sr: Access to the seqrepo
-        :param str f_id: The feature's ID
-        :return: A gene dictionary if the ID attribute exists.
-                 Else return None.
+        :param db: GFF database
+        :param f: A gene from the gff data file
+        :param sr: Access to the seqrepo
+        :param f_id: The feature's ID
+        :return: A gene dictionary if the ID attribute exists. Else return None.
         """
         params = dict()
         params['src_name'] = SourceName.NCBI.value
@@ -318,14 +320,16 @@ class NCBI(Base):
                 elif key == 'Name':
                     gene['symbol'] = val
 
-    def _get_vrs_sq_location(self, db, sr, params, f_id):
+    def _get_vrs_sq_location(
+        self, db: gffutils.FeatureDB, sr: SeqRepo, params: Dict, f_id: str
+    ) -> Dict:
         """Store GA4GH VRS SequenceLocation in a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
 
-        :param FeatureDB db: GFF database
-        :param SeqRepo sr: Access to the seqrepo
-        :param dict params: A transformed gene record
-        :param str f_id: The feature's ID
+        :param db: GFF database
+        :param sr: Access to the seqrepo
+        :param params: A transformed gene record
+        :param f_id: The feature's ID
         :return: A GA4GH VRS SequenceLocation
         """
         gene = db[f_id]
@@ -333,10 +337,10 @@ class NCBI(Base):
         return self._sequence_location.add_location(gene.seqid, gene,
                                                     params, sr)
 
-    def _get_xref_associated_with(self, src_name, src_id):
+    def _get_xref_associated_with(self, src_name: str, src_id: str) -> Dict:
         """Get xref or associated_with ref.
 
-        :param str src_name: Source name
+        :param src_name: Source name
         :param src_id: The source's accession number
         :return: A dict containing an xref or associated_with ref
         """
@@ -355,12 +359,12 @@ class NCBI(Base):
             source['associated_with'] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]  # noqa E501
         return source
 
-    def _get_vrs_chr_location(self, row, params):
+    def _get_vrs_chr_location(self, row: List[str], params: Dict) -> List:
         """Store GA4GH VRS ChromosomeLocation in a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#chromosomelocation
 
-        :param list row: A row in NCBI data file
-        :param dict params: A transformed gene record
+        :param row: A row in NCBI data file
+        :param params: A transformed gene record
         :return: A list of GA4GH VRS ChromosomeLocations
         """
         params['location_annotations'] = list()
@@ -384,11 +388,11 @@ class NCBI(Base):
             del params['location_annotations']
         return location_list
 
-    def _set_chromsomes_locations(self, row, params):
+    def _set_chromsomes_locations(self, row: List[str], params: Dict) -> Dict:
         """Set chromosomes and locations for a given gene record.
 
-        :param list row: A gene row in the NCBI data file
-        :param dict params: A transformed gene record
+        :param row: A gene row in the NCBI data file
+        :param params: A transformed gene record
         :return: A dictionary containing a gene's chromosomes and locations
         """
         chromosomes = None
@@ -445,12 +449,14 @@ class NCBI(Base):
             'exclude': exclude
         }
 
-    def _add_chromosome_location(self, locations, location_list, params):
+    def _add_chromosome_location(
+        self, locations: List, location_list: List, params: Dict
+    ) -> None:
         """Add a chromosome location to the location list.
 
-        :param list locations: NCBI map locations for a gene record.
-        :param list location_list: A list to store chromosome locations.
-        :param dict params: A transformed gene record
+        :param locations: NCBI map locations for a gene record.
+        :param location_list: A list to store chromosome locations.
+        :param params: A transformed gene record
         """
         for i in range(len(locations)):
             loc = locations[i].strip()
@@ -501,22 +507,22 @@ class NCBI(Base):
             if chr_location:
                 location_list.append(chr_location)
 
-    def _set_centromere_location(self, loc, location):
+    def _set_centromere_location(self, loc: str, location: Dict) -> None:
         """Set centromere location for a gene.
 
-        :param str loc: A gene location
-        :param dict location: GA4GH location
+        :param loc: A gene location
+        :param location: GA4GH location
         """
-        centromere_ix = re.search("cen", loc).start()
+        centromere_ix = re.search("cen", loc).start()  # type: ignore
         if '-' in loc:
             # Location gives both start and end
-            range_ix = re.search('-', loc).start()
+            range_ix = re.search('-', loc).start()  # type: ignore
             if 'q' in loc:
                 location['chr'] = loc[:centromere_ix].strip()
                 location['start'] = "cen"
                 location['end'] = loc[range_ix + 1:]
             elif 'p' in loc:
-                p_ix = re.search("p", loc).start()
+                p_ix = re.search("p", loc).start()  # type: ignore
                 location['chr'] = loc[:p_ix].strip()
                 location['end'] = "cen"
                 location['start'] = loc[:range_ix]

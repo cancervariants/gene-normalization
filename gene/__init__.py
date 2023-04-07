@@ -22,8 +22,9 @@ logging.getLogger("biocommons.seqrepo.seqaliasdb.seqaliasdb").setLevel(logging.I
 logging.getLogger("biocommons.seqrepo.fastadir.fastadir").setLevel(logging.INFO)  # noqa: E501
 
 
-SEQREPO_DATA_PATH = environ.get("SEQREPO_DATA_PATH",
-                                "/usr/local/share/seqrepo/latest")
+SEQREPO_DATA_PATH = Path(
+    environ.get("SEQREPO_DATA_PATH", "/usr/local/share/seqrepo/latest")
+)
 
 
 class DownloadException(Exception):

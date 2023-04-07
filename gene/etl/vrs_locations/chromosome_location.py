@@ -1,6 +1,7 @@
 """This module defines GA4GH Chromosome Location."""
 import re
 import logging
+from typing import Dict
 
 from pydantic.error_wrappers import ValidationError
 
@@ -14,14 +15,13 @@ logger.setLevel(logging.DEBUG)
 class ChromosomeLocation:
     """The class for GA4GH Chromosome Location."""
 
-    def get_location(self, location, gene):
+    def get_location(self, location: Dict, gene: Dict):
         """Transform a gene's location into a Chromosome Location.
 
-        :param dict location: A gene's location.
-        :param dict gene: A transformed gene record.
-        :return: If location is a valid VRS ChromosomeLocation, return a
-         dictionary containing the ChromosomeLocation.
-         Else, return None.
+        :param location: A gene's location.
+        :param gene: A transformed gene record.
+        :return: If location is a valid VRS ChromosomeLocation, return a dictionary
+            containing the ChromosomeLocation. Else, return None.
         """
         if 'chr' in location and 'start' in location \
                 and 'end' in location:
@@ -43,17 +43,17 @@ class ChromosomeLocation:
                 return chr_location
         return None
 
-    def set_interval_range(self, loc, arm_ix, location):
+    def set_interval_range(self, loc: str, arm_ix: int, location: Dict) -> None:
         """Set the location interval range.
 
-        :param str loc: A gene location
-        :param int arm_ix: The index of the q or p arm for a given location
-        :param dict location: A gene's location
+        :param loc: A gene location
+        :param arm_ix: The index of the q or p arm for a given location
+        :param location: A gene's location
         """
-        range_ix = re.search('-', loc).start()
+        range_ix = re.search('-', loc).start()  # type: ignore
 
         start = loc[arm_ix:range_ix]
-        start_arm_ix = re.search("[pq]", start).start()
+        start_arm_ix = re.search("[pq]", start).start()  # type: ignore
         start_arm = start[start_arm_ix]
 
         end = loc[range_ix + 1:]
@@ -64,7 +64,7 @@ class ChromosomeLocation:
             end = f"{start[0]}{end}"
             end_arm_match = re.search("[pq]", end)
 
-        end_arm_ix = end_arm_match.start()
+        end_arm_ix = end_arm_match.start()  # type: ignore
         end_arm = end[end_arm_ix]
 
         if (start_arm == end_arm and start > end) or \

@@ -17,15 +17,15 @@ Install the Gene Normalizer via PyPI: ::
 
     pip install gene-normalizer
 
-Create a new PostgreSQL database. For example, using the `psql createdb <https://www.postgresql.org/docs/current/app-createdb.html>`_ utility, and assuming that `postgres` is a valid user: ::
+Create a new PostgreSQL database. For example, using the `psql createdb <https://www.postgresql.org/docs/current/app-createdb.html>`_ utility, and assuming that ``postgres`` is a valid user: ::
 
     createdb -h localhost -p 5432 -U postgres gene_normalizer
 
-Set the environment variable `GENE_NORM_DB_URL` to a connection description for that database. See the PostgreSQL `connection string documentation <https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING>`_ for more information: ::
+Set the environment variable ``GENE_NORM_DB_URL`` to a connection description for that database. See the PostgreSQL `connection string documentation <https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING>`_ for more information: ::
 
    export GENE_NORM_DB_URL=postgres://postgres@localhost:5432/gene_normalizer
 
-Use the `gene_norm_update_remote` shell command to load data from the most recent remotely-stored data dump: ::
+Use the ``gene_norm_update_remote`` shell command to load data from the most recent remotely-stored data dump: ::
 
     gene_norm_update_remote
 

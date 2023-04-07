@@ -10,12 +10,12 @@ The Gene Normalizer provides tools for resolving ambiguous gene references to co
 The Gene Normalizer is a library created to support the `Knowledgebase Integration Project <https://cancervariants.org/projects/integration/>`_ of the `Variant Interpretation for Cancer Consortium (VICC) <https://cancervariants.org/>`_. It is developed primarily by the `Wagner Lab <https://www.nationwidechildrens.org/specialties/institute-for-genomic-medicine/research-labs/wagner-lab>`_. Full source code is available on `GitHub <https://github.com/cancervariants/gene-normalization>`_.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
     Quick installation<quick_install>
     Full installation<full_install>
+    Searching genes<search_capabilities>
     Managing data<managing_data/index>
-    Using the search endpoints<search_endpoints>
     Normalization<normalization>
     API<api/api>
     Contributing<contributing>

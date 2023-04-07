@@ -15,7 +15,7 @@ author = 'VICC'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
+extensions = ["sphinx.ext.autodoc", "sphinx_autodoc_typehints", "sphinx.ext.linkcode"]
 
 templates_path = ['_templates']
 exclude_patterns = []
@@ -29,9 +29,8 @@ html_theme = 'alabaster'
 html_static_path = []
 
 # -- autodoc things ----------------------------------------------------------
-extensions = ["sphinx.ext.autodoc", "sphinx_autodoc_typehints"]
-import os
-import sys
+import os  # noqa: E402
+import sys  # noqa: E402
 sys.path.insert(0, os.path.abspath("../../gene"))
 
 
@@ -39,3 +38,12 @@ sys.path.insert(0, os.path.abspath("../../gene"))
 from gene import __version__  # noqa: E402
 version = __version__
 release = version
+
+# -- linkcode ----------------------------------------------------------------
+def linkcode_resolve(domain, info):
+    if domain != "py":
+        return None
+    if not info["module"]:
+        return None
+    filename = info["module"].replace(".", "/")
+    return f"https://github.com/cancervariants/gene-normalization/blob/main/{filename}.py"  # noqa: E501
