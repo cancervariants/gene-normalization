@@ -178,7 +178,7 @@ class Ensembl(Base):
 
         :param f: A gene from the data
         :param gene: A transformed gene record
-        :param SeqRepo sr: Access to the seqrepo
+        :param sr: Access to the seqrepo
         :param accession_numbers: Accession numbers for each chromosome and scaffold
         :return: gene record dictionary with location added
         """

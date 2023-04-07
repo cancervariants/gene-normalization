@@ -1,7 +1,7 @@
 """This module defines GA4GH Chromosome Location."""
 import re
 import logging
-from typing import Dict
+from typing import Dict, Optional
 
 from pydantic.error_wrappers import ValidationError
 
@@ -15,7 +15,7 @@ logger.setLevel(logging.DEBUG)
 class ChromosomeLocation:
     """The class for GA4GH Chromosome Location."""
 
-    def get_location(self, location: Dict, gene: Dict):
+    def get_location(self, location: Dict, gene: Dict) -> Optional[Dict]:
         """Transform a gene's location into a Chromosome Location.
 
         :param location: A gene's location.
