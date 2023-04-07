@@ -37,6 +37,8 @@ You will want to do the following:\
 sudo mv /usr/local/share/seqrepo/2021-01-29._fkuefgd /usr/local/share/seqrepo/2021-01-29
 ```
 
+Use the `SEQREPO_ROOT_DIR` environment variable to set the path of an already existing SeqRepo directory. The default is `/usr/local/share/seqrepo/latest`.
+
 ### Database Initialization
 
 The Normalizer supports two data storage options:
