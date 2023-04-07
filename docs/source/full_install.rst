@@ -38,6 +38,8 @@ You may need to manually finish moving sequence files (replace the `XXXXXX` char
 
     sudo mv /usr/local/share/seqrepo/2021-01-29.XXXXXXX /usr/local/share/seqrepo/2021-01-29
 
+Use the ``SEQREPO_ROOT_DIR`` environment variable to set the path of an already existing SeqRepo directory. The default is ``/usr/local/share/seqrepo/latest``.
+
 
 Database setup
 --------------
