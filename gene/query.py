@@ -40,7 +40,7 @@ class QueryHandler:
     def emit_warnings(query_str: str) -> List:
         """Emit warnings if query contains non breaking space characters.
 
-        :param str query_str: query string
+        :param query_str: query string
         :return: List of warnings
         """
         warnings = []
@@ -61,7 +61,7 @@ class QueryHandler:
     def _transform_sequence_location(loc: Dict) -> models.SequenceLocation:
         """Transform a sequence location to VRS sequence location
 
-        :param Dict loc: Sequence location
+        :param loc: Sequence location
         :return: VRS sequence location
         """
         return models.SequenceLocation(
@@ -76,7 +76,7 @@ class QueryHandler:
     def _transform_chromosome_location(loc: Dict) -> models.ChromosomeLocation:
         """Transform a chromosome location to VRS chromosome location
 
-        :param Dict loc: Chromosome location
+        :param loc: Chromosome location
         :return: VRS chromosome location
         """
         transformed_loc = models.ChromosomeLocation(
@@ -92,7 +92,7 @@ class QueryHandler:
     def _transform_location(self, loc: Dict) -> Dict:
         """Transform a sequence/chromosome location to VRS sequence/chromosome location
 
-        :param Dict loc: Sequence or Chromosome location
+        :param loc: Sequence or Chromosome location
         :return: VRS sequence or chromosome location represented as a dictionary
         """
         if loc["type"] == VRSTypes.SEQUENCE_LOCATION:
@@ -105,7 +105,7 @@ class QueryHandler:
     def _transform_locations(self, record: Dict) -> Dict:
         """Transform gene locations to VRS Chromosome/Sequence Locations
 
-        :param Dict record: original record
+        :param record: original record
         :return: record with transformed locations attributes, if applicable
         """
         record_locations = list()
@@ -137,10 +137,9 @@ class QueryHandler:
                    match_type: MatchType):
         """Add individual record (i.e. Item in DynamoDB) to response object
 
-        :param Dict[str, Dict] response: in-progress response object to return
-            to client
-        :param Dict item: Item retrieved from DynamoDB
-        :param MatchType match_type: match type for query
+        :param response: in-progress response object to return to client
+        :param item: Item retrieved from DynamoDB
+        :param match_type: match type for query
         """
         item = self._transform_locations(item)
         item["match_type"] = match_type
@@ -162,11 +161,9 @@ class QueryHandler:
                      match_type: MatchType) -> None:
         """Add fetched record to response
 
-        :param Dict[str, Dict] response: in-progress response object to return
-            to client.
-        :param str concept_id: Concept id to fetch record for.
-            Should be all lower-case.
-        :param MatchType match_type: match type for record
+        :param response: in-progress response object to return to client.
+        :param concept_id: Concept id to fetch record for. Should be all lower-case.
+        :param match_type: match type for record
         """
         try:
             match = self.db.get_record_by_id(concept_id, case_sensitive=False)
@@ -184,9 +181,9 @@ class QueryHandler:
         """Fill all empty source_matches slots with NO_MATCH results and
         sort source records by descending `match_type`.
 
-        :param Dict resp: incoming response object
-        :return: response object with empty source slots filled with
-                NO_MATCH results and corresponding source metadata
+        :param resp: incoming response object
+        :return: response object with empty source slots filled with NO_MATCH results
+            and corresponding source metadata
         """
         for src_name in resp['source_matches'].keys():
             if resp['source_matches'][src_name] is None:
@@ -206,8 +203,8 @@ class QueryHandler:
         """Return response as dict where key is source name and value
         is a list of records. Corresponds to `keyed=true` API parameter.
 
-        :param str query: string to match against
-        :param Set[str] sources: sources to match from
+        :param query: string to match against
+        :param sources: sources to match from
         :return: completed response object to return to client
         """
         resp = {
@@ -261,8 +258,8 @@ class QueryHandler:
         """Return response as list, where the first key-value in each item
         is the source name. Corresponds to `keyed=false` API parameter.
 
-        :param str query: string to match against
-        :param List[str] sources: sources to match from
+        :param query: string to match against
+        :param sources: sources to match from
         :return: completed response object to return to client
         """
         response_dict = self.response_keyed(query, sources)
@@ -294,18 +291,16 @@ class QueryHandler:
                incl: str = '', excl: str = '', **params) -> SearchService:
         """Return highest match for each source.
 
-        :param str query_str: query, a string, to search for
-        :param bool keyed: if true, return response as dict keying source names
-            to source objects; otherwise, return list of source objects
-        :param str incl: str containing comma-separated names of sources to
-            use. Will exclude all other sources. Case-insensitive. Raises
-            InvalidParameterException if both incl and excl args are
-            provided, or if invalid source names are given.
-        :param str excl: str containing comma-separated names of source to
-            exclude. Will include all other source. Case-insensitive. Raises
-            InvalidParameterException if both incl and excl args are
-            provided, or if invalid source names are given.
+        :param query_str: query, a string, to search for
+        :param keyed: if true, return response as dict keying source names to source
+            objects; otherwise, return list of source objects
+        :param incl: str containing comma-separated names of sources to use. Will
+            exclude all other sources. Case-insensitive.
+        :param excl: str containing comma-separated names of source to exclude. Will
+            include all other source. Case-insensitive.
         :return: SearchService class containing all matches found in sources.
+        :raise InvalidParameterException: if both `incl` and `excl` args are provided,
+            or if invalid source names are given
         """
         possible_sources = {name.value.lower(): name.value for name in
                             SourceName.__members__.values()}
@@ -359,7 +354,7 @@ class QueryHandler:
     def _add_merged_meta(self, response: NormalizeService) -> NormalizeService:
         """Add source metadata to response object.
 
-        :param Dict response: in-progress response object
+        :param response: in-progress response object
         :return: completed response object.
         """
         sources_meta = {}
@@ -378,9 +373,9 @@ class QueryHandler:
                          possible_concepts: List[str]) -> NormService:
         """Add alternate matches warning to response object
 
-        :param NormService response: in-progress response object
-        :param Dict record: normalized record
-        :param List[str] possible_concepts: other possible matches
+        :param response: in-progress response object
+        :param record: normalized record
+        :param possible_concepts: other possible matches
         :return: updated response object
         """
         norm_concepts = set()
@@ -403,11 +398,10 @@ class QueryHandler:
     ) -> NormalizeService:
         """Add gene descriptor to response.
 
-        :param Dict response: Response object
-        :param Dict record: Gene record
-        :param MatchType match_type: query's match type
-        :param Optional[List[str]] possible_concepts: List of other normalized
-            concepts found
+        :param response: Response object
+        :param record: Gene record
+        :param match_type: query's match type
+        :param possible_concepts: List of other normalized concepts found
         :return: Response with gene descriptor
         """
         params = {
@@ -497,7 +491,7 @@ class QueryHandler:
     def _record_order(record: Dict) -> Tuple[int, str]:
         """Construct priority order for matching. Only called by sort().
 
-        :param Dict record: individual record item in iterable to sort
+        :param record: individual record item in iterable to sort
         :return: tuple with rank value and concept ID
         """
         src = record['src_name'].upper()
@@ -505,12 +499,12 @@ class QueryHandler:
         return source_rank, record['concept_id']
 
     @staticmethod
-    def _handle_failed_merge_ref(record, response, query) -> Dict:
+    def _handle_failed_merge_ref(record: Dict, response: Dict, query: str) -> Dict:
         """Log + fill out response for a failed merge reference lookup.
 
-        :param Dict record: record containing failed merge_ref
-        :param Dict response: in-progress response object
-        :param str query: original query value
+        :param record: record containing failed merge_ref
+        :param response: in-progress response object
+        :param query: original query value
         :return: response with no match
         """
         logger.error(f"Merge ref lookup failed for ref {record['merge_ref']} "
@@ -521,7 +515,7 @@ class QueryHandler:
     def _prepare_normalized_response(self, query: str) -> Dict[str, Any]:
         """Provide base response object for normalize endpoints.
 
-        :param str query: user-provided query
+        :param query: user-provided query
         :return: basic normalization response boilerplate
         """
         return {
@@ -536,7 +530,7 @@ class QueryHandler:
     def normalize(self, query: str) -> NormalizeService:
         """Return normalized concept for query.
 
-        :param str query: String to find normalized concept for
+        :param query: String to find normalized concept for
         :return: Normalized gene concept
         """
         response = NormalizeService(**self._prepare_normalized_response(query))
@@ -549,11 +543,11 @@ class QueryHandler:
     ) -> NormService:
         """Given a record, return the corresponding normalized record
 
-        :param NormalizationService response: in-progress response object
-        :param Dict record: record to retrieve normalized concept for
-        :param MatchType match_type: type of match that returned these records
-        :param Callable callback: response constructor method
-        :param Optional[List[str]] possible_concepts: alternate possible matches
+        :param response: in-progress response object
+        :param record: record to retrieve normalized concept for
+        :param match_type: type of match that returned these records
+        :param callback: response constructor method
+        :param possible_concepts: alternate possible matches
         :return: Normalized response object
         """
         merge_ref = record.get("merge_ref")
@@ -578,9 +572,9 @@ class QueryHandler:
     ) -> NormService:
         """Retrieve normalized concept, for use in normalization endpoints
 
-        :param NormService response: in-progress response object
-        :param str query: user-provided query
-        :param Callable response_builder: response constructor callback method
+        :param response: in-progress response object
+        :param query: user-provided query
+        :param response_builder: response constructor callback method
         :return: completed service response object
         """
         if query == "":
@@ -628,11 +622,11 @@ class QueryHandler:
     ) -> UnmergedNormalizationService:
         """Add individual records to unmerged normalize response.
 
-        :param UnmergedNormalizationService response: in-progress response
-        :param Dict normalized_record: record associated with normalized concept,
-            either merged or single identity
-        :param MatchType match_type: type of match achieved
-        :param Optional[List[str]] possible_concepts: other possible results
+        :param response: in-progress response
+        :param normalized_record: record associated with normalized concept, either
+        merged or single identity
+        :param match_type: type of match achieved
+        :param possible_concepts: other possible results
         :return: Completed response object
         """
         response.match_type = match_type
@@ -670,7 +664,7 @@ class QueryHandler:
         """Return all source records under the normalized concept for the
         provided query string.
 
-        :param str query: string to search against
+        :param query: string to search against
         :return: Normalized response object
         """
         response = UnmergedNormalizationService(
