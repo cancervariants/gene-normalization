@@ -1,23 +1,21 @@
 """This module provides methods for handling queries."""
 import re
-from typing import List, Dict, Set, Any, TypeVar, Callable, Optional
+from typing import List, Dict, Set, Any, Tuple, TypeVar, Callable, Optional
 from urllib.parse import quote
 from datetime import datetime
 
 from ga4gh.vrsatile.pydantic.core_models import Extension
 from ga4gh.vrsatile.pydantic.vrs_models import VRSTypes
 from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
-from botocore.exceptions import ClientError
-from boto3.dynamodb.conditions import Key
 from ga4gh.vrs import models
 from ga4gh.core import ga4gh_identify
 
 from gene import logger
 from gene import NAMESPACE_LOOKUP, PREFIX_LOOKUP, ITEM_TYPES
 from gene.version import __version__
-from gene.database import Database
-from gene.schemas import BaseGene, Gene, SourceMeta, MatchType, SourceName, \
-    ServiceMeta, SourcePriority, NormalizeService, SearchService, \
+from gene.database import AbstractDatabase, DatabaseReadException
+from gene.schemas import BaseGene, Gene, NamespacePrefix, RefType, MatchType, \
+    SourceName, ServiceMeta, SourcePriority, NormalizeService, SearchService, \
     GeneTypeFieldName, UnmergedNormalizationService, MatchesNormalized, \
     BaseNormalizationService
 
@@ -36,13 +34,9 @@ class QueryHandler:
     and normalizes query input.
     """
 
-    def __init__(self, db_url: str = '', db_region: str = 'us-east-2'):
-        """Initialize QueryHandler instance.
-
-        :param str db_url: URL to database source.
-        :param str db_region: AWS default region.
-        """
-        self.db = Database(db_url=db_url, region_name=db_region)
+    def __init__(self, database: AbstractDatabase) -> None:
+        """Initialize QueryHandler instance."""
+        self.db = database
 
     @staticmethod
     def emit_warnings(query_str: str) -> List:
@@ -64,24 +58,6 @@ class QueryHandler:
                 f'Query ({query_str}) contains non-breaking space characters.'
             )
         return warnings
-
-    def fetch_meta(self, src_name: str) -> SourceMeta:
-        """Fetch metadata for src_name.
-
-        :param str src_name: name of source to get metadata for
-        :return: SourceMeta object containing source metadata
-        """
-        if src_name in self.db.cached_sources.keys():
-            return self.db.cached_sources[src_name]
-        else:
-            try:
-                db_response = self.db.metadata.get_item(Key={'src_name':
-                                                             src_name})
-                response = SourceMeta(**db_response['Item'])
-                self.db.cached_sources[src_name] = response
-                return response
-            except ClientError as e:
-                logger.error(e.response['Error']['Message'])
 
     @staticmethod
     def _transform_sequence_location(loc: Dict) -> models.SequenceLocation:
@@ -116,11 +92,11 @@ class QueryHandler:
         :return: VRS sequence or chromosome location represented as a dictionary
         """
         if loc["type"] == VRSTypes.SEQUENCE_LOCATION:
-            loc = self._transform_sequence_location(loc)
+            transformed_loc = self._transform_sequence_location(loc)
         else:
-            loc = self._transform_chromosome_location(loc)
-        loc.id = ga4gh_identify(loc)
-        return loc.as_dict()
+            transformed_loc = self._transform_chromosome_location(loc)
+        transformed_loc.id = ga4gh_identify(transformed_loc)
+        return transformed_loc.as_dict()
 
     def _transform_locations(self, record: Dict) -> Dict:
         """Transform gene locations to VRS Chromosome/Sequence Locations
@@ -135,25 +111,37 @@ class QueryHandler:
         record["locations"] = record_locations
         return record
 
+    def _get_src_name(self, concept_id: str) -> SourceName:
+        """Get source name enum from ID.
+
+        :param concept_id: candidate concept ID string to check
+        :return: SourceName option
+        :raise: ValueError if unrecognized ID provided
+        """
+        if concept_id.startswith(NamespacePrefix.ENSEMBL.value):
+            return SourceName.ENSEMBL
+        elif concept_id.startswith(NamespacePrefix.NCBI.value):
+            return SourceName.NCBI
+        elif concept_id.startswith(NamespacePrefix.HGNC.value):
+            return SourceName.HGNC
+        else:
+            raise ValueError("Invalid or unrecognized concept ID provided")
+
     def add_record(self,
                    response: Dict[str, Dict],
                    item: Dict,
-                   match_type: MatchType) -> (Dict, str):
+                   match_type: MatchType):
         """Add individual record (i.e. Item in DynamoDB) to response object
 
         :param Dict[str, Dict] response: in-progress response object to return
             to client
         :param Dict item: Item retrieved from DynamoDB
         :param MatchType match_type: match type for query
-        :return: Tuple containing updated response object, and string
-            containing name of the source of the match
         """
-        del item['label_and_type']
-        # DynamoDB Numbers get converted to Decimal
         item = self._transform_locations(item)
         item["match_type"] = match_type
         gene = Gene(**item)
-        src_name = item['src_name']
+        src_name = item["src_name"]
 
         matches = response['source_matches']
         if src_name not in matches.keys():
@@ -161,12 +149,10 @@ class QueryHandler:
         elif matches[src_name] is None:
             matches[src_name] = {
                 'records': [gene],
-                'source_meta_': self.fetch_meta(src_name)
+                'source_meta_': self.db.get_source_metadata(src_name)
             }
         else:
             matches[src_name]['records'].append(gene)
-
-        return response, src_name
 
     def fetch_record(self, response: Dict[str, Dict], concept_id: str,
                      match_type: MatchType) -> None:
@@ -179,13 +165,16 @@ class QueryHandler:
         :param MatchType match_type: match type for record
         """
         try:
-            pk = f'{concept_id}##identity'
-            filter_exp = Key('label_and_type').eq(pk)
-            result = self.db.genes.query(KeyConditionExpression=filter_exp)
-            match = result['Items'][0]
-            self.add_record(response, match, match_type)
-        except ClientError as e:
-            logger.error(e.response['Error']['Message'])
+            match = self.db.get_record_by_id(concept_id, case_sensitive=False)
+        except DatabaseReadException as e:
+            logger.error(
+                f"Encountered DatabaseReadException looking up {concept_id}: {e}"
+            )
+        else:
+            if match:
+                self.add_record(response, match, match_type)
+            else:
+                logger.error(f"Unable to find expected record for {concept_id} matching as {match_type}")  # noqa: E501
 
     def post_process_resp(self, resp: Dict) -> Dict:
         """Fill all empty source_matches slots with NO_MATCH results and
@@ -200,7 +189,7 @@ class QueryHandler:
                 resp['source_matches'][src_name] = {
                     'match_type': MatchType.NO_MATCH,
                     'records': [],
-                    'source_meta_': self.fetch_meta(src_name)
+                    'source_meta_': self.db.get_source_metadata(src_name)
                 }
             else:
                 records = resp['source_matches'][src_name]['records']
@@ -230,39 +219,35 @@ class QueryHandler:
 
         queries = list()
         if [p for p in PREFIX_LOOKUP.keys() if query_l.startswith(p)]:
-            pk = f'{query_l}##identity'
-            queries.append(pk)
+            queries.append((query_l, "identity"))
 
         for prefix in [p for p in NAMESPACE_LOOKUP.keys() if
                        query_l.startswith(p)]:
-            pk = f'{NAMESPACE_LOOKUP[prefix].lower()}:{query_l}##identity'
-            queries.append(pk)
+            term = f"{NAMESPACE_LOOKUP[prefix].lower()}:{query_l}"
+            queries.append((term, "identity"))
 
         for match in ITEM_TYPES.values():
-            pk = f'{query_l}##{match}'
-            queries.append(pk)
+            queries.append((query_l, match))
 
         matched_concept_ids = list()
-        for q in queries:
+        for term, item_type in queries:
             try:
-                query_resp = self.db.genes.query(
-                    KeyConditionExpression=Key('label_and_type').eq(q)
-                )
-                for record in query_resp['Items']:
-                    concept_id = record['concept_id']
-                    if concept_id in matched_concept_ids:
-                        continue
-                    else:
-                        if record['item_type'] == "identity":
-                            self.add_record(resp, record, MatchType.CONCEPT_ID)
-                        else:
-                            self.fetch_record(
-                                resp, concept_id,
-                                MatchType[record['item_type'].upper()])
-                        matched_concept_ids.append(concept_id)
+                if item_type == "identity":
+                    record = self.db.get_record_by_id(term, False)
+                    if record and record['concept_id'] not in matched_concept_ids:
+                        self.add_record(resp, record, MatchType.CONCEPT_ID)
+                else:
+                    refs = self.db.get_refs_by_type(term, RefType(item_type))
+                    for ref in refs:
+                        if ref not in matched_concept_ids:
+                            self.fetch_record(resp, ref, MatchType[item_type.upper()])
+                            matched_concept_ids.append(ref)
 
-            except ClientError as e:
-                logger.error(e.response['Error']['Message'])
+            except DatabaseReadException as e:
+                logger.error(
+                    f"Encountered DatabaseReadException looking up {item_type}"
+                    f" {term}: {e}"
+                )
                 continue
 
         # remaining sources get no match
@@ -322,7 +307,7 @@ class QueryHandler:
                             SourceName.__members__.values()}
         sources = dict()
         for k, v in possible_sources.items():
-            if self.db.metadata.get_item(Key={'src_name': v}).get('Item'):
+            if self.db.get_source_metadata(v):
                 sources[k] = v
 
         if not incl and not excl:
@@ -381,7 +366,7 @@ class QueryHandler:
             prefix = concept_id.split(':')[0]
             src_name = PREFIX_LOOKUP[prefix.lower()]
             if src_name not in sources_meta:
-                sources_meta[src_name] = self.fetch_meta(src_name)
+                sources_meta[src_name] = self.db.get_source_metadata(src_name)
         response.source_meta_ = sources_meta
         return response
 
@@ -505,7 +490,7 @@ class QueryHandler:
         return response
 
     @staticmethod
-    def _record_order(record: Dict) -> (int, str):
+    def _record_order(record: Dict) -> Tuple[int, str]:
         """Construct priority order for matching. Only called by sort().
 
         :param Dict record: individual record item in iterable to sort
@@ -584,21 +569,11 @@ class QueryHandler:
             # record is sole member of concept group
             return callback(response, record, match_type, possible_concepts)
 
-    def _get_matches_by_type(self, query: str, match_type: str) -> List[Dict]:
-        """Get matches list for match tier.
-        :param str query: user-provided query
-        :param str match_type: keyword of match type to check
-        :return: List of records matching the query and match level
-        """
-        matching_refs = self.db.get_records_by_type(query, match_type)
-        matching_records = [self.db.get_record_by_id(m["concept_id"], False)
-                            for m in matching_refs]
-        return sorted(matching_records, key=self._record_order)  # type: ignore
-
     def _perform_normalized_lookup(
         self, response: NormService, query: str, response_builder: Callable
     ) -> NormService:
         """Retrieve normalized concept, for use in normalization endpoints
+
         :param NormService response: in-progress response object
         :param str query: user-provided query
         :param Callable response_builder: response constructor callback method
@@ -619,17 +594,15 @@ class QueryHandler:
             return self._resolve_merge(response, record, MatchType.CONCEPT_ID,
                                        response_builder)
 
-        for match_type in ITEM_TYPES.values():
+        for match_type in RefType:
             # get matches list for match tier
-            matching_refs = self.db.get_records_by_type(query_str, match_type)
+            matching_refs = self.db.get_refs_by_type(query_str, match_type)
             matching_records = \
-                [self.db.get_record_by_id(m['concept_id'], False)
-                 for m in matching_refs]
+                [self.db.get_record_by_id(ref, False) for ref in matching_refs]
             matching_records.sort(key=self._record_order)  # type: ignore
 
             if len(matching_refs) > 1:
-                possible_concepts = \
-                    [ref["concept_id"] for ref in matching_refs]
+                possible_concepts = [ref for ref in matching_refs]
             else:
                 possible_concepts = None
 
@@ -638,7 +611,7 @@ class QueryHandler:
                 assert match is not None
                 record = self.db.get_record_by_id(match["concept_id"], False)
                 if record:
-                    match_type_value = MatchType[match_type.upper()]
+                    match_type_value = MatchType[match_type.value.upper()]
                     return self._resolve_merge(
                         response, record, match_type_value,
                         response_builder, possible_concepts
@@ -662,9 +635,10 @@ class QueryHandler:
         response.normalized_concept_id = normalized_record["concept_id"]
         if normalized_record["item_type"] == "identity":
             record_source = SourceName[normalized_record["src_name"].upper()]
+            meta = self.db.get_source_metadata(record_source.value)
             response.source_matches[record_source] = MatchesNormalized(
                 records=[BaseGene(**self._transform_locations(normalized_record))],
-                source_meta_=self.fetch_meta(record_source.value)
+                source_meta_=meta  # type: ignore
             )
         else:
             concept_ids = [normalized_record["concept_id"]] + \
@@ -678,9 +652,10 @@ class QueryHandler:
                 if record_source in response.source_matches:
                     response.source_matches[record_source].records.append(gene)
                 else:
+                    meta = self.db.get_source_metadata(record_source.value)
                     response.source_matches[record_source] = MatchesNormalized(
                         records=[gene],
-                        source_meta_=self.fetch_meta(record_source.value)
+                        source_meta_=meta,  # type: ignore
                     )
         if possible_concepts:
             response = self._add_alt_matches(response, normalized_record,

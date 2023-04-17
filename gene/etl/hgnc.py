@@ -5,7 +5,7 @@ import shutil
 import re
 
 from gene import APP_ROOT, PREFIX_LOOKUP
-from gene.database import Database
+from gene.database import AbstractDatabase
 from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, \
     SourceMeta, Annotation, Chromosome
 from gene.etl.base import Base
@@ -19,7 +19,7 @@ class HGNC(Base):
     """ETL the HGNC source into the normalized database."""
 
     def __init__(self,
-                 database: Database,
+                 database: AbstractDatabase,
                  host='ftp.ebi.ac.uk',
                  data_dir='pub/databases/genenames/hgnc/json/',
                  src_data_dir=APP_ROOT / 'data' / 'hgnc',
@@ -27,7 +27,7 @@ class HGNC(Base):
                  ):
         """Initialize HGNC ETL class.
 
-        :param Database database: DynamoDB database
+        :param AbstractDatabase database: DynamoDB database
         :param str host: FTP host name
         :param str data_dir: FTP data directory to use
         :param Path src_data_dir: Data directory for HGNC
@@ -66,36 +66,34 @@ class HGNC(Base):
 
         records = data['response']['docs']
 
-        with self._database.genes.batch_writer() as batch:
-            for r in records:
-                gene = dict()
-                gene['concept_id'] = r['hgnc_id'].lower()
-                gene['label_and_type'] = \
-                    f"{gene['concept_id']}##identity"
-                gene['item_type'] = 'identity'
-                gene['symbol'] = r['symbol']
-                gene['label'] = r['name']
-                gene['src_name'] = SourceName.HGNC.value
-                if r['status']:
-                    if r['status'] == 'Approved':
-                        gene['symbol_status'] = \
-                            SymbolStatus.APPROVED.value
-                    elif r['status'] == 'Entry Withdrawn':
-                        gene['symbol_status'] =\
-                            SymbolStatus.WITHDRAWN.value
-                gene['src_name'] = SourceName.HGNC.value
+        for r in records:
+            gene = dict()
+            gene["concept_id"] = r["hgnc_id"].lower()
+            gene["label_and_type"] = f"{gene['concept_id']}##identity"
+            gene["item_type"] = "identity"
+            gene["symbol"] = r["symbol"]
+            gene["label"] = r["name"]
+            gene["src_name"] = SourceName.HGNC.value
+            if r["status"]:
+                if r["status"] == "Approved":
+                    gene["symbol_status"] = \
+                        SymbolStatus.APPROVED.value
+                elif r["status"] == "Entry Withdrawn":
+                    gene["symbol_status"] =\
+                        SymbolStatus.WITHDRAWN.value
+            gene["src_name"] = SourceName.HGNC.value
 
-                # store alias, xref, associated_with, prev_symbols, location
-                self._get_aliases(r, gene)
-                self._get_xrefs_associated_with(r, gene)
-                if 'prev_symbol' in r:
-                    self._get_previous_symbols(r, gene)
-                if 'location' in r:
-                    self._get_location(r, gene)
-                if "locus_type" in r:
-                    gene["gene_type"] = r["locus_type"]
-                self._load_gene(gene, batch)
-        logger.info('Successfully transformed HGNC.')
+            # store alias, xref, associated_with, prev_symbols, location
+            self._get_aliases(r, gene)
+            self._get_xrefs_associated_with(r, gene)
+            if "prev_symbol" in r:
+                self._get_previous_symbols(r, gene)
+            if "location" in r:
+                self._get_location(r, gene)
+            if "locus_type" in r:
+                gene["gene_type"] = r["locus_type"]
+                self._load_gene(gene)
+        logger.info("Successfully transformed HGNC.")
 
     def _get_aliases(self, r, gene):
         """Store aliases in a gene record.
@@ -256,8 +254,7 @@ class HGNC(Base):
 
             if '-' in loc:
                 # Location gives both start and end
-                self._chromosome_location.set_interval_range(loc,
-                                                             arm_ix, location)
+                self._chromosome_location.set_interval_range(loc, arm_ix, location)
             else:
                 # Location only gives start
                 start = loc[arm_ix:]
@@ -276,10 +273,10 @@ class HGNC(Base):
         self._extract_data()
         self._add_meta()
         self._transform_data()
-        self._database.flush_batch()
+        self._database.complete_write_transaction()
         return self._processed_ids
 
-    def _add_meta(self, *args, **kwargs):
+    def _add_meta(self) -> None:
         """Add HGNC metadata to the gene_metadata table."""
         metadata = SourceMeta(
             data_license='custom',
@@ -294,5 +291,4 @@ class HGNC(Base):
             },
             genome_assemblies=[]
         )
-
-        self._load_meta(self._database, metadata, SourceName.HGNC.value)
+        self._database.add_source_metadata(SourceName.HGNC, metadata)

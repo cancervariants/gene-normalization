@@ -16,7 +16,7 @@ boto3 = "*"
 gene = {editable = true, path = "."}
 gffutils = "*"
 "biocommons.seqrepo" = "*"
-psycopg2-binary = "*"
+psycopg = {version = "*", extras=["binary"]}
 pytest = "*"
 pre-commit = "*"
 flake8 = "*"

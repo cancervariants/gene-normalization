@@ -1,8 +1,8 @@
 """A base class for extraction, transformation, and loading of data."""
 from abc import ABC, abstractmethod
 from typing import Optional, List
-from gene.database import Database
-from gene import PREFIX_LOOKUP, ITEM_TYPES, SEQREPO_ROOT_DIR
+from gene.database import AbstractDatabase
+from gene import ITEM_TYPES, SEQREPO_ROOT_DIR
 from biocommons.seqrepo import SeqRepo
 from pathlib import Path
 from ftplib import FTP
@@ -13,7 +13,7 @@ from dateutil import parser
 import datetime
 import logging
 import pydantic
-from gene.schemas import Gene, MatchType
+from gene.schemas import Gene, MatchType, SourceName
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -22,18 +22,19 @@ logger.setLevel(logging.DEBUG)
 class Base(ABC):
     """The ETL base class."""
 
-    def __init__(self, database: Database, host: str, data_dir: str,
+    def __init__(self, database: AbstractDatabase, host: str, data_dir: str,
                  src_data_dir: Path,
                  seqrepo_dir=SEQREPO_ROOT_DIR,
                  *args, **kwargs) -> None:
         """Instantiate Base class.
 
-        :param Database database: DynamoDB database
+        :param AbstractDatabase database: database instance
         :param str host: Hostname of FTP site
         :param str data_dir: Data directory of FTP site to look at
         :param Path src_data_dir: Data directory for source
         :param Path seqrepo_dir: Path to seqrepo directory
         """
+        self._src_name = SourceName(self.__class__.__name__)
         self._database = database
         self._host = host
         self._data_dir = data_dir
@@ -43,7 +44,7 @@ class Base(ABC):
 
     @abstractmethod
     def perform_etl(self) -> List[str]:
-        """Extract, Transform, and Load data into DynamoDB database.
+        """Extract, Transform, and Load data into database.
 
         :return: Concept IDs of concepts successfully loaded
         """
@@ -61,36 +62,20 @@ class Base(ABC):
 
     @abstractmethod
     def _add_meta(self, *args, **kwargs) -> None:
-        """Add source meta to DynamoDB table."""
+        """Add source meta to database source info."""
         raise NotImplementedError
 
     def _create_data_directory(self):
         """Create data directory for source."""
         self.src_data_dir.mkdir(exist_ok=True, parents=True)
 
-    def _load_meta(self, db, metadata, source_name) -> None:
-        """Load source metadata into database.
-
-        :param Database db: DynamoDB Database
-        :param SourceMeta metadata: Source's metadata
-        :param str source_name: Source to load metadata for
-        """
-        db.metadata.put_item(Item={
-            'src_name': source_name,
-            'data_license': metadata.data_license,
-            'data_license_url': metadata.data_license_url,
-            'version': metadata.version,
-            'data_url': metadata.data_url,
-            'rdp_url': metadata.rdp_url,
-            'data_license_attributes': metadata.data_license_attributes,
-            'genome_assemblies': metadata.genome_assemblies
-        })
-
-    def _load_gene(self, gene, batch) -> None:
-        """Load a gene record into database.
+    def _load_gene(self, gene) -> None:
+        """Load a gene record into database. This method takes responsibility for:
+         * validating structure correctness
+         * removing duplicates from list-like fields
+         * removing empty fields
 
         :param dict gene: Gene record
-        :param BatchWriter batch: Object to write data to DynamoDB
         """
         try:
             assert Gene(match_type=MatchType.NO_MATCH, **gene)
@@ -98,31 +83,21 @@ class Base(ABC):
             logger.warning(f"Unable to load {gene} due to validation error: "
                            f"{e}")
         else:
-            concept_id = gene['concept_id'].lower()
-            gene['label_and_type'] = f"{concept_id}##identity"
-            gene['src_name'] = \
-                PREFIX_LOOKUP[gene['concept_id'].split(':')[0].lower()]
+            concept_id = gene['concept_id']
+            gene['label_and_type'] = f"{concept_id.lower()}##identity"
+            gene["src_name"] = self._src_name.value
             gene['item_type'] = 'identity'
 
-            for attr_type, item_type in ITEM_TYPES.items():
+            for attr_type in ITEM_TYPES:
                 if attr_type in gene:
                     value = gene[attr_type]
-                    if value is not None and value != []:
-                        if isinstance(value, str):
-                            items = [value.lower()]
-                        else:
-                            gene[attr_type] = list(set(value))
-                            items = {item.lower() for item in value}
-                        for item in items:
-                            batch.put_item(Item={
-                                'label_and_type': f"{item}##{item_type}",
-                                'concept_id': concept_id,
-                                'src_name': gene['src_name'],
-                                'item_type': item_type
-                            })
-                    else:
+                    if value is None or value == []:
                         del gene[attr_type]
-            batch.put_item(Item=gene)
+                    elif isinstance(value, str):
+                        continue
+                    gene[attr_type] = list(set(value))
+
+            self._database.add_record(gene, self._src_name)
             self._processed_ids.append(concept_id)
 
     def _ftp_download(self, host: str, data_dir: str, fn: str,

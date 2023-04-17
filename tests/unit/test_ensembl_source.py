@@ -6,11 +6,11 @@ from tests.conftest import check_resp_single_record
 
 
 @pytest.fixture(scope="module")
-def ensembl():
+def ensembl(database):
     """Build ensembl test fixture."""
     class QueryGetter:
         def __init__(self):
-            self.query_handler = QueryHandler()
+            self.query_handler = QueryHandler(database)
 
         def search(self, query_str, incl="ensembl"):
             resp = self.query_handler.search(query_str, keyed=True, incl=incl)
