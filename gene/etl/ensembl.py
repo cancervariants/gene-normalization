@@ -1,9 +1,13 @@
 """This module defines the Ensembl ETL methods."""
 import logging
+from pathlib import Path
 import re
 from ftplib import FTP
+from typing import Dict, List
+from biocommons.seqrepo import SeqRepo
 
 import gffutils
+from gffutils.feature import Feature
 
 from .base import Base
 from gene import APP_ROOT
@@ -19,15 +23,15 @@ logger.setLevel(logging.DEBUG)
 class Ensembl(Base):
     """ETL the Ensembl source into the normalized database."""
 
-    def __init__(self, database: AbstractDatabase, host="ftp.ensembl.org",
-                 data_dir="pub/current_gff3/homo_sapiens/",
-                 src_data_dir=APP_ROOT / "data" / "ensembl") -> None:
+    def __init__(self, database: AbstractDatabase, host: str = "ftp.ensembl.org",
+                 data_dir: str = "pub/current_gff3/homo_sapiens/",
+                 src_data_dir: Path = APP_ROOT / "data" / "ensembl") -> None:
         """Initialize Ensembl ETL class.
 
-        :param AbstractDatabase database: DynamoDB database
-        :param str host: FTP host name
-        :param str data_dir: FTP data directory to use
-        :param Path src_data_dir: Data directory for Ensembl
+        :param database: DynamoDB database
+        :param host: FTP host name
+        :param data_dir: FTP data directory to use
+        :param src_data_dir: Data directory for Ensembl
         """
         super().__init__(database, host, data_dir, src_data_dir)
         self._sequence_location = SequenceLocation()
@@ -97,15 +101,13 @@ class Ensembl(Base):
                         self._load_gene(gene)
         logger.info("Successfully transformed Ensembl.")
 
-    def _add_gene(self, f, sr, accession_numbers):
+    def _add_gene(self, f: Feature, sr: SeqRepo, accession_numbers: Dict) -> Dict:
         """Create a transformed gene record.
 
-        :param gffutils.feature.Feature f: A gene from the data
-        :param SeqRepo sr: Access to the seqrepo
-        :param dict accession_numbers: Accession numbers for each
-            chromosome and scaffold
-        :return: A gene dictionary if the ID attribute exists.
-                 Else return None.
+        :param f: A gene from the data
+        :param sr: Access to the seqrepo
+        :param accession_numbers: Accession numbers for each chromosome and scaffold
+        :return: A gene dictionary containing data if the ID attribute exists.
         """
         gene = dict()
         if f.strand == "-":
@@ -125,10 +127,10 @@ class Ensembl(Base):
 
         return gene
 
-    def _add_attributes(self, f, gene):
+    def _add_attributes(self, f: Feature, gene: Dict) -> None:
         """Add concept_id, symbol, xrefs, and associated_with to a gene record.
 
-        :param gffutils.feature.Feature f: A gene from the data
+        :param f: A gene from the data
         :param gene: A transformed gene record
         """
         attributes = {
@@ -168,23 +170,25 @@ class Ensembl(Base):
 
                 gene[attributes[key]] = val
 
-    def _add_location(self, f, gene, sr, accession_numbers):
+    def _add_location(
+        self, f: Feature, gene: Dict, sr: SeqRepo, accession_numbers: Dict
+    ) -> Dict:
         """Add GA4GH SequenceLocation to a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
 
-        :param gffutils.feature.Feature f: A gene from the data
-        :param dict gene: A transformed gene record
-        :param dict accession_numbers: Accession numbers for each chromosome
-            and scaffold
-        :param  SeqRepo sr: Access to the seqrepo
+        :param f: A gene from the data
+        :param gene: A transformed gene record
+        :param sr: Access to the seqrepo
+        :param accession_numbers: Accession numbers for each chromosome and scaffold
+        :return: gene record dictionary with location added
         """
         return self._sequence_location.add_location(accession_numbers[f.seqid],
                                                     f, gene, sr)
 
-    def _get_xref_associated_with(self, src_name, src_id):
+    def _get_xref_associated_with(self, src_name: str, src_id: str) -> Dict:
         """Get xref or associated_with concept.
 
-        :param str src_name: Source name
+        :param src_name: Source name
         :param src_id: The source's accession number
         :return: A dict containing an other identifier or xref
         """
@@ -203,7 +207,7 @@ class Ensembl(Base):
             source["associated_with"] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]
         return source
 
-    def perform_etl(self, *args, **kwargs):
+    def perform_etl(self, *args, **kwargs) -> List[str]:
         """Extract, Transform, and Load data into DynamoDB database.
 
         :return: Concept IDs of concepts successfully loaded
@@ -215,7 +219,7 @@ class Ensembl(Base):
         self._database.complete_write_transaction()
         return self._processed_ids
 
-    def _add_meta(self, *args, **kwargs):
+    def _add_meta(self, *args, **kwargs) -> None:
         """Add Ensembl metadata."""
         metadata = SourceMeta(
             data_license="custom",

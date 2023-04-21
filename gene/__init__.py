@@ -23,7 +23,9 @@ logging.getLogger("biocommons.seqrepo.seqaliasdb.seqaliasdb").setLevel(logging.I
 logging.getLogger("biocommons.seqrepo.fastadir.fastadir").setLevel(logging.INFO)
 
 
-SEQREPO_ROOT_DIR = environ.get("SEQREPO_ROOT_DIR", "/usr/local/share/seqrepo/latest")
+SEQREPO_ROOT_DIR = Path(
+    environ.get("SEQREPO_ROOT_DIR", "/usr/local/share/seqrepo/latest")
+)
 
 
 class DownloadException(Exception):

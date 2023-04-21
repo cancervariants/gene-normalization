@@ -1,8 +1,10 @@
 """This module defines the HGNC ETL methods."""
 import logging
 import json
+from pathlib import Path
 import shutil
 import re
+from typing import Dict, List
 
 from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import AbstractDatabase
@@ -20,18 +22,18 @@ class HGNC(Base):
 
     def __init__(self,
                  database: AbstractDatabase,
-                 host='ftp.ebi.ac.uk',
-                 data_dir='pub/databases/genenames/hgnc/json/',
-                 src_data_dir=APP_ROOT / 'data' / 'hgnc',
-                 fn='hgnc_complete_set.json'
-                 ):
+                 host: str = 'ftp.ebi.ac.uk',
+                 data_dir: str = 'pub/databases/genenames/hgnc/json/',
+                 src_data_dir: Path = APP_ROOT / 'data' / 'hgnc',
+                 fn: str = 'hgnc_complete_set.json'
+                 ) -> None:
         """Initialize HGNC ETL class.
 
-        :param AbstractDatabase database: DynamoDB database
-        :param str host: FTP host name
-        :param str data_dir: FTP data directory to use
-        :param Path src_data_dir: Data directory for HGNC
-        :param str fn: Data file to download
+        :param database: DynamoDB database
+        :param host: FTP host name
+        :param data_dir: FTP data directory to use
+        :param src_data_dir: Data directory for HGNC
+        :param fn: Data file to download
         """
         super().__init__(database, host, data_dir, src_data_dir)
         self._chromosome_location = ChromosomeLocation()
@@ -39,7 +41,7 @@ class HGNC(Base):
         self._fn = fn
         self._version = None
 
-    def _download_data(self, *args, **kwargs):
+    def _download_data(self, *args, **kwargs) -> None:
         """Download HGNC JSON data file."""
         logger.info('Downloading HGNC data file...')
         self._create_data_directory()
@@ -51,14 +53,14 @@ class HGNC(Base):
                     f"{self.src_data_dir}/hgnc_{self._version}.json")
         logger.info('Successfully downloaded HGNC data file.')
 
-    def _extract_data(self, *args, **kwargs):
+    def _extract_data(self, *args, **kwargs) -> None:
         """Extract data from the HGNC source."""
         if 'data_path' in kwargs:
             self._data_src = kwargs['data_path']
         else:
             self._data_src = sorted(list(self.src_data_dir.iterdir()))[-1]
 
-    def _transform_data(self, *args, **kwargs):
+    def _transform_data(self, *args, **kwargs) -> None:
         """Transform the HGNC source."""
         logger.info('Transforming HGNC...')
         with open(self._data_src, 'r') as f:
@@ -95,11 +97,11 @@ class HGNC(Base):
                 self._load_gene(gene)
         logger.info("Successfully transformed HGNC.")
 
-    def _get_aliases(self, r, gene):
+    def _get_aliases(self, r: Dict, gene: Dict) -> None:
         """Store aliases in a gene record.
 
-        :param dict r: A gene record in the HGNC data file
-        :param dict gene: A transformed gene record
+        :param r: A gene record in the HGNC data file
+        :param gene: A transformed gene record
         """
         alias_symbol = list()
         enzyme_id = list()
@@ -112,21 +114,21 @@ class HGNC(Base):
         if alias_symbol or enzyme_id:
             gene['aliases'] = list(set(alias_symbol + enzyme_id))
 
-    def _get_previous_symbols(self, r, gene):
+    def _get_previous_symbols(self, r: Dict, gene: Dict) -> None:
         """Store previous symbols in a gene record.
 
-        :param dict r: A gene record in the HGNC data file
-        :param dict gene: A transformed gene record
+        :param r: A gene record in the HGNC data file
+        :param gene: A transformed gene record
         """
         prev_symbols = r['prev_symbol']
         if prev_symbols:
             gene['previous_symbols'] = list(set(prev_symbols))
 
-    def _get_xrefs_associated_with(self, r, gene):
+    def _get_xrefs_associated_with(self, r: Dict, gene: Dict) -> None:
         """Store xrefs and/or associated_with refs in a gene record.
 
-        :param dict r: A gene record in the HGNC data file
-        :param dict gene: A transformed gene record
+        :param r: A gene record in the HGNC data file
+        :param gene: A transformed gene record
         """
         xrefs = list()
         associated_with = list()
@@ -164,13 +166,15 @@ class HGNC(Base):
         if associated_with:
             gene['associated_with'] = associated_with
 
-    def _get_xref_associated_with(self, key, src, r, src_type):
+    def _get_xref_associated_with(
+        self, key: str, src: str, r: Dict, src_type: Dict
+    ) -> None:
         """Add an xref or associated_with ref to a gene record.
 
-        :param str key: The source's name
-        :param str src: HGNC's source field
-        :param dict r: A gene record in the HGNC data file
-        :param list src_type: Either xrefs or associated_with list
+        :param key: The source's name
+        :param src: HGNC's source field
+        :param r: A gene record in the HGNC data file
+        :param src_type: Either xrefs or associated_with list
         """
         if type(r[src]) == list:
             for xref in r[src]:
@@ -183,12 +187,12 @@ class HGNC(Base):
                 f"{NamespacePrefix[key.upper()].value}"
                 f":{r[src]}")
 
-    def _get_location(self, r, gene):
+    def _get_location(self, r: Dict, gene: Dict) -> None:
         """Store GA4GH VRS ChromosomeLocation in a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#chromosomelocation
 
-        :param dict r: A gene record in the HGNC data file
-        :param dict gene: A transformed gene record
+        :param r: A gene record in the HGNC data file
+        :param gene: A transformed gene record
         """
         # Get list of a gene's map locations
         if 'and' in r['location']:
@@ -219,11 +223,12 @@ class HGNC(Base):
         if not gene['location_annotations']:
             del gene['location_annotations']
 
-    def _set_annotation(self, loc, gene):
+    def _set_annotation(self, loc: str, gene: Dict) -> None:
         """Set the annotations attribute if one is provided.
-           Return `True` if a location is provided, `False` otherwise.
+        Return `True` if a location is provided, `False` otherwise.
 
-        :param str loc: A gene location
+        :param loc: A gene location
+        :param gene: in-progress gene record
         :return: A bool whether or not a gene map location is provided
         """
         annotations = {v.value for v in
@@ -238,12 +243,12 @@ class HGNC(Base):
                     return None
         return loc
 
-    def _set_location(self, loc, location, gene):
+    def _set_location(self, loc: str, location: Dict, gene: Dict) -> None:
         """Set a gene's location.
 
-        :param str loc: A gene location
-        :param dict location: GA4GH location
-        :param dict gene: A transformed gene record
+        :param loc: A gene location
+        :param location: GA4GH location
+        :param gene: A transformed gene record
         """
         arm_match = re.search('[pq]', loc)
 
@@ -264,7 +269,7 @@ class HGNC(Base):
             # Only gives chromosome
             gene['location_annotations'].append(loc)
 
-    def perform_etl(self, *args, **kwargs):
+    def perform_etl(self, *args, **kwargs) -> List[str]:
         """Extract, Transform, and Load data into DynamoDB database.
 
         :return: Concept IDs of concepts successfully loaded

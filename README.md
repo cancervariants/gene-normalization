@@ -8,7 +8,7 @@ Services and guidelines for normalizing gene terms
 The Normalizer is available via PyPI:
 
 ```commandline
-pip install gene[dev]
+pip install gene-normalizer[dev]
 ```
 
 The `[dev]` argument tells pip to install packages to fulfill the dependencies of the `gene.etl` package.

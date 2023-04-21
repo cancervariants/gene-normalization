@@ -1,6 +1,6 @@
 """A base class for extraction, transformation, and loading of data."""
 from abc import ABC, abstractmethod
-from typing import Optional, List
+from typing import Dict, Optional, List
 from gene.database import AbstractDatabase
 from gene import ITEM_TYPES, SEQREPO_ROOT_DIR
 from biocommons.seqrepo import SeqRepo
@@ -23,16 +23,15 @@ class Base(ABC):
     """The ETL base class."""
 
     def __init__(self, database: AbstractDatabase, host: str, data_dir: str,
-                 src_data_dir: Path,
-                 seqrepo_dir=SEQREPO_ROOT_DIR,
+                 src_data_dir: Path, seqrepo_dir: Path = SEQREPO_ROOT_DIR,
                  *args, **kwargs) -> None:
         """Instantiate Base class.
 
-        :param AbstractDatabase database: database instance
-        :param str host: Hostname of FTP site
-        :param str data_dir: Data directory of FTP site to look at
-        :param Path src_data_dir: Data directory for source
-        :param Path seqrepo_dir: Path to seqrepo directory
+        :param database: database instance
+        :param host: Hostname of FTP site
+        :param data_dir: Data directory of FTP site to look at
+        :param src_data_dir: Data directory for source
+        :param seqrepo_dir: Path to seqrepo directory
         """
         self._src_name = SourceName(self.__class__.__name__)
         self._database = database
@@ -65,17 +64,17 @@ class Base(ABC):
         """Add source meta to database source info."""
         raise NotImplementedError
 
-    def _create_data_directory(self):
+    def _create_data_directory(self) -> None:
         """Create data directory for source."""
         self.src_data_dir.mkdir(exist_ok=True, parents=True)
 
-    def _load_gene(self, gene) -> None:
+    def _load_gene(self, gene: Dict) -> None:
         """Load a gene record into database. This method takes responsibility for:
          * validating structure correctness
          * removing duplicates from list-like fields
          * removing empty fields
 
-        :param dict gene: Gene record
+        :param gene: Gene record
         """
         try:
             assert Gene(match_type=MatchType.NO_MATCH, **gene)
@@ -100,16 +99,15 @@ class Base(ABC):
             self._database.add_record(gene, self._src_name)
             self._processed_ids.append(concept_id)
 
-    def _ftp_download(self, host: str, data_dir: str, fn: str,
-                      source_dir: Path,
+    def _ftp_download(self, host: str, data_dir: str, fn: str, source_dir: Path,
                       data_fn: str) -> Optional[str]:
         """Download data file from FTP site.
 
-        :param str host: Source's FTP host name
-        :param str data_dir: Data directory located on FTP site
-        :param str fn: Filename for downloaded file
-        :param Path source_dir: Source's data directory
-        :param str data_fn: Filename on FTP site to be downloaded
+        :param host: Source's FTP host name
+        :param data_dir: Data directory located on FTP site
+        :param fn: Filename for downloaded file
+        :param source_dir: Source's data directory
+        :param data_fn: Filename on FTP site to be downloaded
         :return: Time file was last updated
         """
         with FTP(host) as ftp:
@@ -126,10 +124,10 @@ class Base(ABC):
                            fn: str) -> None:
         """Download data file from FTP
 
-        :param FTP ftp: FTP instance
-        :param str data_fn: Filename on FTP site to be downloaded
-        :param Path source_dir: Source's data directory
-        :param str fn: Filename for downloaded file
+        :param ftp: FTP instance
+        :param data_fn: Filename on FTP site to be downloaded
+        :param source_dir: Source's data directory
+        :param fn: Filename for downloaded file
         """
         if data_fn.endswith('.gz'):
             filepath = source_dir / f'{fn}.gz'
@@ -143,10 +141,10 @@ class Base(ABC):
                     shutil.copyfileobj(f_in, f_out)
             remove(filepath)
 
-    def get_seqrepo(self, seqrepo_dir) -> SeqRepo:
+    def get_seqrepo(self, seqrepo_dir: Path) -> SeqRepo:
         """Return SeqRepo instance if seqrepo_dir exists.
 
-        :param Path seqrepo_dir: Path to seqrepo directory
+        :param seqrepo_dir: Path to seqrepo directory
         :return: SeqRepo instance
         """
         if not Path(seqrepo_dir).exists():
