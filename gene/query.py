@@ -543,7 +543,7 @@ class QueryHandler:
         >>> result.gene_descriptor.gene_id
         'hgnc:1097'
         >>> result.xrefs
-        ['ensembl:ENSG00000157764', 'ensembl:ENSG00000157764', 'ncbigene:673']
+        ['ensembl:ENSG00000157764', 'ncbigene:673']
 
         :param query: String to find normalized concept for
         :return: Normalized gene concept
