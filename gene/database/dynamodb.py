@@ -13,8 +13,7 @@ import click
 from gene import ITEM_TYPES, PREFIX_LOOKUP
 from gene.database.database import AWS_ENV_VAR_NAME, SKIP_AWS_DB_ENV_NAME, \
     VALID_AWS_ENV_NAMES, AbstractDatabase, AwsEnvName, DatabaseException, \
-    DatabaseInitializationException, DatabaseReadException, DatabaseWriteException, \
-    confirm_aws_db_use
+    DatabaseReadException, DatabaseWriteException, confirm_aws_db_use
 from gene.schemas import RefType, SourceMeta, SourceName
 
 logger = logging.getLogger()
@@ -71,7 +70,10 @@ class DynamoDbDatabase(AbstractDatabase):
         self.dynamodb = boto3.resource('dynamodb', **boto_params)
         self.dynamodb_client = boto3.client('dynamodb', **boto_params)
 
-        self.initialize_db()
+        # Only create tables for local instance
+        envs_do_not_create_tables = {AWS_ENV_VAR_NAME, "GENE_TEST"}
+        if not set(envs_do_not_create_tables) & set(environ):
+            self.initialize_db()
 
         self.genes = self.dynamodb.Table(gene_concepts_table)
         self.metadata = self.dynamodb.Table(gene_metadata_table)
@@ -237,19 +239,10 @@ class DynamoDbDatabase(AbstractDatabase):
         return True
 
     def initialize_db(self) -> None:
-        """Create gene_concepts and gene_metadata tables if not already created.
-
-        :raise DatabaseInitializationException: if schema is uninitialized and in
-        an environment that requires manual creation, e.g. production.
-        """
+        """Create gene_concepts and gene_metadata tables if not already created."""
         if not self.check_schema_initialized():
-            # Only create tables for local instance
-            envs_do_not_create_tables = {AWS_ENV_VAR_NAME, "GENE_TEST"}
-            if not set(envs_do_not_create_tables) & set(environ):
-                self._create_genes_table()
-                self._create_meta_data_table()
-            else:
-                raise DatabaseInitializationException("DynamoDB schema uninitialized.")
+            self._create_genes_table()
+            self._create_meta_data_table()
 
     def get_source_metadata(self, src_name: Union[str, SourceName]) -> Dict:
         """Get license, versioning, data lookup, etc information for a source.
