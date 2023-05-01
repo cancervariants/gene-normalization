@@ -291,6 +291,13 @@ class QueryHandler:
                incl: str = '', excl: str = '', **params) -> SearchService:
         """Return highest match for each source.
 
+        >>> from gene.query import QueryHandler
+        >>> from gene.database import create_db
+        >>> q = QueryHandler(create_db())
+        >>> result = q.search("BRAF")
+        >>> result.source_matches[0].records[0].concept_id
+        'ncbigene:673'
+
         :param query_str: query, a string, to search for
         :param keyed: if true, return response as dict keying source names to source
             objects; otherwise, return list of source objects
@@ -529,6 +536,15 @@ class QueryHandler:
 
     def normalize(self, query: str) -> NormalizeService:
         """Return normalized concept for query.
+
+        Use to retrieve normalized gene concept records:
+
+        >>> from gene.query import QueryHandler
+        >>> from gene.database import create_db
+        >>> q = QueryHandler(create_db())
+        >>> result = q.normalize("BRAF")
+        >>> result.gene_descriptor.gene_id
+        'hgnc:1097'
 
         :param query: String to find normalized concept for
         :return: Normalized gene concept
