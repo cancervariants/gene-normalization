@@ -37,7 +37,7 @@ class QueryHandler:
         self.db = database
 
     @staticmethod
-    def emit_warnings(query_str: str) -> List:
+    def _emit_warnings(query_str: str) -> List:
         """Emit warnings if query contains non breaking space characters.
 
         :param query_str: query string
@@ -131,10 +131,7 @@ class QueryHandler:
         else:
             raise ValueError("Invalid or unrecognized concept ID provided")
 
-    def add_record(self,
-                   response: Dict[str, Dict],
-                   item: Dict,
-                   match_type: MatchType):
+    def _add_record(self, response: Dict[str, Dict], item: Dict, match_type: MatchType):
         """Add individual record (i.e. Item in DynamoDB) to response object
 
         :param response: in-progress response object to return to client
@@ -157,8 +154,8 @@ class QueryHandler:
         else:
             matches[src_name]['records'].append(gene)
 
-    def fetch_record(self, response: Dict[str, Dict], concept_id: str,
-                     match_type: MatchType) -> None:
+    def _fetch_record(self, response: Dict[str, Dict], concept_id: str,
+                      match_type: MatchType) -> None:
         """Add fetched record to response
 
         :param response: in-progress response object to return to client.
@@ -173,11 +170,11 @@ class QueryHandler:
             )
         else:
             if match:
-                self.add_record(response, match, match_type)
+                self._add_record(response, match, match_type)
             else:
                 logger.error(f"Unable to find expected record for {concept_id} matching as {match_type}")  # noqa: E501
 
-    def post_process_resp(self, resp: Dict) -> Dict:
+    def _post_process_resp(self, resp: Dict) -> Dict:
         """Fill all empty source_matches slots with NO_MATCH results and
         sort source records by descending `match_type`.
 
@@ -199,7 +196,7 @@ class QueryHandler:
                         records, key=lambda k: k.match_type, reverse=True)
         return resp
 
-    def response_keyed(self, query: str, sources: Set[str]) -> Dict:
+    def _response_keyed(self, query: str, sources: Set[str]) -> Dict:
         """Return response as dict where key is source name and value
         is a list of records. Corresponds to `keyed=true` API parameter.
 
@@ -209,13 +206,13 @@ class QueryHandler:
         """
         resp = {
             'query': query,
-            'warnings': self.emit_warnings(query),
+            'warnings': self._emit_warnings(query),
             'source_matches': {
                 source: None for source in sources
             }
         }
         if query == '':
-            return self.post_process_resp(resp)
+            return self._post_process_resp(resp)
         query_l = query.lower()
 
         queries = list()
@@ -236,12 +233,12 @@ class QueryHandler:
                 if item_type == "identity":
                     record = self.db.get_record_by_id(term, False)
                     if record and record['concept_id'] not in matched_concept_ids:
-                        self.add_record(resp, record, MatchType.CONCEPT_ID)
+                        self._add_record(resp, record, MatchType.CONCEPT_ID)
                 else:
                     refs = self.db.get_refs_by_type(term, RefType(item_type))
                     for ref in refs:
                         if ref not in matched_concept_ids:
-                            self.fetch_record(resp, ref, MatchType[item_type.upper()])
+                            self._fetch_record(resp, ref, MatchType[item_type.upper()])
                             matched_concept_ids.append(ref)
 
             except DatabaseReadException as e:
@@ -252,9 +249,9 @@ class QueryHandler:
                 continue
 
         # remaining sources get no match
-        return self.post_process_resp(resp)
+        return self._post_process_resp(resp)
 
-    def response_list(self, query: str, sources: Set[str]) -> Dict:
+    def _response_list(self, query: str, sources: Set[str]) -> Dict:
         """Return response as list, where the first key-value in each item
         is the source name. Corresponds to `keyed=false` API parameter.
 
@@ -262,7 +259,7 @@ class QueryHandler:
         :param sources: sources to match from
         :return: completed response object to return to client
         """
-        response_dict = self.response_keyed(query, sources)
+        response_dict = self._response_keyed(query, sources)
         source_list = []
         for src_name in response_dict['source_matches'].keys():
             src = {
@@ -290,6 +287,13 @@ class QueryHandler:
     def search(self, query_str: str, keyed: bool = False,
                incl: str = '', excl: str = '', **params) -> SearchService:
         """Return highest match for each source.
+
+        >>> from gene.query import QueryHandler
+        >>> from gene.database import create_db
+        >>> q = QueryHandler(create_db())
+        >>> result = q.search("BRAF")
+        >>> result.source_matches[0].records[0].concept_id
+        'ncbigene:673'
 
         :param query_str: query, a string, to search for
         :param keyed: if true, return response as dict keying source names to source
@@ -344,9 +348,9 @@ class QueryHandler:
         query_str = query_str.strip()
 
         if keyed:
-            resp = self.response_keyed(query_str, query_sources)
+            resp = self._response_keyed(query_str, query_sources)
         else:
-            resp = self.response_list(query_str, query_sources)
+            resp = self._response_list(query_str, query_sources)
 
         resp['service_meta_'] = self._get_service_meta()
         return SearchService(**resp)
@@ -392,7 +396,7 @@ class QueryHandler:
             })
         return response
 
-    def add_gene_descriptor(
+    def _add_gene_descriptor(
         self, response: NormalizeService, record: Dict, match_type: MatchType,
         possible_concepts: Optional[List[str]] = None
     ) -> NormalizeService:
@@ -521,7 +525,7 @@ class QueryHandler:
         return {
             "query": query,
             "match_type": MatchType.NO_MATCH,
-            "warnings": self.emit_warnings(query),
+            "warnings": self._emit_warnings(query),
             "service_meta_": ServiceMeta(
                 version=__version__,
                 response_datetime=str(datetime.now()))
@@ -530,12 +534,23 @@ class QueryHandler:
     def normalize(self, query: str) -> NormalizeService:
         """Return normalized concept for query.
 
+        Use to retrieve normalized gene concept records:
+
+        >>> from gene.query import QueryHandler
+        >>> from gene.database import create_db
+        >>> q = QueryHandler(create_db())
+        >>> result = q.normalize("BRAF")
+        >>> result.gene_descriptor.gene_id
+        'hgnc:1097'
+        >>> result.xrefs
+        ['ensembl:ENSG00000157764', 'ncbigene:673']
+
         :param query: String to find normalized concept for
         :return: Normalized gene concept
         """
         response = NormalizeService(**self._prepare_normalized_response(query))
         return self._perform_normalized_lookup(response, query,
-                                               self.add_gene_descriptor)
+                                               self._add_gene_descriptor)
 
     def _resolve_merge(
         self, response: NormService, record: Dict, match_type: MatchType,
@@ -663,6 +678,16 @@ class QueryHandler:
     def normalize_unmerged(self, query: str) -> UnmergedNormalizationService:
         """Return all source records under the normalized concept for the
         provided query string.
+
+        >>> from gene.query import QueryHandler
+        >>> from gene.database import create_db
+        >>> from gene.schemas import SourceName
+        >>> q = QueryHandler(create_db())
+        >>> response = q.normalize_unmerged("BRAF")
+        >>> response.match_type
+        <MatchType.CONCEPT_ID: 100>
+        >>> response.source_matches[SourceName.ENSEMBL].concept_id
+        'ensembl:ENSG00000157764'
 
         :param query: string to search against
         :return: Normalized response object
