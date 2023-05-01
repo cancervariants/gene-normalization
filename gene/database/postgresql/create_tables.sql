@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS gene_sources (
+CREATE TABLE gene_sources (
     name VARCHAR(127) PRIMARY KEY,
     data_license TEXT NOT NULL,
     data_license_url TEXT NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS gene_sources (
     data_license_sa BOOLEAN NOT NULL,
     genome_assemblies TEXT [] NOT NULL
 );
-CREATE TABLE IF NOT EXISTS gene_merged (
+CREATE TABLE gene_merged (
     concept_id VARCHAR(127) PRIMARY KEY,
     symbol TEXT,
     symbol_status VARCHAR(127),
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS gene_merged (
     associated_with TEXT [],
     xrefs TEXT []
 );
-CREATE TABLE IF NOT EXISTS gene_concepts (
+CREATE TABLE gene_concepts (
     concept_id VARCHAR(127) PRIMARY KEY,
     source VARCHAR(127) NOT NULL REFERENCES gene_sources (name),
     symbol_status VARCHAR(127),
@@ -39,27 +39,27 @@ CREATE TABLE IF NOT EXISTS gene_concepts (
     gene_type TEXT,
     merge_ref VARCHAR(127) REFERENCES gene_merged (concept_id)
 );
-CREATE TABLE IF NOT EXISTS gene_symbols (
+CREATE TABLE gene_symbols (
     id SERIAL PRIMARY KEY,
     symbol TEXT NOT NULL,
     concept_id VARCHAR(127) REFERENCES gene_concepts (concept_id)
 );
-CREATE TABLE IF NOT EXISTS gene_previous_symbols (
+CREATE TABLE gene_previous_symbols (
     id SERIAL PRIMARY KEY,
     prev_symbol TEXT NOT NULL,
     concept_id VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
 );
-CREATE TABLE IF NOT EXISTS gene_aliases (
+CREATE TABLE gene_aliases (
     id SERIAL PRIMARY KEY,
     alias TEXT NOT NULL,
     concept_id VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
 );
-CREATE TABLE IF NOT EXISTS gene_xrefs (
+CREATE TABLE gene_xrefs (
     id SERIAL PRIMARY KEY,
     xref TEXT NOT NULL,
     concept_id VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
 );
-CREATE TABLE IF NOT EXISTS gene_associations (
+CREATE TABLE gene_associations (
     id SERIAL PRIMARY KEY,
     associated_with TEXT NOT NULL,
     concept_ID VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)

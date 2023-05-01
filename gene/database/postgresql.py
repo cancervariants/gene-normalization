@@ -10,7 +10,8 @@ import tempfile
 from datetime import datetime
 
 import psycopg
-from psycopg.errors import UndefinedTable, UniqueViolation
+from psycopg.errors import DuplicateObject, DuplicateTable, UndefinedTable, \
+    UniqueViolation
 import requests
 
 from gene.database import AbstractDatabase, DatabaseException, DatabaseReadException, \
@@ -106,20 +107,88 @@ class PostgresDatabase(AbstractDatabase):
             self.conn.commit()
         logger.info("Dropped all existing gene normalizer tables.")
 
+    def check_schema_initialized(self) -> bool:
+        """Check if database schema is properly initialized.
+
+        :return: True if DB appears to be fully initialized, False otherwise
+        """
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute((SCRIPTS_DIR / "create_tables.sql").read_bytes())
+        except DuplicateTable:
+            self.conn.rollback()
+        else:
+            logger.info("Gene table existence check failed.")
+            self.conn.rollback()
+            return False
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute((SCRIPTS_DIR / "add_fkeys.sql").read_bytes())
+        except DuplicateObject:
+            self.conn.rollback()
+        else:
+            logger.info("Gene foreign key existence check failed.")
+            self.conn.rollback()
+            return False
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute(
+                    (SCRIPTS_DIR / "create_record_lookup_view.sql").read_bytes()
+                )
+        except DuplicateTable:
+            self.conn.rollback()
+        else:
+            logger.info("Gene normalized view lookup failed.")
+            self.conn.rollback()
+            return False
+        try:
+            with self.conn.cursor() as cur:
+                cur.execute((SCRIPTS_DIR / "add_indexes.sql").read_bytes())
+        except DuplicateTable:
+            self.conn.rollback()
+        else:
+            logger.info("Gene indexes check failed.")
+            self.conn.rollback()
+            return False
+
+        return True
+
+    def check_tables_populated(self) -> bool:
+        """Perform rudimentary checks to see if tables are populated.
+
+        Emphasis is on rudimentary -- if some rogueish element has deleted half of the
+        gene aliases, this method won't pick it up. It just wants to see if a few
+        critical tables have at least a small number of records.
+
+        :return: True if queries successful, false if DB appears empty
+        """
+        with self.conn.cursor() as cur:
+            cur.execute("SELECT name FROM gene_sources;")
+            results = cur.fetchall()
+        if len(results) < len(SourceName):
+            return False
+
+        with self.conn.cursor() as cur:
+            cur.execute("SELECT COUNT(1) FROM gene_concepts LIMIT 1;")
+            result = cur.fetchone()
+        if not result or result[0] < 1:
+            return False
+
+        with self.conn.cursor() as cur:
+            cur.execute("SELECT COUNT(1) FROM gene_merged LIMIT 1;")
+            result = cur.fetchone()
+        if not result or result[0] < 1:
+            return False
+
+        return True
+
     def initialize_db(self) -> None:
         """Check if DB is set up. If not, create tables/indexes/views."""
-        tables = self.list_tables()
-        expected_tables = ["gene_associations", "gene_sources", "gene_concepts",
-                           "gene_symbols", "gene_previous_symbols", "gene_aliases",
-                           "gene_merged"]
-        for table in expected_tables:
-            if table not in tables:
-                logger.info(f"{table} was missing -- resetting gene normalizer tables")
-                self.drop_db()
-                self._create_tables()
-                self._create_views()
-                self._add_indexes()
-                break
+        if not self.check_schema_initialized():
+            self.drop_db()
+            self._create_tables()
+            self._create_views()
+            self._add_indexes()
 
     def _create_views(self) -> None:
         """Create materialized views."""
@@ -169,7 +238,7 @@ class PostgresDatabase(AbstractDatabase):
     def _create_tables(self) -> None:
         """Create all tables, indexes, and views."""
         logger.debug("Creating new gene normalizer tables.")
-        tables_query = (SCRIPTS_DIR / "create_tables_query.sql").read_bytes()
+        tables_query = (SCRIPTS_DIR / "create_tables.sql").read_bytes()
 
         with self.conn.cursor() as cur:
             cur.execute(tables_query)
