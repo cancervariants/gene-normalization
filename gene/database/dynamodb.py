@@ -16,8 +16,7 @@ from gene.database.database import AWS_ENV_VAR_NAME, SKIP_AWS_DB_ENV_NAME, \
     DatabaseReadException, DatabaseWriteException, confirm_aws_db_use
 from gene.schemas import RefType, SourceMeta, SourceName
 
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 class DynamoDbDatabase(AbstractDatabase):
@@ -205,7 +204,11 @@ class DynamoDbDatabase(AbstractDatabase):
         :return: True if DB appears to be fully initialized, False otherwise
         """
         existing_tables = self.list_tables()
-        return "gene_concepts" in existing_tables and "gene_metadata" in existing_tables
+        exists = "gene_concepts" in existing_tables and \
+            "gene_metadata" in existing_tables
+        if not exists:
+            logger.info("Gene tables are missing or unavailable.")
+        return exists
 
     def check_tables_populated(self) -> bool:
         """Perform rudimentary checks to see if tables are populated.
@@ -218,6 +221,7 @@ class DynamoDbDatabase(AbstractDatabase):
         """
         sources = self.metadata.scan().get("Items", [])
         if len(sources) < len(SourceName):
+            logger.info("Gene sources table is missing expected sources.")
             return False
 
         records = self.genes.query(
@@ -226,6 +230,7 @@ class DynamoDbDatabase(AbstractDatabase):
             Limit=1
         )
         if len(records.get("Items", [])) < 1:
+            logger.info("Gene records index is empty.")
             return False
 
         normalized_records = self.genes.query(
@@ -234,6 +239,7 @@ class DynamoDbDatabase(AbstractDatabase):
             Limit=1
         )
         if len(normalized_records.get("Items", [])) < 1:
+            logger.info("Normalized gene records index is empty.")
             return False
 
         return True

@@ -19,8 +19,7 @@ from gene.database import AbstractDatabase, DatabaseException, DatabaseReadExcep
 from gene.schemas import RefType, SourceMeta, SourceName
 
 
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 SCRIPTS_DIR = Path(__file__).parent / "postgresql"
@@ -166,18 +165,21 @@ class PostgresDatabase(AbstractDatabase):
             cur.execute("SELECT name FROM gene_sources;")
             results = cur.fetchall()
         if len(results) < len(SourceName):
+            logger.info("Gene sources table is missing expected sources.")
             return False
 
         with self.conn.cursor() as cur:
             cur.execute("SELECT COUNT(1) FROM gene_concepts LIMIT 1;")
             result = cur.fetchone()
         if not result or result[0] < 1:
+            logger.info("Gene records table is empty.")
             return False
 
         with self.conn.cursor() as cur:
             cur.execute("SELECT COUNT(1) FROM gene_merged LIMIT 1;")
             result = cur.fetchone()
         if not result or result[0] < 1:
+            logger.info("Normalized gene records table is empty.")
             return False
 
         return True
