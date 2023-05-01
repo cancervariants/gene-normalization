@@ -10,6 +10,7 @@ CREATE TABLE gene_sources (
     data_license_sa BOOLEAN NOT NULL,
     genome_assemblies TEXT [] NOT NULL
 );
+-- see also: delete_normalized_concepts.sql
 CREATE TABLE gene_merged (
     concept_id VARCHAR(127) PRIMARY KEY,
     symbol TEXT,

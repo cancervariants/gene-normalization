@@ -1,7 +1,7 @@
 CREATE INDEX idx_g_concept_id_low
     ON gene_concepts (lower(concept_id));
-CREATE INDEX idx_gm_concept_id_low
-    ON gene_merged (lower(concept_id));
+-- see also: delete_normalized_concepts.sql
+CREATE INDEX idx_gm_concept_id_low ON gene_merged (lower(concept_id));
 CREATE INDEX idx_gs_symbol_low ON gene_symbols (lower(symbol));
 CREATE INDEX idx_gps_symbol_low
     ON gene_previous_symbols (lower(prev_symbol));
