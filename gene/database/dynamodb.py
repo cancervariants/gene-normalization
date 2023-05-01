@@ -16,8 +16,7 @@ from gene.database.database import AWS_ENV_VAR_NAME, SKIP_AWS_DB_ENV_NAME, \
     DatabaseReadException, DatabaseWriteException, confirm_aws_db_use
 from gene.schemas import RefType, SourceMeta, SourceName
 
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 
 class DynamoDbDatabase(AbstractDatabase):
@@ -104,116 +103,152 @@ class DynamoDbDatabase(AbstractDatabase):
         for table_name in existing_tables:
             self.dynamodb.Table(table_name).delete()
 
-    def _create_genes_table(self, existing_tables: List[str]):
-        """Create Genes table if non-existent.
-
-        :param List[str] existing_tables: table names already in DB
-        """
-        table_name = 'gene_concepts'
-        if table_name not in existing_tables:
-            self.dynamodb.create_table(
-                TableName=table_name,
-                KeySchema=[
-                    {
-                        'AttributeName': 'label_and_type',
-                        'KeyType': 'HASH'  # Partition key
-                    },
-                    {
-                        'AttributeName': 'concept_id',
-                        'KeyType': 'RANGE'  # Sort key
-                    }
-                ],
-                AttributeDefinitions=[
-                    {
-                        'AttributeName': 'label_and_type',
-                        'AttributeType': 'S'
-                    },
-                    {
-                        'AttributeName': 'concept_id',
-                        'AttributeType': 'S'
-                    },
-                    {
-                        'AttributeName': 'src_name',
-                        'AttributeType': 'S'
-                    },
-                    {
-                        'AttributeName': 'item_type',
-                        'AttributeType': 'S'
-                    }
-
-                ],
-                GlobalSecondaryIndexes=[
-                    {
-                        'IndexName': 'src_index',
-                        'KeySchema': [
-                            {
-                                'AttributeName': 'src_name',
-                                'KeyType': 'HASH'
-                            }
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'KEYS_ONLY'
-                        },
-                        'ProvisionedThroughput': {
-                            'ReadCapacityUnits': 10,
-                            'WriteCapacityUnits': 10
-                        }
-                    },
-                    {
-                        'IndexName': 'item_type_index',
-                        'KeySchema': [
-                            {
-                                'AttributeName': 'item_type',
-                                'KeyType': 'HASH'
-                            }
-                        ],
-                        'Projection': {
-                            'ProjectionType': 'KEYS_ONLY'
-                        },
-                        'ProvisionedThroughput': {
-                            'ReadCapacityUnits': 10,
-                            'WriteCapacityUnits': 10
-                        }
-                    }
-                ],
-                ProvisionedThroughput={
-                    'ReadCapacityUnits': 10,
-                    'WriteCapacityUnits': 10
+    def _create_genes_table(self):
+        """Create Genes table."""
+        self.dynamodb.create_table(
+            TableName="gene_concepts",
+            KeySchema=[
+                {
+                    'AttributeName': 'label_and_type',
+                    'KeyType': 'HASH'  # Partition key
+                },
+                {
+                    'AttributeName': 'concept_id',
+                    'KeyType': 'RANGE'  # Sort key
                 }
-            )
-
-    def _create_meta_data_table(self, existing_tables: List[str]) -> None:
-        """Create MetaData table if non-existent.
-
-        :param List[str] existing_tables: table names already in DB
-        """
-        table_name = 'gene_metadata'
-        if table_name not in existing_tables:
-            self.dynamodb.create_table(
-                TableName=table_name,
-                KeySchema=[
-                    {
-                        'AttributeName': 'src_name',
-                        'KeyType': 'HASH'  # Partition key
-                    }
-                ],
-                AttributeDefinitions=[
-                    {
-                        'AttributeName': 'src_name',
-                        'AttributeType': 'S'
-                    },
-                ],
-                ProvisionedThroughput={
-                    'ReadCapacityUnits': 10,
-                    'WriteCapacityUnits': 10
+            ],
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'label_and_type',
+                    'AttributeType': 'S'
+                },
+                {
+                    'AttributeName': 'concept_id',
+                    'AttributeType': 'S'
+                },
+                {
+                    'AttributeName': 'src_name',
+                    'AttributeType': 'S'
+                },
+                {
+                    'AttributeName': 'item_type',
+                    'AttributeType': 'S'
                 }
-            )
+
+            ],
+            GlobalSecondaryIndexes=[
+                {
+                    'IndexName': 'src_index',
+                    'KeySchema': [
+                        {
+                            'AttributeName': 'src_name',
+                            'KeyType': 'HASH'
+                        }
+                    ],
+                    'Projection': {
+                        'ProjectionType': 'KEYS_ONLY'
+                    },
+                    'ProvisionedThroughput': {
+                        'ReadCapacityUnits': 10,
+                        'WriteCapacityUnits': 10
+                    }
+                },
+                {
+                    'IndexName': 'item_type_index',
+                    'KeySchema': [
+                        {
+                            'AttributeName': 'item_type',
+                            'KeyType': 'HASH'
+                        }
+                    ],
+                    'Projection': {
+                        'ProjectionType': 'KEYS_ONLY'
+                    },
+                    'ProvisionedThroughput': {
+                        'ReadCapacityUnits': 10,
+                        'WriteCapacityUnits': 10
+                    }
+                }
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 10,
+                'WriteCapacityUnits': 10
+            }
+        )
+
+    def _create_meta_data_table(self) -> None:
+        """Create MetaData table if non-existent."""
+        self.dynamodb.create_table(
+            TableName="gene_metadata",
+            KeySchema=[
+                {
+                    'AttributeName': 'src_name',
+                    'KeyType': 'HASH'  # Partition key
+                }
+            ],
+            AttributeDefinitions=[
+                {
+                    'AttributeName': 'src_name',
+                    'AttributeType': 'S'
+                },
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 10,
+                'WriteCapacityUnits': 10
+            }
+        )
+
+    def check_schema_initialized(self) -> bool:
+        """Check if database schema is properly initialized.
+
+        :return: True if DB appears to be fully initialized, False otherwise
+        """
+        existing_tables = self.list_tables()
+        exists = "gene_concepts" in existing_tables and \
+            "gene_metadata" in existing_tables
+        if not exists:
+            logger.info("Gene tables are missing or unavailable.")
+        return exists
+
+    def check_tables_populated(self) -> bool:
+        """Perform rudimentary checks to see if tables are populated.
+
+        Emphasis is on rudimentary -- if some rogueish element has deleted half of the
+        gene aliases, this method won't pick it up. It just wants to see if a few
+        critical tables have at least a small number of records.
+
+        :return: True if queries successful, false if DB appears empty
+        """
+        sources = self.metadata.scan().get("Items", [])
+        if len(sources) < len(SourceName):
+            logger.info("Gene sources table is missing expected sources.")
+            return False
+
+        records = self.genes.query(
+            IndexName="item_type_index",
+            KeyConditionExpression=Key("item_type").eq("identity"),
+            Limit=1
+        )
+        if len(records.get("Items", [])) < 1:
+            logger.info("Gene records index is empty.")
+            return False
+
+        normalized_records = self.genes.query(
+            IndexName="item_type_index",
+            KeyConditionExpression=Key("item_type").eq("merger"),
+            Limit=1
+        )
+        if len(normalized_records.get("Items", [])) < 1:
+            logger.info("Normalized gene records index is empty.")
+            return False
+
+        return True
 
     def initialize_db(self) -> None:
-        """Create gene_concepts and gene_metadata tables."""
-        existing_tables = self.list_tables()
-        self._create_genes_table(existing_tables)
-        self._create_meta_data_table(existing_tables)
+        """Create gene_concepts and gene_metadata tables if not already created."""
+        if not self.check_schema_initialized():
+            self._create_genes_table()
+            self._create_meta_data_table()
 
     def get_source_metadata(self, src_name: Union[str, SourceName]) -> Dict:
         """Get license, versioning, data lookup, etc information for a source.
