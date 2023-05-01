@@ -143,7 +143,7 @@ class Merge:
             "ensembl_biotype": set()
         }
         if len(records) > 1:
-            merged_attrs['xrefs'] = [r['concept_id'] for r in records[1:]]
+            merged_attrs['xrefs'] = list({r['concept_id'] for r in records[1:]})
 
         # merge from constituent records
         set_fields = ["aliases", "associated_with", "previous_symbols"]
