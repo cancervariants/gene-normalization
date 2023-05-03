@@ -64,7 +64,7 @@ jobs:
           ./tests/unit/dynamodb_build.bash
 
       - name: Run tests
-        run: pytest
+        run: python3 -m pytest
   docs:
     runs-on: ubuntu-latest
     steps:
