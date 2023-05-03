@@ -16,10 +16,13 @@ Package installation
 
 First, install the Gene Normalizer from PyPI: ::
 
-    pip install gene-normalizer[dev]
+    pip install "gene-normalizer[etl]"
 
-The ``[dev]`` option installs dependencies necessary for using the ``gene.etl`` package, which performs data loading operations.
+The ``[etl]`` option installs dependencies necessary for using the ``gene.etl`` package, which performs data loading operations.
 
+Users intending to utilize PostgreSQL to store source data should also include the `pg` dependency group: ::
+
+    pip install "gene-normalizer[etl,pg]"
 
 SeqRepo
 -------
