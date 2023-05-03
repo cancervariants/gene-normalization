@@ -18,3 +18,11 @@ To update specific sources, use the ``--normalizer`` option along with source na
 
     gene_norm_update --normalizer="HGNC NCBI" --update_merged
 
+Check DB health
+---------------
+
+The shell command `gene_norm_check_db` performs a basic check on the database status. It first confirms that the database's schema exists, and then identifies whether metadata is available for each source, and whether gene record and normalized concept tables are non-empty. Check the process's exit code for the result.
+
+    % gene_norm_check_db
+    % echo $?
+    1  # indicates failure

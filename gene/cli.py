@@ -23,6 +23,32 @@ logger.setLevel(logging.DEBUG)
 
 
 @click.command()
+@click.option("--db_url", help="URL endpoint for the application database.")
+@click.option("--verbose", "-v", is_flag=True, help="Print result to console if set.")
+def check_db(db_url: str, verbose: bool = False) -> None:
+    """Perform basic checks on DB health and population. Exits with status code 1
+    if DB schema is uninitialized or if critical tables appear to be empty.
+
+    \f
+    :param db_url: URL to normalizer database
+    :param verbose: if true, print result to console
+    """  # noqa: D301
+    db = create_db(db_url, False)
+    if not db.check_schema_initialized():
+        if verbose:
+            click.echo("Health check failed: DB schema uninitialized.")
+        click.get_current_context().exit(1)
+
+    if not db.check_tables_populated():
+        if verbose:
+            click.echo("Health check failed: DB is incompletely populated.")
+        click.get_current_context().exit(1)
+
+    if verbose:
+        click.echo("DB health check successful: tables appear complete.")
+
+
+@click.command()
 @click.option("--data_url", help="URL to data dump")
 @click.option("--db_url", help="URL endpoint for the application database.")
 def update_from_remote(data_url: Optional[str], db_url: str) -> None:
