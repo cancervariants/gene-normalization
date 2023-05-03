@@ -47,7 +47,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-            python-version: 3.8
+          python-version: 3.8
 
       - name: Install DynamoDB dependencies
         if: ${{ env.GENE_NORM_DB_URL == 'http://localhost:8000' }}
@@ -64,7 +64,7 @@ jobs:
           ./tests/unit/dynamodb_build.bash
 
       - name: Run tests
-        run: python3 -m pytest
+        run: python3 -m pytest tests/
   docs:
     runs-on: ubuntu-latest
     steps:
