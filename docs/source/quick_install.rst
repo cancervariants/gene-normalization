@@ -13,7 +13,7 @@ Requirements
 Installation Steps
 ------------------
 
-Install the Gene Normalizer via PyPI: ::
+Install the Gene Normalizer via PyPI (see the :ref:`note on dependency groups <Dependency groups>` for more info): ::
 
     pip install "gene-normalizer[pg]"
 

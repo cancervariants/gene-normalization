@@ -121,6 +121,16 @@ pipenv update
 pipenv install --dev
 ```
 
+Alternatively, install the `pg`, `etl`, `dev`, and `test` dependency groups in a virtual environment:
+
+```commandline
+git clone https://github.com/cancervariants/gene-normalization
+cd gene-normalization
+python3 -m virtualenv venv
+source venv/bin/activate
+pip install -e ".[pg,etl,dev,test]"
+```
+
 ### Init coding style tests
 
 Code style is managed by [flake8](https://github.com/PyCQA/flake8) and checked prior to commit.
