@@ -8,10 +8,10 @@ Services and guidelines for normalizing gene terms
 The Normalizer is available via PyPI:
 
 ```commandline
-pip install gene-normalizer[dev]
+pip install gene-normalizer[etl,pg]
 ```
 
-The `[dev]` argument tells pip to install packages to fulfill the dependencies of the `gene.etl` package.
+The `[etl,pg]` argument tells pip to install packages to fulfill the dependencies of the `gene.etl` package and the PostgreSQL data storage implementation.
 
 ### External requirements
 
@@ -119,6 +119,16 @@ cd gene-normalization
 pipenv shell
 pipenv update
 pipenv install --dev
+```
+
+Alternatively, install the `pg`, `etl`, `dev`, and `test` dependency groups in a virtual environment:
+
+```commandline
+git clone https://github.com/cancervariants/gene-normalization
+cd gene-normalization
+python3 -m virtualenv venv
+source venv/bin/activate
+pip install -e ".[pg,etl,dev,test]"
 ```
 
 ### Init coding style tests
