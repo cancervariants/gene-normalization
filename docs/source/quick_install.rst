@@ -13,9 +13,9 @@ Requirements
 Installation Steps
 ------------------
 
-Install the Gene Normalizer via PyPI: ::
+Install the Gene Normalizer via PyPI (see the :ref:`note on dependency groups <Dependency groups>` for more info): ::
 
-    pip install gene-normalizer
+    pip install "gene-normalizer[pg]"
 
 Create a new PostgreSQL database. For example, using the `psql createdb <https://www.postgresql.org/docs/current/app-createdb.html>`_ utility, and assuming that ``postgres`` is a valid user: ::
 
