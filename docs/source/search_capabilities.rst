@@ -38,8 +38,6 @@ Each search mode can be accessed directly within Python using the :ref:`query AP
     >>> normalized_response.gene_descriptor.label
     'ERBB2'
 
-
-
 Match types
 -----------
 

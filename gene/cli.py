@@ -1,10 +1,9 @@
 """This module provides a CLI util to make updates to normalizer database."""
-from collections.abc import Collection
 import logging
 import os
 from pathlib import Path
 from timeit import default_timer as timer
-from typing import List, Optional, Set
+from typing import Collection, List, Optional, Set
 
 import click
 
