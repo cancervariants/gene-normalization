@@ -14,7 +14,7 @@ Calling the Gene Normalizer update command with the ``--update_all`` and ``--upd
 Reload individual source
 ------------------------
 
-To update specific sources, call the ``--sources`` option with source name(s) separated by spaces, surrounded by quotes. While it is possible to update individual source data without updating the normalized record data, the normalization query endpoints may not function properly until normalized data is refreshed again, so the `--update_merged` flag is recommended. ::
+To update specific sources, call the ``--sources`` option with source name(s) quoted and separated by spaces. While it is possible to update individual source data without also updating the normalized record data, that may affect the proper function of the normalized query endpoints, so it is recommended to include the `--update_merged` flag as well.
 
     gene_norm_update --sources="HGNC NCBI" --update_merged
 
