@@ -107,7 +107,7 @@ def _update_normalizer(
 ) -> None:
     """Update selected normalizer sources.
 
-    :param sources: names of sources to update
+    :param source: names of sources to update
     :param db: database instance
     :param update_merged: if true, retain processed records to use in updating merged
         records
