@@ -107,7 +107,7 @@ def _update_normalizer(
 ) -> None:
     """Update selected normalizer sources.
 
-    :param source: names of sources to update
+    :param sources: names of sources to update
     :param db: database instance
     :param update_merged: if true, retain processed records to use in updating merged
         records
@@ -233,7 +233,7 @@ def update_normalizer_db(sources: str, aws_instance: bool, db_url: str,
                          update_all: bool, update_merged: bool) -> None:
     """Update selected normalizer source(s) in the gene database.
 
-    :param source: names of sources to update, comma-separated
+    :param sources: names of sources to update, comma-separated
     :param aws_instance: if true, use cloud instance
     :param db_url: URI pointing to database
     :param update_all: if true, update all sources (ignore `normalizer` parameter)
