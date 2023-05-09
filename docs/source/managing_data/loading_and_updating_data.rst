@@ -14,7 +14,7 @@ Calling the Gene Normalizer update command with the ``--update_all`` and ``--upd
 Reload individual source
 ------------------------
 
-To update specific sources, call the ``--sources`` option with source name(s) quoted and separated by spaces. While it is possible to update individual source data without also updating the normalized record data, that may affect the proper function of the normalized query endpoints, so it is recommended to include the `--update_merged` flag as well.
+To update specific sources, call the ``--sources`` option with one or more source name(s) quoted and separated by spaces. While it is possible to update individual source data without also updating the normalized record data, that may affect the proper function of the normalized query endpoints, so it is recommended to include the ``--update_merged`` flag as well.
 
     gene_norm_update --sources="HGNC NCBI" --update_merged
 
@@ -22,7 +22,7 @@ To update specific sources, call the ``--sources`` option with source name(s) qu
 Check DB health
 ---------------
 
-The shell command `gene_norm_check_db` performs a basic check on the database status. It first confirms that the database's schema exists, and then identifies whether metadata is available for each source, and whether gene record and normalized concept tables are non-empty. Check the process's exit code for the result. ::
+The shell command ``gene_norm_check_db`` performs a basic check on the database status. It first confirms that the database's schema exists, and then identifies whether metadata is available for each source, and whether gene record and normalized concept tables are non-empty. Check the process's exit code for the result. ::
 
     % gene_norm_check_db
     % echo $?
