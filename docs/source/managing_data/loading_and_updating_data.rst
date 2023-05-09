@@ -6,7 +6,7 @@ See the :ref:`ETL API documentation<etl-api>` for information on programmatic ac
 Full load/reload
 ----------------
 
-Calling the Gene Normalizer update command with the ``--update_all`` and ``--update_merged`` flags will delete all existing data, fetch new source data if available, and then perform a complete reload of the database: ::
+Calling the Gene Normalizer update command with the ``--update_all`` and ``--update_merged`` flags will delete all existing data, fetch new source data if available, and then perform a complete reload of the database (including merged records): ::
 
     gene_norm_update --update_all --update_merged
 
@@ -14,7 +14,7 @@ Calling the Gene Normalizer update command with the ``--update_all`` and ``--upd
 Reload individual source
 ------------------------
 
-To update specific sources, use the ``--sources`` option along with source name(s), quoted and separated by spaces. While it is possible to update individual source data without updating the normalized record data with ``--update_merged``, the normalization query endpoints may not function properly until normalized data is refreshed again. ::
+To update specific sources, call the ``--sources`` option with source name(s) separated by spaces, surrounded by quotes. While it is possible to update individual source data without updating the normalized record data, the normalization query endpoints may not function properly until normalized data is refreshed again, so the `--update_merged` flag is recommended. ::
 
     gene_norm_update --sources="HGNC NCBI" --update_merged
 
