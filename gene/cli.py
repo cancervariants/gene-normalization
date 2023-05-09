@@ -102,18 +102,18 @@ def dump_database(output_directory: Path, db_url: str):
         click.get_current_context().exit(1)
 
 
-def _update_normalizers(
-    normalizers: Collection[SourceName], db: AbstractDatabase, update_merged: bool
+def _update_normalizer(
+    sources: Collection[SourceName], db: AbstractDatabase, update_merged: bool
 ) -> None:
     """Update selected normalizer sources.
 
-    :param normalizers: names of sources to update
+    :param sources: names of sources to update
     :param db: database instance
     :param update_merged: if true, retain processed records to use in updating merged
         records
     """
     processed_ids = list()
-    for n in normalizers:
+    for n in sources:
         delete_time = _delete_source(n, db)
         _load_source(n, db, delete_time, processed_ids)
 
@@ -207,8 +207,8 @@ def _load_merge(db: AbstractDatabase, processed_ids: Set[str]) -> None:
 
 @click.command()
 @click.option(
-    '--normalizer',
-    help="The normalizer(s) you wish to update separated by spaces."
+    '--source',
+    help="The source(s) you wish to update separated by spaces."
 )
 @click.option(
     '--aws_instance',
@@ -229,11 +229,11 @@ def _load_merge(db: AbstractDatabase, processed_ids: Set[str]) -> None:
     is_flag=True,
     help='Update concepts for normalize endpoint from accepted sources.'
 )
-def update_normalizer_db(normalizer: str, aws_instance: bool, db_url: str,
+def update_normalizer_db(source: str, aws_instance: bool, db_url: str,
                          update_all: bool, update_merged: bool) -> None:
     """Update selected normalizer source(s) in the gene database.
 
-    :param normalizer: names of sources to update, comma-separated
+    :param source: names of sources to update, comma-separated
     :param aws_instance: if true, use cloud instance
     :param db_url: URI pointing to database
     :param update_all: if true, update all sources (ignore `normalizer` parameter)
@@ -242,8 +242,8 @@ def update_normalizer_db(normalizer: str, aws_instance: bool, db_url: str,
     db = create_db(db_url, aws_instance)
 
     if update_all:
-        _update_normalizers(list(SourceName), db, update_merged)
-    elif not normalizer:
+        _update_normalizer(list(SourceName), db, update_merged)
+    elif not source:
         if update_merged:
             _load_merge(db, set())
         else:
@@ -252,18 +252,18 @@ def update_normalizer_db(normalizer: str, aws_instance: bool, db_url: str,
             click.echo(ctx.get_help())
             ctx.exit()
     else:
-        normalizers = normalizer.lower().split()
+        sources = source.lower().split()
 
-        if len(normalizers) == 0:
+        if len(sources) == 0:
             raise Exception("Must enter a normalizer")
 
-        non_sources = set(normalizers) - set(SOURCES)
+        non_sources = set(sources) - set(SOURCES)
 
         if len(non_sources) != 0:
             raise Exception(f"Not valid source(s): {non_sources}")
 
-        sources_to_update = {SourceName(SOURCES[s]) for s in normalizers}
-        _update_normalizers(sources_to_update, db, update_merged)
+        sources_to_update = {SourceName(SOURCES[s]) for s in sources}
+        _update_normalizer(sources_to_update, db, update_merged)
 
 
 if __name__ == '__main__':

@@ -73,15 +73,15 @@ Use the `gene_update` command in a shell to update the database.
 
 The normalizer currently pulls data from [HGNC](https://www.genenames.org/), [Ensembl](https://useast.ensembl.org/index.html), and [NCBI](https://www.ncbi.nlm.nih.gov/gene/).
 
-To update one source, simply set `--normalizer` to the source you wish to update. The normalizer will check to see if local source data is up-to-date, acquire the most recent data if not, and use it to populate the database.
+To update one source, simply set `--source` to the source you wish to update. The normalizer will check to see if local source data is up-to-date, acquire the most recent data if not, and use it to populate the database.
 
 For example, run the following to acquire the latest HGNC data if necessary, and update the HGNC gene records in the normalizer database:
 
 ```commandline
-gene_update --normalizer="hgnc"
+gene_update --source="hgnc"
 ```
 
-To update multiple sources, you can use the `--normalizer` option with the source names separated by spaces.
+To update multiple sources, you can use the `--source` option with the source names separated by spaces.
 
 #### Update all sources
 
