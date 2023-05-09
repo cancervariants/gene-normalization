@@ -207,7 +207,7 @@ def _load_merge(db: AbstractDatabase, processed_ids: Set[str]) -> None:
 
 @click.command()
 @click.option(
-    '--source',
+    '--sources',
     help="The source(s) you wish to update separated by spaces."
 )
 @click.option(
@@ -229,7 +229,7 @@ def _load_merge(db: AbstractDatabase, processed_ids: Set[str]) -> None:
     is_flag=True,
     help='Update concepts for normalize endpoint from accepted sources.'
 )
-def update_normalizer_db(source: str, aws_instance: bool, db_url: str,
+def update_normalizer_db(sources: str, aws_instance: bool, db_url: str,
                          update_all: bool, update_merged: bool) -> None:
     """Update selected normalizer source(s) in the gene database.
 
@@ -243,7 +243,7 @@ def update_normalizer_db(source: str, aws_instance: bool, db_url: str,
 
     if update_all:
         _update_normalizer(list(SourceName), db, update_merged)
-    elif not source:
+    elif not sources:
         if update_merged:
             _load_merge(db, set())
         else:
@@ -252,18 +252,18 @@ def update_normalizer_db(source: str, aws_instance: bool, db_url: str,
             click.echo(ctx.get_help())
             ctx.exit()
     else:
-        sources = source.lower().split()
+        sources_split = sources.lower().split()
 
-        if len(sources) == 0:
-            raise Exception("Must enter a normalizer")
+        if len(sources_split) == 0:
+            raise Exception("Must enter 1 or more source names to update")
 
-        non_sources = set(sources) - set(SOURCES)
+        non_sources = set(sources_split) - set(SOURCES)
 
         if len(non_sources) != 0:
             raise Exception(f"Not valid source(s): {non_sources}")
 
-        sources_to_update = {SourceName(SOURCES[s]) for s in sources}
-        _update_normalizer(sources_to_update, db, update_merged)
+        parsed_source_names = {SourceName(SOURCES[s]) for s in sources_split}
+        _update_normalizer(parsed_source_names, db, update_merged)
 
 
 if __name__ == '__main__':
