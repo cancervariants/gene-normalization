@@ -1,4 +1,5 @@
-![tests](https://github.com/cancervariants/gene-normalization/actions/workflows/github-actions.yml/badge.svg) [![DOI](https://zenodo.org/badge/309797998.svg)](https://zenodo.org/badge/latestdoi/309797998)
+[![tests](https://github.com/cancervariants/gene-normalization/actions/workflows/github-actions.yml/badge.svg)](https://github.com/cancervariants/gene-normalization/actions/workflows/github-actions.yml)
+[![DOI](https://zenodo.org/badge/309797998.svg)](https://zenodo.org/badge/latestdoi/309797998)
 
 # Gene Normalizer
 Services and guidelines for normalizing gene terms
