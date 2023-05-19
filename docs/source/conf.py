@@ -9,23 +9,25 @@
 project = 'Gene Normalizer'
 copyright = '2023, VICC'
 author = 'VICC'
-
-
+html_title = "Gene Normalizer"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.autodoc", "sphinx_autodoc_typehints", "sphinx.ext.linkcode"]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx_autodoc_typehints",
+    "sphinx.ext.linkcode",
+    "sphinx_copybutton"
+]
 
 templates_path = ['_templates']
 exclude_patterns = []
 
-
-
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'alabaster'
+html_theme = 'furo'
 html_static_path = []
 
 # -- autodoc things ----------------------------------------------------------
@@ -47,3 +49,7 @@ def linkcode_resolve(domain, info):
         return None
     filename = info["module"].replace(".", "/")
     return f"https://github.com/cancervariants/gene-normalization/blob/main/{filename}.py"  # noqa: E501
+
+# -- code block style --------------------------------------------------------
+pygments_style = "default"
+pygements_dark_style = "monokai"

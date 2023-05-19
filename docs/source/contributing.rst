@@ -23,6 +23,12 @@ Then initialize the Pipenv environment: ::
     pipenv install --dev
     pipenv shell
 
+Alternatively, use a virtual environment and install all dependency groups: ::
+
+    python3 -m venv venv
+    source venv/bin/activate
+    python3 -m pip install -e ".[pg,etl,test,dev,docs]"
+
 We use `pre-commit <https://pre-commit.com/#usage>`_ to run conformance tests before commits. This provides checks for:
 
 * Code style
@@ -36,7 +42,7 @@ Before your first commit, run: ::
 
 When running the web server, enable hot-reloading on new code changes: ::
 
-    uvicorn gene.main:app --reload
+    uvicorn gene.main:app --reloadz
 
 
 Style
@@ -52,7 +58,7 @@ Tests are executed with `pytest <https://docs.pytest.org/en/7.1.x/getting-starte
 
     pytest
 
-By default, tests will utilize an existing database, and won't load any new data. For test environments where this is unavailable (e.g. in CI), the `GENE_TEST` environment variable can be set to initialize the connected database instance with miniature versions of input data files before tests are executed: ::
+By default, tests will utilize an existing database, and won't load any new data. For test environments where this is unavailable (e.g. in CI), the `GENE_TEST` environment variable can be set to `'true'` to initialize the connected database instance with miniature versions of input data files before tests are executed: ::
 
     export GENE_TEST=true
 

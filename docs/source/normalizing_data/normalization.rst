@@ -26,7 +26,14 @@ The `gene.etl` package contains classes for extracting relevant data for each so
 Building normalized concepts and records
 ----------------------------------------
 
-Once all source records have been loaded into the database, normalized concept construction proceeds by grouping source records according to cross-references. For example, if an HGNC record contains a reference to an Ensembl record, and an NCBI Gene record contains a reference to the former HGNC record, the Gene Normalizer produces a concept group containing each of these records. After grouping is complete, a concept ID for each normalized concept is selected from the record from the highest-priority source in each group. The SourcePriority class defines this priority ranking:
+Once all source records have been loaded into the database, normalized concept construction proceeds by grouping source records according to cross-references. For example, HGNC identifies Orthodenticle Homeobox 2 Pseudogene 1, or OTX2P1, as ``hgnc:33281``. The HGNC record also contains cross-references to ``ncbigene:100033409`` and ``ensembl:ENSG000000234644``. From this, the Gene Normalizer is able to produce a concept group containing each of these records:
+
+.. raw:: html
+   :file: ../_static/html/normalize_otx2p1.html
+
+In practice, gene curation by these sources is rich and thorough, and most gene records in each source contain cross-reference to the corresponding records in the other sources. However, for normalized concept generation, it is sufficient for any record to be included in a normalized concept grouping if there is at least one cross-reference, in either direction, joining it to the rest of the concept group.
+
+After grouping is complete, a concept ID for each normalized concept is selected from the record from the highest-priority source in each group. The SourcePriority class defines this priority ranking:
 
 .. autoclass:: gene.schemas.SourcePriority
     :members:
