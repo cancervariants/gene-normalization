@@ -28,6 +28,8 @@ Building normalized concepts and records
 
 Once all source records have been loaded into the database, normalized concept construction proceeds by grouping source records according to cross-references. For example, HGNC identifies Orthodenticle Homeobox 2 Pseudogene 1, or OTX2P1, as ``hgnc:33281``. The HGNC record also contains cross-references to ``ncbigene:100033409`` and ``ensembl:ENSG000000234644``. From this, the Gene Normalizer is able to produce a concept group containing each of these records:
 
+.. The detail text in the figure below is invisible in dark mode, because it's just in a generic <p> block. We could probably invest some time into injecting custom SCSS and assigning it the "--color-foreground-primary" value at a later date. Once we're there, it'd be nice to update the colors and background of the figure as well.
+
 .. raw:: html
    :file: ../_static/html/normalize_otx2p1.html
 

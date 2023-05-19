@@ -76,3 +76,8 @@ The documentation is built with Sphinx, which is included as part of the develop
     make html
 
 See the `Sphinx documentation <https://www.sphinx-doc.org/en/master/>`_ for more information.
+
+Figure generation
+_________________
+
+We are experimenting with the inclusion of some static HTML figures in the documentation. For now, scripts used to generate these figures should be provided in ``docs/scripts/``, and any external dependencies should be included in the ``docs`` dependency group.

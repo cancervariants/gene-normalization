@@ -1,5 +1,5 @@
-Database API
-============
+Database Handler API
+====================
 
 .. automodule:: gene.database.database
     :members:

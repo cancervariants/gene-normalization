@@ -1,5 +1,5 @@
-Searching genes
-===============
+Usage
+=====
 
 Overview
 --------

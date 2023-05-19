@@ -4,4 +4,4 @@ Normalizing data
 .. toctree::
 
     Normalization overview<normalization>
-    Gene sources<sources>
+    Data sources<sources>
