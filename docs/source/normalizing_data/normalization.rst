@@ -33,7 +33,7 @@ Once all source records have been loaded into the database, normalized concept c
 .. raw:: html
    :file: ../_static/html/normalize_otx2p1.html
 
-In practice, gene curation by these sources is rich and thorough, and most gene records in each source contain cross-reference to the corresponding records in the other sources. However, for normalized concept generation, it is sufficient for any record to be included in a normalized concept grouping if there is at least one cross-reference, in either direction, joining it to the rest of the concept group.
+In practice, gene curation by these sources is rich and thorough, and most records for robustly-understood genes in each source contain cross-reference to the corresponding records in the other sources. However, for normalized concept generation, it is sufficient for any record to be included in a normalized concept grouping if there is at least one cross-reference, in either direction, joining it to the rest of the concept group.
 
 After grouping is complete, a concept ID for each normalized concept is selected from the record from the highest-priority source in each group. The SourcePriority class defines this priority ranking:
 
