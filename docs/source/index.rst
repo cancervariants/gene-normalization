@@ -1,6 +1,9 @@
 Gene Normalizer |version|
 =========================
 
+.. image:: https://img.shields.io/pypi/pyversions/gene-normalizer?color=gr
+   :alt: PyPI - Python Version
+
 .. image:: https://github.com/cancervariants/gene-normalization/actions/workflows/github-actions.yml/badge.svg
      :alt: tests status
      :target: https://github.com/cancervariants/gene-normalization/actions/workflows/github-actions.yml
