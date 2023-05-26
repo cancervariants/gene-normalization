@@ -1,6 +1,5 @@
 """Main application for FastAPI"""
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.openapi.utils import get_openapi
 from typing import Optional
 from gene import __version__
 from gene.database import create_db
@@ -13,42 +12,34 @@ import html
 db = create_db()
 query_handler = QueryHandler(db)
 
+description = """
+The Gene Normalizer provides tools for resolving ambiguous gene references to
+consistently-structured, normalized terms.
+
+See the [documentation](https://gene-normalizer.readthedocs.io/en/latest/) for more
+information.
+"""
+
 app = FastAPI(
+    title="Gene Normalizer",
+    description=description,
+    version=__version__,
+    contact={
+        "name": "Alex H. Wagner",
+        "email": "Alex.Wagner@nationwidechildrens.org",
+        "url": "https://www.nationwidechildrens.org/specialties/institute-for-genomic-medicine/research-labs/wagner-lab",  # noqa: E501
+    },
+    license={
+        "name": "MIT",
+        "url": "https://github.com/cancervariants/gene-normalization/blob/main/LICENSE",
+    },
     docs_url="/gene",
     openapi_url="/gene/openapi.json",
-    swagger_ui_parameters={"tryItOutEnabled": True}
+    swagger_ui_parameters={"tryItOutEnabled": True},
 )
 
 
-def custom_openapi():
-    """Generate custom fields for OpenAPI response"""
-    if app.openapi_schema:
-        return app.openapi_schema
-    openapi_schema = get_openapi(
-        title="The VICC Gene Normalizer",
-        version=__version__,
-        openapi_version="3.0.3",
-        description="Normalize gene terms.",
-        routes=app.routes
-    )
-    # openapi_schema['info']['license'] = {  # TODO
-    #     "name": "name of our license",
-    #     "url": "http://www.our-license-tbd.com"
-    # }
-    openapi_schema['info']['contact'] = {
-        "name": "Alex H. Wagner",
-        "email": "Alex.Wagner@nationwidechildrens.org",
-        "url": "https://www.nationwidechildrens.org/specialties/institute-for-genomic-medicine/research-labs/wagner-lab"  # noqa: E501
-    }
-    app.openapi_schema = openapi_schema
-    return app.openapi_schema
-
-
-app.openapi = custom_openapi
-
-# endpoint description text
-read_query_summary = """Given query, provide matches and match ratings from
-                     aggregated sources"""
+read_query_summary = "Given query, provide best-matching source records."
 response_description = "A response to a validly-formed query"
 q_descr = "Gene to normalize."
 keyed_descr = """Optional. If true, return response as key-value pairs of
@@ -69,8 +60,8 @@ search_description = ("For each source, return strongest-match concepts "
          summary=read_query_summary,
          response_description=response_description,
          response_model=SearchService,
-         description=search_description
-         )
+         description=search_description,
+         tags=["Query"])
 def search(q: str = Query(..., description=q_descr),  # noqa: D103
            keyed: Optional[bool] = Query(False, description=keyed_descr),
            incl: Optional[str] = Query(None, description=incl_descr),
@@ -107,7 +98,8 @@ normalize_q_descr = "Gene to normalize."
          summary=normalize_summary,
          response_description=normalize_response_descr,
          response_model=NormalizeService,
-         description=normalize_descr)
+         description=normalize_descr,
+         tags=["Query"])
 def normalize(q: str = Query(..., description=normalize_q_descr)):
     """Return strongest match concepts to query string provided by user.
 
@@ -135,7 +127,8 @@ unmerged_normalize_description = ("Return unmerged records associated with the "
          operation_id="getUnmergedRecords",
          response_description=unmerged_response_descr,
          response_model=UnmergedNormalizationService,
-         description=unmerged_normalize_description)
+         description=unmerged_normalize_description,
+         tags=["Query"])
 def normalize_unmerged(
     q: str = Query(..., description=normalize_q_descr)
 ) -> UnmergedNormalizationService:
