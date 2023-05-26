@@ -17,6 +17,6 @@ NCBI Gene
 The `NCBI Gene Database <https://www.ncbi.nlm.nih.gov/gene/>`_ is a service provided under the NCBI Database mantle, relaying gene nomenclature, reference sequences, pathways, and cross-references to other genomic resources. :footcite:p:`Ncbi2022` The Gene Normalizer selects all records for *homo sapiens* and gathers names, aliases, cross-references, gene types, and VRS Sequence and Chromosome Locations. Data is sourced from the latest Homo Sapiens release provided on the `NCBI FTP server <https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/>`_.
 
 References
-----------
+__________
 
 .. footbibliography::

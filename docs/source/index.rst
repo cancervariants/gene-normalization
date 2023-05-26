@@ -22,7 +22,7 @@ The Gene Normalizer provides tools for resolving ambiguous human gene references
     >>> result.gene_descriptor.alternate_labels
     ['NS7', 'RAFB1', 'B-raf', 'BRAF-1', 'BRAF1', 'B-RAF1']
 
-See the `public instance of the service <https://normalize.cancervariants.org/gene>`_ for a demonstration.
+See the `public REST instance of the service <https://normalize.cancervariants.org/gene>`_ for a demonstration.
 
 The Gene Normalizer is a library created to support the `Knowledgebase Integration Project <https://cancervariants.org/projects/integration/>`_ of the `Variant Interpretation for Cancer Consortium (VICC) <https://cancervariants.org/>`_. It is developed primarily by the `Wagner Lab <https://www.nationwidechildrens.org/specialties/institute-for-genomic-medicine/research-labs/wagner-lab>`_. Full source code is available on `GitHub <https://github.com/cancervariants/gene-normalization>`_.
 
