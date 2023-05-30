@@ -1,7 +1,7 @@
 Normalizing data
 ================
 
-This section provides an overview of our normalization routines and what kinds of data we use to produce normalized records.
+This section provides an overview of our normalization routines and describes the kinds of data that we use to produce normalized records.
 
 .. toctree::
     :maxdepth: 2
