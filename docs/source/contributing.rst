@@ -42,7 +42,7 @@ Before your first commit, run: ::
 
 When running the web server, enable hot-reloading on new code changes: ::
 
-    uvicorn gene.main:app --reloadz
+    uvicorn gene.main:app --reload
 
 
 Style
