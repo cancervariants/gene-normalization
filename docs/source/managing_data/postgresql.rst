@@ -34,6 +34,8 @@ By default, this command will fetch the `latest data dump <https://vicc-normaliz
 Create SQL dump from database
 -----------------------------
 
-The Gene Normalizer's PostgreSQL class also provides the ``gene_norm_dump`` shell command to create a SQL dump of current data into a file. See ``gene_norm_dump --help`` for more information. This command will create a file named ``gene_norm_YYYYMMDDHHmmss.sql`` in the current directory; the ``-o`` option can be used to specify an alternate location, like so: ::
+The Gene Normalizer's PostgreSQL class also provides the ``gene_norm_dump`` shell command to create a SQL dump of current data into a file. This command will create a file named ``gene_norm_YYYYMMDDHHmmss.sql`` in the current directory; the ``-o`` option can be used to specify an alternate location, like so: ::
 
     gene_norm_dump -o ~/.gene_data/
+
+See ``gene_norm_dump --help`` for more information.

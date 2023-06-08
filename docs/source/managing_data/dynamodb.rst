@@ -12,7 +12,7 @@ The Gene Normalizer can store and retrieve gene records from a `local DynamoDB <
 Local setup
 -----------
 
-See the `instructions for deploying and running DynamoDB local <https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html>`_ in the AWS docs for more information.
+See the `instructions for deploying and running DynamoDB local <https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.DownloadingAndRunning.html>`_ in the AWS docs for server setup instructions.
 
 By default, the Gene Normalizer expects to find a DynamoDB instance running at ``http://localhost:8000``. The ``GENE_NORM_DB_URL`` environment variable can be used to designate an alternate location: ::
 
@@ -20,7 +20,7 @@ By default, the Gene Normalizer expects to find a DynamoDB instance running at `
 
 .. warning::
 
-    By default, DynamoDB Local serves to port 8000, which is also the port that Uvicorn serves at. This means that when running Gene Normalizer REST service with DynamoDB, you may have to use a different port for one of those processes. To do so with DynamoDB, use the ``-port`` option: ::
+    By default, DynamoDB Local serves to port 8000, which is also the port at which Uvicorn serves by default. This means that when running Gene Normalizer REST service with DynamoDB, you may have to use a different port for one of those processes. To do so with DynamoDB, use the ``-port`` option: ::
 
         java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb -port 8001
         # then, in the Gene Normalizer's environment:
@@ -34,4 +34,4 @@ DynamoDB Local will store all data in a file named ``shared-local-instance.db`` 
 
     java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb -dbPath ../other_directory/
 
-If the ``sharedDb`` is not provided, then data will not persist after the DynamoDB process ends.
+If the ``sharedDb`` flag is not provided, then data will not persist after the DynamoDB process ends.
