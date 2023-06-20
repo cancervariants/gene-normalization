@@ -6,9 +6,9 @@ Overview
 
 The Gene Normalizer provides three different search modes:
 
-* **search**: for each source, find the record or records that best match the given search string.
+* **search**: for each :ref:`source <sources>`, find the record or records that best match the given search string.
 * **normalize**: find the normalized concept that best matches the given search string. Return a merged record that incorporates data from all associated records from each source. See :ref:`build_normalization` for more information.
-* **normalize_unmerged**: find the normalized concept that best matches the given search string. Return each source record associated with that normalized concept.
+* **normalize_unmerged**: return each source record associated with the normalized concept that best matches the given search string.
 
 REST endpoints
 --------------

@@ -53,7 +53,7 @@ You may need to manually finish moving sequence files (replace the `XXXXXX` char
 
     sudo mv /usr/local/share/seqrepo/2021-01-29.XXXXXXX /usr/local/share/seqrepo/2021-01-29
 
-By default, the Gene Normalizer expects seqrepo data to be located at ``/ustr/local/share/seqrepo/latest``. To designate an alternate location, set the ``SEQREPO_ROOT_DIR`` environment variable.
+By default, the Gene Normalizer expects seqrepo data to be located at ``/usr/local/share/seqrepo/latest``. To designate an alternate location, set the ``SEQREPO_ROOT_DIR`` environment variable.
 
 
 Database setup

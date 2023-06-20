@@ -14,7 +14,7 @@ Data resources, such as NCBI Gene, HGNC, and Ensembl, provide descriptions of in
 The gene record
 ---------------
 
-The `gene.etl` package contains classes for extracting relevant data for each source record. The `gene.schemas.BaseGene` class demonstrates the kinds of information that the ETL methods attempt to acquire:
+The `gene.etl` package contains classes for extracting relevant data for each source record. The `gene.schemas.BaseGene` class demonstrates the kinds of information that the ETL methods attempt to acquire from each source:
 
 .. autoclass:: gene.schemas.BaseGene
    :members:
@@ -44,4 +44,152 @@ After grouping is complete, a concept ID for each normalized concept is selected
 
 Normalized gene records are constructed by merging known data from all associated gene records. For array-like fields (e.g. aliases, cross-references to entries in other data sources), data from all sources are simply combined. For scalar-like fields (e.g. the gene's symbol), the value is selected from an individual source record according to the priority assigned to the source.
 
-Normalized records are structured as `Gene Descriptors <https://vrsatile.readthedocs.io/en/latest/>`_ in conformance with the `GA4GH VRSATILE Standard <https://vrsatile.readthedocs.io/en/latest/>`_. The normalized gene concept is provided as a value object, and additional metadata is deposited as a label, xrefs, alternate labels, as well as Extensions for more complex information (such as loci and gene type).
+
+The normalized record
+---------------------
+
+Normalized records are structured as `Gene Descriptors <https://vrsatile.readthedocs.io/en/latest/>`_ in conformance with the `GA4GH VRSATILE project <https://vrsatile.readthedocs.io/en/latest/>`_. The normalized gene concept is provided as a value object, and additional metadata is deposited as a label, xrefs, alternate labels, as well as Extensions for more complex information (such as loci and gene type). The following demonstrates this model for the BRAF gene:
+
+.. admonition:: Example
+
+  .. code-block:: json
+
+    {
+      "id": "normalize.gene:braf",
+      "type": "GeneDescriptor",
+      "label": "BRAF",
+      "description": null,
+      "xrefs": [
+        "ensembl:ENSG00000157764",
+        "ncbigene:673"
+      ],
+      "alternate_labels": [
+        "NS7",
+        "B-RAF1",
+        "BRAF-1",
+        "B-raf",
+        "RAFB1",
+        "BRAF1"
+      ],
+      "extensions": [
+        {
+          "type": "Extension",
+          "name": "symbol_status",
+          "value": "approved"
+        },
+        {
+          "type": "Extension",
+          "name": "approved_name",
+          "value": "B-Raf proto-oncogene, serine/threonine kinase"
+        },
+        {
+          "type": "Extension",
+          "name": "associated_with",
+          "value": [
+            "cosmic:BRAF",
+            "ena.embl:M95712",
+            "omim:164757",
+            "iuphar:1943",
+            "ucsc:uc003vwc.5",
+            "vega:OTTHUMG00000157457",
+            "ccds:CCDS87555",
+            "uniprot:P15056",
+            "refseq:NM_004333",
+            "pubmed:1565476",
+            "orphanet:119066",
+            "pubmed:2284096",
+            "ccds:CCDS5863"
+          ]
+        },
+        {
+          "type": "Extension",
+          "name": "hgnc_locations",
+          "value": [
+            {
+              "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
+              "type": "ChromosomeLocation",
+              "species_id": "taxonomy:9606",
+              "chr": "7",
+              "interval": {
+                "type": "CytobandInterval",
+                "start": "q34",
+                "end": "q34"
+              }
+            }
+          ]
+        },
+        {
+          "type": "Extension",
+          "name": "ensembl_locations",
+          "value": [
+            {
+              "_id": "ga4gh:VSL.amNWL6i7F2nbSZAf2QLTRTujxuDrd0pR",
+              "type": "SequenceLocation",
+              "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+              "interval": {
+                "type": "SequenceInterval",
+                "start": {
+                  "type": "Number",
+                  "value": 140719326
+                },
+                "end": {
+                  "type": "Number",
+                  "value": 140924929
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "Extension",
+          "name": "ncbi_locations",
+          "value": [
+            {
+              "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
+              "type": "ChromosomeLocation",
+              "species_id": "taxonomy:9606",
+              "chr": "7",
+              "interval": {
+                "type": "CytobandInterval",
+                "start": "q34",
+                "end": "q34"
+              }
+            },
+            {
+              "_id": "ga4gh:VSL.xZU3kL8F6t2ca6WH_26CWKfNW9-owhR4",
+              "type": "SequenceLocation",
+              "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+              "interval": {
+                "type": "SequenceInterval",
+                "start": {
+                  "type": "Number",
+                  "value": 140713327
+                },
+                "end": {
+                  "type": "Number",
+                  "value": 140924929
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "Extension",
+          "name": "hgnc_locus_type",
+          "value": "gene with protein product"
+        },
+        {
+          "type": "Extension",
+          "name": "ncbi_gene_type",
+          "value": "protein-coding"
+        },
+        {
+          "type": "Extension",
+          "name": "ensembl_biotype",
+          "value": "protein_coding"
+        }
+      ],
+      "gene_id": "hgnc:1097",
+      "gene": null
+    }
+
