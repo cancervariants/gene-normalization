@@ -8,3 +8,4 @@ This section provides an overview of our normalization routines and describes th
 
     Normalization overview<normalization>
     Data sources<sources>
+    VRS compliance<vrs_compliance>
