@@ -70,8 +70,9 @@ By default, tests will utilize an existing database, and won't load any new data
 Documentation
 -------------
 
-The documentation is built with Sphinx, which is included as part of the developer dependencies. To build a local copy, navigate to the `docs/` subdirectory and use `make` to build the HTML version: ::
+The documentation is built with Sphinx, which is included as part of the developer dependencies. To build a local copy, ensure that the Gene Normalizer is installed in your current Python environment, then navigate to the `docs/` subdirectory and use `make` to build the HTML version: ::
 
+    pipenv shell
     cd docs
     make html
 
