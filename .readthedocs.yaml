@@ -11,3 +11,5 @@ python:
       path: .
       extra_requirements:
         - docs
+        - etl
+        - pg
