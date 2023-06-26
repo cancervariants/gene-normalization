@@ -33,7 +33,10 @@ class QueryHandler:
     """
 
     def __init__(self, database: AbstractDatabase) -> None:
-        """Initialize QueryHandler instance."""
+        """Initialize QueryHandler instance.
+
+        :param database: storage backend to search against
+        """
         self.db = database
 
     @staticmethod

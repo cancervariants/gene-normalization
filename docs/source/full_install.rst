@@ -28,12 +28,13 @@ Users intending to utilize PostgreSQL to store source data should also include t
 
 .. note::
 
-    The Gene Normalizer defines four optional dependency groups in total:
+    The Gene Normalizer defines five optional dependency groups in total:
 
     * `etl` provides dependencies for regenerating data from sources. It's necessary for users who don't intend to rely on existing database dumps.
     * `pg` provides dependencies for connecting to a PostgreSQL database. It's not necessary for users who are using a DynamoDB backend.
-    * `dev` provides development dependencies, such as static code analysis and docs generation tools. It's required for contributing to the Gene Normalizer, but otherwise unnecessary.
+    * `dev` provides development dependencies, such as static code analysis. It's required for contributing to the Gene Normalizer, but otherwise unnecessary.
     * `test` provides dependencies for running tests. As with `dev`, it's mostly relevant for contributors.
+    * `docs` provides dependencies for documentation generation. It's only relevant for contributors.
 
 SeqRepo
 -------
@@ -52,17 +53,18 @@ You may need to manually finish moving sequence files (replace the `XXXXXX` char
 
     sudo mv /usr/local/share/seqrepo/2021-01-29.XXXXXXX /usr/local/share/seqrepo/2021-01-29
 
-Use the ``SEQREPO_ROOT_DIR`` environment variable to set the path of an already existing SeqRepo directory. The default is ``/usr/local/share/seqrepo/latest``.
+By default, the Gene Normalizer expects seqrepo data to be located at ``/usr/local/share/seqrepo/latest``. To designate an alternate location, set the ``SEQREPO_ROOT_DIR`` environment variable.
 
 
 Database setup
 --------------
 
-The Gene Normalizer requires a separate database process for data storage and retrieval. See the instructions on database setup and initialization for the available database options:
+The Gene Normalizer requires a separate database process for data storage and retrieval. See the instructions on database setup and population for the available database options:
 
 * :ref:`dynamodb`
 * :ref:`postgres`
 
+By default, the Gene Normalizer will attempt to connect to a DynamoDB instance listening at ``http://localhost:8000``.
 
 Loading data
 ------------
@@ -71,7 +73,7 @@ To load all source data, and then generate normalized records, use the following
 
     gene_norm_update --update_all --update_merged
 
-This will download the latest available versions of all source data files, extract and transform recognized gene concepts, load them into the database, and construct normalized concept groups. For more specific update commands, see the TODO SECTION ON THAT REF OUT
+This will download the latest available versions of all source data files, extract and transform recognized gene concepts, load them into the database, and construct normalized concept groups. For more specific update commands, see :ref:`Loading and updating data <loading_and_updating_data>`.
 
 .. _starting-service:
 
