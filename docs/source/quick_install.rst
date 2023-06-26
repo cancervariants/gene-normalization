@@ -55,3 +55,5 @@ The beginning of the response to a GET request to http://localhost:5000/gene/nor
         "label": "BRAF",
 
         ...
+      }
+    }

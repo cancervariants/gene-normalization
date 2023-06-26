@@ -1,19 +1,19 @@
-Searching genes
-===============
+Usage
+=====
 
 Overview
 --------
 
 The Gene Normalizer provides three different search modes:
 
- * **search**: for each source, find the record or records that best match the given search string.
- * **normalize**: find the normalized concept that best matches the given search string. Return a merged record that incorporates data from all associated records from each source. See :ref:`build_normalization` for more information.
- * **normalize_unmerged**: find the normalized concept that best matches the given search string. Return each source record associated with that normalized concept.
+* **search**: for each :ref:`source <sources>`, find the record or records that best match the given search string.
+* **normalize**: find the normalized concept that best matches the given search string. Return a merged record that incorporates data from all associated records from each source. See :ref:`build_normalization` for more information.
+* **normalize_unmerged**: return each source record associated with the normalized concept that best matches the given search string.
 
 REST endpoints
 --------------
 
-Once :ref:`HTTP service is activated<starting-service>`, OpenAPI documentation for the REST endpoints is available at the ``/genes`` endpoint (e.g., with default service parameters, at ``http://localhost:8000/genes``). This documentation describes endpoint parameters and response objects, and provides some minimal example queries.
+Once :ref:`HTTP service is activated<starting-service>`, OpenAPI documentation for the REST endpoints is available under the ``/genes`` path (e.g., with default service parameters, at ``http://localhost:8000/genes``), describing endpoint parameters and response objects, and providing some minimal example queries. A live instance is available at `https://normalize.cancervariants.org/gene <https://normalize.cancervariants.org/gene>`_.
 
 The individual endpoints are:
 
@@ -26,7 +26,7 @@ Internal Python API
 
 Each search mode can be accessed directly within Python using the :ref:`query API<query-api>`:
 
-::
+.. code-block:: pycon
 
     >>> from gene.database import create_db
     >>> from gene.query import QueryHandler
