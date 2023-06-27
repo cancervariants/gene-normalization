@@ -14,7 +14,7 @@ Create a database instance and pass it to the `QueryHandler` constructor:
 >>> q = QueryHandler(create_db())
 ```
 
-Call the `normalizer()` method with a gene term. If available, a rich description of the normalized concept is returned.
+Call the `normalize()` method with a gene term. If available, a rich description of the normalized concept is returned.
 
 ```
 >>> result = q.normalize("BRAF")

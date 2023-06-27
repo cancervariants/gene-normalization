@@ -53,7 +53,7 @@ Users hoping for a more explicit connection declaration may instead call a datab
     from gene.query import QueryHandler
     pg_db = PostgresDatabase(
         user="postgres",
-        password="hunter2",
+        password="matthew_cannon2",
         db_name="gene_normalizer"
     )
     q = QueryHandler(pg_db)

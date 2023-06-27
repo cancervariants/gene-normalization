@@ -34,7 +34,7 @@ class PostgresDatabase(AbstractDatabase):
         >>> from gene.database.postgresql import PostgresDatabase
         >>> db = PostgresDatabase(
         >>>     user="postgres",
-        >>>     password="hunter2",
+        >>>     password="matthew_cannon2",
         >>>     db_name="gene_normalizer"
         >>> )
 
