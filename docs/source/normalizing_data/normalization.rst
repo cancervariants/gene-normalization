@@ -58,19 +58,6 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
       "id": "normalize.gene:braf",
       "type": "GeneDescriptor",
       "label": "BRAF",
-      "description": null,
-      "xrefs": [
-        "ensembl:ENSG00000157764",
-        "ncbigene:673"
-      ],
-      "alternate_labels": [
-        "NS7",
-        "B-RAF1",
-        "BRAF-1",
-        "B-raf",
-        "RAFB1",
-        "BRAF1"
-      ],
       "extensions": [
         {
           "type": "Extension",
@@ -86,36 +73,21 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
           "type": "Extension",
           "name": "associated_with",
           "value": [
-            "cosmic:BRAF",
+            "ucsc:uc003vwc.5",
+            "ccds:CCDS87555",
             "ena.embl:M95712",
+            "uniprot:P15056",
+            "ccds:CCDS5863",
+            "pubmed:1565476",
+            "vega:OTTHUMG00000157457",
+            "cosmic:BRAF",
+            "pubmed:2284096",
             "omim:164757",
             "iuphar:1943",
-            "ucsc:uc003vwc.5",
-            "vega:OTTHUMG00000157457",
-            "ccds:CCDS87555",
-            "uniprot:P15056",
+            "ccds:CCDS94218",
             "refseq:NM_004333",
-            "pubmed:1565476",
-            "orphanet:119066",
-            "pubmed:2284096",
-            "ccds:CCDS5863"
-          ]
-        },
-        {
-          "type": "Extension",
-          "name": "hgnc_locations",
-          "value": [
-            {
-              "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
-              "type": "ChromosomeLocation",
-              "species_id": "taxonomy:9606",
-              "chr": "7",
-              "interval": {
-                "type": "CytobandInterval",
-                "start": "q34",
-                "end": "q34"
-              }
-            }
+            "ccds:CCDS94219",
+            "orphanet:119066"
           ]
         },
         {
@@ -123,20 +95,31 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
           "name": "ensembl_locations",
           "value": [
             {
-              "_id": "ga4gh:VSL.amNWL6i7F2nbSZAf2QLTRTujxuDrd0pR",
+              "id": "ga4gh:SL.MPDI-H-JK1AMOnLdvVO6zQjbAXmSnzQ4",
               "type": "SequenceLocation",
               "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
-              "interval": {
-                "type": "SequenceInterval",
-                "start": {
-                  "type": "Number",
-                  "value": 140719326
-                },
-                "end": {
-                  "type": "Number",
-                  "value": 140924929
-                }
+              "start": {
+                "type": "Number",
+                "value": 140719326
+              },
+              "end": {
+                "type": "Number",
+                "value": 140924929
               }
+            }
+          ]
+        },
+        {
+          "type": "Extension",
+          "name": "hgnc_locations",
+          "value": [
+            {
+              "id": "ga4gh:CL.ZZZYpOwuW1BLLJXc_Dm4eVZ5E0smVYCc",
+              "type": "ChromosomeLocation",
+              "species_id": "taxonomy:9606",
+              "chr": "7",
+              "start": "q34",
+              "end": "q34"
             }
           ]
         },
@@ -145,30 +128,24 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
           "name": "ncbi_locations",
           "value": [
             {
-              "_id": "ga4gh:VCL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
+              "id": "ga4gh:CL.ZZZYpOwuW1BLLJXc_Dm4eVZ5E0smVYCc",
               "type": "ChromosomeLocation",
               "species_id": "taxonomy:9606",
               "chr": "7",
-              "interval": {
-                "type": "CytobandInterval",
-                "start": "q34",
-                "end": "q34"
-              }
+              "start": "q34",
+              "end": "q34"
             },
             {
-              "_id": "ga4gh:VSL.xZU3kL8F6t2ca6WH_26CWKfNW9-owhR4",
+              "id": "ga4gh:SL.po-AExwyqkstDx3JWYn6plIlxn5eojv4",
               "type": "SequenceLocation",
               "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
-              "interval": {
-                "type": "SequenceInterval",
-                "start": {
-                  "type": "Number",
-                  "value": 140713327
-                },
-                "end": {
-                  "type": "Number",
-                  "value": 140924929
-                }
+              "start": {
+                "type": "Number",
+                "value": 140713327
+              },
+              "end": {
+                "type": "Number",
+                "value": 140924929
               }
             }
           ]
@@ -189,7 +166,19 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
           "value": "protein_coding"
         }
       ],
-      "gene_id": "hgnc:1097",
-      "gene": null
+      "description": null,
+      "xrefs": [
+        "ensembl:ENSG00000157764",
+        "ncbigene:673"
+      ],
+      "alternate_labels": [
+        "B-raf",
+        "BRAF1",
+        "NS7",
+        "B-RAF1",
+        "BRAF-1",
+        "RAFB1"
+      ],
+      "gene": "hgnc:1097"
     }
 
