@@ -26,6 +26,15 @@ By default, the Gene Normalizer expects to find a DynamoDB instance running at `
         # then, in the Gene Normalizer's environment:
         export GENE_NORM_DB_URL=http://localhost:8001
 
+Configuration
+-------------
+
+By default, the DynamoDB interface requires two different tables:
+
+1) ``gene_concepts``: DB items for all records, references, etc.
+2) ``gene_metadata``: source metadata (e.g. license, data version, etc)
+
+The environment variables ``GENE_DYNAMO_CONCEPTS_TABLE`` and ``GENE_DYNAMO_METADATA_TABLE`` can be used to define different table names for concepts and metadata, respectively.
 
 Managing persistent DynamoDB data
 --------------------------------------------

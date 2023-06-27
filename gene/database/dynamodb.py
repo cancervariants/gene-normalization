@@ -29,8 +29,12 @@ class DynamoDbDatabase(AbstractDatabase):
         :Keyword Arguments:
             * region_name: AWS region (defaults to "us-east-2")
         """
-        gene_concepts_table = "gene_concepts"  # default
-        gene_metadata_table = "gene_metadata"  # default
+        self.gene_concepts_table = environ.get(
+            "GENE_DYNAMO_CONCEPTS_TABLE", "gene_concepts"
+        )
+        self.gene_metadata_table = environ.get(
+            "GENE_DYNAMO_META_TABLE", "gene_metadata"
+        )
 
         region_name = db_args.get("region_name", "us-east-2")
 
@@ -51,8 +55,12 @@ class DynamoDbDatabase(AbstractDatabase):
             }
 
             if aws_env == AwsEnvName.DEVELOPMENT:
-                gene_concepts_table = "gene_concepts_nonprod"
-                gene_metadata_table = "gene_metadata_nonprod"
+                self.gene_concepts_table = environ.get(
+                    "GENE_DYNAMO_CONCEPTS_TABLE", "gene_concepts_nonprod"
+                )
+                self.gene_metadata_table = environ.get(
+                    "GENE_DYNAMO_META_TABLE", "gene_metadata_nonprod"
+                )
         else:
             if db_url:
                 endpoint_url = db_url
@@ -74,8 +82,8 @@ class DynamoDbDatabase(AbstractDatabase):
         if not set(envs_do_not_create_tables) & set(environ):
             self.initialize_db()
 
-        self.genes = self.dynamodb.Table(gene_concepts_table)
-        self.metadata = self.dynamodb.Table(gene_metadata_table)
+        self.genes = self.dynamodb.Table(self.gene_concepts_table)
+        self.metadata = self.dynamodb.Table(self.gene_metadata_table)
         self.batch = self.genes.batch_writer()
         self._cached_sources = {}
         atexit.register(self.close_connection)
@@ -106,7 +114,7 @@ class DynamoDbDatabase(AbstractDatabase):
     def _create_genes_table(self):
         """Create Genes table."""
         self.dynamodb.create_table(
-            TableName="gene_concepts",
+            TableName=self.gene_concepts_table,
             KeySchema=[
                 {
                     'AttributeName': 'label_and_type',
@@ -179,7 +187,7 @@ class DynamoDbDatabase(AbstractDatabase):
     def _create_meta_data_table(self) -> None:
         """Create MetaData table if non-existent."""
         self.dynamodb.create_table(
-            TableName="gene_metadata",
+            TableName=self.gene_metadata_table,
             KeySchema=[
                 {
                     'AttributeName': 'src_name',
@@ -204,8 +212,8 @@ class DynamoDbDatabase(AbstractDatabase):
         :return: True if DB appears to be fully initialized, False otherwise
         """
         existing_tables = self.list_tables()
-        exists = "gene_concepts" in existing_tables and \
-            "gene_metadata" in existing_tables
+        exists = self.gene_concepts_table in existing_tables and \
+            self.gene_metadata_table in existing_tables
         if not exists:
             logger.info("Gene tables are missing or unavailable.")
         return exists
