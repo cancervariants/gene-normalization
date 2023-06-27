@@ -43,7 +43,7 @@ Critically, the ``QueryHandler`` class must receive a database interface instanc
 1) if environment variable ``GENE_NORM_ENV`` is set to a value, or if the ``aws_instance`` method argument is True, try to create a cloud DynamoDB connection
 2) if the ``db_url`` method argument is given a non-None value, try to create a DB connection to that address (if it looks like a PostgreSQL URL, create a PostgreSQL connection, but otherwise try DynamoDB)
 3) if the ``GENE_NORM_DB_URL`` environment variable is set, try to create a DB connection to that address (if it looks like a PostgreSQL URL, create a PostgreSQL connection, but otherwise try DynamoDB)
-4) otherwise, attempt a DynamoDB connection to the default URL, ``http://localhost:8001``
+4) otherwise, attempt a DynamoDB connection to the default URL, ``http://localhost:8000``
 
 Users hoping for a more explicit connection declaration may instead call a database class directly, e.g.:
 

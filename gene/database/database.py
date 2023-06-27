@@ -289,7 +289,7 @@ def create_db(
        connection to that address (if it looks like a PostgreSQL URL, create a
        PostgreSQL connection, but otherwise try DynamoDB)
     4) otherwise, attempt a DynamoDB connection to the default URL,
-       ``http://localhost:8001``
+       ``http://localhost:8000``
 
     :param db_url: address to database instance
     :param aws_instance: use hosted DynamoDB instance, not local DB
