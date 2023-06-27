@@ -23,6 +23,12 @@ Then initialize the Pipenv environment: ::
     pipenv install --dev
     pipenv shell
 
+Alternatively, use a virtual environment and install all dependency groups: ::
+
+    python3 -m venv venv
+    source venv/bin/activate
+    python3 -m pip install -e ".[pg,etl,test,dev,docs]"
+
 We use `pre-commit <https://pre-commit.com/#usage>`_ to run conformance tests before commits. This provides checks for:
 
 * Code style
@@ -52,7 +58,7 @@ Tests are executed with `pytest <https://docs.pytest.org/en/7.1.x/getting-starte
 
     pytest
 
-By default, tests will utilize an existing database, and won't load any new data. For test environments where this is unavailable (e.g. in CI), the `GENE_TEST` environment variable can be set to initialize the connected database instance with miniature versions of input data files before tests are executed: ::
+By default, tests will utilize an existing database, and won't load any new data. For test environments where this is unavailable (e.g. in CI), the `GENE_TEST` environment variable can be set to `'true'` to initialize the connected database instance with miniature versions of input data files before tests are executed: ::
 
     export GENE_TEST=true
 
@@ -64,9 +70,15 @@ By default, tests will utilize an existing database, and won't load any new data
 Documentation
 -------------
 
-The documentation is built with Sphinx, which is included as part of the developer dependencies. To build a local copy, navigate to the `docs/` subdirectory and use `make` to build the HTML version: ::
+The documentation is built with Sphinx, which is included as part of the developer dependencies. To build a local copy, ensure that the Gene Normalizer is installed in your current Python environment, then navigate to the `docs/` subdirectory and use `make` to build the HTML version: ::
 
+    pipenv shell
     cd docs
     make html
 
 See the `Sphinx documentation <https://www.sphinx-doc.org/en/master/>`_ for more information.
+
+Figure generation
+_________________
+
+We are experimenting with the inclusion of some static HTML figures in the documentation. For now, scripts used to generate these figures should be provided in ``docs/scripts/``, and any external dependencies should be included in the ``docs`` dependency group.

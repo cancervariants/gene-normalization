@@ -1,4 +1,4 @@
-"""Provide core database classes and parameters."""
+"""Provide abstract Database class and relevant tools for database initialization."""
 import abc
 from enum import Enum
 from os import environ

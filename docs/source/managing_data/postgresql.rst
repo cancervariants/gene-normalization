@@ -5,8 +5,11 @@ PostgreSQL
 
 The Gene Normalizer can store and retrieve gene records from a `PostgreSQL <https://www.postgresql.org/>`_ database. See the `"Getting Started" section of the PostgreSQL documentation <https://www.postgresql.org/docs/current/tutorial-start.html>`_ for basic installation instructions.
 
+.. note::
 
-Database setup
+    See the :ref:`PostgreSQL handler API reference<postgres_api>` for information on programmatic access.
+
+Local setup
 --------------
 
 To populate the Gene Normalizer, a connection must be established to an existing PostgreSQL database, so one must be created manually when performing Gene Normalizer setup. Most PostgreSQL distributions include the `createdb <https://www.postgresql.org/docs/current/app-createdb.html>`_ utility for this purpose. For example, to create a database named ``gene_normalizer`` in a local database listening on port 5432 using the PostgreSQL user named ``postgres``, run the following shell command: ::
@@ -31,6 +34,8 @@ By default, this command will fetch the `latest data dump <https://vicc-normaliz
 Create SQL dump from database
 -----------------------------
 
-The Gene Normalizer's PostgreSQL class also provides the ``gene_norm_dump`` shell command to create a SQL dump of current data into a file. See ``gene_norm_dump --help`` for more information. This command will create a file named ``gene_norm_YYYYMMDDHHmmss.sql`` in the current directory; the ``-o`` option can be used to specify an alternate location, like so: ::
+The Gene Normalizer's PostgreSQL class also provides the ``gene_norm_dump`` shell command to create a SQL dump of current data into a file. This command will create a file named ``gene_norm_YYYYMMDDHHmmss.sql`` in the current directory; the ``-o`` option can be used to specify an alternate location, like so: ::
 
     gene_norm_dump -o ~/.gene_data/
+
+See ``gene_norm_dump --help`` for more information.

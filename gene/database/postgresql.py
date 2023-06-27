@@ -32,7 +32,6 @@ class PostgresDatabase(AbstractDatabase):
         """Initialize Postgres connection.
 
         :param db_url: libpq compliant database connection URI
-        :param **db_args: see below
 
         :Keyword Arguments:
             * user: Postgres username
