@@ -72,7 +72,7 @@ def etl_data_path():
 
 
 def test_tables_created(db_fixture):
-    """Check that gene_concepts and gene_metadata are created."""
+    """Check that requisite tables are created."""
     existing_tables = db_fixture.db.list_tables()
     if db_fixture.db_name == "PostgresDatabase":
         assert set(existing_tables) == {
@@ -86,8 +86,8 @@ def test_tables_created(db_fixture):
             "gene_sources",
         }
     else:
-        assert 'gene_concepts' in existing_tables
-        assert 'gene_metadata' in existing_tables
+        assert db_fixture.db.gene_concepts_table in existing_tables
+        assert db_fixture.db.gene_metadata_table in existing_tables
 
 
 @pytest.mark.skipif(not IS_TEST_ENV, reason="not in test environment")
