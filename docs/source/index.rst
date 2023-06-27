@@ -20,7 +20,7 @@ The Gene Normalizer provides tools for resolving ambiguous human gene references
     >>> from gene.database import create_db
     >>> q = QueryHandler(create_db())
     >>> result = q.normalize("BRAF")
-    >>> result.gene_descriptor.gene_id
+    >>> result.gene_descriptor.gene
     "hgnc:1097"
     >>> result.gene_descriptor.alternate_labels
     ['NS7', 'RAFB1', 'B-raf', 'BRAF-1', 'BRAF1', 'B-RAF1']

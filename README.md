@@ -18,7 +18,7 @@ Call the `normalize()` method with a gene term. If available, a rich description
 
 ```
 >>> result = q.normalize("BRAF")
->>> result.gene_descriptor.gene_id
+>>> result.gene_descriptor.gene
 "hgnc:1097"
 >>> result.gene_descriptor.alternate_labels
 ['NS7', 'RAFB1', 'B-raf', 'BRAF-1', 'BRAF1', 'B-RAF1']
