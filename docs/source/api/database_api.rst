@@ -1,3 +1,5 @@
+.. _database_api:
+
 Database Handler API
 ====================
 
