@@ -31,6 +31,13 @@ class PostgresDatabase(AbstractDatabase):
     def __init__(self, db_url: Optional[str] = None, **db_args) -> None:
         """Initialize Postgres connection.
 
+        >>> from gene.database.postgresql import PostgresDatabase
+        >>> db = PostgresDatabase(
+        >>>     user="postgres",
+        >>>     password="hunter2",
+        >>>     db_name="gene_normalizer"
+        >>> )
+
         :param db_url: libpq compliant database connection URI
 
         :Keyword Arguments:

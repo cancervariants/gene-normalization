@@ -28,7 +28,10 @@ class DatabaseWriteException(DatabaseException):
 
 
 class AbstractDatabase(abc.ABC):
-    """Define a database interface."""
+    """Define the database interface. This class should never be called directly by a
+    user, but should be used as the parent class for all concrete database
+    implementations.
+    """
 
     @abc.abstractmethod
     def __init__(self, db_url: Optional[str] = None, **db_args):
@@ -256,7 +259,37 @@ def create_db(
 
     Generally prefers to return a DynamoDB instance, unless all DDB-relevant
     environment variables are unset and a libpq-compliant URI is passed to
-    `db_url`.
+    `db_url`. See the `usage` section of the documentation for details.
+
+    Some examples:
+
+    >>> from gene.database import create_db
+    >>> default_db = create_db()  # by default, creates DynamoDB connection on port 8000
+    >>>
+    >>> postgres_url = "postgresql://postgres@localhost:5432/gene_normalizer"
+    >>> pg_db = create_db(postgres_url)  # creates Postgres connection at port 5432
+    >>>
+    >>> import os
+    >>> os.environ["GENE_NORM_DB_URL"] = "http://localhost:8001"
+    >>> local_db = create_db()  # creates DynamoDB connection on port 8001
+    >>>
+    >>> os.environ["GENE_NORM_ENV"] = "Prod"
+    >>> prod_db = create_db()  # creates connection to AWS cloud DynamoDB instance,
+    >>>                        # overruling `GENE_NORM_DB_URL` variable setting
+
+    Precedence is handled for connection settings like so:
+
+    1) if environment variable ``GENE_NORM_ENV`` is set to a value, or if the
+       ``aws_instance`` method argument is True, try to create a cloud DynamoDB
+       connection
+    2) if the ``db_url`` method argument is given a non-None value, try to create a DB
+       connection to that address (if it looks like a PostgreSQL URL, create a
+       PostgreSQL connection, but otherwise try DynamoDB)
+    3) if the ``GENE_NORM_DB_URL`` environment variable is set, try to create a DB
+       connection to that address (if it looks like a PostgreSQL URL, create a
+       PostgreSQL connection, but otherwise try DynamoDB)
+    4) otherwise, attempt a DynamoDB connection to the default URL,
+       ``http://localhost:8001``
 
     :param db_url: address to database instance
     :param aws_instance: use hosted DynamoDB instance, not local DB

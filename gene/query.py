@@ -33,7 +33,17 @@ class QueryHandler:
     """
 
     def __init__(self, database: AbstractDatabase) -> None:
-        """Initialize QueryHandler instance.
+        """Initialize QueryHandler instance. Requires a created database object to
+        initialize. The most straightforward way to do this is via the `create_db`
+        method in the `gene.database` module:
+
+        >>> from gene.query import QueryHandler
+        >>> from gene.database import create_db
+        >>> q = QueryHandler(create_db())
+
+        We'll generally call `create_db` without any arguments in code examples, for
+        the sake of brevity. See the `usage` page in the docs and the `create_db` API
+        description for more details.
 
         :param database: storage backend to search against
         """
