@@ -4,6 +4,28 @@
 
 Services and guidelines for normalizing gene terms
 
+## Basic usage
+
+Create a database instance and pass it to the `QueryHandler` constructor:
+
+```
+>>> from gene.query import QueryHandler
+>>> from gene.database import create_db
+>>> q = QueryHandler(create_db())
+```
+
+Call the `normalize()` method with a gene term. If available, a rich description of the normalized concept is returned.
+
+```
+>>> result = q.normalize("BRAF")
+>>> result.gene_descriptor.gene
+"hgnc:1097"
+>>> result.gene_descriptor.alternate_labels
+['NS7', 'RAFB1', 'B-raf', 'BRAF-1', 'BRAF1', 'B-RAF1']
+```
+
+See the [documentation](https://gene-normalizer.readthedocs.io/en/latest/) for more information, or check out the [public REST instance](https://normalize.cancervariants.org/gene) for a live demonstration.
+
 ## Installation
 
 The Normalizer is available via PyPI:
