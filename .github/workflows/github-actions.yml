@@ -78,5 +78,5 @@ jobs:
 
       - uses: ammaraskar/sphinx-action@master
         with:
-          pre-build-command: 'python3 -m pip install .[pg,etl,test,docs]'
+          pre-build-command: 'python3 -m pip install .[docs]'
           docs-folder: "docs/"
