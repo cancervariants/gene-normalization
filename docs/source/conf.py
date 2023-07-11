@@ -35,7 +35,7 @@ html_static_path = []
 import os  # noqa: E402
 import sys  # noqa: E402
 sys.path.insert(0, os.path.abspath("../../gene"))
-
+autodoc_preserve_defaults = True
 
 # -- get version -------------------------------------------------------------
 from gene import __version__  # noqa: E402
