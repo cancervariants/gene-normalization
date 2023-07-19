@@ -279,26 +279,54 @@ def slc25a6():
         "concept_id": "ncbigene:293",
         "symbol": "SLC25A6",
         "aliases": ["AAC3", "ANT", "ANT 2", "ANT 3", "ANT3", "ANT3Y"],
-        "xrefs": ["hgnc:10992", "ensembl:ENSG00000169100"],
+        "xrefs": ["hgnc:10992", "ensembl:ENSG00000169100", "ensembl:ENSG00000292334"],
         "previous_symbols": ["ANT3Y"],
         "associated_with": ["omim:300151", "omim:403000"],
         "symbol_status": None,
-        "location_annotations": ["X", "Y"],
+        "location_annotations": [],
         "strand": "-",
         "locations": [
             {
+                "id": "ga4gh:CL.Z5pOXNI2Bt8L2NpypNYsbbtgC9L1uyl4",
+                "type": "ChromosomeLocation",
+                "species_id": "taxonomy:9606",
+                "chr": "X",
+                "start": "p22.33",
+                "end": "p22.33"
+            },
+            {
+                "id": "ga4gh:CL.bp7nyvEa1yIoZTw93GnpRSXubcLT0qFM",
+                "type": "ChromosomeLocation",
+                "species_id": "taxonomy:9606",
+                "chr": "Y",
+                "start": "p11.2",
+                "end": "p11.2"
+            },
+            {
                 "id": "ga4gh:SL.bJtaHxlESQXto-K8WCE4jUS_uncnJP3l",
-                "end": {"value": 1392113, "type": "Number"},
-                "start": {"value": 1386151, "type": "Number"},
+                "type": "SequenceLocation",
                 "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
-                "type": "SequenceLocation"
+                "start": {
+                    "type": "Number",
+                    "value": 1386151
+                },
+                "end": {
+                    "type": "Number",
+                    "value": 1392113
+                }
             },
             {
                 "id": "ga4gh:SL.fkr3SI-mzvw2IJgPm3ck9k5pQtbJ8BvX",
-                "end": {"value": 1392113, "type": "Number"},
-                "start": {"value": 1386151, "type": "Number"},
+                "type": "SequenceLocation",
                 "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
-                "type": "SequenceLocation"
+                "start": {
+                    "type": "Number",
+                    "value": 1386151
+                },
+                "end": {
+                    "type": "Number",
+                    "value": 1392113
+                }
             }
         ],
         "gene_type": "protein-coding"
