@@ -345,7 +345,7 @@ def mafip():
     """Create a MAFIP gene fixture."""
     params = {
         "match_type": MatchType.NO_MATCH,
-        "label": "MAFF interacting protein (pseudogene)",
+        "label": "MAFF interacting protein",
         "concept_id": "hgnc:31102",
         "symbol": "MAFIP",
         "location_annotations": ["unplaced", "14"],
@@ -374,7 +374,7 @@ def mafip():
             "pubmed:16549056",
             "pubmed:15881666"
         ],
-        "gene_type": "pseudogene"
+        "gene_type": "unknown"
     }
     return Gene(**params)
 

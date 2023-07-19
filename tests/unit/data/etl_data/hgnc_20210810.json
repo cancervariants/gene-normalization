@@ -550,14 +550,14 @@
                 "refseq_accession": [
                     "NR_046439"
                 ],
-                "locus_type": "pseudogene",
+                "locus_type": "unknown",
                 "hgnc_id": "HGNC:31102",
                 "ensembl_gene_id": "ENSG00000274847",
                 "entrez_id": "727764",
                 "symbol": "MAFIP",
                 "date_name_changed": "2012-03-26",
                 "location": "14 unplaced",
-                "name": "MAFF interacting protein (pseudogene)",
+                "name": "MAFF interacting protein",
                 "date_modified": "2017-09-21",
                 "uniprot_ids": [
                     "Q8WZ33"

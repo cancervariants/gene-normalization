@@ -315,32 +315,66 @@ def slc25a6():
         "concept_id": "ncbigene:293",
         "symbol": "SLC25A6",
         "aliases": ["AAC3", "ANT", "ANT 2", "ANT 3", "ANT3", "ANT3Y"],
-        "xrefs": ["hgnc:10992", "ensembl:ENSG00000169100"],
+        "xrefs": ["hgnc:10992", "ensembl:ENSG00000169100", "ensembl:ENSG00000292334"],
         "previous_symbols": ["ANT3Y"],
         "associated_with": ["omim:300151", "omim:403000"],
         "symbol_status": None,
-        "location_annotations": ["X", "Y"],
+        "location_annotations": [],
         "strand": "-",
         "locations": [
             {
-                "_id": "ga4gh:VSL.HG0bXHwmZoxZzU2ckz4T6lvxIswXhLQZ",
+                "_id": "ga4gh:VCL.CfEpX1j-bA7gs8k-BrgRA-7yk5ccHEOG",
+                "type": "ChromosomeLocation",
+                "species_id": "taxonomy:9606",
+                "chr": "X",
                 "interval": {
-                    "end": {"value": 1392113, "type": "Number"},
-                    "start": {"value": 1386151, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                    "type": "CytobandInterval",
+                    "start": "p22.33",
+                    "end": "p22.33"
+                }
+            },
+            {
+                "_id": "ga4gh:VCL.TxAQEgJyJOrHy8GLUltsUvmeA_z2FlpA",
+                "type": "ChromosomeLocation",
+                "species_id": "taxonomy:9606",
+                "chr": "Y",
+                "interval": {
+                    "type": "CytobandInterval",
+                    "start": "p11.2",
+                    "end": "p11.2"
+                }
+            },
+            {
+                "_id": "ga4gh:VSL.HG0bXHwmZoxZzU2ckz4T6lvxIswXhLQZ",
+                "type": "SequenceLocation",
                 "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
-                "type": "SequenceLocation"
+                "interval": {
+                    "type": "SequenceInterval",
+                    "start": {
+                        "type": "Number",
+                        "value": 1386151
+                    },
+                    "end": {
+                        "type": "Number",
+                        "value": 1392113
+                    }
+                }
             },
             {
                 "_id": "ga4gh:VSL.1J-MNAWJ9hvZtIM_90lqLbxEt707zL_A",
-                "interval": {
-                    "end": {"value": 1392113, "type": "Number"},
-                    "start": {"value": 1386151, "type": "Number"},
-                    "type": "SequenceInterval"
-                },
+                "type": "SequenceLocation",
                 "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
-                "type": "SequenceLocation"
+                "interval": {
+                    "type": "SequenceInterval",
+                    "start": {
+                        "type": "Number",
+                        "value": 1386151
+                    },
+                    "end": {
+                        "type": "Number",
+                        "value": 1392113
+                    }
+                }
             }
         ],
         "gene_type": "protein-coding"

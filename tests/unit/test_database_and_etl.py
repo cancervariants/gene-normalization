@@ -103,7 +103,7 @@ def test_ensembl_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path)
     shutil.rmtree(e.src_data_dir)
 
     e._sequence_location.get_aliases = _get_aliases
-    e._data_src = etl_data_path / 'ensembl_109.gff3'
+    e._data_src = etl_data_path / 'ensembl_110.gff3'
     e._add_meta()
     e._transform_data()
     db_fixture.db.complete_write_transaction()
