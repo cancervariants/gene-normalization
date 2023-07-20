@@ -120,6 +120,11 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
         },
         {
           "type": "Extension",
+          "name": "strand",
+          "value": "-"
+        },
+        {
+          "type": "Extension",
           "name": "ensembl_locations",
           "value": [
             {

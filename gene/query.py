@@ -449,7 +449,8 @@ class QueryHandler:
             ("approved_name", "label"),
             ("associated_with", "associated_with"),
             ("previous_symbols", "previous_symbols"),
-            ("location_annotations", "location_annotations")
+            ("location_annotations", "location_annotations"),
+            ("strand", "strand")
         ]
         for ext_label, record_label in extension_and_record_labels:
             if record_label in record and record[record_label]:
