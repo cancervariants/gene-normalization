@@ -140,15 +140,15 @@ class Merge:
             "previous_symbols": set(),
             "hgnc_locus_type": set(),
             "ncbi_gene_type": set(),
-            "ensembl_biotype": set()
+            "ensembl_biotype": set(),
+            "strand": set(),
         }
         if len(records) > 1:
             merged_attrs['xrefs'] = list({r['concept_id'] for r in records[1:]})
 
         # merge from constituent records
-        set_fields = ["aliases", "associated_with", "previous_symbols"]
-        scalar_fields = ["symbol", "symbol_status", "label", "strand",
-                         "location_annotations"]
+        set_fields = ["aliases", "associated_with", "previous_symbols", "strand"]
+        scalar_fields = ["symbol", "symbol_status", "label", "location_annotations"]
         for record in records:
             for field in set_fields:
                 merged_attrs[field] |= set(record.get(field, set()))
@@ -173,6 +173,14 @@ class Merge:
                 merged_attrs[field] = list(field_value)
             else:
                 del merged_attrs[field]
+
+        # ensure no conflicting strands
+        unique_strand_values = set(merged_attrs.get("strand", []))
+        num_unique_strand_values = len(unique_strand_values)
+        if num_unique_strand_values > 1:
+            del merged_attrs["strand"]
+        elif num_unique_strand_values == 1:
+            merged_attrs["strand"] = list(unique_strand_values)[0]
 
         merged_attrs['item_type'] = 'merger'
         return merged_attrs

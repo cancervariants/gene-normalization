@@ -156,6 +156,11 @@ def normalized_ache():
                 "name": "ensembl_biotype",
                 "type": "Extension",
                 "value": "protein_coding"
+            },
+            {
+                "name": "strand",
+                "type": "Extension",
+                "value": "-"
             }
         ]
     }
@@ -288,6 +293,11 @@ def normalized_braf():
                 "name": "ensembl_biotype",
                 "type": "Extension",
                 "value": "protein_coding"
+            },
+            {
+                "name": "strand",
+                "type": "Extension",
+                "value": "-"
             }
         ]
     }
@@ -432,6 +442,11 @@ def normalized_abl1():
                 "name": "ensembl_biotype",
                 "type": "Extension",
                 "value": "protein_coding"
+            },
+            {
+                "name": "strand",
+                "type": "Extension",
+                "value": "+"
             }
         ]
     }
@@ -561,6 +576,11 @@ def normalized_p150():
                 "name": "previous_symbols",
                 "type": "Extension",
                 "value": ["LOC107985297"]
+            },
+            {
+                "name": "strand",
+                "type": "Extension",
+                "value": "+"
             }
         ]
     }
@@ -626,6 +646,11 @@ def normalized_loc_653303():
                 "type": "Extension",
                 "name": "ncbi_gene_type",
                 "value": "pseudo"
+            },
+            {
+                "name": "strand",
+                "type": "Extension",
+                "value": "+"
             }
         ],
         "gene": "ncbigene:653303"
