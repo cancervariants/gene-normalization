@@ -391,7 +391,6 @@ class DynamoDbDatabase(AbstractDatabase):
             last_evaluated_key = response.get("LastEvaluatedKey")
             if not last_evaluated_key:
                 break
-        # TODO should return a pydantic class not a dict?
 
     def add_source_metadata(self, src_name: SourceName, metadata: SourceMeta) -> None:
         """Add new source metadata entry.
