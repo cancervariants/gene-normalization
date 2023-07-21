@@ -468,33 +468,27 @@ class PostgresDatabase(AbstractDatabase):
 
         if record_type == RecordType.MERGER:
             with self.conn.cursor() as cur:
-                keep_fetching = True
                 results = cur.execute(self._get_all_normalized_records_query)
-                while keep_fetching:
-                    fetched = results.fetchmany(BATCH_SIZE)
+                fetched = results.fetchmany(BATCH_SIZE)
+                while fetched:
                     for row in fetched:
                         yield self._format_merged_record(row)
-                    if not fetched:
-                        keep_fetching = False
-            with self.conn.cursor() as cur:
-                keep_fetching = True
-                results = cur.execute(self._get_all_unmerged_source_records_query)
-                while keep_fetching:
                     fetched = results.fetchmany(BATCH_SIZE)
+            with self.conn.cursor() as cur:
+                results = cur.execute(self._get_all_unmerged_source_records_query)
+                fetched = results.fetchmany(BATCH_SIZE)
+                while fetched:
                     for result in fetched:
                         yield self._format_source_record(result)
-                    if not fetched:
-                        keep_fetching = False
+                    fetched = results.fetchmany(BATCH_SIZE)
         else:
             with self.conn.cursor() as cur:
-                keep_fetching = True
                 results = cur.execute(self._get_all_source_records_query)
-                while keep_fetching:
-                    fetched = results.fetchmany(BATCH_SIZE)
+                fetched = results.fetchmany(BATCH_SIZE)
+                while fetched:
                     for result in fetched:
                         yield self._format_source_record(result)
-                    if not fetched:
-                        keep_fetching = False
+                    fetched = results.fetchmany(BATCH_SIZE)
 
     _add_source_metadata_query = b"""
         INSERT INTO gene_sources(
