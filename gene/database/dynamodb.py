@@ -4,7 +4,7 @@ import logging
 from os import environ
 from pathlib import Path
 import sys
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any, Dict, Generator, List, Optional, Set, Union
 import boto3
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
@@ -14,7 +14,7 @@ from gene import ITEM_TYPES, PREFIX_LOOKUP
 from gene.database.database import AWS_ENV_VAR_NAME, SKIP_AWS_DB_ENV_NAME, \
     VALID_AWS_ENV_NAMES, AbstractDatabase, AwsEnvName, DatabaseException, \
     DatabaseReadException, DatabaseWriteException, confirm_aws_db_use
-from gene.schemas import RefType, SourceMeta, SourceName
+from gene.schemas import RecordType, RefType, SourceMeta, SourceName
 
 logger = logging.getLogger(__name__)
 
@@ -352,6 +352,46 @@ class DynamoDbDatabase(AbstractDatabase):
             if not last_evaluated_key:
                 break
         return set(concept_ids)
+
+    def get_all_records(self, record_type: RecordType) -> Generator[Dict, None, None]:
+        """Retrieve all source or normalized records. Either return all source records,
+        or all records that qualify as "normalized" (i.e., merged groups + source
+        records that are otherwise ungrouped).
+
+        For example,
+
+        >>> from gene.database import create_db
+        >>> from gene.schemas import RecordType
+        >>> db = create_db()
+        >>> for record in db.get_all_records(RecordType.MERGER):
+        >>>     pass  # do something
+
+        :param record_type: type of result to return
+        :return: Generator that lazily provides records as they are retrieved
+        """
+        last_evaluated_key = None
+        while True:
+            if last_evaluated_key:
+                response = self.genes.scan(
+                    ExclusiveStartKey=last_evaluated_key,
+                )
+            else:
+                response = self.genes.scan()
+            records = response.get("Items", [])
+            for record in records:
+                incoming_record_type = record.get("item_type")
+                if record_type == RecordType.IDENTITY:
+                    if incoming_record_type == record_type:
+                        yield record
+                else:
+                    if (
+                        incoming_record_type == RecordType.IDENTITY and not record.get("merge_ref")  # noqa: E501
+                    ) or incoming_record_type == RecordType.MERGER:
+                        yield record
+            last_evaluated_key = response.get("LastEvaluatedKey")
+            if not last_evaluated_key:
+                break
+        # TODO should return a pydantic class not a dict?
 
     def add_source_metadata(self, src_name: SourceName, metadata: SourceMeta) -> None:
         """Add new source metadata entry.

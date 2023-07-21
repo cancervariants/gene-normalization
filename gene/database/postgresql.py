@@ -5,7 +5,7 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, Generator, List, Optional, Set
 import tempfile
 from datetime import datetime
 
@@ -16,7 +16,7 @@ import requests
 
 from gene.database import AbstractDatabase, DatabaseException, DatabaseReadException, \
     DatabaseWriteException
-from gene.schemas import RefType, SourceMeta, SourceName
+from gene.schemas import RecordType, RefType, SourceMeta, SourceName
 
 
 logger = logging.getLogger(__name__)
@@ -424,6 +424,24 @@ class PostgresDatabase(AbstractDatabase):
             cur.execute(self._ids_query)
             ids_tuple = cur.fetchall()
         return {i[0] for i in ids_tuple}
+
+    def get_all_records(self, record_type: RecordType) -> Generator[Dict, None, None]:
+        """Retrieve all source or normalized records. Either return all source records,
+        or all records that qualify as "normalized" (i.e., merged groups + source
+        records that are otherwise ungrouped).
+
+        For example,
+
+        >>> from gene.database import create_db
+        >>> from gene.schemas import RecordType
+        >>> db = create_db()
+        >>> for record in db.get_all_records(RecordType.MERGER):
+        >>>     pass  # do something
+
+        :param record_type: type of result to return
+        :return: Generator that lazily provides records as they are retrieved
+        """
+        # TODO
 
     _add_source_metadata_query = b"""
         INSERT INTO gene_sources(
