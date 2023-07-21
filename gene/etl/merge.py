@@ -1,7 +1,7 @@
 """Create concept groups and merged records."""
 from gene.database import AbstractDatabase
 from gene.database.database import DatabaseWriteException
-from gene.schemas import SourcePriority, GeneTypeFieldName
+from gene.schemas import RecordType, SourcePriority, GeneTypeFieldName
 from typing import Optional, Set, Dict
 from timeit import default_timer as timer
 import logging
@@ -182,5 +182,5 @@ class Merge:
         elif num_unique_strand_values == 1:
             merged_attrs["strand"] = list(unique_strand_values)[0]
 
-        merged_attrs['item_type'] = 'merger'
+        merged_attrs['item_type'] = RecordType.MERGER.value
         return merged_attrs
