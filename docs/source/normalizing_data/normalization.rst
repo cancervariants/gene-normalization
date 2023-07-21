@@ -111,7 +111,12 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
         },
         {
           "type": "Extension",
-          "name": "hgnc_locations",
+          "name": "strand",
+          "value": "-"
+        },
+        {
+          "type": "Extension",
+          "name": "ensembl_locations",
           "value": [
             {
               "id": "ga4gh:CL.ZZZYpOwuW1BLLJXc_Dm4eVZ5E0smVYCc",
