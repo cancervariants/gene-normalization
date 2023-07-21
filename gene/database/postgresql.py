@@ -5,7 +5,7 @@ import json
 import logging
 import os
 from pathlib import Path
-from typing import Any, Dict, Generator, List, Optional, Set
+from typing import Any, Dict, Generator, List, Optional, Set, Tuple
 import tempfile
 from datetime import datetime
 
@@ -295,6 +295,31 @@ class PostgresDatabase(AbstractDatabase):
 
     _get_record_query = b"SELECT * FROM record_lookup_view WHERE lower(concept_id) = %s;"  # noqa: E501
 
+    def _format_source_record(self, source_row: Tuple) -> Dict:
+        """Restructure row from gene_concepts table as source record result object.
+
+        :param source_row: result tuple from psycopg
+        :return: reformatted dictionary keying gene properties to row values
+        """
+        gene_record = {
+            "concept_id": source_row[0],
+            "symbol_status": source_row[1],
+            "label": source_row[2],
+            "strand": source_row[3],
+            "location_annotations": source_row[4],
+            "locations": source_row[5],
+            "gene_type": source_row[6],
+            "aliases": source_row[7],
+            "associated_with": source_row[8],
+            "previous_symbols": source_row[9],
+            "symbol": source_row[10],
+            "xrefs": source_row[11],
+            "src_name": source_row[12],
+            "merge_ref": source_row[13],
+            "item_type": RecordType.IDENTITY.value,
+        }
+        return {k: v for k, v in gene_record.items() if v}
+
     def _get_record(self, concept_id: str, case_sensitive: bool) -> Optional[Dict]:
         """Retrieve non-merged record. The query is pretty different, so this method
         is broken out for PostgreSQL.
@@ -311,25 +336,34 @@ class PostgresDatabase(AbstractDatabase):
             result = cur.fetchone()
         if not result:
             return None
+        return self._format_source_record(result)
 
-        gene_record = {
-            "concept_id": result[0],
-            "symbol_status": result[1],
-            "label": result[2],
-            "strand": result[3],
-            "location_annotations": result[4],
-            "locations": result[5],
-            "gene_type": result[6],
-            "aliases": result[7],
-            "associated_with": result[8],
-            "previous_symbols": result[9],
-            "symbol": result[10],
-            "xrefs": result[11],
-            "src_name": result[12],
-            "merge_ref": result[13],
-            "item_type": "identity",
+    def _format_merged_record(self, merged_row: Tuple) -> Dict:
+        """Restructure row from gene_merged table as normalized result object.
+
+        :param merged_row: result tuple from psycopg
+        :return: reformatted dictionary keying normalized gene properties to row values
+        """
+        merged_record = {
+            "concept_id": merged_row[0],
+            "symbol": merged_row[1],
+            "symbol_status": merged_row[2],
+            "previous_symbols": merged_row[3],
+            "label": merged_row[4],
+            "strand": merged_row[5],
+            "ensembl_locations": merged_row[6],
+            "hgnc_locations": merged_row[7],
+            "ncbi_locations": merged_row[8],
+            "location_annotations": merged_row[9],
+            "ensembl_biotype": merged_row[10],
+            "hgnc_locus_type": merged_row[11],
+            "ncbi_gene_type": merged_row[12],
+            "aliases": merged_row[13],
+            "associated_with": merged_row[14],
+            "xrefs": merged_row[15],
+            "item_type": RecordType.MERGER.value,
         }
-        return {k: v for k, v in gene_record.items() if v}
+        return {k: v for k, v in merged_record.items() if v}
 
     _get_merged_record_query = b"SELECT * FROM gene_merged WHERE lower(concept_id) = %s;"  # noqa: E501
 
@@ -349,27 +383,7 @@ class PostgresDatabase(AbstractDatabase):
             result = cur.fetchone()
         if not result:
             return None
-
-        merged_record = {
-            "concept_id": result[0],
-            "symbol": result[1],
-            "symbol_status": result[2],
-            "previous_symbols": result[3],
-            "label": result[4],
-            "strand": result[5],
-            "ensembl_locations": result[6],
-            "hgnc_locations": result[7],
-            "ncbi_locations": result[8],
-            "location_annotations": result[9],
-            "ensembl_biotype": result[10],
-            "hgnc_locus_type": result[11],
-            "ncbi_gene_type": result[12],
-            "aliases": result[13],
-            "associated_with": result[14],
-            "xrefs": result[15],
-            "item_type": "merger",
-        }
-        return {k: v for k, v in merged_record.items() if v}
+        return self._format_merged_record(result)
 
     def get_record_by_id(self, concept_id: str, case_sensitive: bool = True,
                          merge: bool = False) -> Optional[Dict]:
@@ -425,6 +439,10 @@ class PostgresDatabase(AbstractDatabase):
             ids_tuple = cur.fetchall()
         return {i[0] for i in ids_tuple}
 
+    _get_all_normalized_records_query = b"SELECT * FROM gene_merged;"
+    _get_all_unmerged_source_records_query = b"SELECT * FROM record_lookup_view WHERE merge_ref IS NULL;"  # noqa: E501
+    _get_all_source_records_query = b"SELECT * FROM record_lookup_view;"
+
     def get_all_records(self, record_type: RecordType) -> Generator[Dict, None, None]:
         """Retrieve all source or normalized records. Either return all source records,
         or all records that qualify as "normalized" (i.e., merged groups + source
@@ -438,10 +456,45 @@ class PostgresDatabase(AbstractDatabase):
         >>> for record in db.get_all_records(RecordType.MERGER):
         >>>     pass  # do something
 
+        Unlike DynamoDB, merged records are stored in a separate table from source
+        records. As a result, when fetching all normalized records, merged records are
+        return first, and iteration continues with all source records that don't
+        belong to a normalized concept group.
+
         :param record_type: type of result to return
         :return: Generator that lazily provides records as they are retrieved
         """
-        # TODO
+        BATCH_SIZE = 500
+
+        if record_type == RecordType.MERGER:
+            with self.conn.cursor() as cur:
+                keep_fetching = True
+                results = cur.execute(self._get_all_normalized_records_query)
+                while keep_fetching:
+                    fetched = results.fetchmany(BATCH_SIZE)
+                    for row in fetched:
+                        yield self._format_merged_record(row)
+                    if not fetched:
+                        keep_fetching = False
+            with self.conn.cursor() as cur:
+                keep_fetching = True
+                results = cur.execute(self._get_all_unmerged_source_records_query)
+                while keep_fetching:
+                    fetched = results.fetchmany(BATCH_SIZE)
+                    for result in fetched:
+                        yield self._format_source_record(result)
+                    if not fetched:
+                        keep_fetching = False
+        else:
+            with self.conn.cursor() as cur:
+                keep_fetching = True
+                results = cur.execute(self._get_all_source_records_query)
+                while keep_fetching:
+                    fetched = results.fetchmany(BATCH_SIZE)
+                    for result in fetched:
+                        yield self._format_source_record(result)
+                    if not fetched:
+                        keep_fetching = False
 
     _add_source_metadata_query = b"""
         INSERT INTO gene_sources(

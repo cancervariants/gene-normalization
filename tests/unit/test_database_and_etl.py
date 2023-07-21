@@ -10,6 +10,7 @@ from mock import patch
 from gene.etl import Ensembl, HGNC, NCBI
 from gene.etl.merge import Merge
 from gene.database import AWS_ENV_VAR_NAME
+from gene.schemas import RecordType
 
 
 ALIASES = {
@@ -199,3 +200,22 @@ def test_item_type(db_fixture):
         db_fixture.db.genes.query(KeyConditionExpression=filter_exp)['Items'][0]
     assert 'item_type' in item
     assert item['item_type'] == 'xref'
+
+
+@pytest.mark.skipif(not IS_TEST_ENV, reason="not in test environment")
+def test_get_all_records(db_fixture):
+    """Basic test of get_all_records method.
+
+    It's probably overkill (and unmaintainable) to do exact checks against every
+    record, but fairly easy to check against expected counts and ensure that nothing
+    is getting sent twice.
+    """
+    source_records = list(db_fixture.db.get_all_records(RecordType.IDENTITY))
+    assert len(source_records) == 63
+    source_ids = {r["concept_id"] for r in source_records}
+    assert len(source_ids) == 63
+
+    normalized_records = list(db_fixture.db.get_all_records(RecordType.MERGER))
+    assert len(normalized_records) == 46
+    normalized_ids = {r["concept_id"] for r in normalized_records}
+    assert len(normalized_ids) == 46

@@ -12,9 +12,9 @@ from ga4gh.core import ga4gh_identify
 from gene import logger
 from gene import NAMESPACE_LOOKUP, PREFIX_LOOKUP, ITEM_TYPES
 from gene.database import AbstractDatabase, DatabaseReadException
-from gene.schemas import BaseGene, Gene, NamespacePrefix, RefType, MatchType, \
-    SourceName, ServiceMeta, SourcePriority, NormalizeService, SearchService, \
-    GeneTypeFieldName, UnmergedNormalizationService, MatchesNormalized, \
+from gene.schemas import BaseGene, Gene, NamespacePrefix, RecordType, RefType, \
+    MatchType, SourceName, ServiceMeta, SourcePriority, NormalizeService, \
+    SearchService, GeneTypeFieldName, UnmergedNormalizationService, MatchesNormalized, \
     BaseNormalizationService
 from gene.version import __version__
 
@@ -230,12 +230,12 @@ class QueryHandler:
 
         queries = list()
         if [p for p in PREFIX_LOOKUP.keys() if query_l.startswith(p)]:
-            queries.append((query_l, "identity"))
+            queries.append((query_l, RecordType.IDENTITY.value))
 
         for prefix in [p for p in NAMESPACE_LOOKUP.keys() if
                        query_l.startswith(p)]:
             term = f"{NAMESPACE_LOOKUP[prefix].lower()}:{query_l}"
-            queries.append((term, "identity"))
+            queries.append((term, RecordType.IDENTITY.value))
 
         for match in ITEM_TYPES.values():
             queries.append((query_l, match))
@@ -243,7 +243,7 @@ class QueryHandler:
         matched_concept_ids = list()
         for term, item_type in queries:
             try:
-                if item_type == "identity":
+                if item_type == RecordType.IDENTITY.value:
                     record = self.db.get_record_by_id(term, False)
                     if record and record['concept_id'] not in matched_concept_ids:
                         self._add_record(resp, record, MatchType.CONCEPT_ID)
@@ -460,11 +460,11 @@ class QueryHandler:
                 ))
 
         record_locations = dict()
-        if record["item_type"] == "identity":
+        if record["item_type"] == RecordType.IDENTITY:
             locs = record.get("locations")
             if locs:
                 record_locations[f"{record['src_name'].lower()}_locations"] = locs
-        elif record["item_type"] == "merger":
+        elif record["item_type"] == RecordType.MERGER:
             for k, v in record.items():
                 if k.endswith("locations") and v:
                     record_locations[k] = v
@@ -476,7 +476,7 @@ class QueryHandler:
             extensions.append(Extension(name=loc_name, value=transformed_locs))
 
         # handle gene types separately because they're wonky
-        if record["item_type"] == "identity":
+        if record["item_type"] == RecordType.IDENTITY:
             gene_type = record.get("gene_type")
             if gene_type:
                 extensions.append(Extension(
@@ -660,7 +660,7 @@ class QueryHandler:
         """
         response.match_type = match_type
         response.normalized_concept_id = normalized_record["concept_id"]
-        if normalized_record["item_type"] == "identity":
+        if normalized_record["item_type"] == RecordType.IDENTITY:
             record_source = SourceName[normalized_record["src_name"].upper()]
             meta = self.db.get_source_metadata(record_source.value)
             response.source_matches[record_source] = MatchesNormalized(

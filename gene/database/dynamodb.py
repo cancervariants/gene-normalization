@@ -243,7 +243,7 @@ class DynamoDbDatabase(AbstractDatabase):
 
         normalized_records = self.genes.query(
             IndexName="item_type_index",
-            KeyConditionExpression=Key("item_type").eq("merger"),
+            KeyConditionExpression=Key("item_type").eq(RecordType.MERGER.value),
             Limit=1
         )
         if len(normalized_records.get("Items", [])) < 1:
@@ -286,9 +286,9 @@ class DynamoDbDatabase(AbstractDatabase):
         """
         try:
             if merge:
-                pk = f'{concept_id.lower()}##merger'
+                pk = f'{concept_id.lower()}##{RecordType.MERGER.value}'
             else:
-                pk = f'{concept_id.lower()}##identity'
+                pk = f'{concept_id.lower()}##{RecordType.IDENTITY.value}'
             if case_sensitive:
                 match = self.genes.get_item(Key={
                     'label_and_type': pk,
@@ -445,9 +445,9 @@ class DynamoDbDatabase(AbstractDatabase):
         concept_id = record["concept_id"]
         id_prefix = concept_id.split(":")[0].lower()
         record["src_name"] = PREFIX_LOOKUP[id_prefix]
-        label_and_type = f"{concept_id.lower()}##merger"
+        label_and_type = f"{concept_id.lower()}##{RecordType.MERGER.value}"
         record["label_and_type"] = label_and_type
-        record["item_type"] = "merger"
+        record["item_type"] = RecordType.MERGER.value
         try:
             self.batch.put_item(Item=record)
         except ClientError as e:
@@ -523,7 +523,9 @@ class DynamoDbDatabase(AbstractDatabase):
                 try:
                     response = self.genes.query(
                         IndexName="item_type_index",
-                        KeyConditionExpression=Key("item_type").eq("merger"),
+                        KeyConditionExpression=Key("item_type").eq(
+                            RecordType.MERGER.value
+                        ),
                     )
                 except ClientError as e:
                     raise DatabaseReadException(e)
