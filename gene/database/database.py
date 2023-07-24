@@ -3,12 +3,12 @@ import abc
 from enum import Enum
 from os import environ
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any, Dict, Generator, List, Optional, Set, Union
 import sys
 
 import click
 
-from gene.schemas import RefType, SourceMeta, SourceName
+from gene.schemas import RecordType, RefType, SourceMeta, SourceName
 
 
 class DatabaseException(Exception):
@@ -141,6 +141,24 @@ class AbstractDatabase(abc.ABC):
         """Retrieve all available concept IDs for use in generating normalized records.
 
         :return: List of concept IDs as strings.
+        """
+
+    @abc.abstractmethod
+    def get_all_records(self, record_type: RecordType) -> Generator[Dict, None, None]:
+        """Retrieve all source or normalized records. Either return all source records,
+        or all records that qualify as "normalized" (i.e., merged groups + source
+        records that are otherwise ungrouped).
+
+        For example,
+
+        >>> from gene.database import create_db
+        >>> from gene.schemas import RecordType
+        >>> db = create_db()
+        >>> for record in db.get_all_records(RecordType.MERGER):
+        >>>     pass  # do something
+
+        :param record_type: type of result to return
+        :return: Generator that lazily provides records as they are retrieved
         """
 
     @abc.abstractmethod
