@@ -1,15 +1,21 @@
 """Test import of NCBI source data"""
-import pytest
-from gene.schemas import Gene, MatchType, SourceName
-from gene.query import QueryHandler
 from datetime import datetime
-from tests.conftest import assertion_checks, check_ncbi_discontinued_gene, \
-    check_resp_single_record
+
+import pytest
+
+from gene.query import QueryHandler
+from gene.schemas import Gene, MatchType, SourceName
+from tests.conftest import (
+    assertion_checks,
+    check_ncbi_discontinued_gene,
+    check_resp_single_record,
+)
 
 
 @pytest.fixture(scope="module")
 def ncbi(database):
     """Build ncbi test fixture."""
+
     class QueryGetter:
         def __init__(self):
             self.query_handler = QueryHandler(database)
@@ -44,23 +50,23 @@ def dpf1():
                 "interval": {
                     "end": "q13.2",
                     "start": "q13.2",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             },
             {
                 "_id": "ga4gh:VSL.MbzGuoGI9MRB8oPe6eE-ULk3FIBdpMF8",
                 "interval": {
                     "end": {"value": 38229695, "type": "Number"},
                     "start": {"value": 38211005, "type": "Number"},
-                    "type": "SequenceInterval"
+                    "type": "SequenceInterval",
                 },
                 "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
-                "type": "SequenceLocation"
-            }
+                "type": "SequenceLocation",
+            },
         ],
-        "gene_type": "protein-coding"
+        "gene_type": "protein-coding",
     }
     return Gene(**params)
 
@@ -87,24 +93,23 @@ def pdp1_symbol():
                 "interval": {
                     "end": "q22.1",
                     "start": "q22.1",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             },
             {
                 "_id": "ga4gh:VSL.KmLM61Mm2jxuep7cdgg7lvOOXaIxSW0Y",
                 "interval": {
                     "end": {"value": 93926068, "type": "Number"},
                     "start": {"value": 93916922, "type": "Number"},
-                    "type": "SequenceInterval"
+                    "type": "SequenceInterval",
                 },
                 "sequence_id": "ga4gh:SQ.209Z7zJ-mFypBEWLk4rNC6S_OxY5p7bs",
-                "type": "SequenceLocation"
-            }
+                "type": "SequenceLocation",
+            },
         ],
-        "gene_type": "protein-coding"
-
+        "gene_type": "protein-coding",
     }
     return Gene(**params)
 
@@ -131,23 +136,23 @@ def pdp1_alias():
                 "interval": {
                     "end": "p24.1",
                     "start": "p24.1",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             },
             {
                 "_id": "ga4gh:VSL.X_fA-Sjsw2ZreE9rykzPNzCFctpFGG-u",
                 "interval": {
                     "end": {"value": 4665258, "type": "Number"},
                     "start": {"value": 4662293, "type": "Number"},
-                    "type": "SequenceInterval"
+                    "type": "SequenceInterval",
                 },
                 "sequence_id": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
-                "type": "SequenceLocation"
-            }
+                "type": "SequenceLocation",
+            },
         ],
-        "gene_type": "protein-coding"
+        "gene_type": "protein-coding",
     }
     return Gene(**params)
 
@@ -172,47 +177,39 @@ def spry3():
             {
                 "_id": "ga4gh:VCL.A1s9hZY1tgmRi1WuXM1ETZOqJcpo4Ftx",
                 "chr": "Y",
-                "interval": {
-                    "end": "q12",
-                    "start": "q12",
-                    "type": "CytobandInterval"
-                },
+                "interval": {"end": "q12", "start": "q12", "type": "CytobandInterval"},
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             },
             {
                 "_id": "ga4gh:VCL.fEBeCyej0jVKsvjw4vxyW6j1h8UVLb5S",
                 "chr": "X",
-                "interval": {
-                    "end": "q28",
-                    "start": "q28",
-                    "type": "CytobandInterval"
-                },
+                "interval": {"end": "q28", "start": "q28", "type": "CytobandInterval"},
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             },
             {
                 "_id": "ga4gh:VSL.r6_z0hmAdPdufX0g1ciRj_zPU6poQviA",
                 "interval": {
                     "end": {"value": 155782459, "type": "Number"},
                     "start": {"value": 155612585, "type": "Number"},
-                    "type": "SequenceInterval"
+                    "type": "SequenceInterval",
                 },
                 "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
-                "type": "SequenceLocation"
+                "type": "SequenceLocation",
             },
             {
                 "_id": "ga4gh:VSL.SvfaYotp4SHyoacjNXRqdIE1AZPCx_SI",
                 "interval": {
                     "end": {"value": 56968979, "type": "Number"},
                     "start": {"value": 56954315, "type": "Number"},
-                    "type": "SequenceInterval"
+                    "type": "SequenceInterval",
                 },
                 "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
-                "type": "SequenceLocation"
-            }
+                "type": "SequenceLocation",
+            },
         ],
-        "gene_type": "protein-coding"
+        "gene_type": "protein-coding",
     }
     return Gene(**params)
 
@@ -234,7 +231,7 @@ def adcp1():
         "strand": None,
         "location_annotations": ["6"],
         "locations": [],
-        "gene_type": "unknown"
+        "gene_type": "unknown",
     }
     return Gene(**params)
 
@@ -256,7 +253,7 @@ def afa():
         "strand": None,
         "location_annotations": [],
         "locations": [],
-        "gene_type": "unknown"
+        "gene_type": "unknown",
     }
     return Gene(**params)
 
@@ -284,23 +281,23 @@ def znf84():
                 "interval": {
                     "end": "q24.33",
                     "start": "q24.33",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             },
             {
                 "_id": "ga4gh:VSL.pT54XeMRdsoRFulVQU4wxmTcLR0jHbuu",
                 "interval": {
                     "end": {"value": 133063299, "type": "Number"},
                     "start": {"value": 133037508, "type": "Number"},
-                    "type": "SequenceInterval"
+                    "type": "SequenceInterval",
                 },
                 "sequence_id": "ga4gh:SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl",
-                "type": "SequenceLocation"
-            }
+                "type": "SequenceLocation",
+            },
         ],
-        "gene_type": "protein-coding"
+        "gene_type": "protein-coding",
     }
     return Gene(**params)
 
@@ -330,8 +327,8 @@ def slc25a6():
                 "interval": {
                     "type": "CytobandInterval",
                     "start": "p22.33",
-                    "end": "p22.33"
-                }
+                    "end": "p22.33",
+                },
             },
             {
                 "_id": "ga4gh:VCL.TxAQEgJyJOrHy8GLUltsUvmeA_z2FlpA",
@@ -341,8 +338,8 @@ def slc25a6():
                 "interval": {
                     "type": "CytobandInterval",
                     "start": "p11.2",
-                    "end": "p11.2"
-                }
+                    "end": "p11.2",
+                },
             },
             {
                 "_id": "ga4gh:VSL.HG0bXHwmZoxZzU2ckz4T6lvxIswXhLQZ",
@@ -350,15 +347,9 @@ def slc25a6():
                 "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
                 "interval": {
                     "type": "SequenceInterval",
-                    "start": {
-                        "type": "Number",
-                        "value": 1386151
-                    },
-                    "end": {
-                        "type": "Number",
-                        "value": 1392113
-                    }
-                }
+                    "start": {"type": "Number", "value": 1386151},
+                    "end": {"type": "Number", "value": 1392113},
+                },
             },
             {
                 "_id": "ga4gh:VSL.1J-MNAWJ9hvZtIM_90lqLbxEt707zL_A",
@@ -366,18 +357,12 @@ def slc25a6():
                 "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
                 "interval": {
                     "type": "SequenceInterval",
-                    "start": {
-                        "type": "Number",
-                        "value": 1386151
-                    },
-                    "end": {
-                        "type": "Number",
-                        "value": 1392113
-                    }
-                }
-            }
+                    "start": {"type": "Number", "value": 1386151},
+                    "end": {"type": "Number", "value": 1392113},
+                },
+            },
         ],
-        "gene_type": "protein-coding"
+        "gene_type": "protein-coding",
     }
     return Gene(**params)
 
@@ -402,16 +387,12 @@ def loc106783576():
             {
                 "_id": "ga4gh:VCL.RFN35KQMhqzhmo4QP7AxKAzlPtnh7slL",
                 "chr": "10",
-                "interval": {
-                    "end": "cen",
-                    "start": "pter",
-                    "type": "CytobandInterval"
-                },
+                "interval": {"end": "cen", "start": "pter", "type": "CytobandInterval"},
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             }
         ],
-        "gene_type": "biological-region"
+        "gene_type": "biological-region",
     }
     return Gene(**params)
 
@@ -436,16 +417,12 @@ def glc1b():
             {
                 "_id": "ga4gh:VCL.HStPIl_6UkNQmbjZW1TeUmHFMptbIj6t",
                 "chr": "2",
-                "interval": {
-                    "end": "q13",
-                    "start": "cen",
-                    "type": "CytobandInterval"
-                },
+                "interval": {"end": "q13", "start": "cen", "type": "CytobandInterval"},
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             }
         ],
-        "gene_type": "unknown"
+        "gene_type": "unknown",
     }
     return Gene(**params)
 
@@ -473,13 +450,13 @@ def hdpa():
                 "interval": {
                     "end": "p22.32",
                     "start": "pter",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             }
         ],
-        "gene_type": "unknown"
+        "gene_type": "unknown",
     }
     return Gene(**params)
 
@@ -491,7 +468,7 @@ def prkrap1():
     params = {
         "match_type": MatchType.NO_MATCH,
         "label": "protein activator of interferon induced protein kinase "
-                 "EIF2AK2 pseudogene 1",
+        "EIF2AK2 pseudogene 1",
         "concept_id": "ncbigene:731716",
         "symbol": "PRKRAP1",
         "aliases": [],
@@ -508,33 +485,33 @@ def prkrap1():
                 "interval": {
                     "end": "p21.3",
                     "start": "p21.3",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             },
             {
                 "_id": "ga4gh:VSL.WB_2IFcms7VmbkPBXUgUaH-R1EdKRs4s",
                 "interval": {
                     "end": {"value": 3941874, "type": "Number"},
                     "start": {"value": 3940269, "type": "Number"},
-                    "type": "SequenceInterval"
+                    "type": "SequenceInterval",
                 },
                 "sequence_id": "ga4gh:SQ.MjujHSAsgNWRTX4w3ysM7b5OVhZpdXu1",
-                "type": "SequenceLocation"
+                "type": "SequenceLocation",
             },
             {
                 "_id": "ga4gh:VSL.PIeADExe9_iSJkTLQbSvhxAJ8PM19R6r",
                 "interval": {
                     "end": {"value": 3932085, "type": "Number"},
                     "start": {"value": 3930480, "type": "Number"},
-                    "type": "SequenceInterval"
+                    "type": "SequenceInterval",
                 },
                 "sequence_id": "ga4gh:SQ.Q8IworEhpLeXwpz1CHM7C3luysh-ltx-",
-                "type": "SequenceLocation"
-            }
+                "type": "SequenceLocation",
+            },
         ],
-        "gene_type": "pseudo"
+        "gene_type": "pseudo",
     }
     return Gene(**params)
 
@@ -562,13 +539,13 @@ def mhb():
                 "interval": {
                     "end": "p21.32",
                     "start": "p22.2",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             }
         ],
-        "gene_type": "unknown"
+        "gene_type": "unknown",
     }
     return Gene(**params)
 
@@ -596,13 +573,13 @@ def spg37():
                 "interval": {
                     "end": "q13.3",
                     "start": "p21.2",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             }
         ],
-        "gene_type": "unknown"
+        "gene_type": "unknown",
     }
     return Gene(**params)
 
@@ -842,29 +819,35 @@ def test_discontinued_genes(ncbi):
     """Test searches for discontinued genes."""
     # HOTS
     resp = ncbi.search("ncbigene:103344718")
-    check_ncbi_discontinued_gene(resp, "ncbigene:103344718",
-                                 "HOTS", MatchType.CONCEPT_ID)
+    check_ncbi_discontinued_gene(
+        resp, "ncbigene:103344718", "HOTS", MatchType.CONCEPT_ID
+    )
 
     resp = ncbi.search("HOTS")
-    check_ncbi_discontinued_gene(resp, "ncbigene:103344718",
-                                 "HOTS", MatchType.CONCEPT_ID)
+    check_ncbi_discontinued_gene(
+        resp, "ncbigene:103344718", "HOTS", MatchType.CONCEPT_ID
+    )
 
     resp = ncbi.search("hots")
-    check_ncbi_discontinued_gene(resp, "ncbigene:103344718",
-                                 "HOTS", MatchType.CONCEPT_ID)
+    check_ncbi_discontinued_gene(
+        resp, "ncbigene:103344718", "HOTS", MatchType.CONCEPT_ID
+    )
 
     # AASTH23
     resp = ncbi.search("ncbigene:544580")
-    check_ncbi_discontinued_gene(resp, "ncbigene:544580",
-                                 "AASTH23", MatchType.CONCEPT_ID)
+    check_ncbi_discontinued_gene(
+        resp, "ncbigene:544580", "AASTH23", MatchType.CONCEPT_ID
+    )
 
     resp = ncbi.search("AASTH23")
-    check_ncbi_discontinued_gene(resp, "ncbigene:544580",
-                                 "AASTH23", MatchType.CONCEPT_ID)
+    check_ncbi_discontinued_gene(
+        resp, "ncbigene:544580", "AASTH23", MatchType.CONCEPT_ID
+    )
 
     resp = ncbi.search("aastH23")
-    check_ncbi_discontinued_gene(resp, "ncbigene:544580",
-                                 "AASTH23", MatchType.CONCEPT_ID)
+    check_ncbi_discontinued_gene(
+        resp, "ncbigene:544580", "AASTH23", MatchType.CONCEPT_ID
+    )
 
 
 def test_no_match(ncbi):
@@ -873,14 +856,16 @@ def test_no_match(ncbi):
     assert len(response.records) == 0
     # double-check that meta still populates
     assert response.source_meta_.data_license == "custom"
-    assert response.source_meta_.data_license_url == \
-           "https://www.ncbi.nlm.nih.gov/home/about/policies/"
+    assert (
+        response.source_meta_.data_license_url
+        == "https://www.ncbi.nlm.nih.gov/home/about/policies/"
+    )
     assert datetime.strptime(response.source_meta_.version, "%Y%m%d")
-    assert response.source_meta_.data_url == \
-        "ftp://ftp.ncbi.nlm.nih.gov"
-    assert response.source_meta_.rdp_url == \
-        "https://reusabledata.org/ncbi-gene.html"
-    assert not response.source_meta_.data_license_attributes["non_commercial"]  # noqa: E501
+    assert response.source_meta_.data_url == "ftp://ftp.ncbi.nlm.nih.gov"
+    assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
+    assert not response.source_meta_.data_license_attributes[
+        "non_commercial"
+    ]  # noqa: E501
     assert not response.source_meta_.data_license_attributes["share_alike"]
     assert not response.source_meta_.data_license_attributes["attribution"]
 
@@ -919,16 +904,16 @@ def test_meta(ncbi):
     """Test NCBI source metadata."""
     response = ncbi.search("PDP1")
     assert response.source_meta_.data_license == "custom"
-    assert response.source_meta_.data_license_url == \
-        "https://www.ncbi.nlm.nih.gov/home/about/policies/"
+    assert (
+        response.source_meta_.data_license_url
+        == "https://www.ncbi.nlm.nih.gov/home/about/policies/"
+    )
     assert datetime.strptime(response.source_meta_.version, "%Y%m%d")
-    assert response.source_meta_.data_url == \
-        "ftp://ftp.ncbi.nlm.nih.gov"
-    assert response.source_meta_.rdp_url == \
-        "https://reusabledata.org/ncbi-gene.html"
+    assert response.source_meta_.data_url == "ftp://ftp.ncbi.nlm.nih.gov"
+    assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
     assert response.source_meta_.genome_assemblies == ["GRCh38.p14"]
     assert response.source_meta_.data_license_attributes == {
         "non_commercial": False,
         "share_alike": False,
-        "attribution": False
+        "attribution": False,
     }
