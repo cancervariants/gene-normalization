@@ -32,11 +32,15 @@ docstring-quotes = "double"
 [tool.ruff.per-file-ignores]
 # ANN001 - missing-type-function-argument
 # ANN2 - missing-return-type
+# ANN201 - MIssing type annotation
 # ANN102 - missing-type-cls
-# N805 - invalid-first-argument-name-for-method
+# D103 - Missing docstring in public function
 # F821 - undefined-name
 # F401 - unused-import
+# I001 - Import block unsorted or unformatted
+# N805 - invalid-first-argument-name-for-method
 "tests/*" = ["ANN001", "ANN102", "ANN2"]
 "setup.py" = ["F821"]
 "*__init__.py" = ["F401"]
 "gene/schemas.py" = ["ANN001", "ANN201", "N805"]
+"docs/source/conf.py" = ["D100", "I001", "D103", "ANN201", "ANN001"]
