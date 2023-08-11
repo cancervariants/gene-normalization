@@ -1,30 +1,37 @@
 """A base class for extraction, transformation, and loading of data."""
-from abc import ABC, abstractmethod
-from typing import Dict, Optional, List
-from gene.database import AbstractDatabase
-from gene import ITEM_TYPES, SEQREPO_ROOT_DIR
-from biocommons.seqrepo import SeqRepo
-from pathlib import Path
-from ftplib import FTP
-import gzip
-import shutil
-from os import remove
-from dateutil import parser
 import datetime
+import gzip
 import logging
+import shutil
+from abc import ABC, abstractmethod
+from ftplib import FTP
+from os import remove
+from pathlib import Path
+from typing import Dict, List, Optional
+
 import pydantic
+from biocommons.seqrepo import SeqRepo
+from dateutil import parser
+
+from gene import ITEM_TYPES, SEQREPO_ROOT_DIR
+from gene.database import AbstractDatabase
 from gene.schemas import Gene, MatchType, SourceName
 
-logger = logging.getLogger('gene')
+logger = logging.getLogger("gene")
 logger.setLevel(logging.DEBUG)
 
 
 class Base(ABC):
     """The ETL base class."""
 
-    def __init__(self, database: AbstractDatabase, host: str, data_dir: str,
-                 src_data_dir: Path, seqrepo_dir: Path = SEQREPO_ROOT_DIR,
-                 *args, **kwargs) -> None:
+    def __init__(
+        self,
+        database: AbstractDatabase,
+        host: str,
+        data_dir: str,
+        src_data_dir: Path,
+        seqrepo_dir: Path = SEQREPO_ROOT_DIR,
+    ) -> None:
         """Instantiate Base class.
 
         :param database: database instance
@@ -50,17 +57,17 @@ class Base(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def _extract_data(self, *args, **kwargs) -> None:
+    def _extract_data(self, *args, **kwargs) -> None:  # noqa: ANN002
         """Extract data from FTP site or local data directory."""
         raise NotImplementedError
 
     @abstractmethod
-    def _transform_data(self, *args, **kwargs) -> None:
+    def _transform_data(self) -> None:
         """Transform data to model."""
         raise NotImplementedError
 
     @abstractmethod
-    def _add_meta(self, *args, **kwargs) -> None:
+    def _add_meta(self) -> None:
         """Add source meta to database source info."""
         raise NotImplementedError
 
@@ -79,13 +86,12 @@ class Base(ABC):
         try:
             assert Gene(match_type=MatchType.NO_MATCH, **gene)
         except pydantic.error_wrappers.ValidationError as e:
-            logger.warning(f"Unable to load {gene} due to validation error: "
-                           f"{e}")
+            logger.warning(f"Unable to load {gene} due to validation error: " f"{e}")
         else:
-            concept_id = gene['concept_id'].lower()
-            gene['label_and_type'] = f"{concept_id}##identity"
+            concept_id = gene["concept_id"].lower()
+            gene["label_and_type"] = f"{concept_id}##identity"
             gene["src_name"] = self._src_name.value
-            gene['item_type'] = 'identity'
+            gene["item_type"] = "identity"
 
             for attr_type in ITEM_TYPES:
                 if attr_type in gene:
@@ -99,8 +105,9 @@ class Base(ABC):
             self._database.add_record(gene, self._src_name)
             self._processed_ids.append(concept_id)
 
-    def _ftp_download(self, host: str, data_dir: str, fn: str, source_dir: Path,
-                      data_fn: str) -> Optional[str]:
+    def _ftp_download(
+        self, host: str, data_dir: str, fn: str, source_dir: Path, data_fn: str
+    ) -> Optional[str]:
         """Download data file from FTP site.
 
         :param host: Source's FTP host name
@@ -112,16 +119,16 @@ class Base(ABC):
         """
         with FTP(host) as ftp:
             ftp.login()
-            timestamp = ftp.voidcmd(f'MDTM {data_dir}{data_fn}')[4:].strip()
+            timestamp = ftp.voidcmd(f"MDTM {data_dir}{data_fn}")[4:].strip()
             date = str(parser.parse(timestamp)).split()[0]
-            version = \
-                datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%Y%m%d')
+            version = datetime.datetime.strptime(date, "%Y-%m-%d").strftime("%Y%m%d")
             ftp.cwd(data_dir)
             self._ftp_download_file(ftp, data_fn, source_dir, fn)
         return version
 
-    def _ftp_download_file(self, ftp: FTP, data_fn: str, source_dir: Path,
-                           fn: str) -> None:
+    def _ftp_download_file(
+        self, ftp: FTP, data_fn: str, source_dir: Path, fn: str
+    ) -> None:
         """Download data file from FTP
 
         :param ftp: FTP instance
@@ -129,15 +136,15 @@ class Base(ABC):
         :param source_dir: Source's data directory
         :param fn: Filename for downloaded file
         """
-        if data_fn.endswith('.gz'):
-            filepath = source_dir / f'{fn}.gz'
+        if data_fn.endswith(".gz"):
+            filepath = source_dir / f"{fn}.gz"
         else:
             filepath = source_dir / fn
-        with open(filepath, 'wb') as fp:
-            ftp.retrbinary(f'RETR {data_fn}', fp.write)
-        if data_fn.endswith('.gz'):
-            with gzip.open(filepath, 'rb') as f_in:
-                with open(source_dir / fn, 'wb') as f_out:
+        with open(filepath, "wb") as fp:
+            ftp.retrbinary(f"RETR {data_fn}", fp.write)
+        if data_fn.endswith(".gz"):
+            with gzip.open(filepath, "rb") as f_in:
+                with open(source_dir / fn, "wb") as f_out:
                     shutil.copyfileobj(f_in, f_out)
             remove(filepath)
 

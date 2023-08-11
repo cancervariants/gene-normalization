@@ -1,14 +1,17 @@
-"""This module contains data models for representing VICC normalized
-gene records.
-"""
-from typing import Literal, Type, List, Optional, Dict, Union, Any
-from pydantic import BaseModel, StrictBool, validator
+"""Contains data models for representing VICC normalized gene records."""
 from enum import Enum, IntEnum
+from typing import Any, Dict, List, Literal, Optional, Type, Union
+
 from ga4gh.vrsatile.pydantic import return_value
-from ga4gh.vrsatile.pydantic.vrs_models import CURIE, VRSTypes, SequenceLocation, \
-    ChromosomeLocation
+from ga4gh.vrsatile.pydantic.vrs_models import (
+    CURIE,
+    ChromosomeLocation,
+    SequenceLocation,
+    VRSTypes,
+)
 from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
-from pydantic.types import StrictStr, StrictInt
+from pydantic import BaseModel, StrictBool, validator
+from pydantic.types import StrictInt, StrictStr
 
 
 class SymbolStatus(str, Enum):
@@ -40,7 +43,7 @@ class Annotation(str, Enum):
 class Chromosome(str, Enum):
     """Define string constraints for chromosomes."""
 
-    MITOCHONDRIA = 'MT'
+    MITOCHONDRIA = "MT"
 
 
 class MatchType(IntEnum):
@@ -86,21 +89,23 @@ class BaseGene(BaseModel):
     label: Optional[StrictStr]
     strand: Optional[Strand]
     location_annotations: Optional[List[StrictStr]] = []
-    locations: Optional[Union[
-        List[Union[SequenceLocation, ChromosomeLocation]],
-        List[Union[GeneSequenceLocation, GeneChromosomeLocation]]  # dynamodb
-    ]] = [],
+    locations: Optional[
+        Union[
+            List[Union[SequenceLocation, ChromosomeLocation]],
+            List[Union[GeneSequenceLocation, GeneChromosomeLocation]],  # dynamodb
+        ]
+    ] = ([],)
     aliases: Optional[List[StrictStr]] = []
     previous_symbols: Optional[List[StrictStr]] = []
     xrefs: Optional[List[CURIE]] = []
     associated_with: Optional[List[CURIE]] = []
     gene_type: Optional[StrictStr]
 
-    _get_concept_id_val = \
-        validator('concept_id', allow_reuse=True)(return_value)
-    _get_xrefs_val = validator('xrefs', allow_reuse=True)(return_value)
-    _get_associated_with_val = \
-        validator('associated_with', allow_reuse=True)(return_value)
+    _get_concept_id_val = validator("concept_id", allow_reuse=True)(return_value)
+    _get_xrefs_val = validator("xrefs", allow_reuse=True)(return_value)
+    _get_associated_with_val = validator("associated_with", allow_reuse=True)(
+        return_value
+    )
 
 
 class Gene(BaseGene):
@@ -114,14 +119,13 @@ class Gene(BaseGene):
         use_enum_values = True
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['Gene']) -> None:
+        def schema_extra(schema: Dict[str, Any], model: Type["Gene"]) -> None:
             """Configure OpenAPI schema"""
-            if 'title' in schema.keys():
-                schema.pop('title', None)
-            for p in schema.get('properties', {}).values():
-                p.pop('title', None)
-            schema['example'] = {
+            if "title" in schema.keys():
+                schema.pop("title", None)
+            for p in schema.get("properties", {}).values():
+                p.pop("title", None)
+            schema["example"] = {
                 "label": None,
                 "concept_id": "ensembl:ENSG00000157764",
                 "symbol": "BRAF",
@@ -218,11 +222,11 @@ class RefType(str, Enum):
     """Reference item types."""
 
     # Must be in descending MatchType order.
-    SYMBOL = 'symbol'
-    PREVIOUS_SYMBOLS = 'prev_symbol'
-    ALIASES = 'alias'
-    XREFS = 'xref'
-    ASSOCIATED_WITH = 'associated_with'
+    SYMBOL = "symbol"
+    PREVIOUS_SYMBOLS = "prev_symbol"
+    ALIASES = "alias"
+    XREFS = "xref"
+    ASSOCIATED_WITH = "associated_with"
 
 
 class SourceMeta(BaseModel):
@@ -242,25 +246,24 @@ class SourceMeta(BaseModel):
         use_enum_values = True
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['SourceMeta']) -> None:
+        def schema_extra(schema: Dict[str, Any], model: Type["SourceMeta"]) -> None:
             """Configure OpenAPI schema"""
-            if 'title' in schema.keys():
-                schema.pop('title', None)
-            for prop in schema.get('properties', {}).values():
-                prop.pop('title', None)
-            schema['example'] = {
+            if "title" in schema.keys():
+                schema.pop("title", None)
+            for prop in schema.get("properties", {}).values():
+                prop.pop("title", None)
+            schema["example"] = {
                 "data_license": "custom",
                 "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                 "version": "20201215",
                 "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
                 "rdp_url": "https://reusabledata.org/ncbi-gene.html",
-                'data_license_attributes': {
+                "data_license_attributes": {
                     "non_commercial": False,
                     "share_alike": False,
-                    "attribution": False
+                    "attribution": False,
                 },
-                "genome_assemblies": None
+                "genome_assemblies": None,
             }
 
 
@@ -278,14 +281,13 @@ class MatchesKeyed(BaseModel):
         use_enum_values = True
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['MatchesKeyed']) -> None:
+        def schema_extra(schema: Dict[str, Any], model: Type["MatchesKeyed"]) -> None:
             """Configure OpenAPI schema"""
-            if 'title' in schema.keys():
-                schema.pop('title', None)
-            for prop in schema.get('properties', {}).values():
-                prop.pop('title', None)
-            schema['example'] = {
+            if "title" in schema.keys():
+                schema.pop("title", None)
+            for prop in schema.get("properties", {}).values():
+                prop.pop("title", None)
+            schema["example"] = {
                 "NCBI": {
                     "match_type": 0,
                     "records": [],
@@ -298,10 +300,10 @@ class MatchesKeyed(BaseModel):
                         "data_license_attributes": {
                             "non_commercial": False,
                             "share_alike": False,
-                            "attribution": False
+                            "attribution": False,
                         },
-                        "genome_assemblies": None
-                    }
+                        "genome_assemblies": None,
+                    },
                 }
             }
 
@@ -321,14 +323,13 @@ class MatchesListed(BaseModel):
         use_enum_values = True
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['MatchesListed']) -> None:
+        def schema_extra(schema: Dict[str, Any], model: Type["MatchesListed"]) -> None:
             """Configure OpenAPI schema"""
-            if 'title' in schema.keys():
-                schema.pop('title', None)
-            for prop in schema.get('properties', {}).values():
-                prop.pop('title', None)
-            schema['example'] = {
+            if "title" in schema.keys():
+                schema.pop("title", None)
+            for prop in schema.get("properties", {}).values():
+                prop.pop("title", None)
+            schema["example"] = {
                 "source": "NCBI",
                 "match_type": 0,
                 "records": [],
@@ -341,20 +342,20 @@ class MatchesListed(BaseModel):
                     "data_license_attributes": {
                         "non_commercial": False,
                         "share_alike": False,
-                        "attribution": False
+                        "attribution": False,
                     },
-                    "genome_assemblies": None
-                }
+                    "genome_assemblies": None,
+                },
             }
 
 
 class ServiceMeta(BaseModel):
     """Metadata regarding the gene-normalization service."""
 
-    name = 'gene-normalizer'
+    name = "gene-normalizer"
     version: StrictStr
     response_datetime: StrictStr
-    url = 'https://github.com/cancervariants/gene-normalization'
+    url = "https://github.com/cancervariants/gene-normalization"
 
     class Config:
         """Configure model example"""
@@ -362,18 +363,17 @@ class ServiceMeta(BaseModel):
         use_enum_values = True
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['ServiceMeta']) -> None:
+        def schema_extra(schema: Dict[str, Any], model: Type["ServiceMeta"]) -> None:
             """Configure OpenAPI schema"""
-            if 'title' in schema.keys():
-                schema.pop('title', None)
-            for prop in schema.get('properties', {}).values():
-                prop.pop('title', None)
-            schema['example'] = {
-                'name': 'gene-normalizer',
-                'version': '0.1.0',
-                'response_datetime': '2022-03-23 15:57:14.180908',
-                'url': 'https://github.com/cancervariants/gene-normalization'
+            if "title" in schema.keys():
+                schema.pop("title", None)
+            for prop in schema.get("properties", {}).values():
+                prop.pop("title", None)
+            schema["example"] = {
+                "name": "gene-normalizer",
+                "version": "0.1.0",
+                "response_datetime": "2022-03-23 15:57:14.180908",
+                "url": "https://github.com/cancervariants/gene-normalization",
             }
 
 
@@ -391,14 +391,13 @@ class SearchService(BaseModel):
         use_enum_values = True
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['SearchService']) -> None:
+        def schema_extra(schema: Dict[str, Any], model: Type["SearchService"]) -> None:
             """Configure OpenAPI schema"""
-            if 'title' in schema.keys():
-                schema.pop('title', None)
-            for prop in schema.get('properties', {}).values():
-                prop.pop('title', None)
-            schema['example'] = {
+            if "title" in schema.keys():
+                schema.pop("title", None)
+            for prop in schema.get("properties", {}).values():
+                prop.pop("title", None)
+            schema["example"] = {
                 "query": "BRAF",
                 "warnings": [],
                 "source_matches": [
@@ -415,7 +414,7 @@ class SearchService(BaseModel):
                                 "xrefs": [],
                                 "symbol_status": None,
                                 "strand": "-",
-                                "locations": []
+                                "locations": [],
                             }
                         ],
                         "source_meta_": {
@@ -427,18 +426,18 @@ class SearchService(BaseModel):
                             "data_license_attributes": {
                                 "non_commercial": False,
                                 "share_alike": False,
-                                "attribution": False
+                                "attribution": False,
                             },
-                            "genome_assemblies": "GRCh38"
-                        }
+                            "genome_assemblies": "GRCh38",
+                        },
                     }
                 ],
                 "service_meta_": {
-                    'name': 'gene-normalizer',
-                    'version': '0.1.0',
-                    'response_datetime': '2022-03-23 15:57:14.180908',
-                    'url': 'https://github.com/cancervariants/gene-normalization'  # noqa: E501
-                }
+                    "name": "gene-normalizer",
+                    "version": "0.1.0",
+                    "response_datetime": "2022-03-23 15:57:14.180908",
+                    "url": "https://github.com/cancervariants/gene-normalization",  # noqa: E501
+                },
             }
 
 
@@ -473,46 +472,35 @@ class NormalizeService(BaseNormalizationService):
         use_enum_values = True
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['NormalizeService']) -> None:
+        def schema_extra(
+            schema: Dict[str, Any], model: Type["NormalizeService"]
+        ) -> None:
             """Configure OpenAPI schema"""
-            if 'title' in schema.keys():
-                schema.pop('title', None)
-            for prop in schema.get('properties', {}).values():
-                prop.pop('title', None)
-            schema['example'] = {
+            if "title" in schema.keys():
+                schema.pop("title", None)
+            for prop in schema.get("properties", {}).values():
+                prop.pop("title", None)
+            schema["example"] = {
                 "query": "BRAF",
                 "warnings": [],
                 "match_type": 100,
                 "gene_descriptor": {
                     "id": "normalize.gene:BRAF",
                     "type": "GeneDescriptor",
-                    "gene": {
-                        "gene_id": "hgnc:1097",
-                        "type": "Gene"
-                    },
+                    "gene": {"gene_id": "hgnc:1097", "type": "Gene"},
                     "label": "BRAF",
-                    "xrefs": [
-                        "ncbigene:673",
-                        "ensembl:ENSG00000157764"
-                    ],
-                    "alternate_labels": [
-                        "BRAF1",
-                        "RAFB1",
-                        "B-raf",
-                        "NS7",
-                        "B-RAF1"
-                    ],
+                    "xrefs": ["ncbigene:673", "ensembl:ENSG00000157764"],
+                    "alternate_labels": ["BRAF1", "RAFB1", "B-raf", "NS7", "B-RAF1"],
                     "extensions": [
                         {
                             "name": "approved_name",
                             "value": "B-Raf proto-oncogene, serine/threonine kinase",  # noqa: E501
-                            "type": "Extension"
+                            "type": "Extension",
                         },
                         {
                             "name": "symbol_status",
                             "value": "approved",
-                            "type": "Extension"
+                            "type": "Extension",
                         },
                         {
                             "name": "associated_with",
@@ -529,9 +517,9 @@ class NormalizeService(BaseNormalizationService):
                                 "uniprot:P15056",
                                 "ena.embl:M95712",
                                 "vega:OTTHUMG00000157457",
-                                "pubmed:1565476"
+                                "pubmed:1565476",
                             ],
-                            "type": "Extension"
+                            "type": "Extension",
                         },
                         {
                             "name": "chromosome_location",
@@ -543,12 +531,12 @@ class NormalizeService(BaseNormalizationService):
                                 "interval": {
                                     "end": "q34",
                                     "start": "q34",
-                                    "type": "CytobandInterval"
-                                }
+                                    "type": "CytobandInterval",
+                                },
                             },
-                            "type": "Extension"
-                        }
-                    ]
+                            "type": "Extension",
+                        },
+                    ],
                 },
                 "source_meta_": {
                     "HGNC": {
@@ -560,9 +548,9 @@ class NormalizeService(BaseNormalizationService):
                         "data_license_attributes": {
                             "non_commercial": False,
                             "attribution": False,
-                            "share_alike": False
+                            "share_alike": False,
                         },
-                        "genome_assemblies": []
+                        "genome_assemblies": [],
                     },
                     "Ensembl": {
                         "data_license": "custom",
@@ -573,11 +561,9 @@ class NormalizeService(BaseNormalizationService):
                         "data_license_attributes": {
                             "non_commercial": False,
                             "attribution": False,
-                            "share_alike": False
+                            "share_alike": False,
                         },
-                        "genome_assemblies": [
-                            "GRCh38"
-                        ]
+                        "genome_assemblies": ["GRCh38"],
                     },
                     "NCBI": {
                         "data_license": "custom",
@@ -588,19 +574,17 @@ class NormalizeService(BaseNormalizationService):
                         "data_license_attributes": {
                             "non_commercial": False,
                             "attribution": False,
-                            "share_alike": False
+                            "share_alike": False,
                         },
-                        "genome_assemblies": [
-                            "GRCh38.p13"
-                        ]
-                    }
+                        "genome_assemblies": ["GRCh38.p13"],
+                    },
                 },
                 "service_meta_": {
-                    'name': 'gene-normalizer',
-                    'version': '0.1.19',
-                    'response_datetime': '2022-03-23 15:57:14.180908',
-                    'url': 'https://github.com/cancervariants/gene-normalization'  # noqa: E501
-                }
+                    "name": "gene-normalizer",
+                    "version": "0.1.19",
+                    "response_datetime": "2022-03-23 15:57:14.180908",
+                    "url": "https://github.com/cancervariants/gene-normalization",  # noqa: E501
+                },
             }
 
 
@@ -614,8 +598,9 @@ class MatchesNormalized(BaseModel):
         """Configure OpenAPI schema"""
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type["MatchesNormalized"]) -> None:
+        def schema_extra(
+            schema: Dict[str, Any], model: Type["MatchesNormalized"]
+        ) -> None:
             """Configure OpenAPI schema"""
             if "title" in schema.keys():
                 schema.pop("title", None)
@@ -636,8 +621,9 @@ class UnmergedNormalizationService(BaseNormalizationService):
         """Configure OpenAPI schema"""
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type["UnmergedNormalizationService"]) -> None:
+        def schema_extra(
+            schema: Dict[str, Any], model: Type["UnmergedNormalizationService"]
+        ) -> None:
             """Configure OpenAPI schema example"""
             if "title" in schema.keys():
                 schema.pop("title", None)
@@ -651,7 +637,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
                     "version": "0.1.27",
                     "response_datetime": "2022-04-26 14:20:54.180240",
                     "name": "gene-normalizer",
-                    "url": "https://github.com/cancervariants/gene-normalization"
+                    "url": "https://github.com/cancervariants/gene-normalization",
                 },
                 "normalized_concept_id": "hgnc:108",
                 "source_matches": {
@@ -673,20 +659,13 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                         "interval": {
                                             "type": "CytobandInterval",
                                             "start": "q22.1",
-                                            "end": "q22.1"
-                                        }
+                                            "end": "q22.1",
+                                        },
                                     }
                                 ],
-                                "aliases": [
-                                    "3.1.1.7"
-                                ],
-                                "previous_symbols": [
-                                    "YT"
-                                ],
-                                "xrefs": [
-                                    "ncbigene:43",
-                                    "ensembl:ENSG00000087085"
-                                ],
+                                "aliases": ["3.1.1.7"],
+                                "previous_symbols": ["YT"],
+                                "xrefs": ["ncbigene:43", "ensembl:ENSG00000087085"],
                                 "associated_with": [
                                     "ucsc:uc003uxi.4",
                                     "vega:OTTHUMG00000157033",
@@ -698,9 +677,9 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                     "refseq:NM_015831",
                                     "pubmed:1380483",
                                     "uniprot:P22303",
-                                    "ccds:CCDS64736"
+                                    "ccds:CCDS64736",
                                 ],
-                                "gene_type": "gene with protein product"
+                                "gene_type": "gene with protein product",
                             }
                         ],
                         "source_meta_": {
@@ -712,10 +691,10 @@ class UnmergedNormalizationService(BaseNormalizationService):
                             "data_license_attributes": {
                                 "non_commercial": False,
                                 "share_alike": False,
-                                "attribution": False
+                                "attribution": False,
                             },
-                            "genome_assemblies": []
-                        }
+                            "genome_assemblies": [],
+                        },
                     },
                     "Ensembl": {
                         "records": [
@@ -735,22 +714,20 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                             "type": "SequenceInterval",
                                             "start": {
                                                 "type": "Number",
-                                                "value": 100889993
+                                                "value": 100889993,
                                             },
                                             "end": {
                                                 "type": "Number",
-                                                "value": 100896974
-                                            }
-                                        }
+                                                "value": 100896974,
+                                            },
+                                        },
                                     }
                                 ],
                                 "aliases": [],
                                 "previous_symbols": [],
-                                "xrefs": [
-                                    "hgnc:108"
-                                ],
+                                "xrefs": ["hgnc:108"],
                                 "associated_with": [],
-                                "gene_type": "protein_coding"
+                                "gene_type": "protein_coding",
                             }
                         ],
                         "source_meta_": {
@@ -762,12 +739,10 @@ class UnmergedNormalizationService(BaseNormalizationService):
                             "data_license_attributes": {
                                 "non_commercial": False,
                                 "share_alike": False,
-                                "attribution": False
+                                "attribution": False,
                             },
-                            "genome_assemblies": [
-                                "GRCh38"
-                            ]
-                        }
+                            "genome_assemblies": ["GRCh38"],
+                        },
                     },
                     "NCBI": {
                         "records": [
@@ -787,8 +762,8 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                         "interval": {
                                             "type": "CytobandInterval",
                                             "start": "q22.1",
-                                            "end": "q22.1"
-                                        }
+                                            "end": "q22.1",
+                                        },
                                     },
                                     {
                                         "_id": "ga4gh:VSL.EepkXho2doYcUT1DW54fT1a00_zkqrn0",  # noqa: E501
@@ -798,32 +773,20 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                             "type": "SequenceInterval",
                                             "start": {
                                                 "type": "Number",
-                                                "value": 100889993
+                                                "value": 100889993,
                                             },
                                             "end": {
                                                 "type": "Number",
-                                                "value": 100896994
-                                            }
-                                        }
-                                    }
+                                                "value": 100896994,
+                                            },
+                                        },
+                                    },
                                 ],
-                                "aliases": [
-                                    "YT",
-                                    "ARACHE",
-                                    "ACEE",
-                                    "N-ACHE"
-                                ],
-                                "previous_symbols": [
-                                    "ACEE"
-                                ],
-                                "xrefs": [
-                                    "hgnc:108",
-                                    "ensembl:ENSG00000087085"
-                                ],
-                                "associated_with": [
-                                    "omim:100740"
-                                ],
-                                "gene_type": "protein-coding"
+                                "aliases": ["YT", "ARACHE", "ACEE", "N-ACHE"],
+                                "previous_symbols": ["ACEE"],
+                                "xrefs": ["hgnc:108", "ensembl:ENSG00000087085"],
+                                "associated_with": ["omim:100740"],
+                                "gene_type": "protein-coding",
                             }
                         ],
                         "source_meta_": {
@@ -835,12 +798,10 @@ class UnmergedNormalizationService(BaseNormalizationService):
                             "data_license_attributes": {
                                 "non_commercial": False,
                                 "share_alike": False,
-                                "attribution": False
+                                "attribution": False,
                             },
-                            "genome_assemblies": [
-                                "GRCh38.p13"
-                            ]
-                        }
-                    }
-                }
+                            "genome_assemblies": ["GRCh38.p13"],
+                        },
+                    },
+                },
             }

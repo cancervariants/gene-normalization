@@ -1,17 +1,17 @@
 """Provide abstract Database class and relevant tools for database initialization."""
 import abc
+import sys
 from enum import Enum
 from os import environ
 from pathlib import Path
 from typing import Any, Dict, Generator, List, Optional, Set, Union
-import sys
 
 import click
 
 from gene.schemas import RecordType, RefType, SourceMeta, SourceName
 
 
-class DatabaseException(Exception):
+class DatabaseException(Exception):  # noqa: N818
     """Create custom class for handling database exceptions"""
 
 
@@ -34,7 +34,7 @@ class AbstractDatabase(abc.ABC):
     """
 
     @abc.abstractmethod
-    def __init__(self, db_url: Optional[str] = None, **db_args):
+    def __init__(self, db_url: Optional[str] = None, **db_args) -> None:
         """Initialize database instance.
 
         Generally, implementing classes should be able to construct a connection by
@@ -114,8 +114,9 @@ class AbstractDatabase(abc.ABC):
         """
 
     @abc.abstractmethod
-    def get_record_by_id(self, concept_id: str, case_sensitive: bool = True,
-                         merge: bool = False) -> Optional[Dict]:
+    def get_record_by_id(
+        self, concept_id: str, case_sensitive: bool = True, merge: bool = False
+    ) -> Optional[Dict]:
         """Fetch record corresponding to provided concept ID
 
         :param concept_id: concept ID for gene record
@@ -186,7 +187,7 @@ class AbstractDatabase(abc.ABC):
         """
 
     @abc.abstractmethod
-    def update_merge_ref(self, concept_id: str, merge_ref: Any) -> None:
+    def update_merge_ref(self, concept_id: str, merge_ref: Any) -> None:  # noqa: ANN401
         """Update the merged record reference of an individual record to a new value.
 
         :param concept_id: record to update
@@ -261,8 +262,9 @@ VALID_AWS_ENV_NAMES = {v.value for v in AwsEnvName.__members__.values()}
 
 def confirm_aws_db_use(env_name: str) -> None:
     """Check to ensure that AWS instance should actually be used."""
-    if click.confirm(f"Are you sure you want to use the AWS {env_name} database?",
-                     default=False):
+    if click.confirm(
+        f"Are you sure you want to use the AWS {env_name} database?", default=False
+    ):
         click.echo(f"***GENE AWS {env_name.upper()} DATABASE IN USE***")
     else:
         click.echo("Exiting.")
@@ -317,20 +319,23 @@ def create_db(
 
     if aws_env_var_set or aws_instance:
         from gene.database.dynamodb import DynamoDbDatabase
+
         db = DynamoDbDatabase()
     else:
         if db_url:
             endpoint_url = db_url
-        elif 'GENE_NORM_DB_URL' in environ.keys():
-            endpoint_url = environ['GENE_NORM_DB_URL']
+        elif "GENE_NORM_DB_URL" in environ.keys():
+            endpoint_url = environ["GENE_NORM_DB_URL"]
         else:
-            endpoint_url = 'http://localhost:8000'
+            endpoint_url = "http://localhost:8000"
 
         # prefer DynamoDB unless connection explicitly reads like a libpq URI
         if endpoint_url.startswith("postgres"):
             from gene.database.postgresql import PostgresDatabase
+
             db = PostgresDatabase(endpoint_url)
         else:
             from gene.database.dynamodb import DynamoDbDatabase
+
             db = DynamoDbDatabase(endpoint_url)
     return db

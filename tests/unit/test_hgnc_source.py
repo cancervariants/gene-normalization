@@ -1,14 +1,17 @@
 """Test that the gene normalizer works as intended for the HGNC source."""
-import pytest
-from gene.schemas import Gene, MatchType, SourceName
-from gene.query import QueryHandler
 from datetime import datetime
+
+import pytest
+
+from gene.query import QueryHandler
+from gene.schemas import Gene, MatchType, SourceName
 from tests.conftest import check_resp_single_record
 
 
 @pytest.fixture(scope="module")
 def hgnc(database):
     """Build hgnc test fixture."""
+
     class QueryGetter:
         def __init__(self):
             self.query_handler = QueryHandler(database)
@@ -41,17 +44,13 @@ def a1bg_as1():
                 "interval": {
                     "end": "q13.43",
                     "start": "q13.43",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             }
         ],
-        "previous_symbols": [
-            "NCRNA00181",
-            "A1BGAS",
-            "A1BG-AS"
-        ],
+        "previous_symbols": ["NCRNA00181", "A1BGAS", "A1BG-AS"],
         "aliases": ["FLJ23569"],
         "symbol_status": "approved",
         "associated_with": [
@@ -60,13 +59,10 @@ def a1bg_as1():
             "refseq:NR_015380",
             "ena.embl:BC040926",
             "refseq:NR_015380",
-            "ena.embl:BC040926"
+            "ena.embl:BC040926",
         ],
-        "xrefs": [
-            "ensembl:ENSG00000268895",
-            "ncbigene:503538"
-        ],
-        "gene_type": "RNA, long non-coding"
+        "xrefs": ["ensembl:ENSG00000268895", "ncbigene:503538"],
+        "gene_type": "RNA, long non-coding",
     }
     return Gene(**params)
 
@@ -88,17 +84,14 @@ def tp53():
                 "interval": {
                     "end": "p13.1",
                     "start": "p13.1",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             }
         ],
         "previous_symbols": [],
-        "aliases": [
-            "p53",
-            "LFS1"
-        ],
+        "aliases": ["p53", "LFS1"],
         "symbol_status": "approved",
         "associated_with": [
             "vega:OTTHUMG00000162125",
@@ -123,13 +116,10 @@ def tp53():
             "ena.embl:AF307851",
             "pubmed:6396087",
             "pubmed:3456488",
-            "pubmed:2047879"
+            "pubmed:2047879",
         ],
-        "xrefs": [
-            "ensembl:ENSG00000141510",
-            "ncbigene:7157"
-        ],
-        "gene_type": "gene with protein product"
+        "xrefs": ["ensembl:ENSG00000141510", "ncbigene:7157"],
+        "gene_type": "gene with protein product",
     }
     return Gene(**params)
 
@@ -151,24 +141,16 @@ def a3galt2():
                 "interval": {
                     "end": "p35.1",
                     "start": "p35.1",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             }
         ],
-        "previous_symbols": [
-            "A3GALT2P"
-        ],
-        "aliases": [
-            "IGBS3S",
-            "IGB3S"
-        ],
+        "previous_symbols": ["A3GALT2P"],
+        "aliases": ["IGBS3S", "IGB3S"],
         "symbol_status": "approved",
-        "xrefs": [
-            "ensembl:ENSG00000184389",
-            "ncbigene:127550"
-        ],
+        "xrefs": ["ensembl:ENSG00000184389", "ncbigene:127550"],
         "associated_with": [
             "vega:OTTHUMG00000004125",
             "vega:OTTHUMG00000004125",
@@ -178,9 +160,9 @@ def a3galt2():
             "omim:619850",
             "pubmed:10854427",
             "pubmed:18630988",
-            "refseq:NM_001080438"
+            "refseq:NM_001080438",
         ],
-        "gene_type": "gene with protein product"
+        "gene_type": "gene with protein product",
     }
     return Gene(**params)
 
@@ -202,23 +184,16 @@ def wdhd1():
                 "interval": {
                     "end": "q22.2",
                     "start": "q22.3",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             }
         ],
         "previous_symbols": [],
-        "aliases": [
-            "AND-1",
-            "CTF4",
-            "CHTF4"
-        ],
+        "aliases": ["AND-1", "CTF4", "CHTF4"],
         "symbol_status": "approved",
-        "xrefs": [
-            "ensembl:ENSG00000198554",
-            "ncbigene:11169"
-        ],
+        "xrefs": ["ensembl:ENSG00000198554", "ncbigene:11169"],
         "associated_with": [
             "vega:OTTHUMG00000140304",
             "refseq:NM_007086",
@@ -229,9 +204,9 @@ def wdhd1():
             "ccds:CCDS9721",
             "ena.embl:AJ006266",
             "pubmed:9175701",
-            "pubmed:20028748"
+            "pubmed:20028748",
         ],
-        "gene_type": "gene with protein product"
+        "gene_type": "gene with protein product",
     }
     return Gene(**params)
 
@@ -244,25 +219,15 @@ def g6pr():
         "label": "glucose-6-phosphatase regulator",
         "concept_id": "hgnc:4059",
         "symbol": "G6PR",
-        "location_annotations": [
-            "reserved"
-        ],
+        "location_annotations": ["reserved"],
         "locations": [],
         "strand": None,
         "previous_symbols": [],
-        "aliases": [
-            "GSD1aSP"
-        ],
+        "aliases": ["GSD1aSP"],
         "symbol_status": "approved",
-        "xrefs": [
-            "ncbigene:2541"
-        ],
-        "associated_with": [
-            "pubmed:2172641",
-            "pubmed:7814621",
-            "pubmed:2996501"
-        ],
-        "gene_type": "unknown"
+        "xrefs": ["ncbigene:2541"],
+        "associated_with": ["pubmed:2172641", "pubmed:7814621", "pubmed:2996501"],
+        "gene_type": "unknown",
     }
     return Gene(**params)
 
@@ -275,22 +240,15 @@ def pirc24():
         "label": "piwi-interacting RNA cluster 24",
         "concept_id": "hgnc:37528",
         "symbol": "PIRC24",
-        "location_annotations": [
-            "6"
-        ],
+        "location_annotations": ["6"],
         "locations": [],
         "strand": None,
         "previous_symbols": [],
-        "aliases": [
-        ],
+        "aliases": [],
         "symbol_status": "approved",
-        "xrefs": [
-            "ncbigene:100313810"
-        ],
-        "associated_with": [
-            "pubmed:17881367"
-        ],
-        "gene_type": "RNA, cluster"
+        "xrefs": ["ncbigene:100313810"],
+        "associated_with": ["pubmed:17881367"],
+        "gene_type": "RNA, cluster",
     }
     return Gene(**params)
 
@@ -303,9 +261,7 @@ def gage4():
         "label": "G antigen 4",
         "concept_id": "hgnc:4101",
         "symbol": "GAGE4",
-        "location_annotations": [
-            "not on reference assembly"
-        ],
+        "location_annotations": ["not on reference assembly"],
         "strand": None,
         "locations": [
             {
@@ -314,28 +270,24 @@ def gage4():
                 "interval": {
                     "end": "p11.2",
                     "start": "p11.4",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             }
         ],
         "previous_symbols": [],
-        "aliases": [
-            "CT4.4"
-        ],
+        "aliases": ["CT4.4"],
         "symbol_status": "approved",
-        "xrefs": [
-            "ncbigene:2576"
-        ],
+        "xrefs": ["ncbigene:2576"],
         "associated_with": [
             "refseq:NM_001474",
             "omim:300597",
             "uniprot:P0DSO3",
             "ena.embl:U19145",
-            "pubmed:7544395"
+            "pubmed:7544395",
         ],
-        "gene_type": "gene with protein product"
+        "gene_type": "gene with protein product",
     }
     return Gene(**params)
 
@@ -352,19 +304,9 @@ def mafip():
         "locations": [],
         "strand": None,
         "previous_symbols": [],
-        "aliases": [
-            "FLJ35473",
-            "FLJ00219",
-            "FLJ39633",
-            "MIP",
-            "pp5644",
-            "TEKT4P4"
-        ],
+        "aliases": ["FLJ35473", "FLJ00219", "FLJ39633", "MIP", "pp5644", "TEKT4P4"],
         "symbol_status": "approved",
-        "xrefs": [
-            "ensembl:ENSG00000274847",
-            "ncbigene:727764"
-        ],
+        "xrefs": ["ensembl:ENSG00000274847", "ncbigene:727764"],
         "associated_with": [
             "vega:OTTHUMG00000188065",
             "refseq:NR_046439",
@@ -372,9 +314,9 @@ def mafip():
             "ena.embl:AK074146",
             "ena.embl:AF289559",
             "pubmed:16549056",
-            "pubmed:15881666"
+            "pubmed:15881666",
         ],
-        "gene_type": "unknown"
+        "gene_type": "unknown",
     }
     return Gene(**params)
 
@@ -390,17 +332,12 @@ def mt_7sdna():
         "location_annotations": ["MT"],
         "locations": [],
         "strand": None,
-        "previous_symbols": [
-            "MT7SDNA"
-        ],
+        "previous_symbols": ["MT7SDNA"],
         "aliases": [],
         "symbol_status": "approved",
         "xrefs": [],
-        "associated_with": [
-            "pubmed:24709344",
-            "pubmed:273237"
-        ],
-        "gene_type": "region"
+        "associated_with": ["pubmed:24709344", "pubmed:273237"],
+        "gene_type": "region",
     }
     return Gene(**params)
 
@@ -419,24 +356,17 @@ def cecr():
             {
                 "_id": "ga4gh:VCL.-hT6Cp6B32GmZTD8BXh1xf6SJeLM1uN7",
                 "chr": "22",
-                "interval": {
-                    "end": "q11",
-                    "start": "pter",
-                    "type": "CytobandInterval"
-                },
+                "interval": {"end": "q11", "start": "pter", "type": "CytobandInterval"},
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             }
         ],
         "previous_symbols": [],
-        "aliases": [
-        ],
+        "aliases": [],
         "symbol_status": "approved",
-        "xrefs": [
-            "ncbigene:1055"
-        ],
+        "xrefs": ["ncbigene:1055"],
         "associated_with": [],
-        "gene_type": "region"
+        "gene_type": "region",
     }
     return Gene(**params)
 
@@ -458,10 +388,10 @@ def csf2ra():
                 "interval": {
                     "end": "p22.32",
                     "start": "p22.32",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             },
             {
                 "_id": "ga4gh:VCL.QzbpRniVtZz8V-7B7vKhGeX3A3huKacK",
@@ -469,24 +399,16 @@ def csf2ra():
                 "interval": {
                     "end": "p11.3",
                     "start": "p11.3",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+                "type": "ChromosomeLocation",
+            },
         ],
-        "previous_symbols": [
-            "CSF2R"
-        ],
-        "aliases": [
-            "CD116",
-            "alphaGMR"
-        ],
+        "previous_symbols": ["CSF2R"],
+        "aliases": ["CD116", "alphaGMR"],
         "symbol_status": "approved",
-        "xrefs": [
-            "ensembl:ENSG00000198223",
-            "ncbigene:1438"
-        ],
+        "xrefs": ["ensembl:ENSG00000198223", "ncbigene:1438"],
         "associated_with": [
             "vega:OTTHUMG00000012533",
             "refseq:NM_001161529",
@@ -504,14 +426,14 @@ def csf2ra():
             "ccds:CCDS55359",
             "ccds:CCDS35192",
             "ccds:CCDS35193",
-            "pubmed:1702217"
+            "pubmed:1702217",
         ],
-        "gene_type": "gene with protein product"
+        "gene_type": "gene with protein product",
     }
     return Gene(**params)
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def rps24p5():
     """Create a RPS24P5 gene fixture."""
     params = {
@@ -528,25 +450,18 @@ def rps24p5():
                 "interval": {
                     "end": "q41",
                     "start": "p36.13",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             }
         ],
-        "previous_symbols": [
-        ],
-        "aliases": [
-        ],
+        "previous_symbols": [],
+        "aliases": [],
         "symbol_status": "approved",
-        "xrefs": [
-            "ncbigene:100271094"
-        ],
-        "associated_with": [
-            "refseq:NG_011274",
-            "pubmed:19123937"
-        ],
-        "gene_type": "pseudogene"
+        "xrefs": ["ncbigene:100271094"],
+        "associated_with": ["refseq:NG_011274", "pubmed:19123937"],
+        "gene_type": "pseudogene",
     }
     return Gene(**params)
 
@@ -565,29 +480,17 @@ def trl_cag2_1():
             {
                 "_id": "ga4gh:VCL.r_iXu-FjXuJjmeNhmDEputf6tgjXRQIr",
                 "chr": "16",
-                "interval": {
-                    "end": "q13",
-                    "start": "q21",
-                    "type": "CytobandInterval"
-                },
+                "interval": {"end": "q13", "start": "q21", "type": "CytobandInterval"},
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             }
         ],
-        "previous_symbols": [
-            "TRNAL13"
-        ],
-        "aliases": [
-            "tRNA-Leu-CAG-2-1"
-        ],
+        "previous_symbols": ["TRNAL13"],
+        "aliases": ["tRNA-Leu-CAG-2-1"],
         "symbol_status": "approved",
-        "xrefs": [
-            "ncbigene:100189130"
-        ],
-        "associated_with": [
-            "ena.embl:HG983896"
-        ],
-        "gene_type": "RNA, transfer"
+        "xrefs": ["ncbigene:100189130"],
+        "associated_with": ["ena.embl:HG983896"],
+        "gene_type": "RNA, transfer",
     }
     return Gene(**params)
 
@@ -606,24 +509,15 @@ def myo5b():
             {
                 "_id": "ga4gh:VCL.1vd9qlPiSSaDZC5X4jIKpapokxvKrITd",
                 "chr": "18",
-                "interval": {
-                    "end": "qter",
-                    "start": "cen",
-                    "type": "CytobandInterval"
-                },
+                "interval": {"end": "qter", "start": "cen", "type": "CytobandInterval"},
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             }
         ],
         "previous_symbols": [],
-        "aliases": [
-            "KIAA1119"
-        ],
+        "aliases": ["KIAA1119"],
         "symbol_status": "approved",
-        "xrefs": [
-            "ensembl:ENSG00000167306",
-            "ncbigene:4645"
-        ],
+        "xrefs": ["ensembl:ENSG00000167306", "ncbigene:4645"],
         "associated_with": [
             "vega:OTTHUMG00000179843",
             "refseq:NM_001080467",
@@ -634,9 +528,9 @@ def myo5b():
             "ccds:CCDS42436",
             "ena.embl:AB032945",
             "pubmed:8884266",
-            "pubmed:17462998"
+            "pubmed:17462998",
         ],
-        "gene_type": "gene with protein product"
+        "gene_type": "gene with protein product",
     }
     return Gene(**params)
 
@@ -661,10 +555,10 @@ def gstt1():
                 "interval": {
                     "end": "q11.23",
                     "start": "q11.23",
-                    "type": "CytobandInterval"
+                    "type": "CytobandInterval",
                 },
                 "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
+                "type": "ChromosomeLocation",
             }
         ],
         "previous_symbols": [],
@@ -677,13 +571,10 @@ def gstt1():
             "uniprot:P30711",
             "orphanet:470418",
             "ena.embl:KI270879",
-            "pubmed:8617495"
+            "pubmed:8617495",
         ],
-        "xrefs": [
-            "ensembl:ENSG00000277656",
-            "ncbigene:2952"
-        ],
-        "gene_type": "gene with protein product"
+        "xrefs": ["ensembl:ENSG00000277656", "ncbigene:2952"],
+        "gene_type": "gene with protein product",
     }
     return Gene(**params)
 
@@ -947,15 +838,16 @@ def test_meta_info(hgnc):
     """Test that the meta field is correct."""
     resp = hgnc.search("HGNC:37133")
     assert resp.source_meta_.data_license == "custom"
-    assert resp.source_meta_.data_license_url == \
-           "https://www.genenames.org/about/"
+    assert resp.source_meta_.data_license_url == "https://www.genenames.org/about/"
     assert datetime.strptime(resp.source_meta_.version, "%Y%m%d")  # noqa: E501
-    assert resp.source_meta_.data_url == \
-           "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"  # noqa: E501
+    assert (
+        resp.source_meta_.data_url
+        == "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
+    )  # noqa: E501
     assert resp.source_meta_.rdp_url is None
     assert resp.source_meta_.genome_assemblies == []
     assert resp.source_meta_.data_license_attributes == {
         "non_commercial": False,
         "share_alike": False,
-        "attribution": False
+        "attribution": False,
     }

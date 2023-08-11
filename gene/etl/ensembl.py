@@ -1,20 +1,20 @@
-"""This module defines the Ensembl ETL methods."""
+"""Defines the Ensembl ETL methods."""
 import logging
-from pathlib import Path
 import re
 from ftplib import FTP
+from pathlib import Path
 from typing import Dict, List
-from biocommons.seqrepo import SeqRepo
 
 import gffutils
+from biocommons.seqrepo import SeqRepo
 from gffutils.feature import Feature
 
-from .base import Base
 from gene import APP_ROOT
-from gene.schemas import SourceName, NamespacePrefix, Strand, SourceMeta
 from gene.database import AbstractDatabase
 from gene.etl.vrs_locations import SequenceLocation
+from gene.schemas import NamespacePrefix, SourceMeta, SourceName, Strand
 
+from .base import Base
 
 logger = logging.getLogger("gene")
 logger.setLevel(logging.DEBUG)
@@ -23,9 +23,13 @@ logger.setLevel(logging.DEBUG)
 class Ensembl(Base):
     """ETL the Ensembl source into the normalized database."""
 
-    def __init__(self, database: AbstractDatabase, host: str = "ftp.ensembl.org",
-                 data_dir: str = "pub/current_gff3/homo_sapiens/",
-                 src_data_dir: Path = APP_ROOT / "data" / "ensembl") -> None:
+    def __init__(
+        self,
+        database: AbstractDatabase,
+        host: str = "ftp.ensembl.org",
+        data_dir: str = "pub/current_gff3/homo_sapiens/",
+        src_data_dir: Path = APP_ROOT / "data" / "ensembl",
+    ) -> None:
         """Initialize Ensembl ETL class.
 
         :param database: DynamoDB database
@@ -57,32 +61,38 @@ class Ensembl(Base):
                     self._assembly = resp["assembly"]
                     self._version = resp["version"]
                     self._fn = f
-                    self._data_url = f"ftp://{self._host}/{self._data_dir}{self._fn}"  # noqa: E501
+                    self._data_url = (
+                        f"ftp://{self._host}/{self._data_dir}{self._fn}"  # noqa: E501
+                    )
                     new_fn = f"ensembl_{self._version}.gff3"
                     if not (self.src_data_dir / new_fn).exists():
-                        self._ftp_download_file(ftp, self._fn, self.src_data_dir,
-                                                new_fn)
-                        logger.info(f"Successfully downloaded Ensembl {self._version}"
-                                    f" data.")
+                        self._ftp_download_file(
+                            ftp, self._fn, self.src_data_dir, new_fn
+                        )
+                        logger.info(
+                            f"Successfully downloaded Ensembl {self._version}" f" data."
+                        )
                     else:
                         logger.info(f"Ensembl {self._version} data already exists.")
                     break
 
-    def _extract_data(self, *args, **kwargs):
+    def _extract_data(self, *args, **kwargs) -> None:  # noqa: ANN002
         """Extract data from the Ensembl source."""
         if "data_path" in kwargs:
             self._data_src = kwargs["data_path"]
         else:
             self._data_src = sorted(list(self.src_data_dir.iterdir()))[-1]
 
-    def _transform_data(self, *args, **kwargs):
+    def _transform_data(self) -> None:
         """Transform the Ensembl source."""
         logger.info("Transforming Ensembl...")
-        db = gffutils.create_db(str(self._data_src),
-                                dbfn=":memory:",
-                                force=True,
-                                merge_strategy="create_unique",
-                                keep_order=True)
+        db = gffutils.create_db(
+            str(self._data_src),
+            dbfn=":memory:",
+            force=True,
+            merge_strategy="create_unique",
+            keep_order=True,
+        )
 
         # Get accession numbers
         accession_numbers = dict()
@@ -95,8 +105,7 @@ class Ensembl(Base):
             if f.attributes.get("ID"):
                 f_id = f.attributes.get("ID")[0].split(":")[0]
                 if f_id == "gene":
-                    gene = \
-                        self._add_gene(f, self.seqrepo, accession_numbers)
+                    gene = self._add_gene(f, self.seqrepo, accession_numbers)
                     if gene:
                         self._load_gene(gene)
         logger.info("Successfully transformed Ensembl.")
@@ -121,8 +130,7 @@ class Ensembl(Base):
         if location:
             gene["locations"] = [location]
 
-        gene["label_and_type"] = \
-            f"{gene['concept_id'].lower()}##identity"
+        gene["label_and_type"] = f"{gene['concept_id'].lower()}##identity"
         gene["item_type"] = "identity"
 
         return gene
@@ -137,7 +145,7 @@ class Ensembl(Base):
             "ID": "concept_id",
             "Name": "symbol",
             "description": "xrefs",
-            "biotype": "gene_type"
+            "biotype": "gene_type",
         }
 
         for attribute in f.attributes.items():
@@ -150,14 +158,20 @@ class Ensembl(Base):
                     val = val[0]
                     if key == "ID":
                         if val.startswith("gene"):
-                            val = f"{NamespacePrefix.ENSEMBL.value}:" \
-                                  f"{val.split(':')[1]}"
+                            val = (
+                                f"{NamespacePrefix.ENSEMBL.value}:"
+                                f"{val.split(':')[1]}"
+                            )
 
                 if key == "description":
                     gene["label"] = val.split("[")[0].strip()
                     if "Source:" in val:
-                        src_name = val.split("[")[-1].split(
-                            "Source:")[-1].split("Acc")[0].split(";")[0]
+                        src_name = (
+                            val.split("[")[-1]
+                            .split("Source:")[-1]
+                            .split("Acc")[0]
+                            .split(";")[0]
+                        )
                         src_id = val.split("Acc:")[-1].split("]")[0]
                         if ":" in src_id:
                             src_id = src_id.split(":")[-1]
@@ -182,8 +196,9 @@ class Ensembl(Base):
         :param accession_numbers: Accession numbers for each chromosome and scaffold
         :return: gene record dictionary with location added
         """
-        return self._sequence_location.add_location(accession_numbers[f.seqid],
-                                                    f, gene, sr)
+        return self._sequence_location.add_location(
+            accession_numbers[f.seqid], f, gene, sr
+        )
 
     def _get_xref_associated_with(self, src_name: str, src_id: str) -> Dict:
         """Get xref or associated_with concept.
@@ -194,11 +209,9 @@ class Ensembl(Base):
         """
         source = dict()
         if src_name.startswith("HGNC"):
-            source["xrefs"] = \
-                [f"{NamespacePrefix.HGNC.value}:{src_id}"]
+            source["xrefs"] = [f"{NamespacePrefix.HGNC.value}:{src_id}"]
         elif src_name.startswith("NCBI"):
-            source["xrefs"] = \
-                [f"{NamespacePrefix.NCBI.value}:{src_id}"]
+            source["xrefs"] = [f"{NamespacePrefix.NCBI.value}:{src_id}"]
         elif src_name.startswith("UniProt"):
             source["associated_with"] = [f"{NamespacePrefix.UNIPROT.value}:{src_id}"]
         elif src_name.startswith("miRBase"):
@@ -207,7 +220,7 @@ class Ensembl(Base):
             source["associated_with"] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]
         return source
 
-    def perform_etl(self, *args, **kwargs) -> List[str]:
+    def perform_etl(self) -> List[str]:
         """Extract, Transform, and Load data into DynamoDB database.
 
         :return: Concept IDs of concepts successfully loaded
@@ -219,21 +232,21 @@ class Ensembl(Base):
         self._database.complete_write_transaction()
         return self._processed_ids
 
-    def _add_meta(self, *args, **kwargs) -> None:
+    def _add_meta(self) -> None:
         """Add Ensembl metadata."""
         metadata = SourceMeta(
             data_license="custom",
             data_license_url="https://useast.ensembl.org/info/about"
-                             "/legal/disclaimer.html",
+            "/legal/disclaimer.html",
             version=self._version,
             data_url=self._data_url,
             rdp_url=None,
             data_license_attributes={
                 "non_commercial": False,
                 "share_alike": False,
-                "attribution": False
+                "attribution": False,
             },
-            genome_assemblies=[self._assembly]
+            genome_assemblies=[self._assembly],
         )
 
         self._database.add_source_metadata(self._src_name, metadata)

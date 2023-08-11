@@ -1,13 +1,13 @@
-"""This module defines GA4GH Sequence Location."""
-from typing import Dict, List
+"""Defines GA4GH Sequence Location."""
 import logging
-from biocommons.seqrepo import SeqRepo
+from typing import Dict, List
 
+from biocommons.seqrepo import SeqRepo
 from gffutils.feature import Feature
 
 from gene.schemas import GeneSequenceLocation
 
-logger = logging.getLogger('gene')
+logger = logging.getLogger("gene")
 logger.setLevel(logging.DEBUG)
 
 
@@ -44,15 +44,18 @@ class SequenceLocation:
         if not aliases:
             return location
 
-        sequence_id = [a for a in aliases if a.startswith('ga4gh')][0]
+        sequence_id = [a for a in aliases if a.startswith("ga4gh")][0]
 
-        if gene.start != '.' and gene.end != '.' and sequence_id:
+        if gene.start != "." and gene.end != "." and sequence_id:
             if 0 <= gene.start <= gene.end:  # type: ignore
                 location = GeneSequenceLocation(
                     start=gene.start - 1,  # type: ignore
                     end=gene.end,  # type: ignore
-                    sequence_id=sequence_id).dict()  # type: ignore
+                    sequence_id=sequence_id,
+                ).dict()  # type: ignore
             else:
-                logger.info(f"{params['concept_id']} has invalid interval:"
-                            f"start={gene.start - 1} end={gene.end}")  # type: ignore
+                logger.info(
+                    f"{params['concept_id']} has invalid interval:"
+                    f"start={gene.start - 1} end={gene.end}"
+                )  # type: ignore
         return location
