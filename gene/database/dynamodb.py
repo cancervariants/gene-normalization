@@ -353,10 +353,11 @@ class DynamoDbDatabase(AbstractDatabase):
         :param data: known source attributes
         :raise DatabaseWriteException: if write fails
         """
+        src_name_value = src_name.value
         metadata_item = metadata.dict()
-        metadata_item["src_name"] = src_name.value
-        metadata_item["label_and_type"] = f"{str(src_name).lower()}##source"
-        metadata_item["concept_id"] = f"source:{str(src_name).lower()}"
+        metadata_item["src_name"] = src_name_value
+        metadata_item["label_and_type"] = f"{str(src_name_value).lower()}##source"
+        metadata_item["concept_id"] = f"source:{str(src_name_value).lower()}"
         metadata_item["item_type"] = "source"
         try:
             self.genes.put_item(Item=metadata_item)
