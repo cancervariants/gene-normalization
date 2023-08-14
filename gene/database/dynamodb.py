@@ -107,7 +107,8 @@ class DynamoDbDatabase(AbstractDatabase):
         except DatabaseWriteException as e:
             raise e
 
-        self.dynamodb.Table(self.gene_table).delete()
+        if self.gene_table in self.list_tables():
+            self.dynamodb.Table(self.gene_table).delete()
 
     def _create_genes_table(self) -> None:
         """Create Genes table."""
