@@ -210,9 +210,11 @@ class DynamoDbDatabase(AbstractDatabase):
         if src_name in self._cached_sources:
             return self._cached_sources[src_name]
         else:
-            metadata = self.genes.query(
-                KeyConditionExpression=Key("item_type").eq(f"{src_name}##source")
-            ).get("Item")
+            pk = f"{src_name.lower()}##source"
+            concept_id = f"source:{src_name.lower()}"
+            metadata = self.genes.get_item(
+                Key={"label_and_type": pk, "concept_id": concept_id}
+            )
             if not metadata:
                 raise DatabaseReadException(
                     f"Unable to retrieve data for source {src_name}"
@@ -353,8 +355,8 @@ class DynamoDbDatabase(AbstractDatabase):
         """
         metadata_item = metadata.dict()
         metadata_item["src_name"] = src_name.value
-        metadata_item["label_and_type"] = f"{src_name}##source"
-        metadata_item["concept_id"] = f"source:{src_name}"
+        metadata_item["label_and_type"] = f"{str(src_name).lower()}##source"
+        metadata_item["concept_id"] = f"source:{str(src_name).lower()}"
         metadata_item["item_type"] = "source"
         try:
             self.genes.put_item(Item=metadata_item)
