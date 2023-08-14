@@ -195,7 +195,7 @@ class DynamoDbDatabase(AbstractDatabase):
         return True
 
     def initialize_db(self) -> None:
-        """Create gene_concepts and gene_metadata tables if not already created."""
+        """Create gene_normalizer table if not already created."""
         if not self.check_schema_initialized():
             self._create_genes_table()
 

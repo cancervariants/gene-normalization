@@ -29,12 +29,7 @@ By default, the Gene Normalizer expects to find a DynamoDB instance running at `
 Configuration
 -------------
 
-By default, the DynamoDB interface requires two different tables:
-
-1) ``gene_concepts``: DB items for all records, references, etc.
-2) ``gene_metadata``: source metadata (e.g. license, data version, etc)
-
-The environment variables ``GENE_DYNAMO_CONCEPTS_TABLE`` and ``GENE_DYNAMO_METADATA_TABLE`` can be used to define different table names for concepts and metadata, respectively.
+By default, the DynamoDB interface uses a table named ``gene_normalizer`` for all DB items (source records, aliases, etc, as well as metadata like source data version, licensing, etc). The environment variable ``GENE_DYNAMO_TABLE`` can be used to define a different table name.
 
 Managing persistent DynamoDB data
 --------------------------------------------
