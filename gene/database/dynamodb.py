@@ -214,7 +214,7 @@ class DynamoDbDatabase(AbstractDatabase):
             concept_id = f"source:{src_name.lower()}"
             metadata = self.genes.get_item(
                 Key={"label_and_type": pk, "concept_id": concept_id}
-            )
+            ).get("Item")
             if not metadata:
                 raise DatabaseReadException(
                     f"Unable to retrieve data for source {src_name}"
