@@ -2,19 +2,20 @@
 import logging
 import re
 from ftplib import FTP
+from json import dumps
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict
 
 import gffutils
+import requests
 from biocommons.seqrepo import SeqRepo
 from gffutils.feature import Feature
 
 from gene import APP_ROOT
 from gene.database import AbstractDatabase
+from gene.etl.base import Base, FileUnavailableError, SourceFormatError
 from gene.etl.vrs_locations import SequenceLocation
 from gene.schemas import NamespacePrefix, SourceMeta, SourceName, Strand
-
-from .base import Base
 
 logger = logging.getLogger("gene")
 logger.setLevel(logging.DEBUG)
@@ -38,56 +39,90 @@ class Ensembl(Base):
         :param src_data_dir: Data directory for Ensembl
         """
         super().__init__(database, host, data_dir, src_data_dir)
+        self._data_file_pattern = re.compile(r"ensembl_(GRCh\d+)_(\d+)\.gff3")
         self._sequence_location = SequenceLocation()
         self._version = None
         self._fn = None
-        self._data_url = None
+        self._data_url = f"ftp://{self._host}/{self._data_dir}{self._fn}"  # noqa: E501
         self._assembly = None
 
-    def _download_data(self) -> None:
+    def _is_up_to_date(self, data_file: Path) -> bool:
+        """Verify whether local data is up-to-date with latest available remote file.
+
+        :param data_file: path to latest local file
+        :return: True if data is up-to-date
+        """
+        local_match = re.match(self._data_file_pattern, data_file.name)
+        parse_msg = (
+            f"Unable to parse version number from local file: {data_file.absolute()}"
+        )
+        if not local_match or not local_match.groups():
+            raise SourceFormatError(parse_msg)
+        try:
+            version = int(local_match.groups()[1])
+        except ValueError:
+            raise SourceFormatError(parse_msg)
+
+        ensembl_api = (
+            "https://rest.ensembl.org/info/data/?content-type=application/json"
+        )
+        response = requests.get(ensembl_api)
+        if response.status_code != 200:
+            raise FileUnavailableError(
+                f"Unable to get response from Ensembl version API endpoint: {ensembl_api}"
+            )
+
+        releases = response.json().get("releases")
+        if not releases:
+            raise FileUnavailableError(
+                f"Malformed response from Ensembl version API endpoint: {dumps(response.json())}"
+            )
+
+        releases.sort()
+        return version == releases[-1]
+
+    def _download_data(self) -> Path:
         """Download latest Ensembl GFF3 data file."""
         logger.info("Downloading latest Ensembl data file...")
-        self._create_data_directory()
-        regex_pattern = r"Homo_sapiens\.(?P<assembly>GRCh\d+)\.(?P<version>\d+)\.gff3\.gz"  # noqa: E501
-        regex = re.compile(regex_pattern)
+        pattern = r"Homo_sapiens\.(?P<assembly>GRCh\d+)\.(?P<version>\d+)\.gff3\.gz"
         with FTP(self._host) as ftp:
             ftp.login()
             ftp.cwd(self._data_dir)
             files = ftp.nlst()
             for f in files:
-                match = regex.match(f)
+                match = re.match(pattern, f)
                 if match:
                     resp = match.groupdict()
-                    self._assembly = resp["assembly"]
-                    self._version = resp["version"]
+                    assembly = resp["assembly"]
+                    version = resp["version"]
                     self._fn = f
-                    self._data_url = (
-                        f"ftp://{self._host}/{self._data_dir}{self._fn}"  # noqa: E501
+                    new_fn = f"ensembl_{assembly}_{version}.gff3"
+                    self._ftp_download_file(ftp, self._fn, self.src_data_dir, new_fn)
+                    logger.info(
+                        f"Successfully downloaded Ensembl {version} data to {self.src_data_dir / new_fn}."
                     )
-                    new_fn = f"ensembl_{self._version}.gff3"
-                    if not (self.src_data_dir / new_fn).exists():
-                        self._ftp_download_file(
-                            ftp, self._fn, self.src_data_dir, new_fn
-                        )
-                        logger.info(
-                            f"Successfully downloaded Ensembl {self._version}" f" data."
-                        )
-                    else:
-                        logger.info(f"Ensembl {self._version} data already exists.")
-                    break
+                    return self.src_data_dir / new_fn
+        raise FileUnavailableError(
+            "Unable to find file matching expected Ensembl pattern via FTP"
+        )
 
-    def _extract_data(self, *args, **kwargs) -> None:  # noqa: ANN002
-        """Extract data from the Ensembl source."""
-        if "data_path" in kwargs:
-            self._data_src = kwargs["data_path"]
-        else:
-            self._data_src = sorted(list(self.src_data_dir.iterdir()))[-1]
+    def _extract_data(self, use_existing: bool) -> None:
+        """Acquire Ensembl data file and get metadata.
+
+        :param use_existing: if True, use latest available local file
+        """
+        self._data_file = self.acquire_data_file(
+            "ensembl_*.gff3", use_existing, self._is_up_to_date, self._download_data
+        )
+        match = re.match(self._data_file_pattern, self._data_file.name)
+        self._assembly = match.groups()[0]
+        self._version = match.groups()[1]
 
     def _transform_data(self) -> None:
         """Transform the Ensembl source."""
         logger.info("Transforming Ensembl...")
         db = gffutils.create_db(
-            str(self._data_src),
+            str(self._data_file),
             dbfn=":memory:",
             force=True,
             merge_strategy="create_unique",
@@ -219,18 +254,6 @@ class Ensembl(Base):
         elif src_name.startswith("RFAM"):
             source["associated_with"] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]
         return source
-
-    def perform_etl(self) -> List[str]:
-        """Extract, Transform, and Load data into DynamoDB database.
-
-        :return: Concept IDs of concepts successfully loaded
-        """
-        self._download_data()
-        self._extract_data()
-        self._add_meta()
-        self._transform_data()
-        self._database.complete_write_transaction()
-        return self._processed_ids
 
     def _add_meta(self) -> None:
         """Add Ensembl metadata."""

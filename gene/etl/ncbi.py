@@ -12,7 +12,7 @@ from biocommons.seqrepo import SeqRepo
 
 from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import AbstractDatabase
-from gene.etl.base import Base
+from gene.etl.base import Base, FileUnavailableError
 from gene.etl.vrs_locations import ChromosomeLocation, SequenceLocation
 from gene.schemas import (
     Annotation,
@@ -25,6 +25,8 @@ from gene.schemas import (
 
 logger = logging.getLogger("gene")
 logger.setLevel(logging.DEBUG)
+
+TODAY = datetime.today().strftime("%Y%m%d")
 
 
 class NCBI(Base):
@@ -49,103 +51,161 @@ class NCBI(Base):
         self._chromosome_location = ChromosomeLocation()
         self._data_url = f"ftp://{host}"
         self._assembly = None
-        self._date_today = datetime.today().strftime("%Y%m%d")
 
-    def perform_etl(self) -> List[str]:
-        """Perform ETL methods.
+    @staticmethod
+    def _navigate_ftp_genome_assembly(ftp: FTP) -> None:
+        """Navigate NCBI FTP filesystem to directory containing latest assembly annotation data.
 
-        :return: Concept IDs of concepts successfully loaded
+        :param ftp: logged-in FTP instance
+        :return: None, but modifies FTP connection in-place
+        :raise FileUnavailableError: if navigation fails
         """
-        self._extract_data()
-        self._add_meta()
-        self._transform_data()
-        self._database.complete_write_transaction()
-        return self._processed_ids
+        major_annotation_pattern = r"GCF_\d+\.\d+_GRCh\d+.+"
+        ftp.cwd(
+            "genomes/refseq/vertebrate_mammalian/Homo_sapiens/"
+            "latest_assembly_versions"
+        )
+        try:
+            grch_dir = [d for d in ftp.nlst() if re.match(major_annotation_pattern, d)][
+                0
+            ]
+        except (IndexError, AttributeError):
+            raise FileUnavailableError(
+                "No directories matching expected latest assembly version pattern"
+            )
+        ftp.cwd(grch_dir)
 
-    def _download_data(self) -> None:
-        """Download NCBI info, history, and GRCh38 files."""
-        # Download info
-        data_dir = f"{self._data_dir}GENE_INFO/Mammalia/"
-        fn = f"ncbi_info_{self._date_today}.tsv"
-        data_fn = "Homo_sapiens.gene_info.gz"
-        logger.info("Downloading NCBI gene_info....")
-        self._ftp_download(self._host, data_dir, fn, self.src_data_dir, data_fn)
-        logger.info("Successfully downloaded NCBI gene_info.")
+    def _gff_is_up_to_date(self, gff: Path) -> bool:
+        """Verify whether local GRCh38 annotation file is up-to-date. Currently, their
+        API endpoints require auth keys (adding complexity for new users) and may or may not
+        give us exactly what we want, so we ascertain version availability by manually
+        checking what's listed in the FTP filesystem.
 
-        # Download history
-        fn = f"ncbi_history_{self._date_today}.tsv"
+        :param gff: path to local GFF file (file should be saved like `ncbi_GRCh38.p14.gff`)
+        :return: True if file version matches most recent known remote version
+        """
+        try:
+            version = re.match(r"ncbi_(.+)", gff.stem).groups()[0]
+        except (IndexError, AttributeError):
+            raise FileUnavailableError(
+                f"Unable to parse version from NCBI GRCh38 annotation file: {gff.absolute()}"
+            )
+
+        genomic_gff_pattern = r"GCF_\d+\.\d+_(GRCh\d+\.\w\d+)_genomic.gff.gz"
+        with FTP(self._host) as ftp:
+            ftp.login()
+            self._navigate_ftp_genome_assembly(ftp)
+            for file in ftp.nlst():
+                match = re.match(genomic_gff_pattern, file)
+                if match and match.groups():
+                    latest_version = match.groups()[0]
+                    return version == latest_version
+        raise FileUnavailableError(
+            "Unable to parse latest available NCBI GRCh38 annotation version"
+        )
+
+    def _download_gff(self) -> Path:
+        """Download NCBI GRCh38 annotation file.
+
+        :return: Path to downloaded file
+        """
+        logger.info("Downloading NCBI genome annotation file...")
+        genomic_gff_pattern = r"GCF_\d+\.\d+_(GRCh\d+\.\w\d+)_genomic.gff.gz"
+        with FTP(self._host) as ftp:
+            ftp.login()
+            self._navigate_ftp_genome_assembly(ftp)
+            genomic_filename = None
+            version = None
+            for f in ftp.nlst():
+                gff_match = re.match(genomic_gff_pattern, f)
+                if gff_match and gff_match.groups():
+                    genomic_filename = f
+                    version = gff_match.groups()[0]
+            if not version or not genomic_filename:
+                raise FileUnavailableError(
+                    "Unable to parse latest available NCBI GRCh38 annotation"
+                )
+            new_filename = f"ncbi_{version}.gff"
+            self._ftp_download_file(
+                ftp, genomic_filename, self.src_data_dir, new_filename
+            )
+        logger.info(
+            f"Downloaded NCBI genome annotation file to {self.src_data_dir / new_filename}"
+        )
+        return self.src_data_dir / new_filename
+
+    def _history_file_is_up_to_date(self, history_file: Path) -> bool:
+        """Verify whether local NCBI name history file is up-to-date. It should be recalculated daily, so we can just perform a check against today's date.
+
+        :param gff: path to local history file (file should be saved like `ncbi_history_20230315.tsv`)
+        :return: True if file version matches most recent expected remote version
+        """
+        return history_file.name == f"ncbi_history_{TODAY}.tsv"
+
+    def _download_history_file(self) -> Path:
+        """Download NCBI gene name history file
+
+        :return: Path to downloaded file
+        """
+        fn = f"ncbi_history_{TODAY}.tsv"
         data_fn = "gene_history.gz"
         logger.info("Downloading NCBI gene_history...")
         self._ftp_download(self._host, self._data_dir, fn, self.src_data_dir, data_fn)
-        logger.info("Successfully downloaded NCBI gene_history.")
+        logger.info(
+            f"Successfully downloaded NCBI gene_history to {self.src_data_dir / fn}."
+        )
+        return self.src_data_dir / fn
 
-        # Download gff
-        self._download_gff()
+    def _gene_file_is_up_to_date(self, gene_file: Path) -> bool:
+        """Verify whether local NCBI gene info file is up-to-date. It appears to be recalculated daily,
+        so we can just perform a check against today's date.
 
-    def _download_gff(self) -> None:
-        """Download latest gff data"""
-        regex_patern = r"GCF_\d+\.\d+_(?P<assembly>GRCh\d+\.\S+)_genomic.gff.gz"
-        regex = re.compile(regex_patern)
-        with FTP(self._host) as ftp:
-            ftp.login()
-            ftp.cwd(
-                "genomes/refseq/vertebrate_mammalian/Homo_sapiens/"
-                "latest_assembly_versions"
-            )
-            dir = ftp.nlst()[0]
-            ftp.cwd(dir)
-            for f in ftp.nlst():
-                match = regex.match(f)
-                if match:
-                    resp = match.groupdict()
-                    self._assembly = resp["assembly"]
-                    new_fn = f"ncbi_{self._assembly}.gff"
-                    if not (self.src_data_dir / new_fn).exists():
-                        self._ftp_download_file(ftp, f, self.src_data_dir, new_fn)
-                        logger.info(f"Successfully downloaded NCBI {f} data.")
-                    else:
-                        logger.info(f"NCBI {f} already exists.")
-                    break
-
-    def _files_downloaded(self, data_dir: Path) -> bool:
-        """Check whether needed source files exist.
-
-        :param data_dir: source data directory
-        :return: true if all needed files exist, false otherwise
+        :param gff: path to local NCBI info file (file should be saved like `ncbi_info_20230315.tsv`)
+        :return: True if file version matches most recent known remote version
         """
-        files = data_dir.iterdir()
+        return gene_file.name == f"ncbi_info_{TODAY}.tsv"
 
-        info_downloaded: bool = False
-        history_downloaded: bool = False
-        gff_downloaded: bool = False
+    def _download_gene_file(self) -> Path:
+        """Download NCBI gene info file
 
-        for f in files:
-            if f.name.startswith(f"ncbi_info_{self._date_today}"):
-                info_downloaded = True
-            elif f.name.startswith(f"ncbi_history_{self._date_today}"):
-                history_downloaded = True
-            elif f.name.startswith("ncbi_GRCh38.p13"):
-                gff_downloaded = True
-        return info_downloaded and history_downloaded and gff_downloaded
-
-    def _extract_data(self) -> None:
-        """Gather data from local files or download from source.
-        - Data is expected to be in <PROJECT ROOT>/data/ncbi.
-        - For now, data files should all be from the same source data version.
+        :return: Path to downloaded file
         """
-        self._create_data_directory()
-        if not self._files_downloaded(self.src_data_dir):
-            self._download_data()
-        local_files = [
-            f for f in self.src_data_dir.iterdir() if f.name.startswith("ncbi")
-        ]
-        local_files.sort(key=lambda f: f.name.split("_")[-1], reverse=True)
-        self._info_src = [f for f in local_files if f.name.startswith("ncbi_info")][0]
-        self._history_src = [
-            f for f in local_files if f.name.startswith("ncbi_history")
-        ][0]
-        self._gff_src = [f for f in local_files if f.name.startswith("ncbi_GRCh")][0]
+        data_dir = f"{self._data_dir}GENE_INFO/Mammalia/"
+        fn = f"ncbi_info_{TODAY}.tsv"
+        data_fn = "Homo_sapiens.gene_info.gz"
+        logger.info("Downloading NCBI gene_info....")
+        self._ftp_download(self._host, data_dir, fn, self.src_data_dir, data_fn)
+        logger.info(
+            f"Successfully downloaded NCBI gene_info to {self.src_data_dir / fn}."
+        )
+        return self.src_data_dir / fn
+
+    def _extract_data(self, use_existing: bool) -> None:
+        """Acquire NCBI data file and get metadata.
+
+        To figure out:
+        * Do info and history files need to have the same version [date]?
+
+        :param use_existing: if True, use latest available local file
+        """
+        self._gff_src = self.acquire_data_file(
+            "ncbi_GRCh*.gff", use_existing, self._gff_is_up_to_date, self._download_gff
+        )
+        self._history_src = self.acquire_data_file(
+            "ncbi_history*.tsv",
+            use_existing,
+            self._history_file_is_up_to_date,
+            self._download_history_file,
+        )
+        self._info_src = self.acquire_data_file(
+            "ncbi_info_*.tsv",
+            use_existing,
+            self._gene_file_is_up_to_date,
+            self._download_gene_file,
+        )
+
         self._version = self._info_src.stem.split("_")[-1]
+        self._assembly = self._gff_src.stem.split("_")[-1]
 
     def _get_prev_symbols(self) -> Dict[str, str]:
         """Store a gene's symbol history.
