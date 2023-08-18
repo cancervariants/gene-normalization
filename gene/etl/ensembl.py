@@ -43,7 +43,7 @@ class Ensembl(Base):
         self._sequence_location = SequenceLocation()
         self._version = None
         self._fn = None
-        self._data_url = f"ftp://{self._host}/{self._data_dir}{self._fn}"  # noqa: E501
+        self._data_url = f"ftp://{self._host}/{self._data_dir}{self._fn}"
         self._assembly = None
 
     def _is_up_to_date(self, data_file: Path) -> bool:

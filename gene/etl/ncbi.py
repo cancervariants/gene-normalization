@@ -419,17 +419,11 @@ class NCBI(Base):
         elif src_name.startswith("NCBI"):
             source["xrefs"] = [f"{NamespacePrefix.NCBI.value}:{src_id}"]
         elif src_name.startswith("UniProt"):
-            source["associated_with"] = [
-                f"{NamespacePrefix.UNIPROT.value}:{src_id}"
-            ]  # noqa E501
+            source["associated_with"] = [f"{NamespacePrefix.UNIPROT.value}:{src_id}"]
         elif src_name.startswith("miRBase"):
-            source["associated_with"] = [
-                f"{NamespacePrefix.MIRBASE.value}:{src_id}"
-            ]  # noqa E501
+            source["associated_with"] = [f"{NamespacePrefix.MIRBASE.value}:{src_id}"]
         elif src_name.startswith("RFAM"):
-            source["associated_with"] = [
-                f"{NamespacePrefix.RFAM.value}:{src_id}"
-            ]  # noqa E501
+            source["associated_with"] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]
         return source
 
     def _get_vrs_chr_location(self, row: List[str], params: Dict) -> List:
