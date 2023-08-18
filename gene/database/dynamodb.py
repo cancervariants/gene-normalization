@@ -155,7 +155,7 @@ class DynamoDbDatabase(AbstractDatabase):
         existing_tables = self.list_tables()
         exists = self.gene_table in existing_tables
         if not exists:
-            logger.info("Gene normalizer table is missing or unavailable.")
+            logger.info(f"{self.gene_table} table is missing or unavailable.")
         return exists
 
     def check_tables_populated(self) -> bool:
