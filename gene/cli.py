@@ -254,15 +254,23 @@ def update_normalizer_db(
     update_merged: bool,
     use_existing: bool,
 ) -> None:
-    """Update selected normalizer source(s) in the gene database.
+    """Update selected normalizer source(s) in the gene database. For example, the
+    following command will update NCBI and HGNC data, using a database connection at port 8001:
 
+    % gene_norm_update --sources="NCBI HGNC" --db_url=http://localhost:8001
+
+
+
+    See the documentation for more exhaustive information.
+
+    \f
     :param sources: names of sources to update, comma-separated
     :param aws_instance: if true, use cloud instance
     :param db_url: URI pointing to database
     :param update_all: if true, update all sources (ignore `normalizer` parameter)
     :param update_merged: if true, update normalized records
     :param use_existing: if True, use most recent local data instead of fetching latest version
-    """
+    """  # noqa: D301
     db = create_db(db_url, aws_instance)
 
     if update_all:
