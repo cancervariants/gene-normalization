@@ -79,13 +79,12 @@ class HGNC(Base):
         """
         logger.info("Downloading HGNC data file...")
 
-        tmp_fn = "hgnc_version.json"  # TODO move filename definition out of self._ftp_download
+        tmp_fn = "hgnc_version.json"
         version = self._ftp_download(
             self._host, self._data_dir, tmp_fn, self.src_data_dir, self._fn
         )
         final_location = f"{self.src_data_dir}/hgnc_{version}.json"
         shutil.move(f"{self.src_data_dir}/{tmp_fn}", final_location)
-
         logger.info(f"Successfully downloaded HGNC data file to {final_location}.")
         return Path(final_location)
 

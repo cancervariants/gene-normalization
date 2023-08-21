@@ -2,7 +2,7 @@
 import csv
 import logging
 import re
-from datetime import datetime
+import shutil
 from ftplib import FTP
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -25,8 +25,6 @@ from gene.schemas import (
 
 logger = logging.getLogger("gene")
 logger.setLevel(logging.DEBUG)
-
-TODAY = datetime.today().strftime("%Y%m%d")
 
 
 class NCBI(Base):
@@ -137,7 +135,7 @@ class NCBI(Base):
         return self.src_data_dir / new_filename
 
     def _history_file_is_up_to_date(self, history_file: Path) -> bool:
-        """Verify whether local NCBI name history file is up-to-date. It should be recalculated daily, so we can just perform a check against today's date.
+        """Verify whether local NCBI name history file is up-to-date.
 
         :param history_file: path to local history file (file should be saved like `ncbi_history_20230315.tsv`)
         :return: True if file version matches most recent expected remote version
@@ -160,18 +158,19 @@ class NCBI(Base):
 
         :return: Path to downloaded file
         """
-        fn = f"ncbi_history_{TODAY}.tsv"
-        data_fn = "gene_history.gz"
         logger.info("Downloading NCBI gene_history...")
-        self._ftp_download(self._host, self._data_dir, fn, self.src_data_dir, data_fn)
-        logger.info(
-            f"Successfully downloaded NCBI gene_history to {self.src_data_dir / fn}."
+        tmp_fn = "ncbi_history_tmp.tsv"
+        data_fn = "gene_history.gz"
+        version = self._ftp_download(
+            self._host, self._data_dir, tmp_fn, self.src_data_dir, data_fn
         )
-        return self.src_data_dir / fn
+        final_location = f"{self.src_data_dir}/ncbi_history_{version}.tsv"
+        shutil.move(f"{self.src_data_dir}/{tmp_fn}", final_location)
+        logger.info(f"Successfully downloaded NCBI gene_history to {final_location}.")
+        return Path(final_location)
 
     def _gene_file_is_up_to_date(self, gene_file: Path) -> bool:
-        """Verify whether local NCBI gene info file is up-to-date. It appears to be recalculated daily,
-        so we can just perform a check against today's date.
+        """Verify whether local NCBI gene info file is up-to-date.
 
         :param gene_file: path to local NCBI info file (file should be saved like `ncbi_info_20230315.tsv`)
         :return: True if file version matches most recent known remote version
@@ -195,14 +194,16 @@ class NCBI(Base):
         :return: Path to downloaded file
         """
         data_dir = f"{self._data_dir}GENE_INFO/Mammalia/"
-        fn = f"ncbi_info_{TODAY}.tsv"
+        tmp_fn = "ncbi_info_tmp.tsv"
         data_fn = "Homo_sapiens.gene_info.gz"
         logger.info("Downloading NCBI gene_info....")
-        self._ftp_download(self._host, data_dir, fn, self.src_data_dir, data_fn)
-        logger.info(
-            f"Successfully downloaded NCBI gene_info to {self.src_data_dir / fn}."
+        version = self._ftp_download(
+            self._host, data_dir, tmp_fn, self.src_data_dir, data_fn
         )
-        return self.src_data_dir / fn
+        final_location = f"{self.src_data_dir}/ncbi_info_{version}.tsv"
+        shutil.move(f"{self.src_data_dir}/{tmp_fn}", final_location)
+        logger.info(f"Successfully downloaded NCBI gene_info to {final_location}.")
+        return Path(final_location)
 
     def _extract_data(self, use_existing: bool) -> None:
         """Acquire NCBI data file and get metadata.
@@ -231,7 +232,7 @@ class NCBI(Base):
             f"{self._host}gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz"
         )
         self._history_url = f"{self._host}gene/DATA/gene_history.gz"
-        self._assembly_url = f"{self._host}genomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/"  # TODO
+        self._assembly_url = f"{self._host}genomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/"
 
     def _get_prev_symbols(self) -> Dict[str, str]:
         """Store a gene's symbol history.
