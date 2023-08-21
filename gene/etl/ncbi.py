@@ -49,8 +49,11 @@ class NCBI(Base):
         super().__init__(database, host, data_dir, src_data_dir)
         self._sequence_location = SequenceLocation()
         self._chromosome_location = ChromosomeLocation()
-        self._data_url = f"ftp://{host}"
+        self._ftp_hostname = host
         self._assembly = None
+        self._gene_url = None
+        self._history_url = None
+        self._assembly_url = None
 
     @staticmethod
     def _navigate_ftp_genome_assembly(ftp: FTP) -> None:
@@ -66,9 +69,8 @@ class NCBI(Base):
             "latest_assembly_versions"
         )
         try:
-            grch_dir = [d for d in ftp.nlst() if re.match(major_annotation_pattern, d)][
-                0
-            ]
+            grch_dirs = [d for d in ftp.nlst() if re.match(major_annotation_pattern, d)]
+            grch_dir = grch_dirs[0]
         except (IndexError, AttributeError):
             raise FileUnavailableError(
                 "No directories matching expected latest assembly version pattern"
@@ -137,10 +139,21 @@ class NCBI(Base):
     def _history_file_is_up_to_date(self, history_file: Path) -> bool:
         """Verify whether local NCBI name history file is up-to-date. It should be recalculated daily, so we can just perform a check against today's date.
 
-        :param gff: path to local history file (file should be saved like `ncbi_history_20230315.tsv`)
+        :param history_file: path to local history file (file should be saved like `ncbi_history_20230315.tsv`)
         :return: True if file version matches most recent expected remote version
+        :raise FileUnavailableError: if parsing version from local file fails
         """
-        return history_file.name == f"ncbi_history_{TODAY}.tsv"
+        try:
+            version = re.match(r"ncbi_history_(\d+).tsv", history_file.name).groups()[0]
+        except (IndexError, AttributeError):
+            raise FileUnavailableError(
+                f"Unable to parse version from NCBI history file: {history_file.absolute()}"
+            )
+        with FTP(self._host) as ftp:
+            ftp.login()
+            ftp.cwd("gene/DATA/")
+            file_changed_date = ftp.sendcmd("MDTM gene_history.gz")[4:12]
+        return version == file_changed_date
 
     def _download_history_file(self) -> Path:
         """Download NCBI gene name history file
@@ -160,10 +173,21 @@ class NCBI(Base):
         """Verify whether local NCBI gene info file is up-to-date. It appears to be recalculated daily,
         so we can just perform a check against today's date.
 
-        :param gff: path to local NCBI info file (file should be saved like `ncbi_info_20230315.tsv`)
+        :param gene_file: path to local NCBI info file (file should be saved like `ncbi_info_20230315.tsv`)
         :return: True if file version matches most recent known remote version
+        :raise FileUnavailableError: if parsing version from local file fails
         """
-        return gene_file.name == f"ncbi_info_{TODAY}.tsv"
+        try:
+            version = re.match(r"ncbi_history_(\d+).tsv", gene_file.name).groups()[0]
+        except (IndexError, AttributeError):
+            raise FileUnavailableError(
+                f"Unable to parse version from NCBI gene file: {gene_file.absolute()}"
+            )
+        with FTP(self._host) as ftp:
+            ftp.login()
+            ftp.cwd("gene/DATA/GENE_INFO/Mammalia/")
+            file_changed_date = ftp.sendcmd("MDTM Homo_sapiens.gene_info.gz")[4:12]
+        return version == file_changed_date
 
     def _download_gene_file(self) -> Path:
         """Download NCBI gene info file
@@ -183,19 +207,10 @@ class NCBI(Base):
     def _extract_data(self, use_existing: bool) -> None:
         """Acquire NCBI data file and get metadata.
 
-        To figure out:
-        * Do info and history files need to have the same version [date]?
-
         :param use_existing: if True, use latest available local file
         """
         self._gff_src = self.acquire_data_file(
             "ncbi_GRCh*.gff", use_existing, self._gff_is_up_to_date, self._download_gff
-        )
-        self._history_src = self.acquire_data_file(
-            "ncbi_history*.tsv",
-            use_existing,
-            self._history_file_is_up_to_date,
-            self._download_history_file,
         )
         self._info_src = self.acquire_data_file(
             "ncbi_info_*.tsv",
@@ -203,9 +218,20 @@ class NCBI(Base):
             self._gene_file_is_up_to_date,
             self._download_gene_file,
         )
-
         self._version = self._info_src.stem.split("_")[-1]
+        self._history_src = self.acquire_data_file(
+            f"ncbi_history_{self._version}.tsv",
+            use_existing,
+            self._history_file_is_up_to_date,
+            self._download_history_file,
+        )
+
         self._assembly = self._gff_src.stem.split("_")[-1]
+        self._gene_url = (
+            f"{self._host}gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz"
+        )
+        self._history_url = f"{self._host}gene/DATA/gene_history.gz"
+        self._assembly_url = f"{self._host}genomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/"  # TODO
 
     def _get_prev_symbols(self) -> Dict[str, str]:
         """Store a gene's symbol history.
@@ -621,15 +647,27 @@ class NCBI(Base):
 
         :raise NormalizerEtlError: if requisite metadata is unset
         """
-        if not all([self._version, self._data_url, self._assembly]):
+        if not all(
+            [
+                self._version,
+                self._gene_url,
+                self._history_url,
+                self._assembly_url,
+                self._assembly,
+            ]
+        ):
             raise NormalizerEtlError(
                 "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
             )
         metadata = SourceMeta(
             data_license="custom",
-            data_license_url="https://www.ncbi.nlm.nih.gov/home/" "about/policies/",
+            data_license_url="https://www.ncbi.nlm.nih.gov/home/about/policies/",
             version=self._version,
-            data_url=self._data_url,
+            data_url={
+                "info_file": self._gene_url,
+                "history_file": self._history_url,
+                "assembly_file": self._assembly_url,
+            },
             rdp_url="https://reusabledata.org/ncbi-gene.html",
             data_license_attributes={
                 "non_commercial": False,

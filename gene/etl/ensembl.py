@@ -47,7 +47,7 @@ class Ensembl(Base):
         self._data_file_pattern = re.compile(r"ensembl_(GRCh\d+)_(\d+)\.gff3")
         self._sequence_location = SequenceLocation()
         self._version = None
-        self._data_url = None
+        self._data_url = {}
         self._assembly = None
 
     def _is_up_to_date(self, data_file: Path) -> bool:
@@ -273,7 +273,9 @@ class Ensembl(Base):
             data_license_url="https://useast.ensembl.org/info/about"
             "/legal/disclaimer.html",
             version=self._version,
-            data_url=f"ftp://{self._host}/{self._data_dir}Homo_sapiens.{self._assembly}.{self._version}.gff3.gz",
+            data_url={
+                "genome_annotations": f"ftp://{self._host}/{self._data_dir}Homo_sapiens.{self._assembly}.{self._version}.gff3.gz"
+            },
             rdp_url=None,
             data_license_attributes={
                 "non_commercial": False,

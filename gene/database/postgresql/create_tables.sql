@@ -3,7 +3,7 @@ CREATE TABLE gene_sources (
     data_license TEXT NOT NULL,
     data_license_url TEXT NOT NULL,
     version TEXT NOT NULL,
-    data_url TEXT NOT NULL,
+    data_url JSON NOT NULL,
     rdp_url TEXT,
     data_license_nc BOOLEAN NOT NULL,
     data_license_attr BOOLEAN NOT NULL,

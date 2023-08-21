@@ -150,7 +150,7 @@ class Base(ABC):
         :param fn: Filename for downloaded file
         :param source_dir: Source's data directory
         :param data_fn: Filename on FTP site to be downloaded
-        :return: Time file was last updated
+        :return: Date file was last updated
         """
         with FTP(host) as ftp:
             ftp.login()

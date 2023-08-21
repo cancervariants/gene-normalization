@@ -235,7 +235,7 @@ class SourceMeta(BaseModel):
     data_license: StrictStr
     data_license_url: StrictStr
     version: StrictStr
-    data_url: Optional[StrictStr]
+    data_url: Dict[str, str]
     rdp_url: Optional[StrictStr]
     data_license_attributes: Dict[StrictStr, StrictBool]
     genome_assemblies: Optional[List[StrictStr]]
@@ -256,7 +256,7 @@ class SourceMeta(BaseModel):
                 "data_license": "custom",
                 "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                 "version": "20201215",
-                "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+                "data_url": {"TODO": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/"},  # TODO
                 "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                 "data_license_attributes": {
                     "non_commercial": False,
@@ -295,7 +295,7 @@ class MatchesKeyed(BaseModel):
                         "data_license": "custom",
                         "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                         "version": "20201215",
-                        "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+                        "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",  # TODO
                         "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                         "data_license_attributes": {
                             "non_commercial": False,
@@ -337,7 +337,7 @@ class MatchesListed(BaseModel):
                     "data_license": "custom",
                     "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                     "version": "20201215",
-                    "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+                    "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",  # TODO
                     "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                     "data_license_attributes": {
                         "non_commercial": False,
@@ -421,7 +421,7 @@ class SearchService(BaseModel):
                             "data_license": "custom",
                             "data_license_url": "https://uswest.ensembl.org/info/about/legal/index.html",  # noqa: E501
                             "version": "102",
-                            "data_url": "http://ftp.ensembl.org/pub/",
+                            "data_url": "http://ftp.ensembl.org/pub/",  # TODO
                             "rdp_url": None,
                             "data_license_attributes": {
                                 "non_commercial": False,
@@ -543,7 +543,7 @@ class NormalizeService(BaseNormalizationService):
                         "data_license": "custom",
                         "data_license_url": "https://www.genenames.org/about/",
                         "version": "20210810",
-                        "data_url": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json",  # noqa: E501
+                        "data_url": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json",  # noqa: E501  # TODO
                         "rdp_url": None,
                         "data_license_attributes": {
                             "non_commercial": False,
@@ -556,7 +556,7 @@ class NormalizeService(BaseNormalizationService):
                         "data_license": "custom",
                         "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",  # noqa: E501
                         "version": "104",
-                        "data_url": "ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.104.gff3.gz",  # noqa: E501
+                        "data_url": "ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.104.gff3.gz",  # noqa: E501  TODO
                         "rdp_url": None,
                         "data_license_attributes": {
                             "non_commercial": False,
@@ -569,7 +569,7 @@ class NormalizeService(BaseNormalizationService):
                         "data_license": "custom",
                         "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                         "version": "20210813",
-                        "data_url": "ftp://ftp.ncbi.nlm.nih.gov",
+                        "data_url": "ftp://ftp.ncbi.nlm.nih.gov",  # TODO
                         "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                         "data_license_attributes": {
                             "non_commercial": False,
@@ -686,7 +686,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
                             "data_license": "custom",
                             "data_license_url": "https://www.genenames.org/about/",
                             "version": "20220407",
-                            "data_url": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json",  # noqa: E501
+                            "data_url": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json",  # noqa: E501  TODO
                             "rdp_url": None,
                             "data_license_attributes": {
                                 "non_commercial": False,
@@ -734,7 +734,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
                             "data_license": "custom",
                             "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",  # noqa: E501
                             "version": "104",
-                            "data_url": "ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.104.gff3.gz",  # noqa: E501
+                            "data_url": "ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.104.gff3.gz",  # noqa: E501  TODO
                             "rdp_url": None,
                             "data_license_attributes": {
                                 "non_commercial": False,
@@ -793,7 +793,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
                             "data_license": "custom",
                             "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                             "version": "20220407",
-                            "data_url": "ftp://ftp.ncbi.nlm.nih.gov",
+                            "data_url": "ftp://ftp.ncbi.nlm.nih.gov",  # TODO
                             "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                             "data_license_attributes": {
                                 "non_commercial": False,
