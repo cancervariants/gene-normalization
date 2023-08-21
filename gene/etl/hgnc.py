@@ -12,7 +12,7 @@ from dateutil import parser
 
 from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import AbstractDatabase
-from gene.etl.base import Base, NormalizerEtlError, SourceFetchError, VersionParseError
+from gene.etl.base import Base, FileVersionError, NormalizerEtlError, SourceFetchError
 from gene.etl.vrs_locations import ChromosomeLocation
 from gene.schemas import (
     Annotation,
@@ -58,12 +58,12 @@ class HGNC(Base):
 
         :param data_file: path to latest local file
         :return: True if data is up-to-date
-        :raise VersionParseError: if unable to get version from local HGNC file
+        :raise FileVersionError: if unable to get version from local HGNC file
         :raise SourceFetchError: if unable to get latest version available from HGNC
         """
         local_match = re.match(self._data_file_pattern, data_file.name)
         if not local_match:
-            raise VersionParseError(
+            raise FileVersionError(
                 f"Unable to parse version number from local HGNC file: {data_file.absolute()}"
             )
         version = local_match.groups()[0]
