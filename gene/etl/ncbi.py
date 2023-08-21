@@ -12,7 +12,7 @@ from biocommons.seqrepo import SeqRepo
 
 from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import AbstractDatabase
-from gene.etl.base import Base, FileUnavailableError, NormalizerEtlError
+from gene.etl.base import Base, FileVersionError, NormalizerEtlError, SourceFetchError
 from gene.etl.vrs_locations import ChromosomeLocation, SequenceLocation
 from gene.schemas import (
     Annotation,
@@ -59,7 +59,7 @@ class NCBI(Base):
 
         :param ftp: logged-in FTP instance
         :return: None, but modifies FTP connection in-place
-        :raise FileUnavailableError: if navigation fails
+        :raise SourceFetchError: if navigation fails (e.g. because expected directories don't exist)
         """
         major_annotation_pattern = r"GCF_\d+\.\d+_GRCh\d+.+"
         ftp.cwd(
@@ -70,7 +70,7 @@ class NCBI(Base):
             grch_dirs = [d for d in ftp.nlst() if re.match(major_annotation_pattern, d)]
             grch_dir = grch_dirs[0]
         except (IndexError, AttributeError):
-            raise FileUnavailableError(
+            raise SourceFetchError(
                 "No directories matching expected latest assembly version pattern"
             )
         ftp.cwd(grch_dir)
@@ -83,11 +83,13 @@ class NCBI(Base):
 
         :param gff: path to local GFF file (file should be saved like `ncbi_GRCh38.p14.gff`)
         :return: True if file version matches most recent known remote version
+        :raise FileVersionError: if unable to parse version from local or remote file
+        :raise SourceFetchError: if unable to get version from NCBI
         """
         try:
             version = re.match(r"ncbi_(.+)", gff.stem).groups()[0]
         except (IndexError, AttributeError):
-            raise FileUnavailableError(
+            raise FileVersionError(
                 f"Unable to parse version from NCBI GRCh38 annotation file: {gff.absolute()}"
             )
 
@@ -100,14 +102,15 @@ class NCBI(Base):
                 if match and match.groups():
                     latest_version = match.groups()[0]
                     return version == latest_version
-        raise FileUnavailableError(
-            "Unable to parse latest available NCBI GRCh38 annotation version"
+        raise SourceFetchError(
+            "Unable to identify latest available NCBI GRCh38 annotation version"
         )
 
     def _download_gff(self) -> Path:
         """Download NCBI GRCh38 annotation file.
 
         :return: Path to downloaded file
+        :raise SourceFetchError: if unable to identify latest available file
         """
         logger.info("Downloading NCBI genome annotation file...")
         genomic_gff_pattern = r"GCF_\d+\.\d+_(GRCh\d+\.\w\d+)_genomic.gff.gz"
@@ -122,8 +125,8 @@ class NCBI(Base):
                     genomic_filename = f
                     version = gff_match.groups()[0]
             if not version or not genomic_filename:
-                raise FileUnavailableError(
-                    "Unable to parse latest available NCBI GRCh38 annotation"
+                raise SourceFetchError(
+                    "Unable to find latest available NCBI GRCh38 annotation"
                 )
             new_filename = f"ncbi_{version}.gff"
             self._ftp_download_file(
@@ -139,12 +142,12 @@ class NCBI(Base):
 
         :param history_file: path to local history file (file should be saved like `ncbi_history_20230315.tsv`)
         :return: True if file version matches most recent expected remote version
-        :raise FileUnavailableError: if parsing version from local file fails
+        :raise FileVersionError: if parsing version from local file fails
         """
         try:
             version = re.match(r"ncbi_history_(\d+).tsv", history_file.name).groups()[0]
         except (IndexError, AttributeError):
-            raise FileUnavailableError(
+            raise FileVersionError(
                 f"Unable to parse version from NCBI history file: {history_file.absolute()}"
             )
         with FTP(self._host) as ftp:
@@ -174,12 +177,12 @@ class NCBI(Base):
 
         :param gene_file: path to local NCBI info file (file should be saved like `ncbi_info_20230315.tsv`)
         :return: True if file version matches most recent known remote version
-        :raise FileUnavailableError: if parsing version from local file fails
+        :raise FileVersionError: if parsing version from local file fails
         """
         try:
             version = re.match(r"ncbi_history_(\d+).tsv", gene_file.name).groups()[0]
         except (IndexError, AttributeError):
-            raise FileUnavailableError(
+            raise FileVersionError(
                 f"Unable to parse version from NCBI gene file: {gene_file.absolute()}"
             )
         with FTP(self._host) as ftp:
@@ -646,7 +649,7 @@ class NCBI(Base):
     def _add_meta(self) -> None:
         """Add Ensembl metadata.
 
-        :raise NormalizerEtlError: if requisite metadata is unset
+        :raise NormalizerEtlError: if required metadata is unset
         """
         if not all(
             [

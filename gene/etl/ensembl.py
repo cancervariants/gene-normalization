@@ -15,9 +15,9 @@ from gene import APP_ROOT
 from gene.database import AbstractDatabase
 from gene.etl.base import (
     Base,
-    FileUnavailableError,
+    FileVersionError,
     NormalizerEtlError,
-    SourceFormatError,
+    SourceFetchError,
 )
 from gene.etl.vrs_locations import SequenceLocation
 from gene.schemas import NamespacePrefix, SourceMeta, SourceName, Strand
@@ -55,38 +55,41 @@ class Ensembl(Base):
 
         :param data_file: path to latest local file
         :return: True if data is up-to-date
+        :raise FileVersionError: if unable to parse version number from local file
+        :raise SourceFetchError: if unable to get latest version from remote source
         """
         local_match = re.match(self._data_file_pattern, data_file.name)
         parse_msg = (
             f"Unable to parse version number from local file: {data_file.absolute()}"
         )
         if not local_match or not local_match.groups():
-            raise SourceFormatError(parse_msg)
+            raise FileVersionError(parse_msg)
         try:
             version = int(local_match.groups()[1])
         except ValueError:
-            raise SourceFormatError(parse_msg)
+            raise FileVersionError(parse_msg)
 
         ensembl_api = (
             "https://rest.ensembl.org/info/data/?content-type=application/json"
         )
         response = requests.get(ensembl_api)
         if response.status_code != 200:
-            raise FileUnavailableError(
+            raise SourceFetchError(
                 f"Unable to get response from Ensembl version API endpoint: {ensembl_api}"
             )
-
         releases = response.json().get("releases")
         if not releases:
-            raise FileUnavailableError(
+            raise SourceFetchError(
                 f"Malformed response from Ensembl version API endpoint: {dumps(response.json())}"
             )
-
         releases.sort()
         return version == releases[-1]
 
     def _download_data(self) -> Path:
-        """Download latest Ensembl GFF3 data file."""
+        """Download latest Ensembl GFF3 data file.
+
+        :raise SourceFetchError: if unable to find file matching expected pattern
+        """
         logger.info("Downloading latest Ensembl data file...")
         pattern = r"Homo_sapiens\.(?P<assembly>GRCh\d+)\.(?P<version>\d+)\.gff3\.gz"
         with FTP(self._host) as ftp:
@@ -105,7 +108,7 @@ class Ensembl(Base):
                         f"Successfully downloaded Ensembl {version} data to {self.src_data_dir / new_fn}."
                     )
                     return self.src_data_dir / new_fn
-        raise FileUnavailableError(
+        raise SourceFetchError(
             "Unable to find file matching expected Ensembl pattern via FTP"
         )
 

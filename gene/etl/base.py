@@ -91,12 +91,12 @@ class Base(ABC):
         :param check_latest_callback: function to check whether local data is up-to-date
         :param download_callback: function to download from remote
         :return: path to acquired data file
-        :raise FileUnavaiableError: if unable to get data
+        :raise FileNotFoundError: if unable to find any files matching the pattern
         """
         matching_files = list(self.src_data_dir.glob(file_glob))
         if not matching_files:
             if use_existing:
-                raise FileUnavailableError(
+                raise FileNotFoundError(
                     f"No local files matching pattern {self.src_data_dir.absolute().as_uri() + file_glob}"
                 )
             else:
@@ -195,7 +195,11 @@ class Base(ABC):
 
 
 class NormalizerEtlError(Exception):
-    """Root ETL exception."""
+    """Base ETL exception."""
+
+
+class FileVersionError(NormalizerEtlError):
+    """Raise when unable to parse version number from saved data file."""
 
 
 class SourceFormatError(NormalizerEtlError):
@@ -204,7 +208,7 @@ class SourceFormatError(NormalizerEtlError):
     """
 
 
-class FileUnavailableError(NormalizerEtlError):
-    """Raise when source files are unavailable (e.g. no matching local files are found,
-    or network connectivity issues are encountered when fetching from remote, etc)
+class SourceFetchError(NormalizerEtlError):
+    """Raise during data acquisition when data fetch fails (e.g. unable to get latest
+    version number, or connection failure during download)
     """
