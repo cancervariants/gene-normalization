@@ -12,7 +12,7 @@ from dateutil import parser
 
 from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import AbstractDatabase
-from gene.etl.base import Base, SourceFormatError
+from gene.etl.base import Base, NormalizerEtlError, SourceFormatError
 from gene.etl.vrs_locations import ChromosomeLocation
 from gene.schemas import (
     Annotation,
@@ -321,7 +321,14 @@ class HGNC(Base):
             gene["location_annotations"].append(loc)
 
     def _add_meta(self) -> None:
-        """Add HGNC metadata to the gene_metadata table."""
+        """Add Ensembl metadata.
+
+        :raise NormalizerEtlError: if requisite metadata is unset
+        """
+        if not all([self._version, self._data_url]):
+            raise NormalizerEtlError(
+                "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
+            )
         metadata = SourceMeta(
             data_license="custom",
             data_license_url="https://www.genenames.org/about/",

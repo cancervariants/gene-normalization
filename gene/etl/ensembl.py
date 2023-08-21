@@ -13,7 +13,12 @@ from gffutils.feature import Feature
 
 from gene import APP_ROOT
 from gene.database import AbstractDatabase
-from gene.etl.base import Base, FileUnavailableError, SourceFormatError
+from gene.etl.base import (
+    Base,
+    FileUnavailableError,
+    NormalizerEtlError,
+    SourceFormatError,
+)
 from gene.etl.vrs_locations import SequenceLocation
 from gene.schemas import NamespacePrefix, SourceMeta, SourceName, Strand
 
@@ -42,8 +47,7 @@ class Ensembl(Base):
         self._data_file_pattern = re.compile(r"ensembl_(GRCh\d+)_(\d+)\.gff3")
         self._sequence_location = SequenceLocation()
         self._version = None
-        self._fn = None
-        self._data_url = f"ftp://{self._host}/{self._data_dir}{self._fn}"
+        self._data_url = None
         self._assembly = None
 
     def _is_up_to_date(self, data_file: Path) -> bool:
@@ -256,13 +260,20 @@ class Ensembl(Base):
         return source
 
     def _add_meta(self) -> None:
-        """Add Ensembl metadata."""
+        """Add Ensembl metadata.
+
+        :raise NormalizerEtlError: if requisite metadata is unset
+        """
+        if not all([self._version, self._host, self._data_dir, self._assembly]):
+            raise NormalizerEtlError(
+                "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
+            )
         metadata = SourceMeta(
             data_license="custom",
             data_license_url="https://useast.ensembl.org/info/about"
             "/legal/disclaimer.html",
             version=self._version,
-            data_url=self._data_url,
+            data_url=f"ftp://{self._host}/{self._data_dir}Homo_sapiens.{self._assembly}.{self._version}.gff3.gz",
             rdp_url=None,
             data_license_attributes={
                 "non_commercial": False,

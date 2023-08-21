@@ -12,7 +12,7 @@ from biocommons.seqrepo import SeqRepo
 
 from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import AbstractDatabase
-from gene.etl.base import Base, FileUnavailableError
+from gene.etl.base import Base, FileUnavailableError, NormalizerEtlError
 from gene.etl.vrs_locations import ChromosomeLocation, SequenceLocation
 from gene.schemas import (
     Annotation,
@@ -617,7 +617,14 @@ class NCBI(Base):
         logger.info("Successfully transformed NCBI.")
 
     def _add_meta(self) -> None:
-        """Load metadata"""
+        """Add Ensembl metadata.
+
+        :raise NormalizerEtlError: if requisite metadata is unset
+        """
+        if not all([self._version, self._data_url, self._assembly]):
+            raise NormalizerEtlError(
+                "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
+            )
         metadata = SourceMeta(
             data_license="custom",
             data_license_url="https://www.ncbi.nlm.nih.gov/home/" "about/policies/",
