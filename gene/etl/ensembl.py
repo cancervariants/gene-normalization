@@ -99,9 +99,8 @@ class Ensembl(Base):
                     resp = match.groupdict()
                     assembly = resp["assembly"]
                     version = resp["version"]
-                    self._fn = f
                     new_fn = f"ensembl_{assembly}_{version}.gff3"
-                    self._ftp_download_file(ftp, self._fn, self.src_data_dir, new_fn)
+                    self._ftp_download_file(ftp, f, self.src_data_dir, new_fn)
                     logger.info(
                         f"Successfully downloaded Ensembl {version} data to {self.src_data_dir / new_fn}."
                     )
@@ -115,10 +114,10 @@ class Ensembl(Base):
 
         :param use_existing: if True, use latest available local file
         """
-        self._data_file = self.acquire_data_file(
+        self._data_src = self.acquire_data_file(
             "ensembl_*.gff3", use_existing, self._is_up_to_date, self._download_data
         )
-        match = re.match(self._data_file_pattern, self._data_file.name)
+        match = re.match(self._data_file_pattern, self._data_src.name)
         self._assembly = match.groups()[0]
         self._version = match.groups()[1]
 
@@ -126,7 +125,7 @@ class Ensembl(Base):
         """Transform the Ensembl source."""
         logger.info("Transforming Ensembl...")
         db = gffutils.create_db(
-            str(self._data_file),
+            str(self._data_src),
             dbfn=":memory:",
             force=True,
             merge_strategy="create_unique",
