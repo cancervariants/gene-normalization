@@ -76,8 +76,15 @@ class QueryHandler:
         :param loc: Sequence location
         :return: VRS sequence location
         """
+        if "sequence" in loc:
+            # For new dbs
+            sequence = loc["sequence"]
+        else:
+            # For aws db instances that haven't been updated
+            sequence = loc["sequence_id"]
+
         return models.SequenceLocation(
-            sequence=loc["sequence"],
+            sequence=sequence,
             start=int(loc["start"]),
             end=int(loc["end"])
         )
@@ -468,7 +475,8 @@ class QueryHandler:
         for loc_name, locations in record_locations.items():
             transformed_locs = list()
             for loc in locations:
-                transformed_locs.append(self._transform_location(loc))
+                if loc["type"] == "SequenceLocation":
+                    transformed_locs.append(self._transform_location(loc))
             extensions.append(Extension(name=loc_name, value=transformed_locs))
 
         # handle gene types separately because they're wonky
