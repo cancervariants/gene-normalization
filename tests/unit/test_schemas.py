@@ -1,7 +1,7 @@
 """Module to test validators in the schemas module."""
 import pytest
 import pydantic
-from ga4gh.vrs._internal.models import SequenceLocation
+from ga4gh.vrs import models
 
 from gene.schemas import Gene, GeneValueObject
 
@@ -20,7 +20,7 @@ from gene.schemas import Gene, GeneValueObject
 @pytest.fixture(scope='module')
 def sequence_location():
     """Create a valid sequence location test fixture."""
-    return SequenceLocation(
+    return models.SequenceLocation(
         sequence='ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul',
         start=140719327,
         end=140924929

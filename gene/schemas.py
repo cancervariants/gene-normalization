@@ -6,7 +6,7 @@ from enum import Enum, IntEnum
 
 from pydantic import BaseModel, StrictBool, validator, Extra
 from pydantic.types import StrictStr, StrictInt
-from ga4gh.vrs._internal.models import IRI, SequenceLocation
+from ga4gh.vrs import models
 
 
 def return_value(cls, v):
@@ -53,7 +53,7 @@ class GeneValueObject(BaseModel):
     RECOMMENDED.
     """
 
-    id: IRI
+    id: models.IRI
     type: Literal["Gene"] = "Gene"
 
     _get_id_val = validator("id", allow_reuse=True)(return_value)
@@ -64,10 +64,10 @@ class GeneDescriptor(BaseModel):
 
     id: Optional[StrictStr] = None
     type: Literal["GeneDescriptor"] = "GeneDescriptor"
-    gene: Union[IRI, GeneValueObject]
+    gene: Union[models.IRI, GeneValueObject]
     label: Optional[StrictStr] = None
     description: Optional[StrictStr] = None
-    xrefs: List[IRI] = []
+    xrefs: List[models.IRI] = []
     alternate_labels: List[StrictStr] = []
     extensions: List[Extension] = []
 
@@ -138,7 +138,7 @@ class GeneSequenceLocation(BaseModel):
     type: Literal["SequenceLocation"] = "SequenceLocation"
     start: StrictInt
     end: StrictInt
-    sequence: IRI
+    sequence: models.IRI
 
 
 # class GeneChromosomeLocation(BaseModel):
@@ -156,22 +156,22 @@ class BaseGene(BaseModel):
     /search and /normalize_unmerged.
     """
 
-    concept_id: IRI
+    concept_id: models.IRI
     symbol: StrictStr
     symbol_status: Optional[SymbolStatus] = None
     label: Optional[StrictStr] = None
     strand: Optional[Strand] = None
     location_annotations: List[StrictStr] = []
     locations: Union[
-        List[SequenceLocation],
+        List[models.SequenceLocation],
         List[GeneSequenceLocation]
         # List[Union[SequenceLocation, ChromosomeLocation]],
         # List[Union[GeneSequenceLocation, GeneChromosomeLocation]]  # dynamodb
     ] = []
     aliases: List[StrictStr] = []
     previous_symbols: List[StrictStr] = []
-    xrefs: List[IRI] = []
-    associated_with: List[IRI] = []
+    xrefs: List[models.IRI] = []
+    associated_with: List[models.IRI] = []
     gene_type: Optional[StrictStr] = None
 
     _get_concept_id_val = \
@@ -701,7 +701,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
     attributes.
     """
 
-    normalized_concept_id: Optional[IRI] = None
+    normalized_concept_id: Optional[models.IRI] = None
     source_matches: Dict[SourceName, MatchesNormalized]
 
     class Config:
