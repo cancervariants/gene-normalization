@@ -213,10 +213,9 @@ class HGNC(Base):
                 else:
                     location = dict()
                     self._set_location(loc, location, gene)
-                    chr_location = \
-                        self._chromosome_location.get_location(location, gene)
-                    if chr_location:
-                        location_list.append(chr_location)
+                    # chr_location = self._chromosome_location.get_location(location, gene)  # noqa: E501
+                    # if chr_location:
+                    #     location_list.append(chr_location)
 
         if location_list:
             gene['locations'] = location_list

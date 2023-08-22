@@ -2,14 +2,89 @@
 gene records.
 """
 from typing import Literal, Type, List, Optional, Dict, Union, Any
-from pydantic import BaseModel, StrictBool, validator
 from enum import Enum, IntEnum
-from ga4gh.vrsatile.pydantic import return_value
-from ga4gh.vrsatile.pydantic.core_models import CURIE
-from ga4gh.vrsatile.pydantic.vrs_models import SequenceLocation, ChromosomeLocation,\
-    VRSTypes
-from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
+
+from pydantic import BaseModel, StrictBool, validator, Extra
 from pydantic.types import StrictStr, StrictInt
+from ga4gh.vrs._internal.models import IRI, SequenceLocation
+
+
+def return_value(cls, v):
+    """Return value from object.
+
+    :param ModelMetaclass cls: Pydantic Model ModelMetaclass
+    :param v: Model
+    :return: Value
+    """
+    if v:
+        try:
+            if hasattr(v, "__root__"):
+                v = return_value(cls, v.__root__)
+            elif isinstance(v, list):
+                tmp = list()
+                for item in v:
+                    while True:
+                        try:
+                            item = item.__root__
+                        except AttributeError:
+                            break
+                    tmp.append(item)
+                v = tmp
+        except AttributeError:
+            pass
+    return v
+
+
+class Extension(BaseModel):
+    """The Extension class provides VODs with a means to extend descriptions with other
+    attributes unique to a content provider. These extensions are not expected to be
+    natively understood under VRSATILE, but may be used for pre-negotiated exchange of
+    message attributes when needed.
+    """
+
+    type: Literal["Extension"] = "Extension"
+    name: StrictStr
+    value: Optional[Any] = None
+
+
+class GeneValueObject(BaseModel):
+    """A reference to a Gene as defined by an authority. For human genes, the use of
+    `hgnc <https://registry.identifiers.org/registry/hgnc>` as the gene authority is
+    RECOMMENDED.
+    """
+
+    id: IRI
+    type: Literal["Gene"] = "Gene"
+
+    _get_id_val = validator("id", allow_reuse=True)(return_value)
+
+
+class GeneDescriptor(BaseModel):
+    """This descriptor is intended to reference VRS Gene value objects."""
+
+    id: Optional[StrictStr] = None
+    type: Literal["GeneDescriptor"] = "GeneDescriptor"
+    gene: Union[IRI, GeneValueObject]
+    label: Optional[StrictStr] = None
+    description: Optional[StrictStr] = None
+    xrefs: List[IRI] = []
+    alternate_labels: List[StrictStr] = []
+    extensions: List[Extension] = []
+
+    _get_gene_val = validator("gene", allow_reuse=True)(return_value)
+    _get_xrefs_val = validator("xrefs", allow_reuse=True)(return_value)
+
+    class Config:
+        """Class configs."""
+
+        extra = Extra.forbid
+
+    @validator("xrefs")
+    def check_count_value(cls, v):
+        """Check xrefs value"""
+        if v:
+            assert len(v) == len({xref.root for xref in v}), "xrefs must contain unique items"  # noqa: E501
+        return v
 
 
 class SymbolStatus(str, Enum):
@@ -60,20 +135,20 @@ class MatchType(IntEnum):
 class GeneSequenceLocation(BaseModel):
     """Sequence Location model when storing in DynamoDB."""
 
-    type: Literal[VRSTypes.SEQUENCE_LOCATION] = VRSTypes.SEQUENCE_LOCATION
+    type: Literal["SequenceLocation"] = "SequenceLocation"
     start: StrictInt
     end: StrictInt
-    sequence_id: CURIE
+    sequence: IRI
 
 
-class GeneChromosomeLocation(BaseModel):
-    """Chromosome Location model when storing in DynamDB."""
+# class GeneChromosomeLocation(BaseModel):
+#     """Chromosome Location model when storing in DynamDB."""
 
-    type: Literal[VRSTypes.CHROMOSOME_LOCATION] = VRSTypes.CHROMOSOME_LOCATION
-    species_id: Literal["taxonomy:9606"] = "taxonomy:9606"
-    chr: StrictStr
-    start: StrictStr
-    end: StrictStr
+#     type: Literal["ChromosomeLocation"] = "ChromosomeLocation"
+#     species_id: Literal["taxonomy:9606"] = "taxonomy:9606"
+#     chr: StrictStr
+#     start: StrictStr
+#     end: StrictStr
 
 
 class BaseGene(BaseModel):
@@ -81,21 +156,23 @@ class BaseGene(BaseModel):
     /search and /normalize_unmerged.
     """
 
-    concept_id: CURIE
+    concept_id: IRI
     symbol: StrictStr
-    symbol_status: Optional[SymbolStatus]
-    label: Optional[StrictStr]
-    strand: Optional[Strand]
-    location_annotations: Optional[List[StrictStr]] = []
-    locations: Optional[Union[
-        List[Union[SequenceLocation, ChromosomeLocation]],
-        List[Union[GeneSequenceLocation, GeneChromosomeLocation]]  # dynamodb
-    ]] = [],
-    aliases: Optional[List[StrictStr]] = []
-    previous_symbols: Optional[List[StrictStr]] = []
-    xrefs: Optional[List[CURIE]] = []
-    associated_with: Optional[List[CURIE]] = []
-    gene_type: Optional[StrictStr]
+    symbol_status: Optional[SymbolStatus] = None
+    label: Optional[StrictStr] = None
+    strand: Optional[Strand] = None
+    location_annotations: List[StrictStr] = []
+    locations: Union[
+        List[SequenceLocation],
+        List[GeneSequenceLocation]
+        # List[Union[SequenceLocation, ChromosomeLocation]],
+        # List[Union[GeneSequenceLocation, GeneChromosomeLocation]]  # dynamodb
+    ] = []
+    aliases: List[StrictStr] = []
+    previous_symbols: List[StrictStr] = []
+    xrefs: List[IRI] = []
+    associated_with: List[IRI] = []
+    gene_type: Optional[StrictStr] = None
 
     _get_concept_id_val = \
         validator('concept_id', allow_reuse=True)(return_value)
@@ -140,7 +217,7 @@ class GeneGroup(Gene):
 
     description: StrictStr
     type_identifier: StrictStr
-    genes: List[Gene]
+    genes: List[Gene] = []
 
 
 class SourceName(Enum):
@@ -232,10 +309,10 @@ class SourceMeta(BaseModel):
     data_license: StrictStr
     data_license_url: StrictStr
     version: StrictStr
-    data_url: Optional[StrictStr]
-    rdp_url: Optional[StrictStr]
+    data_url: Optional[StrictStr] = None
+    rdp_url: Optional[StrictStr] = None
     data_license_attributes: Dict[StrictStr, StrictBool]
-    genome_assemblies: Optional[List[StrictStr]]
+    genome_assemblies: List[StrictStr] = []
 
     class Config:
         """Configure model example"""
@@ -270,7 +347,7 @@ class MatchesKeyed(BaseModel):
     Used when matches are requested as an object, not an array.
     """
 
-    records: List[Gene]
+    records: List[Gene] = []
     source_meta_: SourceMeta
 
     class Config:
@@ -313,7 +390,7 @@ class MatchesListed(BaseModel):
     """
 
     source: SourceName
-    records: List[Gene]
+    records: List[Gene] = []
     source_meta_: SourceMeta
 
     class Config:
@@ -352,10 +429,10 @@ class MatchesListed(BaseModel):
 class ServiceMeta(BaseModel):
     """Metadata regarding the gene-normalization service."""
 
-    name = 'gene-normalizer'
+    name: StrictStr = 'gene-normalizer'
     version: StrictStr
     response_datetime: StrictStr
-    url = 'https://github.com/cancervariants/gene-normalization'
+    url: StrictStr = 'https://github.com/cancervariants/gene-normalization'
 
     class Config:
         """Configure model example"""
@@ -382,7 +459,7 @@ class SearchService(BaseModel):
     """Define model for returning highest match typed concepts from sources."""
 
     query: StrictStr
-    warnings: Optional[List[Dict]]
+    warnings: List[Dict] = []
     source_matches: Union[Dict[SourceName, MatchesKeyed], List[MatchesListed]]
     service_meta_: ServiceMeta
 
@@ -457,7 +534,7 @@ class BaseNormalizationService(BaseModel):
     """Base method providing shared attributes to Normalization service classes."""
 
     query: StrictStr
-    warnings: Optional[List[Dict]]
+    warnings: List[Dict] = []
     match_type: MatchType
     service_meta_: ServiceMeta
 
@@ -465,8 +542,8 @@ class BaseNormalizationService(BaseModel):
 class NormalizeService(BaseNormalizationService):
     """Define model for returning normalized concept."""
 
-    gene_descriptor: Optional[GeneDescriptor]
-    source_meta_: Optional[Dict[SourceName, SourceMeta]]
+    gene_descriptor: Optional[GeneDescriptor] = None
+    source_meta_: Dict[SourceName, SourceMeta] = {}
 
     class Config:
         """Configure model example"""
@@ -531,18 +608,18 @@ class NormalizeService(BaseNormalizationService):
                             ],
                             "type": "Extension"
                         },
-                        {
-                            "name": "chromosome_location",
-                            "value": {
-                                "id": "ga4gh:CL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",  # noqa: E501
-                                "type": "ChromosomeLocation",
-                                "species_id": "taxonomy:9606",
-                                "chr": "7",
-                                "end": "q34",
-                                "start": "q34",
-                            },
-                            "type": "Extension"
-                        }
+                        # {
+                        #     "name": "chromosome_location",
+                        #     "value": {
+                        #         "id": "ga4gh:CL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",  # noqa: E501
+                        #         "type": "ChromosomeLocation",
+                        #         "species_id": "taxonomy:9606",
+                        #         "chr": "7",
+                        #         "end": "q34",
+                        #         "start": "q34",
+                        #     },
+                        #     "type": "Extension"
+                        # }
                     ]
                 },
                 "source_meta_": {
@@ -602,7 +679,7 @@ class NormalizeService(BaseNormalizationService):
 class MatchesNormalized(BaseModel):
     """Matches associated with normalized concept from a single source."""
 
-    records: List[BaseGene]
+    records: List[BaseGene] = []
     source_meta_: SourceMeta
 
     class Config:
@@ -624,7 +701,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
     attributes.
     """
 
-    normalized_concept_id: Optional[CURIE]
+    normalized_concept_id: Optional[IRI] = None
     source_matches: Dict[SourceName, MatchesNormalized]
 
     class Config:
@@ -660,14 +737,14 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "strand": None,
                                 "location_annotations": [],
                                 "locations": [
-                                    {
-                                        "type": "ChromosomeLocation",
-                                        "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",  # noqa: E501
-                                        "species_id": "taxonomy:9606",
-                                        "chr": "7",
-                                        "start": "q22.1",
-                                        "end": "q22.1"
-                                    }
+                                    # {
+                                    #     "type": "ChromosomeLocation",
+                                    #     "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",  # noqa: E501
+                                    #     "species_id": "taxonomy:9606",
+                                    #     "chr": "7",
+                                    #     "start": "q22.1",
+                                    #     "end": "q22.1"
+                                    # }
                                 ],
                                 "aliases": [
                                     "3.1.1.7"
@@ -720,17 +797,11 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "location_annotations": [],
                                 "locations": [
                                     {
-                                        "id": "ga4gh:SL.AF6wPZclBqTauGr3yx_CqmMndLKhq0Cm",  # noqa: E501
+                                        "id": "ga4gh:SL.vt7T7T0jlhWug8QdfW6FM_yxrTHZDkqt",  # noqa: E501
                                         "type": "SequenceLocation",
-                                        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
-                                        "start": {
-                                            "type": "Number",
-                                            "value": 100889993
-                                        },
-                                        "end": {
-                                            "type": "Number",
-                                            "value": 100896974
-                                        }
+                                        "sequence": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                        "start": 100889993,
+                                        "end": 100896974
                                     }
                                 ],
                                 "aliases": [],
@@ -769,25 +840,19 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "location_annotations": [],
                                 "locations": [
                                     {
-                                        "type": "ChromosomeLocation",
-                                        "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",  # noqa: E501
-                                        "species_id": "taxonomy:9606",
-                                        "chr": "7",
-                                        "start": "q22.1",
-                                        "end": "q22.1"
+                                        # "type": "ChromosomeLocation",
+                                        # "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",  # noqa: E501
+                                        # "species_id": "taxonomy:9606",
+                                        # "chr": "7",
+                                        # "start": "q22.1",
+                                        # "end": "q22.1"
                                     },
                                     {
-                                        "id": "ga4gh:SL.EepkXho2doYcUT1DW54fT1a00_zkqrn0",  # noqa: E501
+                                        "id": "ga4gh:SL.KvCSxEC2FitIcLnS0oiKStfs6_51e0-l",  # noqa: E501
                                         "type": "SequenceLocation",
-                                        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
-                                        "start": {
-                                            "type": "Number",
-                                            "value": 100889993
-                                        },
-                                        "end": {
-                                            "type": "Number",
-                                            "value": 100896994
-                                        }
+                                        "sequence": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                        "start": 100889993,
+                                        "end": 100896994
                                     }
                                 ],
                                 "aliases": [

@@ -4,9 +4,6 @@ from typing import List, Dict, Set, Any, Tuple, TypeVar, Callable, Optional
 from urllib.parse import quote
 from datetime import datetime
 
-from ga4gh.vrsatile.pydantic.core_models import Extension
-from ga4gh.vrsatile.pydantic.vrs_models import VRSTypes
-from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
 from ga4gh.vrs import models
 from ga4gh.core import ga4gh_identify
 
@@ -17,7 +14,7 @@ from gene.database import AbstractDatabase, DatabaseReadException
 from gene.schemas import BaseGene, Gene, NamespacePrefix, RecordType, RefType, \
     MatchType, SourceName, ServiceMeta, SourcePriority, NormalizeService, \
     SearchService, GeneTypeFieldName, UnmergedNormalizationService, MatchesNormalized, \
-    BaseNormalizationService
+    BaseNormalizationService, Extension, GeneDescriptor
 
 
 NormService = TypeVar("NormService", bound=BaseNormalizationService)
@@ -80,23 +77,24 @@ class QueryHandler:
         :return: VRS sequence location
         """
         return models.SequenceLocation(
-            sequence_id=loc["sequence_id"],
-            start=models.Number(value=int(loc["start"])),
-            end=models.Number(value=int(loc["end"])))
+            sequence=loc["sequence"],
+            start=int(loc["start"]),
+            end=int(loc["end"])
+        )
 
-    @staticmethod
-    def _transform_chromosome_location(loc: Dict) -> models.ChromosomeLocation:
-        """Transform a chromosome location to VRS chromosome location
+    # @staticmethod
+    # def _transform_chromosome_location(loc: Dict) -> ChromosomeLocation:
+    #     """Transform a chromosome location to VRS chromosome location
 
-        :param loc: Chromosome location
-        :return: VRS chromosome location
-        """
-        return models.ChromosomeLocation(
-            type="ChromosomeLocation",
-            species_id=loc["species_id"],
-            chr=loc["chr"],
-            start=loc["start"],
-            end=loc["end"])
+    #     :param loc: Chromosome location
+    #     :return: VRS chromosome location
+    #     """
+    #     return ChromosomeLocation(
+    #         species_id=loc["species_id"],
+    #         chr=loc["chr"],
+    #         start=loc["start"],
+    #         end=loc["end"]
+    #     )
 
     def _transform_location(self, loc: Dict) -> Dict:
         """Transform a sequence/chromosome location to VRS sequence/chromosome location
@@ -104,12 +102,14 @@ class QueryHandler:
         :param loc: Sequence or Chromosome location
         :return: VRS sequence or chromosome location represented as a dictionary
         """
-        if loc["type"] == VRSTypes.SEQUENCE_LOCATION:
-            transformed_loc = self._transform_sequence_location(loc)
-        else:
-            transformed_loc = self._transform_chromosome_location(loc)
+        # if loc["type"] == "SequenceLocation":
+        #     transformed_loc = self._transform_sequence_location(loc)
+        # else:
+        #     transformed_loc = self._transform_chromosome_location(loc)
+        # Only support sequence locations atm
+        transformed_loc = self._transform_sequence_location(loc)
         transformed_loc.id = ga4gh_identify(transformed_loc)
-        return transformed_loc.as_dict()
+        return transformed_loc.model_dump(exclude_none=True)
 
     def _transform_locations(self, record: Dict) -> Dict:
         """Transform gene locations to VRS Chromosome/Sequence Locations
@@ -375,7 +375,7 @@ class QueryHandler:
         xrefs = gene_descr.xrefs or []  # type: ignore
         ids = [gene_descr.gene] + xrefs  # type: ignore
         for concept_id in ids:
-            prefix = concept_id.split(':')[0]
+            prefix = concept_id.root.split(':')[0]
             src_name = PREFIX_LOOKUP[prefix.lower()]
             if src_name not in sources_meta:
                 sources_meta[src_name] = self.db.get_source_metadata(src_name)

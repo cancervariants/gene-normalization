@@ -84,20 +84,11 @@ Ensembl
       "location_annotations": [],
       "locations": [
         {
-          "_id": "ga4gh:VSL.amNWL6i7F2nbSZAf2QLTRTujxuDrd0pR",
+          "id": "ga4gh:SL.swvGFPn3qd10kd1jb6S1SdWqGGLi_2qe",
           "type": "SequenceLocation",
-          "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
-          "interval": {
-            "type": "SequenceInterval",
-            "start": {
-              "type": "Number",
-              "value": 140719326
-            },
-            "end": {
-              "type": "Number",
-              "value": 140924929
-            }
-          }
+          "sequence": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+          "start": 140719326,
+          "end": 140924929
         }
       ],
       "aliases": [],
@@ -139,20 +130,11 @@ The `NCBI Gene Database <https://www.ncbi.nlm.nih.gov/gene/>`_ is a service prov
           }
         },
         {
-          "_id": "ga4gh:VSL.xZU3kL8F6t2ca6WH_26CWKfNW9-owhR4",
+          "id": "ga4gh:SL.I6Hn1A9YViUPq37PgWuSNnL-BJmU6XgF",
           "type": "SequenceLocation",
-          "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
-          "interval": {
-            "type": "SequenceInterval",
-            "start": {
-              "type": "Number",
-              "value": 140713327
-            },
-            "end": {
-              "type": "Number",
-              "value": 140924929
-            }
-          }
+          "sequence": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+          "start":  140713327,
+          "end": 140924929
         }
       ],
       "aliases": [

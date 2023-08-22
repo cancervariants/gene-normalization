@@ -1,10 +1,28 @@
 """Test import of NCBI source data"""
-import pytest
-from gene.schemas import Gene, MatchType, SourceName
-from gene.query import QueryHandler
 from datetime import datetime
-from tests.conftest import assertion_checks, check_ncbi_discontinued_gene, \
-    check_resp_single_record
+
+import pytest
+
+from gene.schemas import Gene, MatchType, SourceName, SymbolStatus
+from gene.query import QueryHandler
+
+
+def check_ncbi_discontinued_gene(normalizer_response, concept_id, symbol, match_type):
+    """Check that searches on NCBI discontinued genes are correct."""
+    assert len(normalizer_response.records) == 1
+    resp = normalizer_response.records[0]
+    assert resp.match_type == match_type
+    assert resp.concept_id.root == concept_id
+    assert resp.symbol == symbol
+    assert resp.symbol_status == SymbolStatus.DISCONTINUED
+    assert resp.label is None
+    assert resp.strand is None
+    assert resp.location_annotations == []
+    assert resp.locations == []
+    assert resp.aliases == []
+    assert resp.previous_symbols == []
+    assert resp.xrefs == []
+    assert resp.associated_with == []
 
 
 @pytest.fixture(scope="module")
@@ -38,19 +56,19 @@ def dpf1():
         "location_annotations": [],
         "strand": "-",
         "locations": [
+            # {
+            #     "id": "ga4gh:CL.bzgLv8gt3KHK00OWTAEUNZcdgUjbHU8i",
+            #     "chr": "19",
+            #     "end": "q13.2",
+            #     "start": "q13.2",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # },
             {
-                "id": "ga4gh:CL.bzgLv8gt3KHK00OWTAEUNZcdgUjbHU8i",
-                "chr": "19",
-                "end": "q13.2",
-                "start": "q13.2",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            },
-            {
-                "id": "ga4gh:SL.edxKC-S5GBhbpASqBt7BEg6cFr6CcbY3",
-                "end": {"value": 38229695, "type": "Number"},
-                "start": {"value": 38211005, "type": "Number"},
-                "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
+                "id": "ga4gh:SL.ZWavfc2jxM4eW1XeNrhnnnrhwdp5VRba",
+                "end": 38229695,
+                "start": 38211005,
+                "sequence": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
                 "type": "SequenceLocation"
             }
         ],
@@ -75,19 +93,19 @@ def pdp1_symbol():
         "location_annotations": [],
         "strand": "+",
         "locations": [
+            # {
+            #     "id": "ga4gh:CL.cJsZWKrEtzpFn5psdCtgofb6NaEDVPfB",
+            #     "chr": "8",
+            #     "end": "q22.1",
+            #     "start": "q22.1",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # },
             {
-                "id": "ga4gh:CL.cJsZWKrEtzpFn5psdCtgofb6NaEDVPfB",
-                "chr": "8",
-                "end": "q22.1",
-                "start": "q22.1",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            },
-            {
-                "id": "ga4gh:SL.HJJGMEo7TZQIwsq64prLwLhYzCkaGaDt",
-                "end": {"value": 93926068, "type": "Number"},
-                "start": {"value": 93916922, "type": "Number"},
-                "sequence_id": "ga4gh:SQ.209Z7zJ-mFypBEWLk4rNC6S_OxY5p7bs",
+                "id": "ga4gh:SL.uBfmO37aeH23eD1Zc8zE3-c6OM-8aZ-M",
+                "end": 93926068,
+                "start": 93916922,
+                "sequence": "ga4gh:SQ.209Z7zJ-mFypBEWLk4rNC6S_OxY5p7bs",
                 "type": "SequenceLocation"
             }
         ],
@@ -113,19 +131,19 @@ def pdp1_alias():
         "location_annotations": [],
         "strand": "+",
         "locations": [
+            # {
+            #     "id": "ga4gh:CL.7ivmMgKAqiFiRh1qsbA909w2kUcPabr_",
+            #     "chr": "9",
+            #     "end": "p24.1",
+            #     "start": "p24.1",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # },
             {
-                "id": "ga4gh:CL.7ivmMgKAqiFiRh1qsbA909w2kUcPabr_",
-                "chr": "9",
-                "end": "p24.1",
-                "start": "p24.1",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            },
-            {
-                "id": "ga4gh:SL.jduggMCta37Xu9RgW251jNd7tmEuUOtw",
-                "end": {"value": 4665258, "type": "Number"},
-                "start": {"value": 4662293, "type": "Number"},
-                "sequence_id": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
+                "id": "ga4gh:SL.Ydzn28Wlh_8reMMwq7GIMzYim177dYO-",
+                "end": 4665258,
+                "start": 4662293,
+                "sequence": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
                 "type": "SequenceLocation"
             }
         ],
@@ -151,34 +169,34 @@ def spry3():
         "location_annotations": [],
         "strand": "+",
         "locations": [
+            # {
+            #     "id": "ga4gh:CL.r8Qv_b-B3SoguReqdunL3GCkt1RH-es1",
+            #     "chr": "Y",
+            #     "end": "q12",
+            #     "start": "q12",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # },
+            # {
+            #     "id": "ga4gh:CL.p5Va-YpCTrSTYWyJrpR-rvnxO1YWPIDY",
+            #     "chr": "X",
+            #     "end": "q28",
+            #     "start": "q28",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # },
             {
-                "id": "ga4gh:CL.r8Qv_b-B3SoguReqdunL3GCkt1RH-es1",
-                "chr": "Y",
-                "end": "q12",
-                "start": "q12",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            },
-            {
-                "id": "ga4gh:CL.p5Va-YpCTrSTYWyJrpR-rvnxO1YWPIDY",
-                "chr": "X",
-                "end": "q28",
-                "start": "q28",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            },
-            {
-                "id": "ga4gh:SL.kaGMGXo0NREqH_gsgDwqfQMnBSem3OP1",
-                "end": {"value": 155782459, "type": "Number"},
-                "start": {"value": 155612585, "type": "Number"},
-                "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
+                "id": "ga4gh:SL.zUkalELkBiEdV-fmGxGKbBEGjwt8Ab2Z",
+                "end": 155782459,
+                "start": 155612585,
+                "sequence": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
                 "type": "SequenceLocation"
             },
             {
-                "id": "ga4gh:SL.I51347TrFRIHMT8Bg2iFbKP22_yFxXQb",
-                "end": {"value": 56968979, "type": "Number"},
-                "start": {"value": 56954315, "type": "Number"},
-                "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
+                "id": "ga4gh:SL.jK7kEDBrbCi2_--YRX6DRBvas8sGLmR2",
+                "end": 56968979,
+                "start": 56954315,
+                "sequence": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
                 "type": "SequenceLocation"
             }
         ],
@@ -248,19 +266,19 @@ def znf84():
         "location_annotations": ["map from Rosati ref via FISH [AFS]"],
         "strand": "+",
         "locations": [
+            # {
+            #     "id": "ga4gh:CL.6YvQEs6MuHuNvt0Vlv8r4hMKIOK5Ktq4",
+            #     "chr": "12",
+            #     "end": "q24.33",
+            #     "start": "q24.33",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # },
             {
-                "id": "ga4gh:CL.6YvQEs6MuHuNvt0Vlv8r4hMKIOK5Ktq4",
-                "chr": "12",
-                "end": "q24.33",
-                "start": "q24.33",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            },
-            {
-                "id": "ga4gh:SL.M67HYj0B8ocTAWgZ9zUEourxxna6ZleJ",
-                "end": {"value": 133063299, "type": "Number"},
-                "start": {"value": 133037508, "type": "Number"},
-                "sequence_id": "ga4gh:SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl",
+                "id": "ga4gh:SL.RdwMl_OBrrgACz_cCvdwDNFlM2F4l9jq",
+                "end": 133063299,
+                "start": 133037508,
+                "sequence": "ga4gh:SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl",
                 "type": "SequenceLocation"
             }
         ],
@@ -286,47 +304,35 @@ def slc25a6():
         "location_annotations": [],
         "strand": "-",
         "locations": [
+            # {
+            #     "id": "ga4gh:CL.Z5pOXNI2Bt8L2NpypNYsbbtgC9L1uyl4",
+            #     "type": "ChromosomeLocation",
+            #     "species_id": "taxonomy:9606",
+            #     "chr": "X",
+            #     "start": "p22.33",
+            #     "end": "p22.33"
+            # },
+            # {
+            #     "id": "ga4gh:CL.bp7nyvEa1yIoZTw93GnpRSXubcLT0qFM",
+            #     "type": "ChromosomeLocation",
+            #     "species_id": "taxonomy:9606",
+            #     "chr": "Y",
+            #     "start": "p11.2",
+            #     "end": "p11.2"
+            # },
             {
-                "id": "ga4gh:CL.Z5pOXNI2Bt8L2NpypNYsbbtgC9L1uyl4",
-                "type": "ChromosomeLocation",
-                "species_id": "taxonomy:9606",
-                "chr": "X",
-                "start": "p22.33",
-                "end": "p22.33"
-            },
-            {
-                "id": "ga4gh:CL.bp7nyvEa1yIoZTw93GnpRSXubcLT0qFM",
-                "type": "ChromosomeLocation",
-                "species_id": "taxonomy:9606",
-                "chr": "Y",
-                "start": "p11.2",
-                "end": "p11.2"
-            },
-            {
-                "id": "ga4gh:SL.bJtaHxlESQXto-K8WCE4jUS_uncnJP3l",
+                "id": "ga4gh:SL.yZO5lbRY2yfurtM6TYcqph3quX2Fn37-",
                 "type": "SequenceLocation",
-                "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
-                "start": {
-                    "type": "Number",
-                    "value": 1386151
-                },
-                "end": {
-                    "type": "Number",
-                    "value": 1392113
-                }
+                "sequence": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
+                "start": 1386151,
+                "end": 1392113
             },
             {
-                "id": "ga4gh:SL.fkr3SI-mzvw2IJgPm3ck9k5pQtbJ8BvX",
+                "id": "ga4gh:SL.EfrHeYZ3jnM9p0oRv3rnDIE510DJyi6A",
                 "type": "SequenceLocation",
-                "sequence_id": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
-                "start": {
-                    "type": "Number",
-                    "value": 1386151
-                },
-                "end": {
-                    "type": "Number",
-                    "value": 1392113
-                }
+                "sequence": "ga4gh:SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
+                "start": 1386151,
+                "end": 1392113
             }
         ],
         "gene_type": "protein-coding"
@@ -351,14 +357,14 @@ def loc106783576():
         "location_annotations": [],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.YYGQrLtmKwKgp38asAkHT8AydAidnui8",
-                "chr": "10",
-                "end": "cen",
-                "start": "pter",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.YYGQrLtmKwKgp38asAkHT8AydAidnui8",
+            #     "chr": "10",
+            #     "end": "cen",
+            #     "start": "pter",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "gene_type": "biological-region"
     }
@@ -382,14 +388,14 @@ def glc1b():
         "location_annotations": [],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.8D0hLCktRxyPrx4Etgabq10vEq6TtU43",
-                "chr": "2",
-                "end": "q13",
-                "start": "cen",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.8D0hLCktRxyPrx4Etgabq10vEq6TtU43",
+            #     "chr": "2",
+            #     "end": "q13",
+            #     "start": "cen",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "gene_type": "unknown"
     }
@@ -413,14 +419,14 @@ def hdpa():
         "location_annotations": [],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.kl9HXvnUCE6Z1ktXibt83NBdXvxnT2RA",
-                "chr": "X",
-                "end": "p22.32",
-                "start": "pter",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.kl9HXvnUCE6Z1ktXibt83NBdXvxnT2RA",
+            #     "chr": "X",
+            #     "end": "p22.32",
+            #     "start": "pter",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "gene_type": "unknown"
     }
@@ -445,26 +451,26 @@ def prkrap1():
         "location_annotations": ["alternate reference locus"],
         "strand": "+",
         "locations": [
+            # {
+            #     "id": "ga4gh:CL.FYt7UkCHZVLpkYe7zhNdMk1K6lxl_k7I",
+            #     "chr": "6",
+            #     "end": "p21.3",
+            #     "start": "p21.3",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # },
             {
-                "id": "ga4gh:CL.FYt7UkCHZVLpkYe7zhNdMk1K6lxl_k7I",
-                "chr": "6",
-                "end": "p21.3",
-                "start": "p21.3",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            },
-            {
-                "id": "ga4gh:SL.4rniEdEGTHBg9ZkvZLEVPR_MSBUlU2ih",
-                "end": {"value": 3941874, "type": "Number"},
-                "start": {"value": 3940269, "type": "Number"},
-                "sequence_id": "ga4gh:SQ.MjujHSAsgNWRTX4w3ysM7b5OVhZpdXu1",
+                "id": "ga4gh:SL.uCfZ_QDT33RE-5KoEGVGBAg1Uv39iq1v",
+                "end": 3941874,
+                "start": 3940269,
+                "sequence": "ga4gh:SQ.MjujHSAsgNWRTX4w3ysM7b5OVhZpdXu1",
                 "type": "SequenceLocation"
             },
             {
-                "id": "ga4gh:SL.qlH29_Ijp2JDyb29kxyCrtLOBa0NNx9j",
-                "end": {"value": 3932085, "type": "Number"},
-                "start": {"value": 3930480, "type": "Number"},
-                "sequence_id": "ga4gh:SQ.Q8IworEhpLeXwpz1CHM7C3luysh-ltx-",
+                "id": "ga4gh:SL.wNbV22FrtoPZTnkubHh2uogYnvwCLWQ6",
+                "end": 3932085,
+                "start": 3930480,
+                "sequence": "ga4gh:SQ.Q8IworEhpLeXwpz1CHM7C3luysh-ltx-",
                 "type": "SequenceLocation"
             }
         ],
@@ -490,14 +496,14 @@ def mhb():
         "location_annotations": [],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.6vlmdqdXYxSAGsJI9no7kLN5iLKpvr5X",
-                "chr": "3",
-                "end": "p21.32",
-                "start": "p22.2",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.6vlmdqdXYxSAGsJI9no7kLN5iLKpvr5X",
+            #     "chr": "3",
+            #     "end": "p21.32",
+            #     "start": "p22.2",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "gene_type": "unknown"
     }
@@ -521,21 +527,21 @@ def spg37():
         "location_annotations": [],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.XWbwTwmJ95KD-aCuXfJcD8cNIvXbiXRh",
-                "chr": "8",
-                "end": "q13.3",
-                "start": "p21.2",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.XWbwTwmJ95KD-aCuXfJcD8cNIvXbiXRh",
+            #     "chr": "8",
+            #     "end": "q13.3",
+            #     "start": "p21.2",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "gene_type": "unknown"
     }
     return Gene(**params)
 
 
-def test_dpf1(ncbi, dpf1):
+def test_dpf1(check_resp_single_record, ncbi, dpf1):
     """Test that DPF1 normalizes to correct gene concept."""
     # Concept ID
     resp = ncbi.search("ncbigene:8193")
@@ -573,7 +579,7 @@ def test_dpf1(ncbi, dpf1):
     assert len(resp.records) == 0
 
 
-def test_pdp1(ncbi, pdp1_symbol, pdp1_alias):
+def test_pdp1(compare_records, check_resp_single_record, ncbi, pdp1_symbol, pdp1_alias):
     """Test that PDP1 normalizes to correct gene concept."""
     # Concept ID
     resp = ncbi.search("ncbigene:54704")
@@ -586,14 +592,14 @@ def test_pdp1(ncbi, pdp1_symbol, pdp1_alias):
     resp = ncbi.search("PDP1")
     assert len(resp.records) == 2
     # first record check (should always be symbol)
-    assertion_checks(resp.records[0], pdp1_symbol, MatchType.SYMBOL)
-    assertion_checks(resp.records[1], pdp1_alias, MatchType.ALIAS)
+    compare_records(resp.records[0], pdp1_symbol, MatchType.SYMBOL)
+    compare_records(resp.records[1], pdp1_alias, MatchType.ALIAS)
 
     resp = ncbi.search("pdp1")
     assert len(resp.records) == 2
     # first record check (should always be symbol)
-    assertion_checks(resp.records[0], pdp1_symbol, MatchType.SYMBOL)
-    assertion_checks(resp.records[1], pdp1_alias, MatchType.ALIAS)
+    compare_records(resp.records[0], pdp1_symbol, MatchType.SYMBOL)
+    compare_records(resp.records[1], pdp1_alias, MatchType.ALIAS)
 
     # Previous Symbol
     resp = ncbi.search("LOC157663")
@@ -619,7 +625,7 @@ def test_pdp1(ncbi, pdp1_symbol, pdp1_alias):
     check_resp_single_record(resp, pdp1_symbol, MatchType.ALIAS)
 
 
-def test_spry3(ncbi, spry3):
+def test_spry3(check_resp_single_record, ncbi, spry3):
     """Test that SPRY3 normalizes to correct gene concept."""
     # Concept ID
     resp = ncbi.search("NCBIgene:10251")
@@ -634,7 +640,7 @@ def test_spry3(ncbi, spry3):
     check_resp_single_record(resp, spry3, MatchType.ALIAS)
 
 
-def test_adcp1(ncbi, adcp1):
+def test_adcp1(check_resp_single_record, ncbi, adcp1):
     """Test that ADCP1 normalizes to correct gene concept."""
     # Concept ID
     resp = ncbi.search("NCBIgene:106")
@@ -645,7 +651,7 @@ def test_adcp1(ncbi, adcp1):
     check_resp_single_record(resp, adcp1, MatchType.SYMBOL)
 
 
-def test_afa(ncbi, afa):
+def test_afa(check_resp_single_record, ncbi, afa):
     """Test that AFA normalizes to correct gene concept."""
     # Concept ID
     resp = ncbi.search("NCBIgene:170")
@@ -656,7 +662,7 @@ def test_afa(ncbi, afa):
     check_resp_single_record(resp, afa, MatchType.SYMBOL)
 
 
-def test_znf84(ncbi, znf84):
+def test_znf84(check_resp_single_record, ncbi, znf84):
     """Test that ZNF84 normalizes to correct gene concept."""
     # Concept ID
     resp = ncbi.search("NCBIgene:7637")
@@ -667,7 +673,7 @@ def test_znf84(ncbi, znf84):
     check_resp_single_record(resp, znf84, MatchType.SYMBOL)
 
 
-def test_slc25a6(ncbi, slc25a6):
+def test_slc25a6(check_resp_single_record, ncbi, slc25a6):
     """Test that SLC25A6 normalizes to correct gene concept."""
     # Concept ID
     resp = ncbi.search("NCBIgene:293")
@@ -678,7 +684,7 @@ def test_slc25a6(ncbi, slc25a6):
     check_resp_single_record(resp, slc25a6, MatchType.SYMBOL)
 
 
-def test_loc106783576(ncbi, loc106783576):
+def test_loc106783576(check_resp_single_record, ncbi, loc106783576):
     """Test that LOC106783576 normalizes to correct gene concept."""
     # Concept ID
     resp = ncbi.search("NCBIgene:106783576")
@@ -695,7 +701,7 @@ def test_oms(ncbi):
     assert len(resp.records) == 0
 
 
-def test_glc1b(ncbi, glc1b):
+def test_glc1b(check_resp_single_record, ncbi, glc1b):
     """Test that GLC1B normalizes to correct gene concept."""
     # Concept ID
     resp = ncbi.search("NCBIgene:2722")
@@ -710,7 +716,7 @@ def test_glc1b(ncbi, glc1b):
     check_resp_single_record(resp, glc1b, MatchType.ASSOCIATED_WITH)
 
 
-def test_hdpa(ncbi, hdpa):
+def test_hdpa(check_resp_single_record, ncbi, hdpa):
     """Test that HDPA normalizes to correct gene concept."""
     # Concept ID
     resp = ncbi.search("NCBIgene:50829")
@@ -721,7 +727,7 @@ def test_hdpa(ncbi, hdpa):
     check_resp_single_record(resp, hdpa, MatchType.SYMBOL)
 
 
-def test_prkrap1(ncbi, prkrap1):
+def test_prkrap1(check_resp_single_record, ncbi, prkrap1):
     """Test that PRKRAP1 normalizes to correct gene concept."""
     # Concept ID
     resp = ncbi.search("NCBIgene:731716")
@@ -736,7 +742,7 @@ def test_prkrap1(ncbi, prkrap1):
     check_resp_single_record(resp, prkrap1, MatchType.XREF)
 
 
-def test_mhb(ncbi, mhb):
+def test_mhb(check_resp_single_record, ncbi, mhb):
     """Test that MHB normalizes to correct gene concept."""
     # Concept ID
     resp = ncbi.search("NCBIgene:619511")
@@ -751,7 +757,7 @@ def test_mhb(ncbi, mhb):
     check_resp_single_record(resp, mhb, MatchType.ASSOCIATED_WITH)
 
 
-def test_spg37(ncbi, spg37):
+def test_spg37(check_resp_single_record, ncbi, spg37):
     """Test that SPG37 normalizes to correct gene concept."""
     # Concept ID
     resp = ncbi.search("NCBIgene:100049159")

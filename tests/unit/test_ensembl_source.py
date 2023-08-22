@@ -2,7 +2,6 @@
 import pytest
 from gene.schemas import Gene, MatchType, SourceName
 from gene.query import QueryHandler
-from tests.conftest import check_resp_single_record
 
 
 @pytest.fixture(scope="module")
@@ -35,10 +34,10 @@ def ddx11l1():
         "location_annotations": [],
         "locations": [
             {
-                "id": "ga4gh:SL.RjgWBC-z7VwJBq_PsWvHEtYXa8CYsN1m",
-                "end": {"value": 14409, "type": "Number"},
-                "start": {"value": 11868, "type": "Number"},
-                "sequence_id": "ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
+                "id": "ga4gh:SL.Vz6WCJzmJgPZegl9NlcsyyKd7ldqWe4y",
+                "end": 14409,
+                "start": 11868,
+                "sequence": "ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
                 "type": "SequenceLocation"
             }
         ],
@@ -64,10 +63,10 @@ def tp53():
         "location_annotations": [],
         "locations": [
             {
-                "id": "ga4gh:SL.fACfpMomyTUpCf5dm5NY3_V9Y-eI3RNJ",
-                "end": {"value": 7687538, "type": "Number"},
-                "start": {"value": 7661778, "type": "Number"},
-                "sequence_id": "ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7",
+                "id": "ga4gh:SL.eX7_4xIgmZRKoTtFyBU0Iuz-VYHv0oNe",
+                "end": 7687538,
+                "start": 7661778,
+                "sequence": "ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7",
                 "type": "SequenceLocation"
             }
         ],
@@ -93,10 +92,10 @@ def ATP6AP1_DT():
         "location_annotations": [],
         "locations": [
             {
-                "id": "ga4gh:SL.xFs-A2mSsCuLVdaRikxNgVnR4W3IUMom",
-                "end": {"value": 154428526, "type": "Number"},
-                "start": {"value": 154424377, "type": "Number"},
-                "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
+                "id": "ga4gh:SL.XK4VXE3Cb22wLRS_dqupcEwdkxMK6wwS",
+                "end": 154428526,
+                "start": 154424377,
+                "sequence": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
                 "type": "SequenceLocation"
             }
         ],
@@ -122,10 +121,10 @@ def hsa_mir_1253():
         "location_annotations": [],
         "locations": [
             {
-                "id": "ga4gh:SL.L55GGleEpudsf12fVDRqwG1X3R3mVTQW",
-                "end": {"value": 2748182, "type": "Number"},
-                "start": {"value": 2748077, "type": "Number"},
-                "sequence_id": "ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7",
+                "id": "ga4gh:SL.jw4s2m8KfgrObntfKCv_JR0GqVAhfkG2",
+                "end": 2748182,
+                "start": 2748077,
+                "sequence": "ga4gh:SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7",
                 "type": "SequenceLocation"
             }
         ],
@@ -151,10 +150,10 @@ def spry3():
         "location_annotations": [],
         "locations": [
             {
-                "id": "ga4gh:SL.w_6vBYiRzkypkRjnNKPKHs_g_NPiGT8n",
-                "end": {"value": 155782459, "type": "Number"},
-                "start": {"value": 155612571, "type": "Number"},
-                "sequence_id": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
+                "id": "ga4gh:SL.KcJ-SLF7A8DzO1ZKEGh8bOjHw7-bNWxv",
+                "end": 155782459,
+                "start": 155612571,
+                "sequence": "ga4gh:SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
                 "type": "SequenceLocation"
             }
         ],
@@ -165,7 +164,7 @@ def spry3():
     return Gene(**params)
 
 
-def test_ddx11l1(ensembl, ddx11l1):
+def test_ddx11l1(check_resp_single_record, ensembl, ddx11l1):
     """Test that DDX11L1 normalizes to correct gene concept."""
     # Concept ID
     resp = ensembl.search("ensembl:ENSG00000223972")
@@ -185,7 +184,7 @@ def test_ddx11l1(ensembl, ddx11l1):
     check_resp_single_record(resp, ddx11l1, MatchType.SYMBOL)
 
 
-def test_tp53(ensembl, tp53):
+def test_tp53(check_resp_single_record, ensembl, tp53):
     """Test that tp53 normalizes to correct gene concept."""
     # Concept ID
     resp = ensembl.search("ensembl:ENSG00000141510")
@@ -205,7 +204,7 @@ def test_tp53(ensembl, tp53):
     check_resp_single_record(resp, tp53, MatchType.SYMBOL)
 
 
-def test_ATP6AP1_DT(ensembl, ATP6AP1_DT):
+def test_ATP6AP1_DT(check_resp_single_record, ensembl, ATP6AP1_DT):
     """Test that ATP6AP1-DT normalizes to correct gene concept."""
     # Concept ID
     resp = ensembl.search("ensembl:ENSG00000197180")
@@ -222,7 +221,7 @@ def test_ATP6AP1_DT(ensembl, ATP6AP1_DT):
     check_resp_single_record(resp, ATP6AP1_DT, MatchType.SYMBOL)
 
 
-def test_hsa_mir_1253(ensembl, hsa_mir_1253):
+def test_hsa_mir_1253(check_resp_single_record, ensembl, hsa_mir_1253):
     """Test that hsa-mir-1253 normalizes to correct gene concept."""
     # Concept ID
     resp = ensembl.search("ensembl:ENSG00000272920")
@@ -243,7 +242,7 @@ def test_hsa_mir_1253(ensembl, hsa_mir_1253):
     check_resp_single_record(resp, hsa_mir_1253, MatchType.ASSOCIATED_WITH)
 
 
-def test_spry3(ensembl, spry3):
+def test_spry3(check_resp_single_record, ensembl, spry3):
     """Test that spry3 normalizes to correct gene concept."""
     # Concept ID
     resp = ensembl.search("ensembl:EnSG00000168939")
