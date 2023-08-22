@@ -192,8 +192,10 @@ class Gene(BaseGene):
         use_enum_values = True
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['Gene']) -> None:
+        def json_schema_extra(
+            schema: Dict[str, Any],
+            model: Type['Gene']
+        ) -> None:
             """Configure OpenAPI schema"""
             if 'title' in schema.keys():
                 schema.pop('title', None)
@@ -320,8 +322,10 @@ class SourceMeta(BaseModel):
         use_enum_values = True
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['SourceMeta']) -> None:
+        def json_schema_extra(
+            schema: Dict[str, Any],
+            model: Type['SourceMeta']
+        ) -> None:
             """Configure OpenAPI schema"""
             if 'title' in schema.keys():
                 schema.pop('title', None)
@@ -356,8 +360,10 @@ class MatchesKeyed(BaseModel):
         use_enum_values = True
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['MatchesKeyed']) -> None:
+        def json_schema_extra(
+            schema: Dict[str, Any],
+            model: Type['MatchesKeyed']
+        ) -> None:
             """Configure OpenAPI schema"""
             if 'title' in schema.keys():
                 schema.pop('title', None)
@@ -399,8 +405,10 @@ class MatchesListed(BaseModel):
         use_enum_values = True
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['MatchesListed']) -> None:
+        def json_schema_extra(
+            schema: Dict[str, Any],
+            model: Type['MatchesListed']
+        ) -> None:
             """Configure OpenAPI schema"""
             if 'title' in schema.keys():
                 schema.pop('title', None)
@@ -440,8 +448,10 @@ class ServiceMeta(BaseModel):
         use_enum_values = True
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['ServiceMeta']) -> None:
+        def json_schema_extra(
+            schema: Dict[str, Any],
+            model: Type['ServiceMeta']
+        ) -> None:
             """Configure OpenAPI schema"""
             if 'title' in schema.keys():
                 schema.pop('title', None)
@@ -469,8 +479,10 @@ class SearchService(BaseModel):
         use_enum_values = True
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['SearchService']) -> None:
+        def json_schema_extra(
+            schema: Dict[str, Any],
+            model: Type['SearchService']
+        ) -> None:
             """Configure OpenAPI schema"""
             if 'title' in schema.keys():
                 schema.pop('title', None)
@@ -551,8 +563,10 @@ class NormalizeService(BaseNormalizationService):
         use_enum_values = True
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type['NormalizeService']) -> None:
+        def json_schema_extra(
+            schema: Dict[str, Any],
+            model: Type['NormalizeService']
+        ) -> None:
             """Configure OpenAPI schema"""
             if 'title' in schema.keys():
                 schema.pop('title', None)
@@ -686,8 +700,10 @@ class MatchesNormalized(BaseModel):
         """Configure OpenAPI schema"""
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type["MatchesNormalized"]) -> None:
+        def json_schema_extra(
+            schema: Dict[str, Any],
+            model: Type["MatchesNormalized"]
+        ) -> None:
             """Configure OpenAPI schema"""
             if "title" in schema.keys():
                 schema.pop("title", None)
@@ -708,8 +724,10 @@ class UnmergedNormalizationService(BaseNormalizationService):
         """Configure OpenAPI schema"""
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any],
-                         model: Type["UnmergedNormalizationService"]) -> None:
+        def json_schema_extra(
+            schema: Dict[str, Any],
+            model: Type["UnmergedNormalizationService"]
+        ) -> None:
             """Configure OpenAPI schema example"""
             if "title" in schema.keys():
                 schema.pop("title", None)
