@@ -60,6 +60,11 @@ Users hoping for a more explicit connection declaration may instead call a datab
 
 See the API documentation for the :ref:`database <database_api>`, :ref:`DynamoDB <dynamodb_api>`, and :ref:`PostgreSQL <postgres_api>` modules for more details.
 
+Inputs
+------
+
+Gene symbols and aliases often contain only a handful of characters, raising a non-zero risk that search terms can be ambiguous or conflicting (see :download:`our lab's research on this topic <_static/documents/cgc_2023_poster.pdf>`). As described below, the Gene Normalizer will return the "best available" match where multiple are available, but users are advised to use concept identifiers or current, approved HGNC symbols where available.
+
 Match types
 -----------
 
