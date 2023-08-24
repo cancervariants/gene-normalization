@@ -30,17 +30,46 @@ exclude_patterns = []
 
 html_theme = "furo"
 html_static_path = []
-
+html_css_files = [
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/fontawesome.min.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/solid.min.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/brands.min.css",
+]
+html_theme_options = {
+    "footer_icons": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/cancervariants/gene-normalization",
+            "html": "",
+            "class": "fa-brands fa-solid fa-github",
+        },
+        {
+            "name": "Wagner Lab",
+            "url": "https://www.nationwidechildrens.org/specialties/institute-for-genomic-medicine/research-labs/wagner-lab",
+            "html": "",
+            "class": "fa-solid fa-house",
+        },
+        {
+            "name": "Twitter",
+            "url": "https://twitter.com/genomicmedlab",
+            "html": "",
+            "class": "fa-solid fa-brands fa-twitter",
+        },
+    ],
+}
 # -- autodoc things ----------------------------------------------------------
 import os  # noqa: E402
 import sys  # noqa: E402
+
 sys.path.insert(0, os.path.abspath("../../gene"))
 autodoc_preserve_defaults = True
 
 # -- get version -------------------------------------------------------------
 from gene import __version__  # noqa: E402
+
 version = __version__
 release = version
+
 
 # -- linkcode ----------------------------------------------------------------
 def linkcode_resolve(domain, info):
@@ -50,6 +79,7 @@ def linkcode_resolve(domain, info):
         return None
     filename = info["module"].replace(".", "/")
     return f"https://github.com/cancervariants/gene-normalization/blob/main/{filename}.py"  # noqa: E501
+
 
 # -- code block style --------------------------------------------------------
 pygments_style = "default"
