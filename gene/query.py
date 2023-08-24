@@ -14,7 +14,7 @@ from gene.database import AbstractDatabase, DatabaseReadException
 from gene.schemas import BaseGene, Gene, NamespacePrefix, RecordType, RefType, \
     MatchType, SourceName, ServiceMeta, SourcePriority, NormalizeService, \
     SearchService, GeneTypeFieldName, UnmergedNormalizationService, MatchesNormalized, \
-    BaseNormalizationService, Extension, GeneDescriptor
+    BaseNormalizationService, Extension, GeneDescriptor, SourceMeta
 
 
 NormService = TypeVar("NormService", bound=BaseNormalizationService)
@@ -73,15 +73,10 @@ class QueryHandler:
     def _transform_sequence_location(loc: Dict) -> models.SequenceLocation:
         """Transform a sequence location to VRS sequence location
 
-        :param loc: Sequence location
+        :param loc: GeneSequenceLocation represented as a dict
         :return: VRS sequence location
         """
-        if "sequence" in loc:
-            # For new dbs
-            sequence = loc["sequence"]
-        else:
-            # For aws db instances that haven't been updated
-            sequence = loc["sequence_id"]
+        sequence = loc["sequence_id"]
 
         return models.SequenceLocation(
             sequence=sequence,
@@ -127,7 +122,8 @@ class QueryHandler:
         record_locations = list()
         if "locations" in record:
             for loc in record["locations"]:
-                record_locations.append(self._transform_location(loc))
+                if loc["type"] == "SequenceLocation":
+                    record_locations.append(self._transform_location(loc))
         record["locations"] = record_locations
         return record
 
@@ -385,7 +381,8 @@ class QueryHandler:
             prefix = concept_id.root.split(':')[0]
             src_name = PREFIX_LOOKUP[prefix.lower()]
             if src_name not in sources_meta:
-                sources_meta[src_name] = self.db.get_source_metadata(src_name)
+                _source_meta = self.db.get_source_metadata(src_name)
+                sources_meta[SourceName(src_name)] = SourceMeta(**_source_meta)
         response.source_meta_ = sources_meta
         return response
 

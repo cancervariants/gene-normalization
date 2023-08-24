@@ -51,7 +51,8 @@ class SequenceLocation:
                 location = GeneSequenceLocation(
                     start=gene.start - 1,  # type: ignore
                     end=gene.end,  # type: ignore
-                    sequence=sequence).model_dump()  # type: ignore
+                    sequence_id=sequence
+                ).model_dump()  # type: ignore
             else:
                 logger.info(f"{params['concept_id']} has invalid interval:"
                             f"start={gene.start - 1} end={gene.end}")  # type: ignore

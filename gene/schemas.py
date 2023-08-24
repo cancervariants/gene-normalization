@@ -138,7 +138,7 @@ class GeneSequenceLocation(BaseModel):
     type: Literal["SequenceLocation"] = "SequenceLocation"
     start: StrictInt
     end: StrictInt
-    sequence: models.IRI
+    sequence_id: models.IRI
 
 
 # class GeneChromosomeLocation(BaseModel):
