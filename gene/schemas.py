@@ -267,10 +267,8 @@ class SourceMeta(BaseModel):
             }
 
 
-class MatchesKeyed(BaseModel):
-    """Container for matching information from an individual source.
-    Used when matches are requested as an object, not an array.
-    """
+class SourceSearchMatches(BaseModel):
+    """Container for matching information from an individual source."""
 
     records: List[Gene]
     source_meta_: SourceMeta
@@ -281,7 +279,9 @@ class MatchesKeyed(BaseModel):
         use_enum_values = True
 
         @staticmethod
-        def schema_extra(schema: Dict[str, Any], model: Type["MatchesKeyed"]) -> None:
+        def schema_extra(
+            schema: Dict[str, Any], model: Type["SourceSearchMatches"]
+        ) -> None:
             """Configure OpenAPI schema"""
             if "title" in schema.keys():
                 schema.pop("title", None)
@@ -305,47 +305,6 @@ class MatchesKeyed(BaseModel):
                         "genome_assemblies": None,
                     },
                 }
-            }
-
-
-class MatchesListed(BaseModel):
-    """Container for matching information from an individual source.
-    Used when matches are requested as an array, not an object.
-    """
-
-    source: SourceName
-    records: List[Gene]
-    source_meta_: SourceMeta
-
-    class Config:
-        """Configure model example"""
-
-        use_enum_values = True
-
-        @staticmethod
-        def schema_extra(schema: Dict[str, Any], model: Type["MatchesListed"]) -> None:
-            """Configure OpenAPI schema"""
-            if "title" in schema.keys():
-                schema.pop("title", None)
-            for prop in schema.get("properties", {}).values():
-                prop.pop("title", None)
-            schema["example"] = {
-                "source": "NCBI",
-                "match_type": 0,
-                "records": [],
-                "source_meta_": {
-                    "data_license": "custom",
-                    "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
-                    "version": "20201215",
-                    "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
-                    "rdp_url": "https://reusabledata.org/ncbi-gene.html",
-                    "data_license_attributes": {
-                        "non_commercial": False,
-                        "share_alike": False,
-                        "attribution": False,
-                    },
-                    "genome_assemblies": None,
-                },
             }
 
 
@@ -382,7 +341,7 @@ class SearchService(BaseModel):
 
     query: StrictStr
     warnings: Optional[List[Dict]]
-    source_matches: Union[Dict[SourceName, MatchesKeyed], List[MatchesListed]]
+    source_matches: Dict[SourceName, SourceSearchMatches]
     service_meta_: ServiceMeta
 
     class Config:
@@ -397,48 +356,7 @@ class SearchService(BaseModel):
                 schema.pop("title", None)
             for prop in schema.get("properties", {}).values():
                 prop.pop("title", None)
-            schema["example"] = {
-                "query": "BRAF",
-                "warnings": [],
-                "source_matches": [
-                    {
-                        "source": "Ensembl",
-                        "match_type": 100,
-                        "records": [
-                            {
-                                "label": None,
-                                "concept_id": "ensembl:ENSG00000157764",
-                                "symbol": "BRAF",
-                                "previous_symbols": [],
-                                "aliases": [],
-                                "xrefs": [],
-                                "symbol_status": None,
-                                "strand": "-",
-                                "locations": [],
-                            }
-                        ],
-                        "source_meta_": {
-                            "data_license": "custom",
-                            "data_license_url": "https://uswest.ensembl.org/info/about/legal/index.html",  # noqa: E501
-                            "version": "102",
-                            "data_url": "http://ftp.ensembl.org/pub/",
-                            "rdp_url": None,
-                            "data_license_attributes": {
-                                "non_commercial": False,
-                                "share_alike": False,
-                                "attribution": False,
-                            },
-                            "genome_assemblies": "GRCh38",
-                        },
-                    }
-                ],
-                "service_meta_": {
-                    "name": "gene-normalizer",
-                    "version": "0.1.0",
-                    "response_datetime": "2022-03-23 15:57:14.180908",
-                    "url": "https://github.com/cancervariants/gene-normalization",  # noqa: E501
-                },
-            }
+            schema["example"] = {}  # TODO
 
 
 class GeneTypeFieldName(str, Enum):
