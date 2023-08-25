@@ -356,7 +356,58 @@ class SearchService(BaseModel):
                 schema.pop("title", None)
             for prop in schema.get("properties", {}).values():
                 prop.pop("title", None)
-            schema["example"] = {}  # TODO
+            schema["example"] = {
+                "query": "NCBIgene:293",
+                "warnings": [],
+                "source_matches": {
+                    "NCBI": {
+                        "records": [
+                            {
+                                "concept_id": "ncbigene:293",
+                                "symbol": "SLC25A6",
+                                "symbol_status": None,
+                                "label": "solute carrier family 25 member 6",
+                                "aliases": [
+                                    "AAC3",
+                                    "ANT 3",
+                                    "ANT3",
+                                    "ANT",
+                                    "ANT3Y",
+                                    "ANT 2",
+                                ],
+                                "previous_symbols": ["ANT3Y"],
+                                "xrefs": [
+                                    "ensembl:ENSG00000292334",
+                                    "ensembl:ENSG00000169100",
+                                    "hgnc:10992",
+                                ],
+                                "associated_with": ["omim:300151", "omim:403000"],
+                                "gene_type": "protein-coding",
+                                "match_type": 100,
+                            }
+                        ],
+                        "source_meta_": {
+                            "data_license": "custom",
+                            "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",
+                            "version": "20210813",
+                            "data_url": "ftp://ftp.ncbi.nlm.nih.gov",
+                            "rdp_url": "https://reusabledata.org/ncbi-gene.html",
+                            "data_license_attributes": {
+                                "non_commercial": False,
+                                "attribution": False,
+                                "share_alike": False,
+                            },
+                            "genome_assemblies": ["GRCh38.p14"],
+                        },
+                    }
+                },
+                "service_meta_": {
+                    "version": "0.1.39",
+                    "response_datetime": "2023-08-24 21:55:34.178574",
+                    "name": "gene-normalizer",
+                    "url": "https://github.com/cancervariants/gene-normalization",
+                },
+            }
 
 
 class GeneTypeFieldName(str, Enum):
