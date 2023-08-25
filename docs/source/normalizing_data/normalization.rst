@@ -11,10 +11,12 @@ Basic information model
 
 Data resources, such as NCBI Gene, HGNC, and Ensembl, provide descriptions of individual genes, which we refer to as *records*. Our normalization routines construct mappings between those records and individual normalized concepts. Those concepts are abstract representations of "true" unique entities that exist on the genome. By combining the normalized concept with its associated source records to produce a *normalized record*, we are able to provide a more comprehensive description of individual genes.
 
+.. _gene-record-object:
+
 The gene record
 ---------------
 
-The `gene.etl` package contains classes for extracting relevant data for each source record. The `gene.schemas.BaseGene` class demonstrates the kinds of information that the ETL methods attempt to acquire from each source:
+The ``gene.etl`` package contains classes for extracting relevant data for each source record. The ``gene.schemas.BaseGene`` class demonstrates the kinds of information that the ETL methods attempt to acquire from each source:
 
 .. autoclass:: gene.schemas.BaseGene
    :members:
@@ -44,6 +46,7 @@ After grouping is complete, a concept ID for each normalized concept is selected
 
 Normalized gene records are constructed by merging known data from all associated gene records. For array-like fields (e.g. aliases, cross-references to entries in other data sources), data from all sources are simply combined. For scalar-like fields (e.g. the gene's symbol), the value is selected from an individual source record according to the priority assigned to the source.
 
+.. _normalized-gene-object:
 
 The normalized record
 ---------------------
@@ -180,6 +183,11 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
         },
         {
           "type": "Extension",
+          "name": "strand",
+          "value": "-"
+        },
+        {
+          "type": "Extension",
           "name": "hgnc_locus_type",
           "value": "gene with protein product"
         },
@@ -197,4 +205,3 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
       "gene_id": "hgnc:1097",
       "gene": null
     }
-

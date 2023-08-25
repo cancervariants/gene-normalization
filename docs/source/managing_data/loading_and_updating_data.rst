@@ -37,3 +37,11 @@ The shell command ``gene_norm_check_db`` performs a basic check on the database 
     $ gene_norm_check_db
     $ echo $?
     1  # indicates failure
+
+This command is equivalent to the combination of the database classes' ``check_schema_initialized`` and ``check_tables_populated`` methods:
+
+.. code-block:: python
+
+   from gene.database import create_db
+   db = create_db()
+   db_is_healthy = db.check_schema_initialized() and db.check_tables_populated()

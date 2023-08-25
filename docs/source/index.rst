@@ -39,14 +39,13 @@ The Gene Normalizer can also be installed locally as a Python package for fast a
     >>> result.gene_descriptor.alternate_labels
     ['NS7', 'RAFB1', 'B-raf', 'BRAF-1', 'BRAF1', 'B-RAF1']
 
-The Gene Normalizer is a library created to support the `Knowledgebase Integration Project <https://cancervariants.org/projects/integration/>`_ of the `Variant Interpretation for Cancer Consortium (VICC) <https://cancervariants.org/>`_. It is developed primarily by the `Wagner Lab <https://www.nationwidechildrens.org/specialties/institute-for-genomic-medicine/research-labs/wagner-lab>`_. Full source code is available on `GitHub <https://github.com/cancervariants/gene-normalization>`_.
+The Gene Normalizer was created to support the `Knowledgebase Integration Project <https://cancervariants.org/projects/integration/>`_ of the `Variant Interpretation for Cancer Consortium (VICC) <https://cancervariants.org/>`_. It is developed primarily by the `Wagner Lab <https://www.nationwidechildrens.org/specialties/institute-for-genomic-medicine/research-labs/wagner-lab>`_. Full source code is available on `GitHub <https://github.com/cancervariants/gene-normalization>`_.
 
 .. toctree::
    :hidden:
    :maxdepth: 2
 
-    Quick installation<quick_install>
-    Full installation<full_install>
+    Installation<install>
     Usage<usage>
     Normalizing data<normalizing_data/index>
     Managing data<managing_data/index>
