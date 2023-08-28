@@ -15,7 +15,6 @@ from gene.database import AbstractDatabase
 from gene.schemas import SourceMeta, SourceName, NamespacePrefix, Annotation, \
     Chromosome, SymbolStatus
 from gene.etl.base import Base
-from gene.etl.vrs_locations import SequenceLocation, ChromosomeLocation
 
 
 logger = logging.getLogger('gene')
@@ -38,8 +37,6 @@ class NCBI(Base):
         :param src_data_dir: Data directory for NCBI
         """
         super().__init__(database, host, data_dir, src_data_dir)
-        self._sequence_location = SequenceLocation()
-        self._chromosome_location = ChromosomeLocation()
         self._data_url = f"ftp://{host}"
         self._assembly = None
         self._date_today = datetime.today().strftime('%Y%m%d')
@@ -334,8 +331,7 @@ class NCBI(Base):
         """
         gene = db[f_id]
         params['strand'] = gene.strand
-        return self._sequence_location.add_location(gene.seqid, gene,
-                                                    params, sr)
+        return self._get_sequence_location(gene.seqid, gene, params, sr)
 
     def _get_xref_associated_with(self, src_name: str, src_id: str) -> Dict:
         """Get xref or associated_with ref.
@@ -484,9 +480,7 @@ class NCBI(Base):
                 # Check to see if there is a band / sub band included
                 if arm_ix != len(loc) - 1:
                     if '-' in loc:
-                        self._chromosome_location.set_interval_range(loc,
-                                                                     arm_ix,
-                                                                     location)
+                        self._set_cl_interval_range(loc, arm_ix, location)
                     else:
                         # Location only gives start
                         start = loc[arm_ix:]
@@ -502,8 +496,7 @@ class NCBI(Base):
                 # Location only gives chr
                 params['location_annotations'].append(loc)
 
-            # chr_location = \
-            #     self._chromosome_location.get_location(location, params)
+            # chr_location = self._get_chromosome_location(location, params)
             # if chr_location:
             #     location_list.append(chr_location)
 

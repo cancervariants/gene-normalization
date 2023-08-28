@@ -13,7 +13,6 @@ from .base import Base
 from gene import APP_ROOT
 from gene.schemas import SourceName, NamespacePrefix, Strand, SourceMeta
 from gene.database import AbstractDatabase
-from gene.etl.vrs_locations import SequenceLocation
 
 
 logger = logging.getLogger("gene")
@@ -34,7 +33,6 @@ class Ensembl(Base):
         :param src_data_dir: Data directory for Ensembl
         """
         super().__init__(database, host, data_dir, src_data_dir)
-        self._sequence_location = SequenceLocation()
         self._version = None
         self._fn = None
         self._data_url = None
@@ -182,8 +180,7 @@ class Ensembl(Base):
         :param accession_numbers: Accession numbers for each chromosome and scaffold
         :return: gene record dictionary with location added
         """
-        return self._sequence_location.add_location(accession_numbers[f.seqid],
-                                                    f, gene, sr)
+        return self._get_sequence_location(accession_numbers[f.seqid], f, gene, sr)
 
     def _get_xref_associated_with(self, src_name: str, src_id: str) -> Dict:
         """Get xref or associated_with concept.
