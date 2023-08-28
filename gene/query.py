@@ -224,7 +224,7 @@ class QueryHandler:
                     records = sorted(records, key=lambda k: k.match_type, reverse=True)
         return resp
 
-    def _response_keyed(self, query: str, sources: Set[str]) -> Dict:
+    def _get_search_response(self, query: str, sources: Set[str]) -> Dict:
         """Return response as dict where key is source name and value is a list of
         records.
 
@@ -351,7 +351,7 @@ class QueryHandler:
 
         query_str = query_str.strip()
 
-        resp = self._response_keyed(query_str, query_sources)
+        resp = self._get_search_response(query_str, query_sources)
 
         resp["service_meta_"] = self._get_service_meta()
         return SearchService(**resp)
