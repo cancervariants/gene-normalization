@@ -11,6 +11,13 @@ Base
     :special-members: __init__
     :undoc-members:
 
+Exceptions
+----------
+
+.. automodule:: gene.etl.Exceptions
+    :members:
+    :show-inheritance:
+
 NCBI
 ----
 
