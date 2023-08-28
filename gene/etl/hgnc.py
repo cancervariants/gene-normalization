@@ -105,7 +105,7 @@ class HGNC(Base):
 
         :param use_existing: if True, use latest available local file
         """
-        self._data_file = self.acquire_data_file(
+        self._data_file = self._acquire_data_file(
             "hgnc_*.json", use_existing, self._is_up_to_date, self._download_data
         )
         match = self._data_file_pattern.match(self._data_file.name)

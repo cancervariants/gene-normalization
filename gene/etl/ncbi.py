@@ -218,17 +218,17 @@ class NCBI(Base):
 
         :param use_existing: if True, use latest available local file
         """
-        self._gff_src = self.acquire_data_file(
+        self._gff_src = self._acquire_data_file(
             "ncbi_GRCh*.gff", use_existing, self._gff_is_up_to_date, self._download_gff
         )
-        self._info_src = self.acquire_data_file(
+        self._info_src = self._acquire_data_file(
             "ncbi_info_*.tsv",
             use_existing,
             self._gene_file_is_up_to_date,
             self._download_gene_file,
         )
         self._version = self._info_src.stem.split("_")[-1]
-        self._history_src = self.acquire_data_file(
+        self._history_src = self._acquire_data_file(
             f"ncbi_history_{self._version}.tsv",
             use_existing,
             self._history_file_is_up_to_date,

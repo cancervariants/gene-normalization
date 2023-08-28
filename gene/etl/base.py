@@ -76,7 +76,7 @@ class Base(ABC):
         """Add source meta to database source info."""
         raise NotImplementedError
 
-    def acquire_data_file(
+    def _acquire_data_file(
         self,
         file_glob: str,
         use_existing: bool,
