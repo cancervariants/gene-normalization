@@ -1,10 +1,10 @@
 """Module to load and init namespace at package level."""
 from .ensembl import Ensembl
 from .exceptions import (
-    FileVersionError,
-    NormalizerEtlError,
-    SourceFetchError,
-    SourceFormatError,
+    GeneFileVersionError,
+    GeneNormalizerEtlError,
+    GeneSourceFetchError,
+    GeneSourceFormatError,
 )
 from .hgnc import HGNC
 from .ncbi import NCBI
@@ -13,8 +13,8 @@ __all__ = [
     "Ensembl",
     "HGNC",
     "NCBI",
-    "NormalizerEtlError",
-    "FileVersionError",
-    "SourceFetchError",
-    "SourceFormatError",
+    "GeneNormalizerEtlError",
+    "GeneFileVersionError",
+    "GeneSourceFetchError",
+    "GeneSourceFormatError",
 ]

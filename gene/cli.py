@@ -16,7 +16,7 @@ from gene.database import (
 )
 from gene.database.database import DatabaseException
 from gene.etl import HGNC, NCBI, Ensembl  # noqa: F401
-from gene.etl.exceptions import NormalizerEtlError
+from gene.etl.exceptions import GeneNormalizerEtlError
 from gene.etl.merge import Merge
 from gene.schemas import SourceName
 
@@ -181,7 +181,7 @@ def _load_source(
     source = SourceClass(database=db)
     try:
         processed_ids += source.perform_etl(use_existing)
-    except NormalizerEtlError as e:
+    except GeneNormalizerEtlError as e:
         logger.error(e)
         click.echo(f"Encountered error while loading {n}: {e}.")
         click.get_current_context().exit()

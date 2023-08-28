@@ -15,9 +15,9 @@ from gene import APP_ROOT
 from gene.database import AbstractDatabase
 from gene.etl.base import Base
 from gene.etl.exceptions import (
-    FileVersionError,
-    NormalizerEtlError,
-    SourceFetchError,
+    GeneFileVersionError,
+    GeneNormalizerEtlError,
+    GeneSourceFetchError,
 )
 from gene.etl.vrs_locations import SequenceLocation
 from gene.schemas import NamespacePrefix, SourceMeta, SourceName, Strand
@@ -63,23 +63,23 @@ class Ensembl(Base):
             f"Unable to parse version number from local file: {data_file.absolute()}"
         )
         if not local_match or not local_match.groups():
-            raise FileVersionError(parse_msg)
+            raise GeneFileVersionError(parse_msg)
         try:
             version = int(local_match.groups()[1])
         except ValueError:
-            raise FileVersionError(parse_msg)
+            raise GeneFileVersionError(parse_msg)
 
         ensembl_api = (
             "https://rest.ensembl.org/info/data/?content-type=application/json"
         )
         response = requests.get(ensembl_api)
         if response.status_code != 200:
-            raise SourceFetchError(
+            raise GeneSourceFetchError(
                 f"Unable to get response from Ensembl version API endpoint: {ensembl_api}"
             )
         releases = response.json().get("releases")
         if not releases:
-            raise SourceFetchError(
+            raise GeneSourceFetchError(
                 f"Malformed response from Ensembl version API endpoint: {dumps(response.json())}"
             )
         releases.sort()
@@ -108,7 +108,7 @@ class Ensembl(Base):
                         f"Successfully downloaded Ensembl {version} data to {self.src_data_dir / new_fn}."
                     )
                     return self.src_data_dir / new_fn
-        raise SourceFetchError(
+        raise GeneSourceFetchError(
             "Unable to find file matching expected Ensembl pattern via FTP"
         )
 
@@ -267,7 +267,7 @@ class Ensembl(Base):
         :raise NormalizerEtlError: if requisite metadata is unset
         """
         if not all([self._version, self._host, self._data_dir, self._assembly]):
-            raise NormalizerEtlError(
+            raise GeneNormalizerEtlError(
                 "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
             )
         metadata = SourceMeta(

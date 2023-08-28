@@ -14,9 +14,9 @@ from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import AbstractDatabase
 from gene.etl.base import Base
 from gene.etl.exceptions import (
-    FileVersionError,
-    NormalizerEtlError,
-    SourceFetchError,
+    GeneFileVersionError,
+    GeneNormalizerEtlError,
+    GeneSourceFetchError,
 )
 from gene.etl.vrs_locations import ChromosomeLocation
 from gene.schemas import (
@@ -68,7 +68,7 @@ class HGNC(Base):
         """
         local_match = re.match(self._data_file_pattern, data_file.name)
         if not local_match:
-            raise FileVersionError(
+            raise GeneFileVersionError(
                 f"Unable to parse version number from local HGNC file: {data_file.absolute()}"
             )
         version = local_match.groups()[0]
@@ -79,7 +79,7 @@ class HGNC(Base):
         try:
             remote_version = datetime.strptime(date, "%Y-%m-%d").strftime("%Y%m%d")
         except ValueError:
-            raise SourceFetchError(
+            raise GeneSourceFetchError(
                 f"Unable to parse version number from remote HGNC timestamp: {date}"
             )
         return version == remote_version
@@ -337,7 +337,7 @@ class HGNC(Base):
         :raise NormalizerEtlError: if requisite metadata is unset
         """
         if not all([self._version, self._data_url]):
-            raise NormalizerEtlError(
+            raise GeneNormalizerEtlError(
                 "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
             )
         metadata = SourceMeta(

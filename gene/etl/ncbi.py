@@ -14,9 +14,9 @@ from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import AbstractDatabase
 from gene.etl.base import Base
 from gene.etl.exceptions import (
-    FileVersionError,
-    NormalizerEtlError,
-    SourceFetchError,
+    GeneFileVersionError,
+    GeneNormalizerEtlError,
+    GeneSourceFetchError,
 )
 from gene.etl.vrs_locations import ChromosomeLocation, SequenceLocation
 from gene.schemas import (
@@ -75,7 +75,7 @@ class NCBI(Base):
             grch_dirs = [d for d in ftp.nlst() if re.match(major_annotation_pattern, d)]
             grch_dir = grch_dirs[0]
         except (IndexError, AttributeError):
-            raise SourceFetchError(
+            raise GeneSourceFetchError(
                 "No directories matching expected latest assembly version pattern"
             )
         ftp.cwd(grch_dir)
@@ -94,7 +94,7 @@ class NCBI(Base):
         try:
             version = re.match(r"ncbi_(.+)", gff.stem).groups()[0]
         except (IndexError, AttributeError):
-            raise FileVersionError(
+            raise GeneFileVersionError(
                 f"Unable to parse version from NCBI GRCh38 annotation file: {gff.absolute()}"
             )
 
@@ -107,7 +107,7 @@ class NCBI(Base):
                 if match and match.groups():
                     latest_version = match.groups()[0]
                     return version == latest_version
-        raise SourceFetchError(
+        raise GeneSourceFetchError(
             "Unable to identify latest available NCBI GRCh38 annotation version"
         )
 
@@ -130,7 +130,7 @@ class NCBI(Base):
                     genomic_filename = f
                     version = gff_match.groups()[0]
             if not version or not genomic_filename:
-                raise SourceFetchError(
+                raise GeneSourceFetchError(
                     "Unable to find latest available NCBI GRCh38 annotation"
                 )
             new_filename = f"ncbi_{version}.gff"
@@ -152,7 +152,7 @@ class NCBI(Base):
         try:
             version = re.match(r"ncbi_history_(\d+).tsv", history_file.name).groups()[0]
         except (IndexError, AttributeError):
-            raise FileVersionError(
+            raise GeneFileVersionError(
                 f"Unable to parse version from NCBI history file: {history_file.absolute()}"
             )
         with FTP(self._host) as ftp:
@@ -187,7 +187,7 @@ class NCBI(Base):
         try:
             version = re.match(r"ncbi_history_(\d+).tsv", gene_file.name).groups()[0]
         except (IndexError, AttributeError):
-            raise FileVersionError(
+            raise GeneFileVersionError(
                 f"Unable to parse version from NCBI gene file: {gene_file.absolute()}"
             )
         with FTP(self._host) as ftp:
@@ -665,7 +665,7 @@ class NCBI(Base):
                 self._assembly,
             ]
         ):
-            raise NormalizerEtlError(
+            raise GeneNormalizerEtlError(
                 "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
             )
         metadata = SourceMeta(
