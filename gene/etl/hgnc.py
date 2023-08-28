@@ -200,7 +200,7 @@ class HGNC(Base):
         :param r: A gene record in the HGNC data file
         :param src_type: Either xrefs or associated_with list
         """
-        if type(r[src]) == list:
+        if isinstance(r[src], list):
             for xref in r[src]:
                 src_type.append(f"{NamespacePrefix[key.upper()].value}:{xref}")
         else:
