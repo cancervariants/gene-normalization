@@ -10,7 +10,11 @@ The Gene Normalizer provides tools for resolving ambiguous human gene references
 
 ---
 
+**[Live service](https://normalize.cancervariants.org/gene)**
+
 **[Documentation](https://gene-normalizer.readthedocs.io/en/latest/.html)** · [Installation](https://gene-normalizer.readthedocs.io/en/latest/install.html) · [Usage](https://gene-normalizer.readthedocs.io/en/latest/usage.html) · [API reference](https://gene-normalizer.readthedocs.io/en/latest/api/api.html)
+
+---
 
 ## Install
 
@@ -68,4 +72,4 @@ See the [usage](https://gene-normalizer.readthedocs.io/en/latest/usage.html) and
 
 ## Feedback and contributing
 
-We welcome bug reports, feature requests, and code contributions from users and interested collaborators. The [documentation](https://gene-normalizer.readthedocs.io/en/latest/contributing.html) contains instructions for submitting feedback and contributing new code.
+We welcome bug reports, feature requests, and code contributions from users and interested collaborators. The [documentation](https://gene-normalizer.readthedocs.io/en/latest/contributing.html) contains guidance for submitting feedback and contributing new code.
