@@ -12,7 +12,12 @@ from dateutil import parser
 
 from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import AbstractDatabase
-from gene.etl.base import Base, FileVersionError, NormalizerEtlError, SourceFetchError
+from gene.etl.base import Base
+from gene.etl.exceptions import (
+    FileVersionError,
+    NormalizerEtlError,
+    SourceFetchError,
+)
 from gene.etl.vrs_locations import ChromosomeLocation
 from gene.schemas import (
     Annotation,
