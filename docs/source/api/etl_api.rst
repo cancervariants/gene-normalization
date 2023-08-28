@@ -19,6 +19,7 @@ NCBI
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 HGNC
 ----
@@ -28,6 +29,7 @@ HGNC
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 Ensembl
 -------
@@ -37,6 +39,7 @@ Ensembl
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
+    :inherited-members:
 
 Normalized Records
 ------------------
