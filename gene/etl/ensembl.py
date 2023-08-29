@@ -88,6 +88,7 @@ class Ensembl(Base):
     def _download_data(self) -> Path:
         """Download latest Ensembl GFF3 data file.
 
+        :return: path to acquired file
         :raise GeneSourceFetchError: if unable to find file matching expected pattern
         """
         logger.info("Downloading latest Ensembl data file...")
