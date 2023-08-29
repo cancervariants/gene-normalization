@@ -63,8 +63,8 @@ class HGNC(Base):
 
         :param data_file: path to latest local file
         :return: True if data is up-to-date
-        :raise FileVersionError: if unable to get version from local HGNC file
-        :raise SourceFetchError: if unable to get latest version available from HGNC
+        :raise GeneFileVersionError: if unable to get version from local HGNC file
+        :raise GeneSourceFetchError: if unable to get latest version available from HGNC
         """
         local_match = re.match(self._data_file_pattern, data_file.name)
         if not local_match:
@@ -334,7 +334,7 @@ class HGNC(Base):
     def _add_meta(self) -> None:
         """Add Ensembl metadata.
 
-        :raise NormalizerEtlError: if requisite metadata is unset
+        :raise GeneNormalizerEtlError: if requisite metadata is unset
         """
         if not all([self._version, self._data_url]):
             raise GeneNormalizerEtlError(

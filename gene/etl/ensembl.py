@@ -55,8 +55,8 @@ class Ensembl(Base):
 
         :param data_file: path to latest local file
         :return: True if data is up-to-date
-        :raise FileVersionError: if unable to parse version number from local file
-        :raise SourceFetchError: if unable to get latest version from remote source
+        :raise GeneFileVersionError: if unable to parse version number from local file
+        :raise GeneSourceFetchError: if unable to get latest version from remote source
         """
         local_match = re.match(self._data_file_pattern, data_file.name)
         parse_msg = (
@@ -88,7 +88,7 @@ class Ensembl(Base):
     def _download_data(self) -> Path:
         """Download latest Ensembl GFF3 data file.
 
-        :raise SourceFetchError: if unable to find file matching expected pattern
+        :raise GeneSourceFetchError: if unable to find file matching expected pattern
         """
         logger.info("Downloading latest Ensembl data file...")
         pattern = r"Homo_sapiens\.(?P<assembly>GRCh\d+)\.(?P<version>\d+)\.gff3\.gz"
@@ -264,7 +264,7 @@ class Ensembl(Base):
     def _add_meta(self) -> None:
         """Add Ensembl metadata.
 
-        :raise NormalizerEtlError: if requisite metadata is unset
+        :raise GeneNormalizerEtlError: if requisite metadata is unset
         """
         if not all([self._version, self._host, self._data_dir, self._assembly]):
             raise GeneNormalizerEtlError(

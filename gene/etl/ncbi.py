@@ -88,8 +88,8 @@ class NCBI(Base):
 
         :param gff: path to local GFF file (file should be saved like `ncbi_GRCh38.p14.gff`)
         :return: True if file version matches most recent known remote version
-        :raise FileVersionError: if unable to parse version from local or remote file
-        :raise SourceFetchError: if unable to get version from NCBI
+        :raise GeneFileVersionError: if unable to parse version from local or remote file
+        :raise GeneSourceFetchError: if unable to get version from NCBI
         """
         try:
             version = re.match(r"ncbi_(.+)", gff.stem).groups()[0]
@@ -147,7 +147,7 @@ class NCBI(Base):
 
         :param history_file: path to local history file (file should be saved like `ncbi_history_20230315.tsv`)
         :return: True if file version matches most recent expected remote version
-        :raise FileVersionError: if parsing version from local file fails
+        :raise GeneFileVersionError: if parsing version from local file fails
         """
         try:
             version = re.match(r"ncbi_history_(\d+).tsv", history_file.name).groups()[0]
@@ -182,7 +182,7 @@ class NCBI(Base):
 
         :param gene_file: path to local NCBI info file (file should be saved like `ncbi_info_20230315.tsv`)
         :return: True if file version matches most recent known remote version
-        :raise FileVersionError: if parsing version from local file fails
+        :raise GeneFileVersionError: if parsing version from local file fails
         """
         try:
             version = re.match(r"ncbi_history_(\d+).tsv", gene_file.name).groups()[0]
@@ -654,7 +654,7 @@ class NCBI(Base):
     def _add_meta(self) -> None:
         """Add Ensembl metadata.
 
-        :raise NormalizerEtlError: if required metadata is unset
+        :raise GeneNormalizerEtlError: if required metadata is unset
         """
         if not all(
             [
