@@ -4,7 +4,6 @@ from .exceptions import (
     GeneFileVersionError,
     GeneNormalizerEtlError,
     GeneSourceFetchError,
-    GeneSourceFormatError,
 )
 from .hgnc import HGNC
 from .ncbi import NCBI
@@ -16,5 +15,4 @@ __all__ = [
     "GeneNormalizerEtlError",
     "GeneFileVersionError",
     "GeneSourceFetchError",
-    "GeneSourceFormatError",
 ]
