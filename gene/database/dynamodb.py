@@ -244,12 +244,13 @@ class DynamoDbDatabase(AbstractDatabase):
         self, concept_id: str, case_sensitive: bool = True, merge: bool = False
     ) -> Optional[Dict]:
         """Fetch record corresponding to provided concept ID
+
         :param str concept_id: concept ID for gene record
         :param bool case_sensitive: if true, performs exact lookup, which is more
-        efficient. Otherwise, performs filter operation, which doesn't require correct
-        casing.
+            efficient. Otherwise, performs filter operation, which doesn't require
+            correct casing.
         :param bool merge: if true, look for merged record; look for identity record
-        otherwise.
+            otherwise.
         :return: complete gene record, if match is found; None otherwise
         """
         try:
