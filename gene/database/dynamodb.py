@@ -18,7 +18,7 @@ from gene.database.database import (
     VALID_AWS_ENV_NAMES,
     AbstractDatabase,
     AwsEnvName,
-    DatabaseException,
+    DatabaseInitializationException,
     DatabaseReadException,
     DatabaseWriteException,
     confirm_aws_db_use,
@@ -37,6 +37,7 @@ class DynamoDbDatabase(AbstractDatabase):
         :param str db_url: URL endpoint for DynamoDB source
         :Keyword Arguments:
             * region_name: AWS region (defaults to "us-east-2")
+        :raise DatabaseInitializationException: if initial setup fails
         """
         self.gene_concepts_table = environ.get(
             "GENE_DYNAMO_CONCEPTS_TABLE", "gene_concepts"
@@ -49,13 +50,13 @@ class DynamoDbDatabase(AbstractDatabase):
 
         if AWS_ENV_VAR_NAME in environ:
             if "GENE_TEST" in environ:
-                raise DatabaseException(
+                raise DatabaseInitializationException(
                     f"Cannot have both GENE_TEST and {AWS_ENV_VAR_NAME} set."
                 )  # noqa: E501
 
             aws_env = environ[AWS_ENV_VAR_NAME]
             if aws_env not in VALID_AWS_ENV_NAMES:
-                raise DatabaseException(
+                raise DatabaseInitializationException(
                     f"{AWS_ENV_VAR_NAME} must be one of {VALID_AWS_ENV_NAMES}"
                 )  # noqa: E501
 
