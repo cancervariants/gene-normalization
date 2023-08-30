@@ -59,15 +59,12 @@ class Ensembl(Base):
         :raise GeneSourceFetchError: if unable to get latest version from remote source
         """
         local_match = re.match(self._data_file_pattern, data_file.name)
-        parse_msg = (
-            f"Unable to parse version number from local file: {data_file.absolute()}"
-        )
-        if not local_match or not local_match.groups():
-            raise GeneFileVersionError(parse_msg)
         try:
             version = int(local_match.groups()[1])
-        except ValueError:
-            raise GeneFileVersionError(parse_msg)
+        except (AttributeError, IndexError, ValueError):
+            raise GeneFileVersionError(
+                f"Unable to parse version number from local file: {data_file.absolute()}"
+            )
 
         ensembl_api = (
             "https://rest.ensembl.org/info/data/?content-type=application/json"
