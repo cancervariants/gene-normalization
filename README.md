@@ -59,7 +59,7 @@ Or utilize the [Python API](https://gene-normalizer.readthedocs.io/en/latest/api
 
 ```python
 >>> from gene.database import create_db
->>> from gene.query import QueryHandler()
+>>> from gene.query import QueryHandler
 >>> q = QueryHandler(create_db())
 >>> result = q.normalize("KRAS")
 >>> print(result.gene_descriptor.gene_id)
