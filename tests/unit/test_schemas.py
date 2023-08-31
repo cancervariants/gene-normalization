@@ -21,7 +21,9 @@ from gene.schemas import Gene, GeneValueObject
 def sequence_location():
     """Create a valid sequence location test fixture."""
     return models.SequenceLocation(
-        sequence='ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul',
+        sequence=models.SequenceReference(
+            refgetAccession="SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
+        ),
         start=140719327,
         end=140924929
     )

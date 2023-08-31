@@ -84,9 +84,12 @@ Ensembl
       "location_annotations": [],
       "locations": [
         {
-          "id": "ga4gh:SL.swvGFPn3qd10kd1jb6S1SdWqGGLi_2qe",
+          "id": "ga4gh:SL.iwWw9B3tkU3TCLF3d8xu4zSQBhpDZfJ6",
           "type": "SequenceLocation",
-          "sequence": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+          "sequenceReference": {
+            "type": "SequenceReference",
+            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+          },
           "start": 140719326,
           "end": 140924929
         }
@@ -130,10 +133,13 @@ The `NCBI Gene Database <https://www.ncbi.nlm.nih.gov/gene/>`_ is a service prov
           }
         },
         {
-          "id": "ga4gh:SL.I6Hn1A9YViUPq37PgWuSNnL-BJmU6XgF",
+          "id": "ga4gh:SL.rXzVqqlchBvUef98MNQA77FvwSJgiOf5",
           "type": "SequenceLocation",
-          "sequence": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
-          "start":  140713327,
+          "sequenceReference": {
+            "type": "SequenceReference",
+            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
+          },
+          "start": 140713327,
           "end": 140924929
         }
       ],

@@ -699,9 +699,12 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "location_annotations": [],
                                 "locations": [
                                     {
-                                        "id": "ga4gh:SL.vt7T7T0jlhWug8QdfW6FM_yxrTHZDkqt",  # noqa: E501
+                                        "id": "ga4gh:SL.oyhehgtv3XV3iMTlul7XtMQ_5RSAvts6",  # noqa: E501
                                         "type": "SequenceLocation",
-                                        "sequence": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                        "sequenceReference": {
+                                            "type": "SequenceReference",
+                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"  # noqa: E501
+                                        },
                                         "start": 100889993,
                                         "end": 100896974,
                                     }
@@ -746,9 +749,12 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                         # "end": "q22.1"
                                     },
                                     {
-                                        "id": "ga4gh:SL.KvCSxEC2FitIcLnS0oiKStfs6_51e0-l",  # noqa: E501
+                                        "id": "ga4gh:SL.OuUQ-JYrkb92VioFp1P9JLGAbVQA1Wqs",  # noqa: E501
                                         "type": "SequenceLocation",
-                                        "sequence": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                        "sequenceReference": {
+                                            "type": "SequenceReference",
+                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"  # noqa: E501
+                                        },
                                         "start": 100889993,
                                         "end": 100896994,
                                     },

@@ -95,9 +95,12 @@ def normalized_ache():
                     #     "start": "q22.1"
                     # },
                     {
-                        "id": "ga4gh:SL.KvCSxEC2FitIcLnS0oiKStfs6_51e0-l",
+                        "id": "ga4gh:SL.OuUQ-JYrkb92VioFp1P9JLGAbVQA1Wqs",
                         "type": "SequenceLocation",
-                        "sequence": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
+                        },
                         "start": 100889993,
                         "end": 100896994
                     }
@@ -122,9 +125,12 @@ def normalized_ache():
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.vt7T7T0jlhWug8QdfW6FM_yxrTHZDkqt",
+                        "id": "ga4gh:SL.oyhehgtv3XV3iMTlul7XtMQ_5RSAvts6",
                         "type": "SequenceLocation",
-                        "sequence": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
+                        },
                         "start": 100889993,
                         "end": 100896974
                     }
@@ -226,9 +232,12 @@ def normalized_braf():
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.swvGFPn3qd10kd1jb6S1SdWqGGLi_2qe",
+                        "id": "ga4gh:SL.iwWw9B3tkU3TCLF3d8xu4zSQBhpDZfJ6",
                         "type": "SequenceLocation",
-                        "sequence": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
+                        },
                         "start": 140719326,
                         "end": 140924929
                     }
@@ -247,9 +256,12 @@ def normalized_braf():
                     #     "end": "q34"
                     # },
                     {
-                        "id": "ga4gh:SL.I6Hn1A9YViUPq37PgWuSNnL-BJmU6XgF",
+                        "id": "ga4gh:SL.rXzVqqlchBvUef98MNQA77FvwSJgiOf5",
                         "type": "SequenceLocation",
-                        "sequence": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
+                        },
                         "start": 140713327,
                         "end": 140924929
                     }
@@ -371,9 +383,12 @@ def normalized_abl1():
                     #     "end": "q34.12"
                     # },
                     {
-                        "id": "ga4gh:SL.06oc9xn0acLrpYRLufFN0F3OKUwrnx6P",
+                        "id": "ga4gh:SL.qwMQXDwguWeHsOb5bd7qoLC8zyfxcHzC",
                         "type": "SequenceLocation",
-                        "sequence": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI"
+                        },
                         "start": 130713042,
                         "end": 130887675
                     }
@@ -384,9 +399,12 @@ def normalized_abl1():
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.vLmUPco8kc73ix0f6hvLQNeL7LmQemVi",
+                        "id": "ga4gh:SL.mL3bBgmOG_mOb3P68os_hfhlPzbqr1MS",
                         "type": "SequenceLocation",
-                        "sequence": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI"
+                        },
                         "start": 130713015,
                         "end": 130887675
                     }
@@ -482,9 +500,12 @@ def normalized_p150():
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.cznuFdgVQhHJ2Dkzz_y4m3_3tmvcZ00R",
+                        "id": "ga4gh:SL.4RCVIbLVXLWPxvhd3IkRA-yI4o99Uwuq",
                         "type": "SequenceLocation",
-                        "sequence": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl"
+                        },
                         "start": 4402639,
                         "end": 4445018
                     }
@@ -502,9 +523,12 @@ def normalized_p150():
                     #     "end": "p13.3"
                     # },
                     {
-                        "id": "ga4gh:SL.OBt8LhLlV5AxlDaEHn-D7pYoKoOggse0",
+                        "id": "ga4gh:SL.-EYdfD5JkE4lqRwkCR_NNzaaT0uTYBg2",
                         "type": "SequenceLocation",
-                        "sequence": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl"
+                        },
                         "start": 4402639,
                         "end": 4450830
                     }
@@ -572,9 +596,12 @@ def normalized_loc_653303():
                     #     "end": "q23.3"
                     # },
                     {
-                        "id": "ga4gh:SL.-CGcQJQ5KTLVUdD29QZFkDLbBH5H_gUH",
+                        "id": "ga4gh:SL.Iumme4GSaXUPAo0ifaq85LLlA1nT7l5o",
                         "type": "SequenceLocation",
-                        "sequence": "ga4gh:SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1",
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1"
+                        },
                         "start": 117135528,
                         "end": 117138867
                     }
@@ -632,9 +659,12 @@ def normalize_unmerged_loc_653303():
                             #     "end": "q23.3"
                             # },
                             {
-                                "id": "ga4gh:SL.-CGcQJQ5KTLVUdD29QZFkDLbBH5H_gUH",
+                                "id": "ga4gh:SL.Iumme4GSaXUPAo0ifaq85LLlA1nT7l5o",
                                 "type": "SequenceLocation",
-                                "sequence": "ga4gh:SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1",  # noqa: E501
+                                "sequenceReference": {
+                                    "type": "SequenceReference",
+                                    "refgetAccession": "SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1"  # noqa: E501
+                                },
                                 "start": 117135528,
                                 "end": 117138867
                             }
@@ -718,9 +748,12 @@ def normalize_unmerged_chaf1a():
                         "location_annotations": [],
                         "locations": [
                             {
-                                "id": "ga4gh:SL.cznuFdgVQhHJ2Dkzz_y4m3_3tmvcZ00R",
+                                "id": "ga4gh:SL.4RCVIbLVXLWPxvhd3IkRA-yI4o99Uwuq",
                                 "type": "SequenceLocation",
-                                "sequence": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",  # noqa: E501
+                                "sequenceReference": {
+                                    "type": "SequenceReference",
+                                    "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl"  # noqa: E501
+                                },
                                 "start": 4402639,
                                 "end": 4445018
                             }
@@ -754,9 +787,12 @@ def normalize_unmerged_chaf1a():
                             #     "end": "p13.3"
                             # },
                             {
-                                "id": "ga4gh:SL.OBt8LhLlV5AxlDaEHn-D7pYoKoOggse0",
+                                "id": "ga4gh:SL.-EYdfD5JkE4lqRwkCR_NNzaaT0uTYBg2",
                                 "type": "SequenceLocation",
-                                "sequence": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",  # noqa: E501
+                                "sequenceReference": {
+                                    "type": "SequenceReference",
+                                    "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl"  # noqa: E501
+                                },
                                 "start": 4402639,
                                 "end": 4450830
                             }
@@ -809,9 +845,12 @@ def normalize_unmerged_ache():
                             #     "end": "q22.1"
                             # },
                             {
-                                "id": "ga4gh:SL.KvCSxEC2FitIcLnS0oiKStfs6_51e0-l",
+                                "id": "ga4gh:SL.OuUQ-JYrkb92VioFp1P9JLGAbVQA1Wqs",
                                 "type": "SequenceLocation",
-                                "sequence": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                "sequenceReference": {
+                                    "type": "SequenceReference",
+                                    "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"  # noqa: E501
+                                },
                                 "start": 100889993,
                                 "end": 100896994
                             }
@@ -847,9 +886,12 @@ def normalize_unmerged_ache():
                         "location_annotations": [],
                         "locations": [
                             {
-                                "id": "ga4gh:SL.vt7T7T0jlhWug8QdfW6FM_yxrTHZDkqt",
+                                "id": "ga4gh:SL.oyhehgtv3XV3iMTlul7XtMQ_5RSAvts6",
                                 "type": "SequenceLocation",
-                                "sequence": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                "sequenceReference": {
+                                    "type": "SequenceReference",
+                                    "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"  # noqa: E501
+                                },
                                 "start": 100889993,
                                 "end": 100896974
                             }
