@@ -215,7 +215,7 @@ class Base(ABC):
     #             return chr_location
     #     return None
 
-    def get_seq_id_aliases(self, sr: SeqRepo, seq_id: str) -> List[str]:
+    def _get_seq_id_aliases(self, sr: SeqRepo, seq_id: str) -> List[str]:
         """Get GA4GH aliases for a sequence id
 
         :param sr: seqrepo instance
@@ -242,7 +242,7 @@ class Base(ABC):
             Else, empty dictionary
         """
         location = {}
-        aliases = self.get_seq_id_aliases(sr, seq_id)
+        aliases = self._get_seq_id_aliases(sr, seq_id)
         if not aliases:
             return location
 
