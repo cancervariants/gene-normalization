@@ -9,6 +9,8 @@ Normalized records are constructed by aggregating data from established resource
 
    Per the `GA4GH Variation Representation Specification (VRS) <https://vrs.ga4gh.org/en/stable/>`_, Genomic and cytogenic locations are stored and represented as `VRS locations <https://vrs.ga4gh.org/en/stable/terms_and_model.html#location>`_.
 
+TODO do not merge before adding this part: describe source metadata
+
 HGNC
 ----
 
