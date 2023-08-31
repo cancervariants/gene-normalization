@@ -76,10 +76,10 @@ class QueryHandler:
         :param loc: GeneSequenceLocation represented as a dict
         :return: VRS sequence location
         """
-        sequence = loc["sequence_id"]
+        sequence = loc["sequence_id"].split("ga4gh:")[-1]
 
         return models.SequenceLocation(
-            sequence=sequence,
+            sequenceReference=models.SequenceReference(refgetAccession=sequence),
             start=int(loc["start"]),
             end=int(loc["end"])
         )
