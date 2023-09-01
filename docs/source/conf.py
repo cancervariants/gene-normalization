@@ -19,7 +19,6 @@ extensions = [
     "sphinx_autodoc_typehints",
     "sphinx.ext.linkcode",
     "sphinx_copybutton",
-    "sphinxcontrib.bibtex",
 ]
 
 templates_path = ["_templates"]
@@ -84,6 +83,3 @@ def linkcode_resolve(domain, info):
 # -- code block style --------------------------------------------------------
 pygments_style = "default"
 pygements_dark_style = "monokai"
-
-# -- citations ---------------------------------------------------------------
-bibtex_bibfiles = ["refs.bib"]
