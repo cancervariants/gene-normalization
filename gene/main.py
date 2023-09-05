@@ -42,8 +42,6 @@ app = FastAPI(
 read_query_summary = "Given query, provide best-matching source records."
 response_description = "A response to a validly-formed query"
 q_descr = "Gene to normalize."
-keyed_descr = """Optional. If true, return response as key-value pairs of
-              sources to source matches. False by default."""
 incl_descr = """Optional. Comma-separated list of source names to include in
              response. Will exclude all other sources. Returns HTTP status code
              422: Unprocessable Entity if both 'incl' and 'excl' parameters
@@ -68,15 +66,12 @@ search_description = (
 )
 def search(
     q: str = Query(..., description=q_descr),  # noqa: D103
-    keyed: Optional[bool] = Query(False, description=keyed_descr),
     incl: Optional[str] = Query(None, description=incl_descr),
     excl: Optional[str] = Query(None, description=excl_descr),
 ) -> SearchService:
     """Return strongest match concepts to query string provided by user.
 
     :param str q: gene search term
-    :param Optional[bool] keyed: if true, response is structured as key/value
-        pair of sources to source match lists.
     :param Optional[str] incl: comma-separated list of sources to include,
         with all others excluded. Raises HTTPException if both `incl` and
         `excl` are given.
@@ -86,10 +81,10 @@ def search(
     :return: JSON response with matched records and source metadata
     """
     try:
-        resp = query_handler.search(html.unescape(q), keyed=keyed, incl=incl, excl=excl)
+        resp = query_handler.search(html.unescape(q), incl=incl, excl=excl)
     except InvalidParameterException as e:
         raise HTTPException(status_code=422, detail=str(e))
-
+    breakpoint()
     return resp
 
 

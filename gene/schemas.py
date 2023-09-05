@@ -297,10 +297,8 @@ class SourceMeta(BaseModel):
     )
 
 
-class MatchesKeyed(BaseModel):
-    """Container for matching information from an individual source.
-    Used when matches are requested as an object, not an array.
-    """
+class SourceSearchMatches(BaseModel):
+    """Container for matching information from an individual source."""
 
     records: List[Gene] = []
     source_meta_: SourceMeta
@@ -308,51 +306,66 @@ class MatchesKeyed(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "records": [],
-                "source_meta_": {
-                    "data_license": "custom",
-                    "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
-                    "version": "20201215",
-                    "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
-                    "rdp_url": "https://reusabledata.org/ncbi-gene.html",
-                    "data_license_attributes": {
-                        "non_commercial": False,
-                        "share_alike": False,
-                        "attribution": False,
-                    },
-                    "genome_assemblies": [],
+                "query": "ensembl:ENSG00000157764",
+                "warnings": [],
+                "source_matches": {
+                    "Ensembl": {
+                        "records": [
+                            {
+                                "concept_id": "ensembl:ENSG00000157764",
+                                "symbol": "BRAF",
+                                "symbol_status": None,
+                                "label": "B-Raf proto-oncogene, serine/threonine kinase",
+                                "strand": "-",
+                                "location_annotations": [],
+                                "locations": [
+                                    {
+                                        "id": "ga4gh:SL.iwWw9B3tkU3TCLF3d8xu4zSQBhpDZfJ6",
+                                        "label": None,
+                                        "extensions": None,
+                                        "type": "SequenceLocation",
+                                        "digest": None,
+                                        "sequenceReference": {
+                                            "id": None,
+                                            "label": None,
+                                            "extensions": None,
+                                            "type": "SequenceReference",
+                                            "digest": None,
+                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+                                            "residueAlphabet": None,
+                                        },
+                                        "start": 140719326,
+                                        "end": 140924929,
+                                    }
+                                ],
+                                "aliases": [],
+                                "previous_symbols": [],
+                                "xrefs": ["hgnc:1097"],
+                                "associated_with": [],
+                                "gene_type": "protein_coding",
+                                "match_type": 100,
+                            }
+                        ],
+                        "source_meta_": {
+                            "data_license": "custom",
+                            "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",
+                            "version": "110",
+                            "data_url": "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz",
+                            "rdp_url": None,
+                            "data_license_attributes": {
+                                "non_commercial": False,
+                                "attribution": False,
+                                "share_alike": False,
+                            },
+                            "genome_assemblies": ["GRCh38"],
+                        },
+                    }
                 },
-            }
-        }
-    )
-
-
-class MatchesListed(BaseModel):
-    """Container for matching information from an individual source.
-    Used when matches are requested as an array, not an object.
-    """
-
-    source: SourceName
-    records: List[Gene] = []
-    source_meta_: SourceMeta
-
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "source": "NCBI",
-                "records": [],
-                "source_meta_": {
-                    "data_license": "custom",
-                    "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
-                    "version": "20201215",
-                    "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
-                    "rdp_url": "https://reusabledata.org/ncbi-gene.html",
-                    "data_license_attributes": {
-                        "non_commercial": False,
-                        "share_alike": False,
-                        "attribution": False,
-                    },
-                    "genome_assemblies": [],
+                "service_meta_": {
+                    "name": "gene-normalizer",
+                    "version": "0.3.0-dev0",
+                    "response_datetime": "2023-09-26 15:23:18.837074",
+                    "url": "https://github.com/cancervariants/gene-normalization",
                 },
             }
         }
@@ -386,58 +399,10 @@ class SearchService(BaseModel):
 
     query: StrictStr
     warnings: List[Dict] = []
-    source_matches: Union[Dict[SourceName, MatchesKeyed], List[MatchesListed]]
+    source_matches: Dict[SourceName, SourceSearchMatches]
     service_meta_: ServiceMeta
 
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "query": "BRAF",
-                "warnings": [],
-                "source_matches": [
-                    {
-                        "source": "Ensembl",
-                        "records": [
-                            {
-                                "label": None,
-                                "concept_id": "ensembl:ENSG00000157764",
-                                "symbol": "BRAF",
-                                "previous_symbols": [],
-                                "aliases": [],
-                                "xrefs": [],
-                                "symbol_status": None,
-                                "strand": "-",
-                                "locations": [],
-                                "location_annotations": [],
-                                "associated_with": [],
-                                "gene_type": None,
-                                "match_type": 100,
-                            }
-                        ],
-                        "source_meta_": {
-                            "data_license": "custom",
-                            "data_license_url": "https://uswest.ensembl.org/info/about/legal/index.html",  # noqa: E501
-                            "version": "102",
-                            "data_url": "http://ftp.ensembl.org/pub/",
-                            "rdp_url": None,
-                            "data_license_attributes": {
-                                "non_commercial": False,
-                                "share_alike": False,
-                                "attribution": False,
-                            },
-                            "genome_assemblies": ["GRCh38"],
-                        },
-                    }
-                ],
-                "service_meta_": {
-                    "name": "gene-normalizer",
-                    "version": __version__,
-                    "response_datetime": "2022-03-23 15:57:14.180908",
-                    "url": "https://github.com/cancervariants/gene-normalization",
-                },
-            }
-        }
-    )
+    model_config = ConfigDict(json_schema_extra={"example": {}})
 
 
 class GeneTypeFieldName(str, Enum):

@@ -16,7 +16,7 @@ def hgnc(database):
             self.query_handler = QueryHandler(database)
 
         def search(self, query_str, incl="hgnc"):
-            resp = self.query_handler.search(query_str, keyed=True, incl=incl)
+            resp = self.query_handler.search(query_str, incl=incl)
             return resp.source_matches[SourceName.HGNC]
 
     h = QueryGetter()
