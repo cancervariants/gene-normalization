@@ -88,8 +88,7 @@ def test_tables_created(db_fixture):
             "gene_sources",
         }
     else:
-        assert db_fixture.db.gene_concepts_table in existing_tables
-        assert db_fixture.db.gene_metadata_table in existing_tables
+        assert db_fixture.db.gene_table in existing_tables
 
 
 @pytest.mark.skipif(not IS_TEST_ENV, reason="not in test environment")
