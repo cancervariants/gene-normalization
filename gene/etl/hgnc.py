@@ -298,7 +298,7 @@ class HGNC(Base):
         return self._processed_ids
 
     def _add_meta(self) -> None:
-        """Add HGNC metadata to the gene_metadata table."""
+        """Add HGNC metadata."""
         metadata = SourceMeta(
             data_license="custom",
             data_license_url="https://www.genenames.org/about/",
