@@ -235,7 +235,7 @@ class SourceMeta(BaseModel):
     data_license: StrictStr
     data_license_url: StrictStr
     version: StrictStr
-    data_url: Optional[StrictStr]
+    data_url: Dict[str, str]
     rdp_url: Optional[StrictStr]
     data_license_attributes: Dict[StrictStr, StrictBool]
     genome_assemblies: Optional[List[StrictStr]]
@@ -256,7 +256,11 @@ class SourceMeta(BaseModel):
                 "data_license": "custom",
                 "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                 "version": "20201215",
-                "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+                "data_url": {
+                    "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
+                    "history_file": "ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz",
+                    "assembly_file": "ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/",
+                },
                 "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                 "data_license_attributes": {
                     "non_commercial": False,
@@ -293,9 +297,13 @@ class SourceSearchMatches(BaseModel):
                     "records": [],
                     "source_meta_": {
                         "data_license": "custom",
-                        "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
+                        "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",
                         "version": "20201215",
-                        "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+                        "data_url": {
+                            "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
+                            "history_file": "ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz",
+                            "assembly_file": "ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/",
+                        },
                         "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                         "data_license_attributes": {
                             "non_commercial": False,
@@ -389,15 +397,19 @@ class SearchService(BaseModel):
                         "source_meta_": {
                             "data_license": "custom",
                             "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",
-                            "version": "20210813",
-                            "data_url": "ftp://ftp.ncbi.nlm.nih.gov",
+                            "version": "20201215",
+                            "data_url": {
+                                "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
+                                "history_file": "ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz",
+                                "assembly_file": "ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/",
+                            },
                             "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                             "data_license_attributes": {
                                 "non_commercial": False,
-                                "attribution": False,
                                 "share_alike": False,
+                                "attribution": False,
                             },
-                            "genome_assemblies": ["GRCh38.p14"],
+                            "genome_assemblies": None,
                         },
                     }
                 },
@@ -512,7 +524,9 @@ class NormalizeService(BaseNormalizationService):
                         "data_license": "custom",
                         "data_license_url": "https://www.genenames.org/about/",
                         "version": "20210810",
-                        "data_url": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json",  # noqa: E501
+                        "data_url": {
+                            "complete_set_archive": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
+                        },
                         "rdp_url": None,
                         "data_license_attributes": {
                             "non_commercial": False,
@@ -525,7 +539,9 @@ class NormalizeService(BaseNormalizationService):
                         "data_license": "custom",
                         "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",  # noqa: E501
                         "version": "104",
-                        "data_url": "ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.104.gff3.gz",  # noqa: E501
+                        "data_url": {
+                            "genome_annotations": "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz"
+                        },
                         "rdp_url": None,
                         "data_license_attributes": {
                             "non_commercial": False,
@@ -538,7 +554,11 @@ class NormalizeService(BaseNormalizationService):
                         "data_license": "custom",
                         "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                         "version": "20210813",
-                        "data_url": "ftp://ftp.ncbi.nlm.nih.gov",
+                        "data_url": {
+                            "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
+                            "history_file": "ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz",
+                            "assembly_file": "ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/",
+                        },
                         "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                         "data_license_attributes": {
                             "non_commercial": False,
@@ -655,7 +675,9 @@ class UnmergedNormalizationService(BaseNormalizationService):
                             "data_license": "custom",
                             "data_license_url": "https://www.genenames.org/about/",
                             "version": "20220407",
-                            "data_url": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json",  # noqa: E501
+                            "data_url": {
+                                "complete_set_archive": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
+                            },
                             "rdp_url": None,
                             "data_license_attributes": {
                                 "non_commercial": False,
@@ -703,7 +725,9 @@ class UnmergedNormalizationService(BaseNormalizationService):
                             "data_license": "custom",
                             "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",  # noqa: E501
                             "version": "104",
-                            "data_url": "ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.104.gff3.gz",  # noqa: E501
+                            "data_url": {
+                                "genome_annotations": "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz"
+                            },
                             "rdp_url": None,
                             "data_license_attributes": {
                                 "non_commercial": False,
@@ -762,7 +786,11 @@ class UnmergedNormalizationService(BaseNormalizationService):
                             "data_license": "custom",
                             "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                             "version": "20220407",
-                            "data_url": "ftp://ftp.ncbi.nlm.nih.gov",
+                            "data_url": {
+                                "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
+                                "history_file": "ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz",
+                                "assembly_file": "ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/",
+                            },
                             "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                             "data_license_attributes": {
                                 "non_commercial": False,

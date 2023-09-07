@@ -27,6 +27,16 @@ To update specific sources, call the ``--sources`` option with one or more sourc
     gene_norm_update --sources="HGNC NCBI" --update_merged
 
 
+Use local data
+--------------
+
+The Gene Normalizer will fetch the latest available data from all sources if local data is out-of-date. To suppress this and force usage of local files, use the `--use_existing` flag:
+
+.. code-block:: shell
+
+    gene_norm_update --update_all --use_existing
+
+
 Check DB health
 ---------------
 
