@@ -39,13 +39,7 @@ class DynamoDbDatabase(AbstractDatabase):
             * region_name: AWS region (defaults to "us-east-2")
         :raise DatabaseInitializationException: if initial setup fails
         """
-        self.gene_concepts_table = environ.get(
-            "GENE_DYNAMO_CONCEPTS_TABLE", "gene_concepts"
-        )
-        self.gene_metadata_table = environ.get(
-            "GENE_DYNAMO_META_TABLE", "gene_metadata"
-        )
-
+        self.gene_table = environ.get("GENE_DYNAMO_TABLE", "gene_normalizer")
         region_name = db_args.get("region_name", "us-east-2")
 
         if AWS_ENV_VAR_NAME in environ:
@@ -69,11 +63,8 @@ class DynamoDbDatabase(AbstractDatabase):
             boto_params = {"region_name": region_name}
 
             if aws_env == AwsEnvName.DEVELOPMENT:
-                self.gene_concepts_table = environ.get(
-                    "GENE_DYNAMO_CONCEPTS_TABLE", "gene_concepts_nonprod"
-                )
-                self.gene_metadata_table = environ.get(
-                    "GENE_DYNAMO_META_TABLE", "gene_metadata_nonprod"
+                self.gene_table = environ.get(
+                    "GENE_DYNAMO_TABLE", "gene_normalizer_nonprod"
                 )
         else:
             if db_url:
@@ -93,8 +84,7 @@ class DynamoDbDatabase(AbstractDatabase):
         if not set(envs_do_not_create_tables) & set(environ):
             self.initialize_db()
 
-        self.genes = self.dynamodb.Table(self.gene_concepts_table)
-        self.metadata = self.dynamodb.Table(self.gene_metadata_table)
+        self.genes = self.dynamodb.Table(self.gene_table)
         self.batch = self.genes.batch_writer()
         self._cached_sources = {}
         atexit.register(self.close_connection)
@@ -118,14 +108,13 @@ class DynamoDbDatabase(AbstractDatabase):
         except DatabaseWriteException as e:
             raise e
 
-        existing_tables = self.list_tables()
-        for table_name in existing_tables:
-            self.dynamodb.Table(table_name).delete()
+        if self.gene_table in self.list_tables():
+            self.dynamodb.Table(self.gene_table).delete()
 
     def _create_genes_table(self) -> None:
         """Create Genes table."""
         self.dynamodb.create_table(
-            TableName=self.gene_concepts_table,
+            TableName=self.gene_table,
             KeySchema=[
                 {"AttributeName": "label_and_type", "KeyType": "HASH"},  # Partition key
                 {"AttributeName": "concept_id", "KeyType": "RANGE"},  # Sort key
@@ -159,31 +148,15 @@ class DynamoDbDatabase(AbstractDatabase):
             ProvisionedThroughput={"ReadCapacityUnits": 10, "WriteCapacityUnits": 10},
         )
 
-    def _create_meta_data_table(self) -> None:
-        """Create MetaData table if non-existent."""
-        self.dynamodb.create_table(
-            TableName=self.gene_metadata_table,
-            KeySchema=[
-                {"AttributeName": "src_name", "KeyType": "HASH"}  # Partition key
-            ],
-            AttributeDefinitions=[
-                {"AttributeName": "src_name", "AttributeType": "S"},
-            ],
-            ProvisionedThroughput={"ReadCapacityUnits": 10, "WriteCapacityUnits": 10},
-        )
-
     def check_schema_initialized(self) -> bool:
         """Check if database schema is properly initialized.
 
         :return: True if DB appears to be fully initialized, False otherwise
         """
         existing_tables = self.list_tables()
-        exists = (
-            self.gene_concepts_table in existing_tables
-            and self.gene_metadata_table in existing_tables
-        )
+        exists = self.gene_table in existing_tables
         if not exists:
-            logger.info("Gene tables are missing or unavailable.")
+            logger.info(f"{self.gene_table} table is missing or unavailable.")
         return exists
 
     def check_tables_populated(self) -> bool:
@@ -195,7 +168,10 @@ class DynamoDbDatabase(AbstractDatabase):
 
         :return: True if queries successful, false if DB appears empty
         """
-        sources = self.metadata.scan().get("Items", [])
+        sources = self.genes.query(
+            IndexName="item_type_index",
+            KeyConditionExpression=Key("item_type").eq("source"),
+        ).get("Items", [])
         if len(sources) < len(SourceName):
             logger.info("Gene sources table is missing expected sources.")
             return False
@@ -221,10 +197,9 @@ class DynamoDbDatabase(AbstractDatabase):
         return True
 
     def initialize_db(self) -> None:
-        """Create gene_concepts and gene_metadata tables if not already created."""
+        """Create gene_normalizer table if not already created."""
         if not self.check_schema_initialized():
             self._create_genes_table()
-            self._create_meta_data_table()
 
     def get_source_metadata(self, src_name: Union[str, SourceName]) -> Dict:
         """Get license, versioning, data lookup, etc information for a source.
@@ -236,7 +211,15 @@ class DynamoDbDatabase(AbstractDatabase):
         if src_name in self._cached_sources:
             return self._cached_sources[src_name]
         else:
-            metadata = self.metadata.get_item(Key={"src_name": src_name}).get("Item")
+            pk = f"{src_name.lower()}##source"
+            concept_id = f"source:{src_name.lower()}"
+            metadata = self.genes.get_item(
+                Key={"label_and_type": pk, "concept_id": concept_id}
+            ).get("Item")
+            if not metadata:
+                raise DatabaseReadException(
+                    f"Unable to retrieve data for source {src_name}"
+                )
             self._cached_sources[src_name] = metadata
             return metadata
 
@@ -372,10 +355,14 @@ class DynamoDbDatabase(AbstractDatabase):
         :param data: known source attributes
         :raise DatabaseWriteException: if write fails
         """
+        src_name_value = src_name.value
         metadata_item = metadata.dict()
-        metadata_item["src_name"] = src_name.value
+        metadata_item["src_name"] = src_name_value
+        metadata_item["label_and_type"] = f"{str(src_name_value).lower()}##source"
+        metadata_item["concept_id"] = f"source:{str(src_name_value).lower()}"
+        metadata_item["item_type"] = "source"
         try:
-            self.metadata.put_item(Item=metadata_item)
+            self.genes.put_item(Item=metadata_item)
         except ClientError as e:
             raise DatabaseWriteException(e)
 
@@ -552,11 +539,6 @@ class DynamoDbDatabase(AbstractDatabase):
                         )
                     except ClientError as e:
                         raise DatabaseWriteException(e)
-
-        try:
-            self.metadata.delete_item(Key={"src_name": src_name.value})
-        except ClientError as e:
-            raise DatabaseWriteException(e)
 
     def complete_write_transaction(self) -> None:
         """Conclude transaction or batch writing if relevant."""
