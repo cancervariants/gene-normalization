@@ -18,7 +18,7 @@ from gene.database.database import (
     VALID_AWS_ENV_NAMES,
     AbstractDatabase,
     AwsEnvName,
-    DatabaseException,
+    DatabaseInitializationException,
     DatabaseReadException,
     DatabaseWriteException,
     confirm_aws_db_use,
@@ -37,19 +37,20 @@ class DynamoDbDatabase(AbstractDatabase):
         :param str db_url: URL endpoint for DynamoDB source
         :Keyword Arguments:
             * region_name: AWS region (defaults to "us-east-2")
+        :raise DatabaseInitializationException: if initial setup fails
         """
         self.gene_table = environ.get("GENE_DYNAMO_TABLE", "gene_normalizer")
         region_name = db_args.get("region_name", "us-east-2")
 
         if AWS_ENV_VAR_NAME in environ:
             if "GENE_TEST" in environ:
-                raise DatabaseException(
+                raise DatabaseInitializationException(
                     f"Cannot have both GENE_TEST and {AWS_ENV_VAR_NAME} set."
                 )  # noqa: E501
 
             aws_env = environ[AWS_ENV_VAR_NAME]
             if aws_env not in VALID_AWS_ENV_NAMES:
-                raise DatabaseException(
+                raise DatabaseInitializationException(
                     f"{AWS_ENV_VAR_NAME} must be one of {VALID_AWS_ENV_NAMES}"
                 )  # noqa: E501
 
@@ -226,12 +227,13 @@ class DynamoDbDatabase(AbstractDatabase):
         self, concept_id: str, case_sensitive: bool = True, merge: bool = False
     ) -> Optional[Dict]:
         """Fetch record corresponding to provided concept ID
+
         :param str concept_id: concept ID for gene record
         :param bool case_sensitive: if true, performs exact lookup, which is more
-        efficient. Otherwise, performs filter operation, which doesn't require correct
-        casing.
+            efficient. Otherwise, performs filter operation, which doesn't require
+            correct casing.
         :param bool merge: if true, look for merged record; look for identity record
-        otherwise.
+            otherwise.
         :return: complete gene record, if match is found; None otherwise
         """
         try:

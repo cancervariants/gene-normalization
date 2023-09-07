@@ -6,9 +6,9 @@ Overview
 
 The Gene Normalizer provides three different search modes:
 
-* **search**: for each :ref:`source <sources>`, find the record or records that best match the given search string.
-* **normalize**: find the normalized concept that best matches the given search string. Return a merged record that incorporates data from all associated records from each source. See :ref:`build_normalization` for more information.
-* **normalize_unmerged**: return each source record associated with the normalized concept that best matches the given search string.
+* **search**: for each :ref:`source <sources>`, find the record or records that best match the given search string. Returns :ref:`gene records <gene-record-object>`.
+* **normalize**: find the normalized concept that best matches the given search string. Return a merged record that incorporates data from all associated records from each source. Returns :ref:`a normalized gene object <normalized-gene-object>`. See :ref:`build_normalization` for more information.
+* **normalize_unmerged**: return each source record associated with the normalized concept that best matches the given search string. Returns :ref:`gene records <gene-record-object>`.
 
 REST endpoints
 --------------
@@ -38,7 +38,7 @@ Each search mode can be accessed directly within Python using the :ref:`query AP
     >>> normalized_response.gene_descriptor.label
     'ERBB2'
 
-Critically, the ``QueryHandler`` class must receive a database interface instance as its first argument. The most straightforward way to construct a database instance, as demonstrated above, is with the ``create_db`` method provided in the :py:mod:`gene.database` module. This method tries to build a database connection based on a number of conditions, which are resolved in the following order:
+Critically, the ``QueryHandler`` class must receive a database interface instance as its first argument. The most straightforward way to construct a database instance, as demonstrated above, is with the :py:meth:`create_db() <gene.database.database.create_db>` method. This method tries to build a database connection based on a number of conditions, which are resolved in the following order:
 
 1) if environment variable ``GENE_NORM_ENV`` is set to a value, or if the ``aws_instance`` method argument is True, try to create a cloud DynamoDB connection
 2) if the ``db_url`` method argument is given a non-None value, try to create a DB connection to that address (if it looks like a PostgreSQL URL, create a PostgreSQL connection, but otherwise try DynamoDB)
@@ -59,6 +59,11 @@ Users hoping for a more explicit connection declaration may instead call a datab
     q = QueryHandler(pg_db)
 
 See the API documentation for the :ref:`database <database_api>`, :ref:`DynamoDB <dynamodb_api>`, and :ref:`PostgreSQL <postgres_api>` modules for more details.
+
+Inputs
+------
+
+Gene symbols and aliases often contain only a handful of characters, raising a non-zero risk that search terms can be ambiguous or conflicting (see :download:`our lab's research on this topic <_static/documents/cgc_2023_poster.pdf>`). As described below, the Gene Normalizer will return the "best available" match where multiple are available, but users are advised to use concept identifiers or current, approved HGNC symbols where available.
 
 Match types
 -----------

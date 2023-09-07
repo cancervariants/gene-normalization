@@ -38,7 +38,7 @@ class Ensembl(Base):
     ) -> None:
         """Initialize Ensembl ETL class.
 
-        :param database: DynamoDB database
+        :param database: gene database for adding new data
         :param host: FTP host name
         :param data_dir: FTP data directory to use
         :param src_data_dir: Data directory for Ensembl

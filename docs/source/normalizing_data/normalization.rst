@@ -11,10 +11,12 @@ Basic information model
 
 Data resources, such as NCBI Gene, HGNC, and Ensembl, provide descriptions of individual genes, which we refer to as *records*. Our normalization routines construct mappings between those records and individual normalized concepts. Those concepts are abstract representations of "true" unique entities that exist on the genome. By combining the normalized concept with its associated source records to produce a *normalized record*, we are able to provide a more comprehensive description of individual genes.
 
+.. _gene-record-object:
+
 The gene record
 ---------------
 
-The `gene.etl` package contains classes for extracting relevant data for each source record. The `gene.schemas.BaseGene` class demonstrates the kinds of information that the ETL methods attempt to acquire from each source:
+The ``gene.etl`` package contains classes for extracting relevant data for each source record. The ``gene.schemas.BaseGene`` class demonstrates the kinds of information that the ETL methods attempt to acquire from each source:
 
 .. autoclass:: gene.schemas.BaseGene
    :members:
@@ -26,12 +28,20 @@ The `gene.etl` package contains classes for extracting relevant data for each so
 Building normalized concepts and records
 ----------------------------------------
 
-Once all source records have been loaded into the database, normalized concept construction proceeds by grouping source records according to cross-references. For example, HGNC identifies Orthodenticle Homeobox 2 Pseudogene 1, or OTX2P1, as ``hgnc:33281``. The HGNC record also contains cross-references to ``ncbigene:100033409`` and ``ensembl:ENSG000000234644``. From this, the Gene Normalizer is able to produce a concept group containing each of these records:
+Once all source records have been loaded into the database, normalized concept construction proceeds by grouping source records according to cross-references. Consider the following records referring to genes OTX2P1 and OTX2P2:
+
+* The NCBI record for OTX2P1, ``ncbigene:100033409``, references HGNC record ``hgnc:33281``
+* The HGNC record for OTX2P1, ``hgnc:33281``, references Ensembl record ``ensembl:ENSG00000234644``
+* The NCBI record for OTX2P2, ``ncbigene:100419816``, references both HGNC record ``hgnc:54560`` and Ensembl record ``ensembl:ENSG00000227134``
+* The HGNC record for OTX2P2, ``hgnc:54560``, references Ensembl record ``ensembl:ENSG00000227134`` and NCBI record ``ncbigene:100419816``
+* The Ensembl record for OTX2P2, ``ensembl:ENSG00000227134``, references HGNC record ``hgnc:54560``
+
+From this, the Gene Normalizer is able to produce twoa concept groups (one for each record), which the following visual makes clear:
 
 .. The detail text in the figure below is invisible in dark mode, because it's just in a generic <p> block. We could probably invest some time into injecting custom SCSS and assigning it the "--color-foreground-primary" value at a later date. Once we're there, it'd be nice to update the colors and background of the figure as well.
 
 .. raw:: html
-   :file: ../_static/html/normalize_otx2p1.html
+   :file: ../_static/html/normalize_example.html
 
 In practice, gene curation by these sources is quite thorough, and most records for well-understood genes in each source contain cross-reference to the corresponding records in the other sources. However, for normalized concept generation, it is sufficient for any record to be included in a normalized concept grouping if there is at least one cross-reference, in either direction, joining it to the rest of the concept group.
 
@@ -44,6 +54,7 @@ After grouping is complete, a concept ID for each normalized concept is selected
 
 Normalized gene records are constructed by merging known data from all associated gene records. For array-like fields (e.g. aliases, cross-references to entries in other data sources), data from all sources are simply combined. For scalar-like fields (e.g. the gene's symbol), the value is selected from an individual source record according to the priority assigned to the source.
 
+.. _normalized-gene-object:
 
 The normalized record
 ---------------------
@@ -180,6 +191,11 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
         },
         {
           "type": "Extension",
+          "name": "strand",
+          "value": "-"
+        },
+        {
+          "type": "Extension",
           "name": "hgnc_locus_type",
           "value": "gene with protein product"
         },
@@ -197,4 +213,3 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
       "gene_id": "hgnc:1097",
       "gene": null
     }
-
