@@ -332,7 +332,7 @@ class HGNC(Base):
             gene["location_annotations"].append(loc)
 
     def _add_meta(self) -> None:
-        """Add Ensembl metadata.
+        """Add HGNC metadata.
 
         :raise GeneNormalizerEtlError: if requisite metadata is unset
         """
