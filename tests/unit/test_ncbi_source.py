@@ -571,6 +571,16 @@ def spg37():
     return Gene(**params)
 
 
+@pytest.fixture(scope="module")
+def source_urls():
+    """Provide source data URLs fixture."""
+    return {
+        "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
+        "history_file": "ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz",
+        "assembly_file": "ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/",
+    }
+
+
 def test_dpf1(check_resp_single_record, ncbi, dpf1):
     """Test that DPF1 normalizes to correct gene concept."""
     # Concept ID
@@ -837,7 +847,7 @@ def test_discontinued_genes(ncbi):
     )
 
 
-def test_no_match(ncbi):
+def test_no_match(ncbi, source_urls):
     """Test that nonexistent query doesn"t normalize to a match."""
     response = ncbi.search("cisplatin")
     assert len(response.records) == 0
@@ -848,7 +858,7 @@ def test_no_match(ncbi):
         == "https://www.ncbi.nlm.nih.gov/home/about/policies/"
     )
     assert datetime.strptime(response.source_meta_.version, "%Y%m%d")
-    assert response.source_meta_.data_url == "ftp://ftp.ncbi.nlm.nih.gov"
+    assert response.source_meta_.data_url == source_urls
     assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
     assert not response.source_meta_.data_license_attributes["non_commercial"]
     assert not response.source_meta_.data_license_attributes["share_alike"]
@@ -885,7 +895,7 @@ def test_no_match(ncbi):
     assert len(response.records) == 0
 
 
-def test_meta(ncbi):
+def test_meta(ncbi, source_urls):
     """Test NCBI source metadata."""
     response = ncbi.search("PDP1")
     assert response.source_meta_.data_license == "custom"
@@ -894,7 +904,7 @@ def test_meta(ncbi):
         == "https://www.ncbi.nlm.nih.gov/home/about/policies/"
     )
     assert datetime.strptime(response.source_meta_.version, "%Y%m%d")
-    assert response.source_meta_.data_url == "ftp://ftp.ncbi.nlm.nih.gov"
+    assert response.source_meta_.data_url == source_urls
     assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
     assert response.source_meta_.genome_assemblies == ["GRCh38.p14"]
     assert response.source_meta_.data_license_attributes == {

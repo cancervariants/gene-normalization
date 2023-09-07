@@ -528,7 +528,7 @@ class PostgresDatabase(AbstractDatabase):
                     meta.data_license,
                     meta.data_license_url,
                     meta.version,
-                    meta.data_url,
+                    json.dumps(meta.data_url),
                     meta.rdp_url,
                     meta.data_license_attributes["non_commercial"],
                     meta.data_license_attributes["attribution"],

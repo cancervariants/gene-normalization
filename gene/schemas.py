@@ -273,7 +273,7 @@ class SourceMeta(BaseModel):
     data_license: StrictStr
     data_license_url: StrictStr
     version: StrictStr
-    data_url: Optional[StrictStr] = None
+    data_url: Dict[StrictStr, StrictStr]  # TODO strictness necessary?
     rdp_url: Optional[StrictStr] = None
     data_license_attributes: Dict[StrictStr, StrictBool]
     genome_assemblies: List[StrictStr] = []
@@ -284,7 +284,11 @@ class SourceMeta(BaseModel):
                 "data_license": "custom",
                 "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",
                 "version": "20201215",
-                "data_url": "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/",
+                "data_url": {
+                    "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
+                    "history_file": "ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz",
+                    "assembly_file": "ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/",
+                },
                 "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                 "data_license_attributes": {
                     "non_commercial": False,
@@ -303,73 +307,7 @@ class SourceSearchMatches(BaseModel):
     records: List[Gene] = []
     source_meta_: SourceMeta
 
-    model_config = ConfigDict(
-        json_schema_extra={
-            "example": {
-                "query": "ensembl:ENSG00000157764",
-                "warnings": [],
-                "source_matches": {
-                    "Ensembl": {
-                        "records": [
-                            {
-                                "concept_id": "ensembl:ENSG00000157764",
-                                "symbol": "BRAF",
-                                "symbol_status": None,
-                                "label": "B-Raf proto-oncogene, serine/threonine kinase",
-                                "strand": "-",
-                                "location_annotations": [],
-                                "locations": [
-                                    {
-                                        "id": "ga4gh:SL.iwWw9B3tkU3TCLF3d8xu4zSQBhpDZfJ6",
-                                        "label": None,
-                                        "extensions": None,
-                                        "type": "SequenceLocation",
-                                        "digest": None,
-                                        "sequenceReference": {
-                                            "id": None,
-                                            "label": None,
-                                            "extensions": None,
-                                            "type": "SequenceReference",
-                                            "digest": None,
-                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
-                                            "residueAlphabet": None,
-                                        },
-                                        "start": 140719326,
-                                        "end": 140924929,
-                                    }
-                                ],
-                                "aliases": [],
-                                "previous_symbols": [],
-                                "xrefs": ["hgnc:1097"],
-                                "associated_with": [],
-                                "gene_type": "protein_coding",
-                                "match_type": 100,
-                            }
-                        ],
-                        "source_meta_": {
-                            "data_license": "custom",
-                            "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",
-                            "version": "110",
-                            "data_url": "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz",
-                            "rdp_url": None,
-                            "data_license_attributes": {
-                                "non_commercial": False,
-                                "attribution": False,
-                                "share_alike": False,
-                            },
-                            "genome_assemblies": ["GRCh38"],
-                        },
-                    }
-                },
-                "service_meta_": {
-                    "name": "gene-normalizer",
-                    "version": "0.3.0-dev0",
-                    "response_datetime": "2023-09-26 15:23:18.837074",
-                    "url": "https://github.com/cancervariants/gene-normalization",
-                },
-            }
-        }
-    )
+    model_config = ConfigDict(json_schema_extra={"example": {}})  # TODO
 
 
 class ServiceMeta(BaseModel):
@@ -402,7 +340,7 @@ class SearchService(BaseModel):
     source_matches: Dict[SourceName, SourceSearchMatches]
     service_meta_: ServiceMeta
 
-    model_config = ConfigDict(json_schema_extra={"example": {}})
+    model_config = ConfigDict(json_schema_extra={})  # TODO
 
 
 class GeneTypeFieldName(str, Enum):
@@ -492,7 +430,9 @@ class NormalizeService(BaseNormalizationService):
                         "data_license": "custom",
                         "data_license_url": "https://www.genenames.org/about/",
                         "version": "20210810",
-                        "data_url": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json",  # noqa: E501
+                        "data_url": {
+                            "complete_set_archive": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
+                        },
                         "rdp_url": None,
                         "data_license_attributes": {
                             "non_commercial": False,
@@ -505,7 +445,9 @@ class NormalizeService(BaseNormalizationService):
                         "data_license": "custom",
                         "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",  # noqa: E501
                         "version": "104",
-                        "data_url": "ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.104.gff3.gz",  # noqa: E501
+                        "data_url": {
+                            "genome_annotations": "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz"
+                        },
                         "rdp_url": None,
                         "data_license_attributes": {
                             "non_commercial": False,
@@ -518,7 +460,11 @@ class NormalizeService(BaseNormalizationService):
                         "data_license": "custom",
                         "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                         "version": "20210813",
-                        "data_url": "ftp://ftp.ncbi.nlm.nih.gov",
+                        "data_url": {
+                            "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
+                            "history_file": "ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz",
+                            "assembly_file": "ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/",
+                        },
                         "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                         "data_license_attributes": {
                             "non_commercial": False,
@@ -611,7 +557,9 @@ class UnmergedNormalizationService(BaseNormalizationService):
                             "data_license": "custom",
                             "data_license_url": "https://www.genenames.org/about/",
                             "version": "20220407",
-                            "data_url": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json",  # noqa: E501
+                            "data_url": {
+                                "complete_set_archive": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
+                            },
                             "rdp_url": None,
                             "data_license_attributes": {
                                 "non_commercial": False,
@@ -653,7 +601,9 @@ class UnmergedNormalizationService(BaseNormalizationService):
                             "data_license": "custom",
                             "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",  # noqa: E501
                             "version": "104",
-                            "data_url": "ftp://ftp.ensembl.org/pub/Homo_sapiens.GRCh38.104.gff3.gz",  # noqa: E501
+                            "data_url": {
+                                "genome_annotations": "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz"
+                            },
                             "rdp_url": None,
                             "data_license_attributes": {
                                 "non_commercial": False,
@@ -703,7 +653,11 @@ class UnmergedNormalizationService(BaseNormalizationService):
                             "data_license": "custom",
                             "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                             "version": "20220407",
-                            "data_url": "ftp://ftp.ncbi.nlm.nih.gov",
+                            "data_url": {
+                                "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
+                                "history_file": "ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz",
+                                "assembly_file": "ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/",
+                            },
                             "rdp_url": "https://reusabledata.org/ncbi-gene.html",
                             "data_license_attributes": {
                                 "non_commercial": False,

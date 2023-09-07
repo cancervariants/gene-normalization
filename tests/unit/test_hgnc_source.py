@@ -815,10 +815,9 @@ def test_meta_info(hgnc):
     assert resp.source_meta_.data_license == "custom"
     assert resp.source_meta_.data_license_url == "https://www.genenames.org/about/"
     assert datetime.strptime(resp.source_meta_.version, "%Y%m%d")
-    assert (
-        resp.source_meta_.data_url
-        == "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
-    )  # noqa: E501
+    assert resp.source_meta_.data_url == {
+        "complete_set_archive": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
+    }
     assert resp.source_meta_.rdp_url is None
     assert resp.source_meta_.genome_assemblies == []
     assert resp.source_meta_.data_license_attributes == {
