@@ -5,7 +5,7 @@ just call like so: ::
     python3 docs/scripts/generate_normalize_figure.py
 
 Embeddable HTML for the normalization figure should be deposited in the correct
-location, at docs/source/_static/html/normalize_her2.html.
+location, within docs/source/_static/html/.
 """
 import json
 from typing import Dict
@@ -23,8 +23,6 @@ COLORS = [
     "#00B9E3",
 ]
 
-GENE = "OTX2P1"
-
 
 def create_gjgf(result: UnmergedNormalizationService) -> Dict:
     """Create gravis input.
@@ -33,7 +31,7 @@ def create_gjgf(result: UnmergedNormalizationService) -> Dict:
     """
     graph = {
         "graph": {
-            "label": f"Reference Network for Search Term '{GENE}'",
+            "label": "tmp",
             "nodes": {},
             "edges": [],
             "metadata": {
@@ -83,17 +81,32 @@ def create_gjgf(result: UnmergedNormalizationService) -> Dict:
 def gen_norm_figure() -> None:
     """Generate normalized graph figure for docs."""
     q = QueryHandler(create_db())
-    result = q.normalize_unmerged(GENE)
 
-    graph = create_gjgf(result)
+    otx2p1 = "OTX2P1"
+    otx2p2 = "OTX2P2"
+
+    otx2p1_result = q.normalize_unmerged(otx2p1)
+    otx2p2_result = q.normalize_unmerged(otx2p2)
+
+    otx2p1_graph = create_gjgf(otx2p1_result)
+    otx2p2_graph = create_gjgf(otx2p2_result)
+
+    nodes = otx2p1_graph["graph"]["nodes"]
+    nodes.update(otx2p2_graph["graph"]["nodes"])
+
+    graph = {
+        "graph": {
+            "label": f"Reference network for {otx2p1} and {otx2p2}",
+            "metadata": otx2p1_graph["graph"]["metadata"],
+            "nodes": nodes,
+            "edges": otx2p1_graph["graph"]["edges"] + otx2p2_graph["graph"]["edges"],
+        }
+    }
 
     fig = gv.d3(
         data=graph,
-        graph_height=200,
+        graph_height=250,
         node_hover_neighborhood=True,
-        use_links_force=True,
-        links_force_distance=0.01,
-        links_force_strength=0.01,
         node_label_font="arial",
     )
     fig.export_html(
@@ -103,8 +116,8 @@ def gen_norm_figure() -> None:
             / "source"
             / "_static"
             / "html"
-            / f"normalize_{GENE.lower()}.html"
-        ).absolute(),  # noqa: E501
+            / "normalize_example.html"
+        ).absolute(),
         overwrite=True,
     )
 
