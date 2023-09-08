@@ -378,7 +378,7 @@ class QueryHandler:
         xrefs = gene_descr.xrefs or []  # type: ignore
         ids = [gene_descr.gene] + xrefs  # type: ignore
         for concept_id in ids:
-            prefix = concept_id.root.split(':')[0]
+            prefix = concept_id.split(':')[0]
             src_name = PREFIX_LOOKUP[prefix.lower()]
             if src_name not in sources_meta:
                 _source_meta = self.db.get_source_metadata(src_name)

@@ -111,9 +111,9 @@ class Ensembl(Base):
         """
         gene = dict()
         if f.strand == "-":
-            gene["strand"] = Strand.REVERSE
+            gene["strand"] = Strand.REVERSE.value
         elif f.strand == "+":
-            gene["strand"] = Strand.FORWARD
+            gene["strand"] = Strand.FORWARD.value
         gene["src_name"] = SourceName.ENSEMBL.value
 
         self._add_attributes(f, gene)

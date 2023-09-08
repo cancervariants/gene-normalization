@@ -15,15 +15,10 @@ def _compare_records(normalized_gene, test_gene, match_type):
     assert normalized_gene.label == test_gene.label
     assert normalized_gene.concept_id == test_gene.concept_id
     assert set(normalized_gene.aliases) == set(test_gene.aliases)
-    set_actual_xrefs = {xref.root for xref in normalized_gene.xrefs}
-    set_test_xrefs = {xref.root for xref in test_gene.xrefs}
-    assert set_actual_xrefs == set_test_xrefs
+    assert set(normalized_gene.xrefs) == set(test_gene.xrefs)
     assert normalized_gene.symbol_status == test_gene.symbol_status
-    assert set(normalized_gene.previous_symbols) == \
-           set(test_gene.previous_symbols)
-    set_actual_aw = {aw.root for aw in normalized_gene.associated_with}
-    set_test_aw = {aw.root for aw in test_gene.associated_with}
-    assert set_actual_aw == set_test_aw
+    assert set(normalized_gene.previous_symbols) == set(test_gene.previous_symbols)
+    assert set(normalized_gene.associated_with) == set(test_gene.associated_with)
     assert normalized_gene.symbol == test_gene.symbol
     assert len(normalized_gene.locations) == len(test_gene.locations)
     for loc in normalized_gene.locations:

@@ -1061,14 +1061,10 @@ def compare_unmerged_record(gene, test_gene):
     assert gene.label == test_gene.label
     assert gene.concept_id == test_gene.concept_id
     assert set(gene.aliases) == set(test_gene.aliases)
-    set_actual_xrefs = {xref.root for xref in gene.xrefs}
-    set_test_xrefs = {xref.root for xref in test_gene.xrefs}
-    assert set_actual_xrefs == set_test_xrefs
+    assert set(gene.xrefs) == set(test_gene.xrefs)
     assert gene.symbol_status == test_gene.symbol_status
     assert set(gene.previous_symbols) == set(test_gene.previous_symbols)
-    set_actual_aw = {aw.root for aw in gene.associated_with}
-    set_test_aw = {aw.root for aw in test_gene.associated_with}
-    assert set_actual_aw == set_test_aw
+    assert set(gene.associated_with) == set(test_gene.associated_with)
     assert gene.symbol == test_gene.symbol
     assert len(gene.locations) == len(test_gene.locations)
     for loc in gene.locations:
@@ -1092,7 +1088,7 @@ def compare_unmerged_response(actual, query, warnings, match_type, fixture):
             fixture_gene = None
             # get corresponding fixture record
             for gene in fixture["source_matches"][source.value]["records"]:
-                if gene["concept_id"] == concept_id.root:
+                if gene["concept_id"] == concept_id:
                     fixture_gene = BaseGene(**gene)
                     break
             assert fixture_gene, f"Unable to find fixture for {concept_id}"
@@ -1111,12 +1107,10 @@ def compare_gene_descriptor(test, actual):
     """Test that actual and expected gene descriptors match."""
     assert actual.id == test.id
     assert actual.type == test.type
-    assert actual.gene.root == test.gene.root
+    assert actual.gene == test.gene
     assert actual.label == test.label
     if actual.xrefs or test.xrefs:
-        set_actual_xrefs = {xref.root for xref in actual.xrefs}
-        set_test_xrefs = {xref.root for xref in test.xrefs}
-        assert set_actual_xrefs == set_test_xrefs, "xrefs"
+        assert set(actual.xrefs) == set(test.xrefs), "xrefs"
     assert set(actual.alternate_labels) == set(test.alternate_labels), "alt labels"
     extensions_present = "extensions" in test.model_fields.keys()
     assert ("extensions" in actual.model_fields.keys()) == extensions_present

@@ -5,6 +5,7 @@ from typing import Literal, List, Optional, Dict, Union, Any
 from enum import Enum, IntEnum
 
 from pydantic import (
+    constr,
     BaseModel,
     StrictBool,
     field_validator,
@@ -17,30 +18,7 @@ from ga4gh.vrs import models
 from gene.version import __version__
 
 
-def return_value(cls, v):
-    """Return value from object.
-
-    :param ModelMetaclass cls: Pydantic Model ModelMetaclass
-    :param v: Model
-    :return: Value
-    """
-    if v:
-        try:
-            if hasattr(v, "__root__"):
-                v = return_value(cls, v.__root__)
-            elif isinstance(v, list):
-                tmp = list()
-                for item in v:
-                    while True:
-                        try:
-                            item = item.__root__
-                        except AttributeError:
-                            break
-                    tmp.append(item)
-                v = tmp
-        except AttributeError:
-            pass
-    return v
+CURIE = constr(pattern=r"^\w[^:]*:.+$")
 
 
 class Extension(BaseModel):
@@ -61,10 +39,8 @@ class GeneValueObject(BaseModel):
     RECOMMENDED.
     """
 
-    id: models.IRI
+    id: CURIE
     type: Literal["Gene"] = "Gene"
-
-    _get_id_val = field_validator("id")(return_value)
 
 
 class GeneDescriptor(BaseModel, extra="forbid"):
@@ -72,22 +48,19 @@ class GeneDescriptor(BaseModel, extra="forbid"):
 
     id: Optional[StrictStr] = None
     type: Literal["GeneDescriptor"] = "GeneDescriptor"
-    gene: Union[models.IRI, GeneValueObject]
+    gene: Union[CURIE, GeneValueObject]
     label: Optional[StrictStr] = None
     description: Optional[StrictStr] = None
-    xrefs: List[models.IRI] = []
+    xrefs: List[CURIE] = []
     alternate_labels: List[StrictStr] = []
     extensions: List[Extension] = []
-
-    _get_gene_val = field_validator("gene")(return_value)
-    _get_xrefs_val = field_validator("xrefs")(return_value)
 
     @field_validator("xrefs")
     def check_count_value(cls, v):
         """Check xrefs value"""
         if v:
             assert len(v) == len(
-                {xref.root for xref in v}
+                {xref for xref in v}
             ), "xrefs must contain unique items"  # noqa: E501
         return v
 
@@ -143,7 +116,7 @@ class GeneSequenceLocation(BaseModel):
     type: Literal["SequenceLocation"] = "SequenceLocation"
     start: StrictInt
     end: StrictInt
-    sequence_id: models.IRI
+    sequence_id: constr(pattern=r"^ga4gh:SQ.[0-9A-Za-z_\-]{32}$")  # noqa: F722
 
 
 # class GeneChromosomeLocation(BaseModel):
@@ -161,7 +134,7 @@ class BaseGene(BaseModel):
     /search and /normalize_unmerged.
     """
 
-    concept_id: models.IRI
+    concept_id: CURIE
     symbol: StrictStr
     symbol_status: Optional[SymbolStatus] = None
     label: Optional[StrictStr] = None
@@ -175,13 +148,9 @@ class BaseGene(BaseModel):
     ] = []
     aliases: List[StrictStr] = []
     previous_symbols: List[StrictStr] = []
-    xrefs: List[models.IRI] = []
-    associated_with: List[models.IRI] = []
+    xrefs: List[CURIE] = []
+    associated_with: List[CURIE] = []
     gene_type: Optional[StrictStr] = None
-
-    _get_concept_id_val = field_validator("concept_id")(return_value)
-    _get_xrefs_val = field_validator("xrefs")(return_value)
-    _get_associated_with_val = field_validator("associated_with")(return_value)
 
 
 class Gene(BaseGene):
@@ -619,7 +588,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
     attributes.
     """
 
-    normalized_concept_id: Optional[models.IRI] = None
+    normalized_concept_id: Optional[CURIE] = None
     source_matches: Dict[SourceName, MatchesNormalized]
 
     model_config = ConfigDict(
