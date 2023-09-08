@@ -215,34 +215,32 @@ class Base(ABC):
     #             return chr_location
     #     return None
 
-    def _get_seq_id_aliases(self, sr: SeqRepo, seq_id: str) -> List[str]:
+    def _get_seq_id_aliases(self, seq_id: str) -> List[str]:
         """Get GA4GH aliases for a sequence id
 
-        :param sr: seqrepo instance
         :param seq_id: Sequence ID accession
         :return: List of aliases for seqid
         """
         aliases = []
         try:
-            aliases = sr.translate_alias(seq_id, target_namespaces="ga4gh")
+            aliases = self.seqrepo.translate_alias(seq_id, target_namespaces="ga4gh")
         except KeyError as e:
             logger.warning(f"SeqRepo raised KeyError: {e}")
         return aliases
 
     def _get_sequence_location(
-        self, seq_id: str, gene: Feature, params: Dict, sr: SeqRepo
+        self, seq_id: str, gene: Feature, params: Dict
     ) -> Dict:
         """Get a gene's GeneSequenceLocation.
 
         :param seq_id: The sequence ID.
         :param gene: A gene from the source file.
         :param params: The transformed gene record.
-        :param sr: Access to the SeqRepo
         :return: A dictionary of a GA4GH VRS SequenceLocation, if seq_id alias found.
             Else, empty dictionary
         """
         location = {}
-        aliases = self._get_seq_id_aliases(sr, seq_id)
+        aliases = self._get_seq_id_aliases(seq_id)
         if not aliases:
             return location
 
@@ -256,6 +254,6 @@ class Base(ABC):
                     sequence_id=sequence
                 ).model_dump()  # type: ignore
             else:
-                logger.info(f"{params['concept_id']} has invalid interval:"
-                            f"start={gene.start - 1} end={gene.end}")  # type: ignore
+                logger.warning(f"{params['concept_id']} has invalid interval:"
+                               f"start={gene.start - 1} end={gene.end}")  # type: ignore
         return location

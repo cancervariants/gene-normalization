@@ -4,7 +4,6 @@ from pathlib import Path
 import re
 from ftplib import FTP
 from typing import Dict, List
-from biocommons.seqrepo import SeqRepo
 
 import gffutils
 from gffutils.feature import Feature
@@ -93,17 +92,15 @@ class Ensembl(Base):
             if f.attributes.get("ID"):
                 f_id = f.attributes.get("ID")[0].split(":")[0]
                 if f_id == "gene":
-                    gene = \
-                        self._add_gene(f, self.seqrepo, accession_numbers)
+                    gene = self._add_gene(f, accession_numbers)
                     if gene:
                         self._load_gene(gene)
         logger.info("Successfully transformed Ensembl.")
 
-    def _add_gene(self, f: Feature, sr: SeqRepo, accession_numbers: Dict) -> Dict:
+    def _add_gene(self, f: Feature, accession_numbers: Dict) -> Dict:
         """Create a transformed gene record.
 
         :param f: A gene from the data
-        :param sr: Access to the seqrepo
         :param accession_numbers: Accession numbers for each chromosome and scaffold
         :return: A gene dictionary containing data if the ID attribute exists.
         """
@@ -115,7 +112,7 @@ class Ensembl(Base):
         gene["src_name"] = SourceName.ENSEMBL.value
 
         self._add_attributes(f, gene)
-        location = self._add_location(f, gene, sr, accession_numbers)
+        location = self._add_location(f, gene, accession_numbers)
         if location:
             gene["locations"] = [location]
 
@@ -169,18 +166,17 @@ class Ensembl(Base):
                 gene[attributes[key]] = val
 
     def _add_location(
-        self, f: Feature, gene: Dict, sr: SeqRepo, accession_numbers: Dict
+        self, f: Feature, gene: Dict, accession_numbers: Dict
     ) -> Dict:
         """Add GA4GH SequenceLocation to a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
 
         :param f: A gene from the data
         :param gene: A transformed gene record
-        :param sr: Access to the seqrepo
         :param accession_numbers: Accession numbers for each chromosome and scaffold
         :return: gene record dictionary with location added
         """
-        return self._get_sequence_location(accession_numbers[f.seqid], f, gene, sr)
+        return self._get_sequence_location(accession_numbers[f.seqid], f, gene)
 
     def _get_xref_associated_with(self, src_name: str, src_id: str) -> Dict:
         """Get xref or associated_with concept.

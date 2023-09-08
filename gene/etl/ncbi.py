@@ -6,7 +6,6 @@ import csv
 from datetime import datetime
 import re
 from typing import Dict, List, Optional
-from biocommons.seqrepo import SeqRepo
 
 import gffutils
 
@@ -248,13 +247,12 @@ class NCBI(Base):
         return info_genes
 
     def _get_gene_gff(
-        self, db: gffutils.FeatureDB, info_genes: Dict, sr: SeqRepo
+        self, db: gffutils.FeatureDB, info_genes: Dict
     ) -> None:
         """Store genes from NCBI gff file.
 
         :param db: GFF database
         :param info_genes: A dictionary of gene's from the NCBI info file.
-        :param sr: Access to the seqrepo
         """
         for f in db.all_features():
             if f.attributes.get('ID'):
@@ -265,29 +263,28 @@ class NCBI(Base):
                         # Just need to add SequenceLocation
                         params = info_genes.get(symbol)
                         vrs_sq_location = \
-                            self._get_vrs_sq_location(db, sr, params, f_id)
+                            self._get_vrs_sq_location(db, params, f_id)
                         if vrs_sq_location:
                             params['locations'].append(vrs_sq_location)  # type: ignore
                     else:
                         # Need to add entire gene
-                        gene = self._add_gff_gene(db, f, sr, f_id)
+                        gene = self._add_gff_gene(db, f, f_id)
                         info_genes[gene['symbol']] = gene
 
     def _add_gff_gene(
-        self, db: gffutils.FeatureDB, f: gffutils.Feature, sr: SeqRepo, f_id: str
+        self, db: gffutils.FeatureDB, f: gffutils.Feature, f_id: str
     ) -> Optional[Dict]:
         """Create a transformed gene recor from NCBI gff file.
 
         :param db: GFF database
         :param f: A gene from the gff data file
-        :param sr: Access to the seqrepo
         :param f_id: The feature's ID
         :return: A gene dictionary if the ID attribute exists. Else return None.
         """
         params = dict()
         params['src_name'] = SourceName.NCBI.value
         self._add_attributes(f, params)
-        sq_loc = self._get_vrs_sq_location(db, sr, params, f_id)
+        sq_loc = self._get_vrs_sq_location(db, params, f_id)
         if sq_loc:
             params['locations'] = [sq_loc]
         else:
@@ -318,20 +315,19 @@ class NCBI(Base):
                     gene['symbol'] = val
 
     def _get_vrs_sq_location(
-        self, db: gffutils.FeatureDB, sr: SeqRepo, params: Dict, f_id: str
+        self, db: gffutils.FeatureDB, params: Dict, f_id: str
     ) -> Dict:
         """Store GA4GH VRS SequenceLocation in a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
 
         :param db: GFF database
-        :param sr: Access to the seqrepo
         :param params: A transformed gene record
         :param f_id: The feature's ID
         :return: A GA4GH VRS SequenceLocation
         """
         gene = db[f_id]
         params['strand'] = gene.strand
-        return self._get_sequence_location(gene.seqid, gene, params, sr)
+        return self._get_sequence_location(gene.seqid, gene, params)
 
     def _get_xref_associated_with(self, src_name: str, src_id: str) -> Dict:
         """Get xref or associated_with ref.
@@ -537,7 +533,7 @@ class NCBI(Base):
                                 merge_strategy="create_unique",
                                 keep_order=True)
 
-        self._get_gene_gff(db, info_genes, self.seqrepo)
+        self._get_gene_gff(db, info_genes)
 
         for gene in info_genes.keys():
             self._load_gene(info_genes[gene])

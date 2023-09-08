@@ -55,10 +55,9 @@ def processed_ids():
     return list()
 
 
-def _get_aliases(sr, seqid):
+def _get_aliases(seqid):
     """Monkey patch get aliases method
 
-    :param SeqRepo sr: seqrepo instance
     :param str seqid: Sequence ID accession
     :return: List of aliases for seqid
     """
