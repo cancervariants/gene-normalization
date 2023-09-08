@@ -11,7 +11,6 @@ from gene.database import AbstractDatabase
 from gene.schemas import SourceName, SymbolStatus, NamespacePrefix, \
     SourceMeta, Annotation, Chromosome
 from gene.etl.base import Base
-from gene.etl.vrs_locations import ChromosomeLocation
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -36,7 +35,6 @@ class HGNC(Base):
         :param fn: Data file to download
         """
         super().__init__(database, host, data_dir, src_data_dir)
-        self._chromosome_location = ChromosomeLocation()
         self._data_url = f"ftp://{host}/{data_dir}{fn}"
         self._fn = fn
         self._version = None
@@ -213,7 +211,7 @@ class HGNC(Base):
                 else:
                     location = dict()
                     self._set_location(loc, location, gene)
-                    # chr_location = self._chromosome_location.get_location(location, gene)  # noqa: E501
+                    # chr_location = self._get_chromosome_location(location, gene)
                     # if chr_location:
                     #     location_list.append(chr_location)
 
@@ -258,7 +256,7 @@ class HGNC(Base):
 
             if '-' in loc:
                 # Location gives both start and end
-                self._chromosome_location.set_interval_range(loc, arm_ix, location)
+                self._set_cl_interval_range(loc, arm_ix, location)
             else:
                 # Location only gives start
                 start = loc[arm_ix:]

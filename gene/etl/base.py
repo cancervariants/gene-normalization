@@ -1,9 +1,7 @@
 """A base class for extraction, transformation, and loading of data."""
+import re
 from abc import ABC, abstractmethod
 from typing import Dict, Optional, List
-from gene.database import AbstractDatabase
-from gene import ITEM_TYPES, SEQREPO_ROOT_DIR
-from biocommons.seqrepo import SeqRepo
 from pathlib import Path
 from ftplib import FTP
 import gzip
@@ -12,8 +10,14 @@ from os import remove
 from dateutil import parser
 import datetime
 import logging
+
+from gffutils.feature import Feature
+from biocommons.seqrepo import SeqRepo
 import pydantic
-from gene.schemas import Gene, MatchType, SourceName
+
+from gene.database import AbstractDatabase
+from gene import ITEM_TYPES, SEQREPO_ROOT_DIR
+from gene.schemas import Gene, MatchType, SourceName, GeneSequenceLocation
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -150,3 +154,106 @@ class Base(ABC):
         if not Path(seqrepo_dir).exists():
             raise NotADirectoryError(f"Could not find {seqrepo_dir}")
         return SeqRepo(seqrepo_dir)
+
+    def _set_cl_interval_range(self, loc: str, arm_ix: int, location: Dict) -> None:
+        """Set the Chromosome location interval range.
+
+        :param loc: A gene location
+        :param arm_ix: The index of the q or p arm for a given location
+        :param location: VRS chromosome location. This will be mutated.
+        """
+        range_ix = re.search("-", loc).start()  # type: ignore
+
+        start = loc[arm_ix:range_ix]
+        start_arm_ix = re.search("[pq]", start).start()  # type: ignore
+        start_arm = start[start_arm_ix]
+
+        end = loc[range_ix + 1:]
+        end_arm_match = re.search("[pq]", end)
+
+        if not end_arm_match:
+            # Does not specify the arm, so use the same as start"s
+            end = f"{start[0]}{end}"
+            end_arm_match = re.search("[pq]", end)
+
+        end_arm_ix = end_arm_match.start()  # type: ignore
+        end_arm = end[end_arm_ix]
+
+        if (start_arm == end_arm and start > end) or \
+                (start_arm != end_arm and start_arm == "p" and end_arm == "q"):
+            location["start"] = start
+            location["end"] = end
+        elif (start_arm == end_arm and start < end) or \
+                (start_arm != end_arm and start_arm == "q" and end_arm == "p"):
+            location["start"] = end
+            location["end"] = start
+
+    # Add back once VRS Chromosome Location is supported in 2.0-alpha
+    # def _get_chromosome_location(self, location: Dict, gene: Dict) -> Optional[Dict]:
+    #     """Transform a gene's location into a GeneChromosomeLocation.
+
+    #     :param location: A gene's location.
+    #     :param gene: A transformed gene record.
+    #     :return: If location is a valid VRS ChromosomeLocation, return a dictionary
+    #         containing the ChromosomeLocation. Else, return None.
+    #     """
+    #     if "chr" in location and "start" in location and "end" in location:
+    #         if location["start"] == "p" and location["end"] == "p":
+    #             location["start"] = "pter"
+    #             location["end"] = "cen"
+    #         elif location["start"] == "q" and location["end"] == "q":
+    #             location["start"] = "cen"
+    #             location["end"] = "qter"
+    #         try:
+    #             chr_location = GeneChromosomeLocation(
+    #                 chr=location["chr"],
+    #                 start=location["start"],
+    #                 end=location["end"]).model_dump()
+    #         except ValidationError as e:
+    #             logger.info(f"{e} for {gene['symbol']}")
+    #         else:
+    #             return chr_location
+    #     return None
+
+    def _get_seq_id_aliases(self, seq_id: str) -> List[str]:
+        """Get GA4GH aliases for a sequence id
+
+        :param seq_id: Sequence ID accession
+        :return: List of aliases for seqid
+        """
+        aliases = []
+        try:
+            aliases = self.seqrepo.translate_alias(seq_id, target_namespaces="ga4gh")
+        except KeyError as e:
+            logger.warning(f"SeqRepo raised KeyError: {e}")
+        return aliases
+
+    def _get_sequence_location(
+        self, seq_id: str, gene: Feature, params: Dict
+    ) -> Dict:
+        """Get a gene's GeneSequenceLocation.
+
+        :param seq_id: The sequence ID.
+        :param gene: A gene from the source file.
+        :param params: The transformed gene record.
+        :return: A dictionary of a GA4GH VRS SequenceLocation, if seq_id alias found.
+            Else, empty dictionary
+        """
+        location = {}
+        aliases = self._get_seq_id_aliases(seq_id)
+        if not aliases:
+            return location
+
+        sequence = aliases[0]
+
+        if gene.start != "." and gene.end != "." and sequence:
+            if 0 <= gene.start <= gene.end:  # type: ignore
+                location = GeneSequenceLocation(
+                    start=gene.start - 1,  # type: ignore
+                    end=gene.end,  # type: ignore
+                    sequence_id=sequence
+                ).model_dump()  # type: ignore
+            else:
+                logger.warning(f"{params['concept_id']} has invalid interval:"
+                               f"start={gene.start - 1} end={gene.end}")  # type: ignore
+        return location

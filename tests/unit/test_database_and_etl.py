@@ -55,10 +55,9 @@ def processed_ids():
     return list()
 
 
-def _get_aliases(sr, seqid):
+def _get_aliases(seqid):
     """Monkey patch get aliases method
 
-    :param SeqRepo sr: seqrepo instance
     :param str seqid: Sequence ID accession
     :return: List of aliases for seqid
     """
@@ -103,7 +102,7 @@ def test_ensembl_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path)
     e._extract_data()
     shutil.rmtree(e.src_data_dir)
 
-    e._sequence_location.get_aliases = _get_aliases
+    e._get_seq_id_aliases = _get_aliases
     e._data_src = etl_data_path / 'ensembl_110.gff3'
     e._add_meta()
     e._transform_data()
@@ -142,7 +141,7 @@ def test_ncbi_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     n._extract_data()
     shutil.rmtree(n.src_data_dir)
 
-    n._sequence_location.get_aliases = _get_aliases
+    n._get_seq_id_aliases = _get_aliases
     n._info_src = etl_data_path / 'ncbi_info_20210813.tsv'
     n._history_src = etl_data_path / 'ncbi_history_20210813.tsv'
     n._gff_src = etl_data_path / 'ncbi_GRCh38.p14.gff'

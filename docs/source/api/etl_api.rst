@@ -46,19 +46,3 @@ Normalized Records
     :special-members: __init__
     :undoc-members:
     :show-inheritance:
-
-Chromosome Location
--------------------------------
-
-.. autoclass:: gene.etl.vrs_locations.chromosome_location.ChromosomeLocation
-    :members:
-    :special-members: __init__
-    :undoc-members:
-
-Sequence Location
------------------------------
-
-.. autoclass:: gene.etl.vrs_locations.sequence_location.SequenceLocation
-    :members:
-    :special-members: __init__
-    :undoc-members:
