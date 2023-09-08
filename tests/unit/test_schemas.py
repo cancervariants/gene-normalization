@@ -63,12 +63,12 @@ def test_gene(gene, sequence_location):
     )
 
     # id not a valid curie
-    # with pytest.raises(pydantic.ValidationError):
-    #     Gene(
-    #         match_type=100,
-    #         concept_id='hgnc1096',
-    #         symbol='BRAF'
-    #     )
+    with pytest.raises(pydantic.ValidationError):
+        Gene(
+            match_type=100,
+            concept_id='hgnc1096',
+            symbol='BRAF'
+        )
 
     # symbol not a str
     with pytest.raises(pydantic.ValidationError):
@@ -88,22 +88,22 @@ def test_gene(gene, sequence_location):
         )
 
     # xrefs not a valid curie
-    # with pytest.raises(pydantic.ValidationError):
-    #     Gene(
-    #         match_type=100,
-    #         concept_id='hgnc:1096',
-    #         symbol='BRAF',
-    #         xrefs=['hgnc', 'hgnc:1']
-    #     )
+    with pytest.raises(pydantic.ValidationError):
+        Gene(
+            match_type=100,
+            concept_id='hgnc:1096',
+            symbol='BRAF',
+            xrefs=['hgnc', 'hgnc:1']
+        )
 
     # associated_with not a valid curie
-    # with pytest.raises(pydantic.ValidationError):
-    #     Gene(
-    #         match_type=100,
-    #         concept_id='hgnc:1096',
-    #         symbol='BRAF',
-    #         associated_with=['hgnc', 'hgnc:1']
-    #     )
+    with pytest.raises(pydantic.ValidationError):
+        Gene(
+            match_type=100,
+            concept_id='hgnc:1096',
+            symbol='BRAF',
+            associated_with=['hgnc', 'hgnc:1']
+        )
 
     # symbol status invalid
     with pytest.raises(pydantic.ValidationError):

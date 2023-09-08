@@ -12,7 +12,7 @@ def check_ncbi_discontinued_gene(normalizer_response, concept_id, symbol, match_
     assert len(normalizer_response.records) == 1
     resp = normalizer_response.records[0]
     assert resp.match_type == match_type
-    assert resp.concept_id.root == concept_id
+    assert resp.concept_id == concept_id
     assert resp.symbol == symbol
     assert resp.symbol_status == SymbolStatus.DISCONTINUED
     assert resp.label is None
