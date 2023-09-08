@@ -3,7 +3,6 @@ import pytest
 from gene.schemas import Gene, MatchType, SourceName
 from gene.query import QueryHandler
 from datetime import datetime
-from tests.conftest import check_resp_single_record
 
 
 @pytest.fixture(scope="module")
@@ -15,7 +14,7 @@ def hgnc(database):
 
         def search(self, query_str, incl="hgnc"):
             resp = self.query_handler.search(query_str, keyed=True, incl=incl)
-            return resp.source_matches[SourceName.HGNC.value]
+            return resp.source_matches[SourceName.HGNC]
 
     h = QueryGetter()
     return h
@@ -35,14 +34,14 @@ def a1bg_as1():
         "location_annotations": [],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.Rz-M5wA0_bIhQYLKi2ZPqlqW3nBPfAx5",
-                "chr": "19",
-                "end": "q13.43",
-                "start": "q13.43",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.Rz-M5wA0_bIhQYLKi2ZPqlqW3nBPfAx5",
+            #     "chr": "19",
+            #     "end": "q13.43",
+            #     "start": "q13.43",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "previous_symbols": [
             "NCRNA00181",
@@ -79,14 +78,14 @@ def tp53():
         "location_annotations": [],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.BPk3okUhv4BBatjkyC7eQQsyXL6YwmeF",
-                "chr": "17",
-                "end": "p13.1",
-                "start": "p13.1",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.BPk3okUhv4BBatjkyC7eQQsyXL6YwmeF",
+            #     "chr": "17",
+            #     "end": "p13.1",
+            #     "start": "p13.1",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "previous_symbols": [],
         "aliases": [
@@ -139,14 +138,14 @@ def a3galt2():
         "location_annotations": [],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.iiwv6oaDfVVkjMZ_OH6XEQmM0daVft4u",
-                "chr": "1",
-                "end": "p35.1",
-                "start": "p35.1",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.iiwv6oaDfVVkjMZ_OH6XEQmM0daVft4u",
+            #     "chr": "1",
+            #     "end": "p35.1",
+            #     "start": "p35.1",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "previous_symbols": [
             "A3GALT2P"
@@ -187,14 +186,14 @@ def wdhd1():
         "location_annotations": [],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.sNe5mpPbxivH2KE6HdaDA3U29BkCQXc3",
-                "chr": "14",
-                "end": "q22.2",
-                "start": "q22.3",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.sNe5mpPbxivH2KE6HdaDA3U29BkCQXc3",
+            #     "chr": "14",
+            #     "end": "q22.2",
+            #     "start": "q22.3",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "previous_symbols": [],
         "aliases": [
@@ -296,14 +295,14 @@ def gage4():
         ],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.6KzwrFm2WeSXqwIIiNbAu-pKQQHt2q5Q",
-                "chr": "X",
-                "end": "p11.2",
-                "start": "p11.4",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.6KzwrFm2WeSXqwIIiNbAu-pKQQHt2q5Q",
+            #     "chr": "X",
+            #     "end": "p11.2",
+            #     "start": "p11.4",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "previous_symbols": [],
         "aliases": [
@@ -401,14 +400,14 @@ def cecr():
         "location_annotations": [],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.AgASk5sB6LCeaB6rcqOwmrm16ise3pof",
-                "chr": "22",
-                "end": "q11",
-                "start": "pter",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.AgASk5sB6LCeaB6rcqOwmrm16ise3pof",
+            #     "chr": "22",
+            #     "end": "q11",
+            #     "start": "pter",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "previous_symbols": [],
         "aliases": [
@@ -434,22 +433,22 @@ def csf2ra():
         "location_annotations": [],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.cITg67iNn_QNZTKpJd0I-1JMMhW_yHGU",
-                "chr": "X",
-                "end": "p22.32",
-                "start": "p22.32",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            },
-            {
-                "id": "ga4gh:CL.2uc0CuKSdD7pkb4jKUqg2eusTXro99wM",
-                "chr": "Y",
-                "end": "p11.3",
-                "start": "p11.3",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.cITg67iNn_QNZTKpJd0I-1JMMhW_yHGU",
+            #     "chr": "X",
+            #     "end": "p22.32",
+            #     "start": "p22.32",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # },
+            # {
+            #     "id": "ga4gh:CL.2uc0CuKSdD7pkb4jKUqg2eusTXro99wM",
+            #     "chr": "Y",
+            #     "end": "p11.3",
+            #     "start": "p11.3",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "previous_symbols": [
             "CSF2R"
@@ -498,14 +497,14 @@ def rps24p5():
         "location_annotations": [],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.Ri0ddtMpe6DGzrC9_QGbL35gYAtU2bh_",
-                "chr": "1",
-                "end": "q41",
-                "start": "p36.13",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.Ri0ddtMpe6DGzrC9_QGbL35gYAtU2bh_",
+            #     "chr": "1",
+            #     "end": "q41",
+            #     "start": "p36.13",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "previous_symbols": [
         ],
@@ -535,14 +534,14 @@ def trl_cag2_1():
         "location_annotations": [],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.aZ5aYHaC3GhDWgwhKkAcd9GBvkEo034v",
-                "chr": "16",
-                "end": "q13",
-                "start": "q21",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.aZ5aYHaC3GhDWgwhKkAcd9GBvkEo034v",
+            #     "chr": "16",
+            #     "end": "q13",
+            #     "start": "q21",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "previous_symbols": [
             "TRNAL13"
@@ -573,14 +572,14 @@ def myo5b():
         "location_annotations": [],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.hFukVqPVLD70cshAz1Gtmd6EC1imobpO",
-                "chr": "18",
-                "end": "qter",
-                "start": "cen",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.hFukVqPVLD70cshAz1Gtmd6EC1imobpO",
+            #     "chr": "18",
+            #     "end": "qter",
+            #     "start": "cen",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "previous_symbols": [],
         "aliases": [
@@ -622,14 +621,14 @@ def gstt1():
         "location_annotations": ["alternate reference locus"],
         "strand": None,
         "locations": [
-            {
-                "id": "ga4gh:CL.g74mxFvAzPoenOlyMjY32j-UFMvjjas_",
-                "chr": "22",
-                "end": "q11.23",
-                "start": "q11.23",
-                "species_id": "taxonomy:9606",
-                "type": "ChromosomeLocation"
-            }
+            # {
+            #     "id": "ga4gh:CL.g74mxFvAzPoenOlyMjY32j-UFMvjjas_",
+            #     "chr": "22",
+            #     "end": "q11.23",
+            #     "start": "q11.23",
+            #     "species_id": "taxonomy:9606",
+            #     "type": "ChromosomeLocation"
+            # }
         ],
         "previous_symbols": [],
         "aliases": ["2.5.1.18"],
@@ -652,7 +651,7 @@ def gstt1():
     return Gene(**params)
 
 
-def test_a1bg_as1(a1bg_as1, hgnc):
+def test_a1bg_as1(check_resp_single_record, a1bg_as1, hgnc):
     """Test that a1bg_as1 normalizes to correct gene concept."""
     # Concept ID
     resp = hgnc.search("hgnc:37133")
@@ -689,7 +688,7 @@ def test_a1bg_as1(a1bg_as1, hgnc):
     check_resp_single_record(resp, a1bg_as1, MatchType.ALIAS)
 
 
-def test_a3galt2(a3galt2, hgnc):
+def test_a3galt2(check_resp_single_record, a3galt2, hgnc):
     """Test that a3galt2 normalizes to correct gene concept."""
     # Concept ID
     resp = hgnc.search("hgnc:30005")
@@ -723,7 +722,7 @@ def test_a3galt2(a3galt2, hgnc):
     check_resp_single_record(resp, a3galt2, MatchType.ALIAS)
 
 
-def test_tp53(tp53, hgnc):
+def test_tp53(check_resp_single_record, tp53, hgnc):
     """Test that tp53 normalizes to correct gene concept."""
     # Concept ID
     resp = hgnc.search("hgnc:11998")
@@ -750,7 +749,7 @@ def test_tp53(tp53, hgnc):
     check_resp_single_record(resp, tp53, MatchType.ALIAS)
 
 
-def test_wdhd1(wdhd1, hgnc):
+def test_wdhd1(check_resp_single_record, wdhd1, hgnc):
     """Test that a1bg_as1 normalizes to correct gene concept."""
     # Concept ID
     resp = hgnc.search("hgnc:23170")
@@ -761,7 +760,7 @@ def test_wdhd1(wdhd1, hgnc):
     check_resp_single_record(resp, wdhd1, MatchType.SYMBOL)
 
 
-def test_g6pr(g6pr, hgnc):
+def test_g6pr(check_resp_single_record, g6pr, hgnc):
     """Test that g6pr normalizes to correct gene concept."""
     # Concept ID
     resp = hgnc.search("hgnc:4059")
@@ -772,7 +771,7 @@ def test_g6pr(g6pr, hgnc):
     check_resp_single_record(resp, g6pr, MatchType.SYMBOL)
 
 
-def test_pirc24(pirc24, hgnc):
+def test_pirc24(check_resp_single_record, pirc24, hgnc):
     """Test that pirc24 normalizes to correct gene concept."""
     # Concept ID
     resp = hgnc.search("hgnc:37528")
@@ -783,7 +782,7 @@ def test_pirc24(pirc24, hgnc):
     check_resp_single_record(resp, pirc24, MatchType.SYMBOL)
 
 
-def test_gage4(gage4, hgnc):
+def test_gage4(check_resp_single_record, gage4, hgnc):
     """Test that gage4 normalizes to correct gene concept."""
     # Concept ID
     resp = hgnc.search("hgnc:4101")
@@ -794,7 +793,7 @@ def test_gage4(gage4, hgnc):
     check_resp_single_record(resp, gage4, MatchType.SYMBOL)
 
 
-def test_mafip(mafip, hgnc):
+def test_mafip(check_resp_single_record, mafip, hgnc):
     """Test that mafip normalizes to correct gene concept."""
     # Concept ID
     resp = hgnc.search("hgnc:31102")
@@ -805,7 +804,7 @@ def test_mafip(mafip, hgnc):
     check_resp_single_record(resp, mafip, MatchType.SYMBOL)
 
 
-def test_mt_7sdna(mt_7sdna, hgnc):
+def test_mt_7sdna(check_resp_single_record, mt_7sdna, hgnc):
     """Test that mt_7sdna normalizes to correct gene concept."""
     # Concept ID
     resp = hgnc.search("hgnc:7409")
@@ -816,7 +815,7 @@ def test_mt_7sdna(mt_7sdna, hgnc):
     check_resp_single_record(resp, mt_7sdna, MatchType.SYMBOL)
 
 
-def test_cecr(cecr, hgnc):
+def test_cecr(check_resp_single_record, cecr, hgnc):
     """Test that cecr normalizes to correct gene concept."""
     # Concept ID
     resp = hgnc.search("hgnc:1838")
@@ -827,7 +826,7 @@ def test_cecr(cecr, hgnc):
     check_resp_single_record(resp, cecr, MatchType.SYMBOL)
 
 
-def test_csf2ra(csf2ra, hgnc):
+def test_csf2ra(check_resp_single_record, csf2ra, hgnc):
     """Test that csf2ra normalizes to correct gene concept."""
     # Concept ID
     resp = hgnc.search("hgnc:2435")
@@ -838,7 +837,7 @@ def test_csf2ra(csf2ra, hgnc):
     check_resp_single_record(resp, csf2ra, MatchType.SYMBOL)
 
 
-def test_rps24p5(rps24p5, hgnc):
+def test_rps24p5(check_resp_single_record, rps24p5, hgnc):
     """Test that rps24p5 normalizes to correct gene concept."""
     # Concept ID
     resp = hgnc.search("hgnc:36026")
@@ -849,7 +848,7 @@ def test_rps24p5(rps24p5, hgnc):
     check_resp_single_record(resp, rps24p5, MatchType.SYMBOL)
 
 
-def test_trl_cag2_1(trl_cag2_1, hgnc):
+def test_trl_cag2_1(check_resp_single_record, trl_cag2_1, hgnc):
     """Test that trl_cag2_1 normalizes to correct gene concept."""
     # Concept ID
     resp = hgnc.search("hgnc:34692")
@@ -860,7 +859,7 @@ def test_trl_cag2_1(trl_cag2_1, hgnc):
     check_resp_single_record(resp, trl_cag2_1, MatchType.SYMBOL)
 
 
-def test_myo5b(myo5b, hgnc):
+def test_myo5b(check_resp_single_record, myo5b, hgnc):
     """Test that myo5b normalizes to correct gene concept."""
     # Concept ID
     resp = hgnc.search("hgnc:7603")
@@ -875,7 +874,7 @@ def test_myo5b(myo5b, hgnc):
     check_resp_single_record(resp, myo5b, MatchType.ASSOCIATED_WITH)
 
 
-def test_gstt1(gstt1, hgnc):
+def test_gstt1(check_resp_single_record, gstt1, hgnc):
     """Test that gstt1 normalizes to correct gene concept."""
     # Concept ID
     resp = hgnc.search("hgnc:4641")

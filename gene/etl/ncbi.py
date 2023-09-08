@@ -502,10 +502,10 @@ class NCBI(Base):
                 # Location only gives chr
                 params['location_annotations'].append(loc)
 
-            chr_location = \
-                self._chromosome_location.get_location(location, params)
-            if chr_location:
-                location_list.append(chr_location)
+            # chr_location = \
+            #     self._chromosome_location.get_location(location, params)
+            # if chr_location:
+            #     location_list.append(chr_location)
 
     def _set_centromere_location(self, loc: str, location: Dict) -> None:
         """Set centromere location for a gene.

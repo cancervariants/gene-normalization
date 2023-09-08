@@ -44,14 +44,15 @@ class SequenceLocation:
         if not aliases:
             return location
 
-        sequence_id = [a for a in aliases if a.startswith('ga4gh')][0]
+        sequence = [a for a in aliases if a.startswith('ga4gh')][0]
 
-        if gene.start != '.' and gene.end != '.' and sequence_id:
+        if gene.start != '.' and gene.end != '.' and sequence:
             if 0 <= gene.start <= gene.end:  # type: ignore
                 location = GeneSequenceLocation(
                     start=gene.start - 1,  # type: ignore
                     end=gene.end,  # type: ignore
-                    sequence_id=sequence_id).dict()  # type: ignore
+                    sequence_id=sequence
+                ).model_dump()  # type: ignore
             else:
                 logger.info(f"{params['concept_id']} has invalid interval:"
                             f"start={gene.start - 1} end={gene.end}")  # type: ignore

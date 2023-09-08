@@ -176,7 +176,7 @@ class HGNC(Base):
         :param r: A gene record in the HGNC data file
         :param src_type: Either xrefs or associated_with list
         """
-        if type(r[src]) == list:
+        if isinstance(r[src], list):
             for xref in r[src]:
                 src_type.append(
                     f"{NamespacePrefix[key.upper()].value}:{xref}")
@@ -213,10 +213,9 @@ class HGNC(Base):
                 else:
                     location = dict()
                     self._set_location(loc, location, gene)
-                    chr_location = \
-                        self._chromosome_location.get_location(location, gene)
-                    if chr_location:
-                        location_list.append(chr_location)
+                    # chr_location = self._chromosome_location.get_location(location, gene)  # noqa: E501
+                    # if chr_location:
+                    #     location_list.append(chr_location)
 
         if location_list:
             gene['locations'] = location_list

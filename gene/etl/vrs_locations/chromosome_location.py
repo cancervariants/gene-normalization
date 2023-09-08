@@ -1,12 +1,7 @@
 """This module defines GA4GH Chromosome Location."""
 import re
 import logging
-from typing import Dict, Optional
-
-from pydantic.error_wrappers import ValidationError
-
-from gene.schemas import GeneChromosomeLocation
-
+from typing import Dict
 
 logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
@@ -15,31 +10,31 @@ logger.setLevel(logging.DEBUG)
 class ChromosomeLocation:
     """The class for GA4GH Chromosome Location."""
 
-    def get_location(self, location: Dict, gene: Dict) -> Optional[Dict]:
-        """Transform a gene's location into a Chromosome Location.
+    # def get_location(self, location: Dict, gene: Dict) -> Optional[Dict]:
+    #     """Transform a gene's location into a Chromosome Location.
 
-        :param location: A gene's location.
-        :param gene: A transformed gene record.
-        :return: If location is a valid VRS ChromosomeLocation, return a dictionary
-            containing the ChromosomeLocation. Else, return None.
-        """
-        if 'chr' in location and 'start' in location and 'end' in location:
-            if location['start'] == 'p' and location['end'] == 'p':
-                location['start'] = 'pter'
-                location['end'] = 'cen'
-            elif location['start'] == 'q' and location['end'] == 'q':
-                location['start'] = 'cen'
-                location['end'] = 'qter'
-            try:
-                chr_location = GeneChromosomeLocation(
-                    chr=location["chr"],
-                    start=location["start"],
-                    end=location["end"]).dict()
-            except ValidationError as e:
-                logger.info(f"{e} for {gene['symbol']}")
-            else:
-                return chr_location
-        return None
+    #     :param location: A gene's location.
+    #     :param gene: A transformed gene record.
+    #     :return: If location is a valid VRS ChromosomeLocation, return a dictionary
+    #         containing the ChromosomeLocation. Else, return None.
+    #     """
+    #     if 'chr' in location and 'start' in location and 'end' in location:
+    #         if location['start'] == 'p' and location['end'] == 'p':
+    #             location['start'] = 'pter'
+    #             location['end'] = 'cen'
+    #         elif location['start'] == 'q' and location['end'] == 'q':
+    #             location['start'] = 'cen'
+    #             location['end'] = 'qter'
+    #         try:
+    #             chr_location = GeneChromosomeLocation(
+    #                 chr=location["chr"],
+    #                 start=location["start"],
+    #                 end=location["end"]).model_dump()
+    #         except ValidationError as e:
+    #             logger.info(f"{e} for {gene['symbol']}")
+    #         else:
+    #             return chr_location
+    #     return None
 
     def set_interval_range(self, loc: str, arm_ix: int, location: Dict) -> None:
         """Set the location interval range.

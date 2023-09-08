@@ -78,7 +78,7 @@ class Base(ABC):
         """
         try:
             assert Gene(match_type=MatchType.NO_MATCH, **gene)
-        except pydantic.error_wrappers.ValidationError as e:
+        except pydantic.ValidationError as e:
             logger.warning(f"Unable to load {gene} due to validation error: "
                            f"{e}")
         else:

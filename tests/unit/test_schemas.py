@@ -1,29 +1,31 @@
 """Module to test validators in the schemas module."""
 import pytest
 import pydantic
-from gene.schemas import Gene
-from ga4gh.vrsatile.pydantic.vrs_models import ChromosomeLocation, \
-    SequenceLocation, Gene as GeneValueObject, Number
+from ga4gh.vrs import models
+
+from gene.schemas import Gene, GeneValueObject
 
 
-@pytest.fixture(scope='module')
-def chromosome_location():
-    """Create a valid chromosome location test fixture."""
-    return ChromosomeLocation(
-        species_id='taxonomy:9606',
-        chr='7',
-        start='q34',
-        end='q34'
-    )
+# @pytest.fixture(scope='module')
+# def chromosome_location():
+#     """Create a valid chromosome location test fixture."""
+#     return ChromosomeLocation(
+#         species_id='taxonomy:9606',
+#         chr='7',
+#         start='q34',
+#         end='q34'
+#     )
 
 
 @pytest.fixture(scope='module')
 def sequence_location():
     """Create a valid sequence location test fixture."""
-    return SequenceLocation(
-        sequence_id='ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul',
-        start=Number(value=140719327),
-        end=Number(value=140924929)
+    return models.SequenceLocation(
+        sequence=models.SequenceReference(
+            refgetAccession="SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
+        ),
+        start=140719327,
+        end=140924929
     )
 
 
@@ -37,14 +39,15 @@ def gene():
     )
 
 
-def test_gene(gene, chromosome_location, sequence_location):
+def test_gene(gene, sequence_location):
     """Test that validators for gene work correctly."""
     assert gene
     assert Gene(
         match_type=100,
         concept_id='ensembl:1',
         symbol='GENE',
-        locations=[chromosome_location, sequence_location]
+        # locations=[chromosome_location, sequence_location]
+        locations=[sequence_location]
     )
     assert Gene(
         match_type=100,
@@ -60,7 +63,7 @@ def test_gene(gene, chromosome_location, sequence_location):
     )
 
     # id not a valid curie
-    with pytest.raises(pydantic.error_wrappers.ValidationError):
+    with pytest.raises(pydantic.ValidationError):
         Gene(
             match_type=100,
             concept_id='hgnc1096',
@@ -68,7 +71,7 @@ def test_gene(gene, chromosome_location, sequence_location):
         )
 
     # symbol not a str
-    with pytest.raises(pydantic.error_wrappers.ValidationError):
+    with pytest.raises(pydantic.ValidationError):
         Gene(
             match_type=100,
             concept_id='hgnc:1096',
@@ -76,7 +79,7 @@ def test_gene(gene, chromosome_location, sequence_location):
         )
 
     # strand not -/+
-    with pytest.raises(pydantic.error_wrappers.ValidationError):
+    with pytest.raises(pydantic.ValidationError):
         Gene(
             match_type=100,
             concept_id='hgnc:1096',
@@ -85,7 +88,7 @@ def test_gene(gene, chromosome_location, sequence_location):
         )
 
     # xrefs not a valid curie
-    with pytest.raises(pydantic.error_wrappers.ValidationError):
+    with pytest.raises(pydantic.ValidationError):
         Gene(
             match_type=100,
             concept_id='hgnc:1096',
@@ -94,7 +97,7 @@ def test_gene(gene, chromosome_location, sequence_location):
         )
 
     # associated_with not a valid curie
-    with pytest.raises(pydantic.error_wrappers.ValidationError):
+    with pytest.raises(pydantic.ValidationError):
         Gene(
             match_type=100,
             concept_id='hgnc:1096',
@@ -103,7 +106,7 @@ def test_gene(gene, chromosome_location, sequence_location):
         )
 
     # symbol status invalid
-    with pytest.raises(pydantic.error_wrappers.ValidationError):
+    with pytest.raises(pydantic.ValidationError):
         Gene(
             match_type=100,
             concept_id='hgnc:1096',
@@ -112,7 +115,7 @@ def test_gene(gene, chromosome_location, sequence_location):
         )
 
     # locations not a sequence or chromosome location
-    with pytest.raises(pydantic.error_wrappers.ValidationError):
+    with pytest.raises(pydantic.ValidationError):
         Gene(
             match_type=100,
             concept_id='hgnc:1096',
@@ -121,10 +124,10 @@ def test_gene(gene, chromosome_location, sequence_location):
         )
 
     # location not a list
-    with pytest.raises(pydantic.error_wrappers.ValidationError):
+    with pytest.raises(pydantic.ValidationError):
         Gene(
             match_type=100,
             concept_id='hgnc:1096',
             symbol='BRAF',
-            locations=chromosome_location
+            locations=sequence_location
         )

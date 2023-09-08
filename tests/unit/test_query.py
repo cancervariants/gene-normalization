@@ -1,9 +1,10 @@
 """Module to test the query module."""
-from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
-from gene.query import QueryHandler, InvalidParameterException
-from gene.schemas import BaseGene, SourceName, MatchType
 import copy
+
 import pytest
+
+from gene.query import QueryHandler, InvalidParameterException
+from gene.schemas import BaseGene, SourceName, MatchType, GeneDescriptor
 
 
 @pytest.fixture(scope='module')
@@ -85,59 +86,53 @@ def normalized_ache():
             {
                 "name": "ncbi_locations",
                 "value": [
+                    # {
+                    #     "id": "ga4gh:CL.JSw-08GkF-7M-OQR-33MLLKQHSi7QJb5",
+                    #     "type": "ChromosomeLocation",
+                    #     "species_id": "taxonomy:9606",
+                    #     "chr": "7",
+                    #     "end": "q22.1",
+                    #     "start": "q22.1"
+                    # },
                     {
-                        "id": "ga4gh:CL.JSw-08GkF-7M-OQR-33MLLKQHSi7QJb5",
-                        "type": "ChromosomeLocation",
-                        "species_id": "taxonomy:9606",
-                        "chr": "7",
-                        "end": "q22.1",
-                        "start": "q22.1"
-                    },
-                    {
-                        "id": "ga4gh:SL.UZ4q9hFsiwhOMyB4nDftMupd-i0OVu4w",
+                        "id": "ga4gh:SL.OuUQ-JYrkb92VioFp1P9JLGAbVQA1Wqs",
                         "type": "SequenceLocation",
-                        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
-                        "start": {
-                            "type": "Number",
-                            "value": 100889993
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
                         },
-                        "end": {
-                            "type": "Number",
-                            "value": 100896994
-                        }
+                        "start": 100889993,
+                        "end": 100896994
                     }
                 ],
                 "type": "Extension"
             },
-            {
-                "name": "hgnc_locations",
-                "value": [
-                    {
-                        "id": "ga4gh:CL.JSw-08GkF-7M-OQR-33MLLKQHSi7QJb5",
-                        "type": "ChromosomeLocation",
-                        "species_id": "taxonomy:9606",
-                        "chr": "7",
-                        "start": "q22.1",
-                        "end": "q22.1"
-                    }
-                ],
-                "type": "Extension"
-            },
+            # {
+            #     "name": "hgnc_locations",
+            #     "value": [
+            #         {
+            #             "id": "ga4gh:CL.JSw-08GkF-7M-OQR-33MLLKQHSi7QJb5",
+            #             "type": "ChromosomeLocation",
+            #             "species_id": "taxonomy:9606",
+            #             "chr": "7",
+            #             "start": "q22.1",
+            #             "end": "q22.1"
+            #         }
+            #     ],
+            #     "type": "Extension"
+            # },
             {
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.K5fLruGxiT-ls_GjUrNpNm3tV01hhlgQ",
+                        "id": "ga4gh:SL.oyhehgtv3XV3iMTlul7XtMQ_5RSAvts6",
                         "type": "SequenceLocation",
-                        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
-                        "start": {
-                            "type": "Number",
-                            "value": 100889993
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
                         },
-                        "end": {
-                            "type": "Number",
-                            "value": 100896974
-                        }
+                        "start": 100889993,
+                        "end": 100896974
                     }
                 ],
                 "type": "Extension"
@@ -219,35 +214,32 @@ def normalized_braf():
                 ],
                 "type": "Extension"
             },
-            {
-                "name": "hgnc_locations",
-                "value": [
-                    {
-                        "id": "ga4gh:CL.ZZZYpOwuW1BLLJXc_Dm4eVZ5E0smVYCc",
-                        "type": "ChromosomeLocation",
-                        "species_id": "taxonomy:9606",
-                        "chr": "7",
-                        "end": "q34",
-                        "start": "q34",
-                    }
-                ],
-                "type": "Extension"
-            },
+            # {
+            #     "name": "hgnc_locations",
+            #     "value": [
+            #         {
+            #             "id": "ga4gh:CL.ZZZYpOwuW1BLLJXc_Dm4eVZ5E0smVYCc",
+            #             "type": "ChromosomeLocation",
+            #             "species_id": "taxonomy:9606",
+            #             "chr": "7",
+            #             "end": "q34",
+            #             "start": "q34",
+            #         }
+            #     ],
+            #     "type": "Extension"
+            # },
             {
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.MPDI-H-JK1AMOnLdvVO6zQjbAXmSnzQ4",
+                        "id": "ga4gh:SL.iwWw9B3tkU3TCLF3d8xu4zSQBhpDZfJ6",
                         "type": "SequenceLocation",
-                        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
-                        "start": {
-                            "type": "Number",
-                            "value": 140719326
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
                         },
-                        "end": {
-                            "type": "Number",
-                            "value": 140924929
-                        }
+                        "start": 140719326,
+                        "end": 140924929
                     }
                 ],
                 "type": "Extension"
@@ -255,26 +247,23 @@ def normalized_braf():
             {
                 "name": "ncbi_locations",
                 "value": [
+                    # {
+                    #     "id": "ga4gh:CL.ZZZYpOwuW1BLLJXc_Dm4eVZ5E0smVYCc",
+                    #     "type": "ChromosomeLocation",
+                    #     "species_id": "taxonomy:9606",
+                    #     "chr": "7",
+                    #     "start": "q34",
+                    #     "end": "q34"
+                    # },
                     {
-                        "id": "ga4gh:CL.ZZZYpOwuW1BLLJXc_Dm4eVZ5E0smVYCc",
-                        "type": "ChromosomeLocation",
-                        "species_id": "taxonomy:9606",
-                        "chr": "7",
-                        "start": "q34",
-                        "end": "q34"
-                    },
-                    {
-                        "id": "ga4gh:SL.po-AExwyqkstDx3JWYn6plIlxn5eojv4",
+                        "id": "ga4gh:SL.rXzVqqlchBvUef98MNQA77FvwSJgiOf5",
                         "type": "SequenceLocation",
-                        "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
-                        "start": {
-                            "type": "Number",
-                            "value": 140713327
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
                         },
-                        "end": {
-                            "type": "Number",
-                            "value": 140924929
-                        }
+                        "start": 140713327,
+                        "end": 140924929
                     }
                 ],
                 "type": "Extension"
@@ -368,43 +357,40 @@ def normalized_abl1():
                 ],
                 "type": "Extension"
             },
-            {
-                "name": "hgnc_locations",
-                "value": [
-                    {
-                        "id": "ga4gh:CL.1vsxettosueUHyFIOoTPzwIFD1DodLuT",
-                        "type": "ChromosomeLocation",
-                        "species_id": "taxonomy:9606",
-                        "chr": "9",
-                        "end": "q34.12",
-                        "start": "q34.12"
-                    }
-                ],
-                "type": "Extension"
-            },
+            # {
+            #     "name": "hgnc_locations",
+            #     "value": [
+            #         {
+            #             "id": "ga4gh:CL.1vsxettosueUHyFIOoTPzwIFD1DodLuT",
+            #             "type": "ChromosomeLocation",
+            #             "species_id": "taxonomy:9606",
+            #             "chr": "9",
+            #             "end": "q34.12",
+            #             "start": "q34.12"
+            #         }
+            #     ],
+            #     "type": "Extension"
+            # },
             {
                 "name": "ncbi_locations",
                 "value": [
+                    # {
+                    #     "id": "ga4gh:CL.1vsxettosueUHyFIOoTPzwIFD1DodLuT",
+                    #     "type": "ChromosomeLocation",
+                    #     "species_id": "taxonomy:9606",
+                    #     "chr": "9",
+                    #     "start": "q34.12",
+                    #     "end": "q34.12"
+                    # },
                     {
-                        "id": "ga4gh:CL.1vsxettosueUHyFIOoTPzwIFD1DodLuT",
-                        "type": "ChromosomeLocation",
-                        "species_id": "taxonomy:9606",
-                        "chr": "9",
-                        "start": "q34.12",
-                        "end": "q34.12"
-                    },
-                    {
-                        "id": "ga4gh:SL.av1JXWUExZbLU2LXsFYTUa8LOzJ1Za3o",
+                        "id": "ga4gh:SL.qwMQXDwguWeHsOb5bd7qoLC8zyfxcHzC",
                         "type": "SequenceLocation",
-                        "sequence_id": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
-                        "start": {
-                            "type": "Number",
-                            "value": 130713042
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI"
                         },
-                        "end": {
-                            "type": "Number",
-                            "value": 130887675
-                        }
+                        "start": 130713042,
+                        "end": 130887675
                     }
                 ],
                 "type": "Extension"
@@ -413,17 +399,14 @@ def normalized_abl1():
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.LOUW5_mnHh4yMBagkbwu1BpUN-r0N-2U",
+                        "id": "ga4gh:SL.mL3bBgmOG_mOb3P68os_hfhlPzbqr1MS",
                         "type": "SequenceLocation",
-                        "sequence_id": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
-                        "start": {
-                            "type": "Number",
-                            "value": 130713015
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI"
                         },
-                        "end": {
-                            "type": "Number",
-                            "value": 130887675
-                        }
+                        "start": 130713015,
+                        "end": 130887675
                     }
                 ],
                 "type": "Extension"
@@ -499,61 +482,55 @@ def normalized_p150():
                 ],
                 "type": "Extension"
             },
-            {
-                "name": "hgnc_locations",
-                "value": [
-                    {
-                        "id": "ga4gh:CL.kPEG2TGUPOAsAYK6HY0ukprQ-DR_IuMZ",
-                        "type": "ChromosomeLocation",
-                        "species_id": "taxonomy:9606",
-                        "chr": "19",
-                        "end": "p13.3",
-                        "start": "p13.3"
-                    }
-                ],
-                "type": "Extension"
-            },
+            # {
+            #     "name": "hgnc_locations",
+            #     "value": [
+            #         {
+            #             "id": "ga4gh:CL.kPEG2TGUPOAsAYK6HY0ukprQ-DR_IuMZ",
+            #             "type": "ChromosomeLocation",
+            #             "species_id": "taxonomy:9606",
+            #             "chr": "19",
+            #             "end": "p13.3",
+            #             "start": "p13.3"
+            #         }
+            #     ],
+            #     "type": "Extension"
+            # },
             {
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.kL2Hr6VSSiPQyjE_pJ1Ta5viB-yuJchF",
+                        "id": "ga4gh:SL.4RCVIbLVXLWPxvhd3IkRA-yI4o99Uwuq",
                         "type": "SequenceLocation",
-                        "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
-                        "start": {
-                            "type": "Number",
-                            "value": 4402639
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl"
                         },
-                        "end": {
-                            "type": "Number",
-                            "value": 4445018
-                        }
+                        "start": 4402639,
+                        "end": 4445018
                     }
                 ]
             },
             {
                 "name": "ncbi_locations",
                 "value": [
+                    # {
+                    #     "id": "ga4gh:CL.kPEG2TGUPOAsAYK6HY0ukprQ-DR_IuMZ",
+                    #     "type": "ChromosomeLocation",
+                    #     "species_id": "taxonomy:9606",
+                    #     "chr": "19",
+                    #     "start": "p13.3",
+                    #     "end": "p13.3"
+                    # },
                     {
-                        "id": "ga4gh:CL.kPEG2TGUPOAsAYK6HY0ukprQ-DR_IuMZ",
-                        "type": "ChromosomeLocation",
-                        "species_id": "taxonomy:9606",
-                        "chr": "19",
-                        "start": "p13.3",
-                        "end": "p13.3"
-                    },
-                    {
-                        "id": "ga4gh:SL.LTvvCAh9DqsH8G0A_rNgPafqvPmWk0tn",
+                        "id": "ga4gh:SL.-EYdfD5JkE4lqRwkCR_NNzaaT0uTYBg2",
                         "type": "SequenceLocation",
-                        "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
-                        "start": {
-                            "type": "Number",
-                            "value": 4402639
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl"
                         },
-                        "end": {
-                            "type": "Number",
-                            "value": 4450830
-                        }
+                        "start": 4402639,
+                        "end": 4450830
                     }
                 ]
             },
@@ -610,26 +587,23 @@ def normalized_loc_653303():
             {
                 "name": "ncbi_locations",
                 "value": [
+                    # {
+                    #     "id": "ga4gh:CL.82tL1yxucvwp5U2Yo4jNYX06pru8zZYl",
+                    #     "type": "ChromosomeLocation",
+                    #     "species_id": "taxonomy:9606",
+                    #     "chr": "11",
+                    #     "start": "q23.3",
+                    #     "end": "q23.3"
+                    # },
                     {
-                        "id": "ga4gh:CL.82tL1yxucvwp5U2Yo4jNYX06pru8zZYl",
-                        "type": "ChromosomeLocation",
-                        "species_id": "taxonomy:9606",
-                        "chr": "11",
-                        "start": "q23.3",
-                        "end": "q23.3"
-                    },
-                    {
-                        "id": "ga4gh:SL.zfPjFTCoZIj-gz5tEBDQwKEOfGBxF9kF",
+                        "id": "ga4gh:SL.Iumme4GSaXUPAo0ifaq85LLlA1nT7l5o",
                         "type": "SequenceLocation",
-                        "sequence_id": "ga4gh:SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1",
-                        "start": {
-                            "type": "Number",
-                            "value": 117135528
+                        "sequenceReference": {
+                            "type": "SequenceReference",
+                            "refgetAccession": "SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1"
                         },
-                        "end": {
-                            "type": "Number",
-                            "value": 117138867
-                        }
+                        "start": 117135528,
+                        "end": 117138867
                     }
                 ]
             },
@@ -676,26 +650,23 @@ def normalize_unmerged_loc_653303():
                         "strand": "+",
                         "location_annotations": [],
                         "locations": [
+                            # {
+                            #     "type": "ChromosomeLocation",
+                            #     "id": "ga4gh:CL.82tL1yxucvwp5U2Yo4jNYX06pru8zZYl",
+                            #     "species_id": "taxonomy:9606",
+                            #     "chr": "11",
+                            #     "start": "q23.3",
+                            #     "end": "q23.3"
+                            # },
                             {
-                                "type": "ChromosomeLocation",
-                                "id": "ga4gh:CL.82tL1yxucvwp5U2Yo4jNYX06pru8zZYl",
-                                "species_id": "taxonomy:9606",
-                                "chr": "11",
-                                "start": "q23.3",
-                                "end": "q23.3"
-                            },
-                            {
-                                "id": "ga4gh:SL.zfPjFTCoZIj-gz5tEBDQwKEOfGBxF9kF",
+                                "id": "ga4gh:SL.Iumme4GSaXUPAo0ifaq85LLlA1nT7l5o",
                                 "type": "SequenceLocation",
-                                "sequence_id": "ga4gh:SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1",  # noqa: E501
-                                "start": {
-                                    "type": "Number",
-                                    "value": 117135528
+                                "sequenceReference": {
+                                    "type": "SequenceReference",
+                                    "refgetAccession": "SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1"  # noqa: E501
                                 },
-                                "end": {
-                                    "type": "Number",
-                                    "value": 117138867
-                                }
+                                "start": 117135528,
+                                "end": 117138867
                             }
                         ],
                         "aliases": [],
@@ -730,14 +701,14 @@ def normalize_unmerged_chaf1a():
                         "strand": None,
                         "location_annotations": [],
                         "locations": [
-                            {
-                                "type": "ChromosomeLocation",
-                                "id": "ga4gh:CL.kPEG2TGUPOAsAYK6HY0ukprQ-DR_IuMZ",
-                                "species_id": "taxonomy:9606",
-                                "chr": "19",
-                                "start": "p13.3",
-                                "end": "p13.3"
-                            }
+                            # {
+                            #     "type": "ChromosomeLocation",
+                            #     "id": "ga4gh:CL.kPEG2TGUPOAsAYK6HY0ukprQ-DR_IuMZ",
+                            #     "species_id": "taxonomy:9606",
+                            #     "chr": "19",
+                            #     "start": "p13.3",
+                            #     "end": "p13.3"
+                            # }
                         ],
                         "aliases": [
                             "CAF1P150",
@@ -777,17 +748,14 @@ def normalize_unmerged_chaf1a():
                         "location_annotations": [],
                         "locations": [
                             {
-                                "id": "ga4gh:SL.kL2Hr6VSSiPQyjE_pJ1Ta5viB-yuJchF",
+                                "id": "ga4gh:SL.4RCVIbLVXLWPxvhd3IkRA-yI4o99Uwuq",
                                 "type": "SequenceLocation",
-                                "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",  # noqa: E501
-                                "start": {
-                                    "type": "Number",
-                                    "value": 4402639
+                                "sequenceReference": {
+                                    "type": "SequenceReference",
+                                    "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl"  # noqa: E501
                                 },
-                                "end": {
-                                    "type": "Number",
-                                    "value": 4445018
-                                }
+                                "start": 4402639,
+                                "end": 4445018
                             }
                         ],
                         "aliases": [],
@@ -810,26 +778,23 @@ def normalize_unmerged_chaf1a():
                         "strand": "+",
                         "location_annotations": [],
                         "locations": [
+                            # {
+                            #     "type": "ChromosomeLocation",
+                            #     "id": "ga4gh:CL.kPEG2TGUPOAsAYK6HY0ukprQ-DR_IuMZ",
+                            #     "species_id": "taxonomy:9606",
+                            #     "chr": "19",
+                            #     "start": "p13.3",
+                            #     "end": "p13.3"
+                            # },
                             {
-                                "type": "ChromosomeLocation",
-                                "id": "ga4gh:CL.kPEG2TGUPOAsAYK6HY0ukprQ-DR_IuMZ",
-                                "species_id": "taxonomy:9606",
-                                "chr": "19",
-                                "start": "p13.3",
-                                "end": "p13.3"
-                            },
-                            {
-                                "id": "ga4gh:SL.LTvvCAh9DqsH8G0A_rNgPafqvPmWk0tn",
+                                "id": "ga4gh:SL.-EYdfD5JkE4lqRwkCR_NNzaaT0uTYBg2",
                                 "type": "SequenceLocation",
-                                "sequence_id": "ga4gh:SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",  # noqa: E501
-                                "start": {
-                                    "type": "Number",
-                                    "value": 4402639
+                                "sequenceReference": {
+                                    "type": "SequenceReference",
+                                    "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl"  # noqa: E501
                                 },
-                                "end": {
-                                    "type": "Number",
-                                    "value": 4450830
-                                }
+                                "start": 4402639,
+                                "end": 4450830
                             }
                         ],
                         "aliases": [
@@ -871,26 +836,23 @@ def normalize_unmerged_ache():
                         "strand": "-",
                         "location_annotations": [],
                         "locations": [
+                            # {
+                            #     "type": "ChromosomeLocation",
+                            #     "id": "ga4gh:CL.JSw-08GkF-7M-OQR-33MLLKQHSi7QJb5",
+                            #     "species_id": "taxonomy:9606",
+                            #     "chr": "7",
+                            #     "start": "q22.1",
+                            #     "end": "q22.1"
+                            # },
                             {
-                                "type": "ChromosomeLocation",
-                                "id": "ga4gh:CL.JSw-08GkF-7M-OQR-33MLLKQHSi7QJb5",
-                                "species_id": "taxonomy:9606",
-                                "chr": "7",
-                                "start": "q22.1",
-                                "end": "q22.1"
-                            },
-                            {
-                                "id": "ga4gh:SL.UZ4q9hFsiwhOMyB4nDftMupd-i0OVu4w",
+                                "id": "ga4gh:SL.OuUQ-JYrkb92VioFp1P9JLGAbVQA1Wqs",
                                 "type": "SequenceLocation",
-                                "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
-                                "start": {
-                                    "type": "Number",
-                                    "value": 100889993
+                                "sequenceReference": {
+                                    "type": "SequenceReference",
+                                    "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"  # noqa: E501
                                 },
-                                "end": {
-                                    "type": "Number",
-                                    "value": 100896994
-                                }
+                                "start": 100889993,
+                                "end": 100896994
                             }
                         ],
                         "aliases": [
@@ -924,17 +886,14 @@ def normalize_unmerged_ache():
                         "location_annotations": [],
                         "locations": [
                             {
-                                "id": "ga4gh:SL.K5fLruGxiT-ls_GjUrNpNm3tV01hhlgQ",
+                                "id": "ga4gh:SL.oyhehgtv3XV3iMTlul7XtMQ_5RSAvts6",
                                 "type": "SequenceLocation",
-                                "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
-                                "start": {
-                                    "type": "Number",
-                                    "value": 100889993
+                                "sequenceReference": {
+                                    "type": "SequenceReference",
+                                    "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"  # noqa: E501
                                 },
-                                "end": {
-                                    "type": "Number",
-                                    "value": 100896974
-                                }
+                                "start": 100889993,
+                                "end": 100896974
                             }
                         ],
                         "aliases": [],
@@ -955,14 +914,14 @@ def normalize_unmerged_ache():
                         "strand": None,
                         "location_annotations": [],
                         "locations": [
-                            {
-                                "type": "ChromosomeLocation",
-                                "id": "ga4gh:CL.JSw-08GkF-7M-OQR-33MLLKQHSi7QJb5",
-                                "species_id": "taxonomy:9606",
-                                "chr": "7",
-                                "start": "q22.1",
-                                "end": "q22.1"
-                            }
+                            # {
+                            #     "type": "ChromosomeLocation",
+                            #     "id": "ga4gh:CL.JSw-08GkF-7M-OQR-33MLLKQHSi7QJb5",
+                            #     "species_id": "taxonomy:9606",
+                            #     "chr": "7",
+                            #     "start": "q22.1",
+                            #     "end": "q22.1"
+                            # }
                         ],
                         "aliases": [
                             "3.1.1.7"
@@ -1059,8 +1018,7 @@ def num_sources():
 @pytest.fixture(scope="module")
 def source_meta():
     """Create test fixture for source meta"""
-    return [SourceName.HGNC.value, SourceName.ENSEMBL.value,
-            SourceName.NCBI.value]
+    return [SourceName.HGNC, SourceName.ENSEMBL, SourceName.NCBI]
 
 
 def compare_warnings(actual_warnings, expected_warnings):
@@ -1092,8 +1050,7 @@ def compare_normalize_resp(resp, expected_query, expected_match_type,
         assert resp.source_meta_ == {}
     else:
         resp_source_meta_keys = resp.source_meta_.keys()
-        assert len(resp_source_meta_keys) == len(expected_source_meta),\
-            "source_meta_keys"
+        assert len(resp_source_meta_keys) == len(expected_source_meta), "source_meta_keys"  # noqa: E501
         for src in expected_source_meta:
             assert src in resp_source_meta_keys
     compare_service_meta(resp.service_meta_)
@@ -1155,8 +1112,8 @@ def compare_gene_descriptor(test, actual):
     if actual.xrefs or test.xrefs:
         assert set(actual.xrefs) == set(test.xrefs), "xrefs"
     assert set(actual.alternate_labels) == set(test.alternate_labels), "alt labels"
-    extensions_present = "extensions" in test.__fields__.keys()
-    assert ("extensions" in actual.__fields__.keys()) == extensions_present
+    extensions_present = "extensions" in test.model_fields.keys()
+    assert ("extensions" in actual.model_fields.keys()) == extensions_present
     if extensions_present:
         assert len(actual.extensions) == len(test.extensions), "len of extensions"
         n_ext_correct = 0
@@ -1209,15 +1166,15 @@ def test_search_query_inc_exc(query_handler, num_sources):
     resp = query_handler.search('BRAF', keyed=True, incl=sources)
     matches = resp.source_matches
     assert len(matches) == len(sources.split())
-    assert SourceName.HGNC.value in matches
-    assert SourceName.NCBI.value in matches
+    assert SourceName.HGNC in matches
+    assert SourceName.NCBI in matches
 
     sources = 'HGnC'
     resp = query_handler.search('BRAF', keyed=True, excl=sources)
     matches = resp.source_matches
     assert len(matches) == num_sources - len(sources.split())
-    assert SourceName.ENSEMBL.value in matches
-    assert SourceName.NCBI.value in matches
+    assert SourceName.ENSEMBL in matches
+    assert SourceName.NCBI in matches
 
 
 def test_search_invalid_parameter_exception(query_handler):
@@ -1235,24 +1192,24 @@ def test_ache_query(query_handler, num_sources, normalized_ache, source_meta):
     resp = query_handler.search('ncbigene:43', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.XREF
-    assert len(matches[SourceName.ENSEMBL.value].records) == 0
-    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.CONCEPT_ID
+    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
+    assert len(matches[SourceName.ENSEMBL].records) == 0
+    assert matches[SourceName.NCBI].records[0].match_type == MatchType.CONCEPT_ID
 
     resp = query_handler.search('hgnc:108', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.CONCEPT_ID
-    assert matches[SourceName.ENSEMBL.value].records[0].match_type == MatchType.XREF
-    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.HGNC].records[0].match_type == MatchType.CONCEPT_ID
+    assert matches[SourceName.ENSEMBL].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
 
     resp = query_handler.search('ensembl:ENSG00000087085', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.XREF
-    assert matches[SourceName.ENSEMBL.value].records[0].match_type == \
+    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.ENSEMBL].records[0].match_type == \
            MatchType.CONCEPT_ID
-    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
 
     # Normalize
     q = "ACHE"
@@ -1323,24 +1280,24 @@ def test_braf_query(query_handler, num_sources, normalized_braf, source_meta):
     resp = query_handler.search('ncbigene:673', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.XREF
-    assert len(matches[SourceName.ENSEMBL.value].records) == 0
-    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.CONCEPT_ID
+    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
+    assert len(matches[SourceName.ENSEMBL].records) == 0
+    assert matches[SourceName.NCBI].records[0].match_type == MatchType.CONCEPT_ID
 
     resp = query_handler.search('hgnc:1097', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.CONCEPT_ID
-    assert matches[SourceName.ENSEMBL.value].records[0].match_type == MatchType.XREF
-    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.HGNC].records[0].match_type == MatchType.CONCEPT_ID
+    assert matches[SourceName.ENSEMBL].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
 
     resp = query_handler.search('ensembl:ENSG00000157764', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.XREF
-    assert matches[SourceName.ENSEMBL.value].records[0].match_type == \
+    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.ENSEMBL].records[0].match_type == \
            MatchType.CONCEPT_ID
-    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
 
     # Normalize
     q = "BRAF"
@@ -1399,24 +1356,24 @@ def test_abl1_query(query_handler, num_sources, normalized_abl1, source_meta):
     resp = query_handler.search('ncbigene:25', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.XREF
-    assert len(matches[SourceName.ENSEMBL.value].records) == 0
-    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.CONCEPT_ID
+    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
+    assert len(matches[SourceName.ENSEMBL].records) == 0
+    assert matches[SourceName.NCBI].records[0].match_type == MatchType.CONCEPT_ID
 
     resp = query_handler.search('hgnc:76', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.CONCEPT_ID
-    assert matches[SourceName.ENSEMBL.value].records[0].match_type == MatchType.XREF
-    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.HGNC].records[0].match_type == MatchType.CONCEPT_ID
+    assert matches[SourceName.ENSEMBL].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
 
     resp = query_handler.search('ensembl:ENSG00000097007', keyed=True)
     matches = resp.source_matches
     assert len(matches) == num_sources
-    assert matches[SourceName.HGNC.value].records[0].match_type == MatchType.XREF
-    assert matches[SourceName.ENSEMBL.value].records[0].match_type == \
+    assert matches[SourceName.HGNC].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.ENSEMBL].records[0].match_type == \
            MatchType.CONCEPT_ID
-    assert matches[SourceName.NCBI.value].records[0].match_type == MatchType.XREF
+    assert matches[SourceName.NCBI].records[0].match_type == MatchType.XREF
 
     # Normalize
     q = "ABL1"
@@ -1501,7 +1458,7 @@ def test_normalize_single_entry(query_handler, normalized_loc_653303):
     q = "LOC653303"
     resp = query_handler.normalize(q)
     compare_normalize_resp(resp, q, MatchType.SYMBOL, normalized_loc_653303,
-                           expected_source_meta=[SourceName.NCBI.value])
+                           expected_source_meta=[SourceName.NCBI])
 
 
 def test_normalize_no_locations(query_handler, normalized_ifnr):
@@ -1512,7 +1469,7 @@ def test_normalize_no_locations(query_handler, normalized_ifnr):
     resp = query_handler.normalize(q)
     compare_normalize_resp(
         resp, q, MatchType.SYMBOL, normalized_ifnr,
-        expected_source_meta=[SourceName.HGNC.value, SourceName.NCBI.value])
+        expected_source_meta=[SourceName.HGNC, SourceName.NCBI])
 
 
 def test_normalize_unmerged(query_handler, normalize_unmerged_loc_653303,
@@ -1584,7 +1541,7 @@ def test_normalize_unmerged(query_handler, normalize_unmerged_loc_653303,
 def test_invalid_queries(query_handler):
     """Test invalid queries"""
     resp = query_handler.normalize("B R A F")
-    assert resp.match_type is MatchType.NO_MATCH.value
+    assert resp.match_type is MatchType.NO_MATCH
 
     with pytest.raises(TypeError):
         resp["match_type"]

@@ -95,17 +95,14 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
           "name": "ensembl_locations",
           "value": [
             {
-              "id": "ga4gh:SL.MPDI-H-JK1AMOnLdvVO6zQjbAXmSnzQ4",
+              "id": "ga4gh:SL.iwWw9B3tkU3TCLF3d8xu4zSQBhpDZfJ6",
               "type": "SequenceLocation",
-              "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
-              "start": {
-                "type": "Number",
-                "value": 140719326
+              "sequenceReference": {
+                "type": "SequenceReference",
+                "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
               },
-              "end": {
-                "type": "Number",
-                "value": 140924929
-              }
+              "start": 140719326,
+              "end": 140924929
             }
           ]
         },
@@ -141,17 +138,14 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
               "end": "q34"
             },
             {
-              "id": "ga4gh:SL.po-AExwyqkstDx3JWYn6plIlxn5eojv4",
+              "id": "ga4gh:SL.rXzVqqlchBvUef98MNQA77FvwSJgiOf5",
               "type": "SequenceLocation",
-              "sequence_id": "ga4gh:SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
-              "start": {
-                "type": "Number",
-                "value": 140713327
+              "sequenceReference": {
+                "type": "SequenceReference",
+                "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
               },
-              "end": {
-                "type": "Number",
-                "value": 140924929
-              }
+              "start": 140713327,
+              "end": 140924929
             }
           ]
         },
