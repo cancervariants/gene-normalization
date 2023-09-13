@@ -374,7 +374,7 @@ class QueryHandler:
         """
         sources_meta = {}
         gene = response.gene
-        sources = [gene.id.split(":")[0]]
+        sources = [response.normalized_id.split(":")[0]]
         if gene.mappings:
             sources += [m.coding.system for m in gene.mappings]
 
@@ -427,7 +427,7 @@ class QueryHandler:
         :return: Response with core Gene
         """
         gene_obj = core_models.Gene(
-            id=record["concept_id"],
+            id=f"normalize.gene.{record['concept_id']}",
             label=record["symbol"],
         )
 
@@ -520,6 +520,7 @@ class QueryHandler:
             response = self._add_alt_matches(response, record,
                                              possible_concepts)
 
+        response.normalized_id = record["concept_id"]
         response.gene = gene_obj
         response = self._add_merged_meta(response)
         response.match_type = match_type
@@ -574,7 +575,7 @@ class QueryHandler:
         >>> from gene.database import create_db
         >>> q = QueryHandler(create_db())
         >>> result = q.normalize("BRAF")
-        >>> result.gene.id
+        >>> result.normalized_id
         'hgnc:1097'
         >>> result.aliases
         ['BRAF1', 'RAFB1', 'B-raf', 'NS7', 'B-RAF1']

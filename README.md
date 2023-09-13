@@ -18,7 +18,7 @@ Call the `normalize()` method with a gene term. If available, a rich description
 
 ```
 >>> result = q.normalize("BRAF")
->>> result.gene.id
+>>> result.normalized_id
 "hgnc:1097"
 >>> result.gene.aliases
 ['NS7', 'RAFB1', 'B-raf', 'BRAF-1', 'BRAF1', 'B-RAF1']

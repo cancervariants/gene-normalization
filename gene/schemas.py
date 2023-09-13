@@ -419,6 +419,7 @@ class BaseNormalizationService(BaseModel):
 class NormalizeService(BaseNormalizationService):
     """Define model for returning normalized concept."""
 
+    normalized_id: Optional[str] = None
     gene: Optional[core_models.Gene] = None
     source_meta_: Dict[SourceName, SourceMeta] = {}
 
@@ -428,9 +429,10 @@ class NormalizeService(BaseNormalizationService):
                 "query": "BRAF",
                 "warnings": [],
                 "match_type": 100,
+                "normalized_id": "hgnc:1037",
                 "gene": {
                     "type": "Gene",
-                    "id": "hgnc:1097",
+                    "id": "normalize.gene.hgnc:1097",
                     "label": "BRAF",
                     "mappings": [
                         {

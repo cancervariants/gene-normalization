@@ -32,7 +32,7 @@ def normalized_ache():
     """Return normalized core Gene object for ACHE."""
     params = {
         "type": "Gene",
-        "id": "hgnc:108",
+        "id": "normalize.gene.hgnc:108",
         "label": "ACHE",
         "mappings": [
             {
@@ -198,7 +198,7 @@ def normalized_braf():
     """Return normalized core Gene object for BRAF."""
     params = {
         "type": "Gene",
-        "id": "hgnc:1097",
+        "id": "normalize.gene.hgnc:1097",
         "label": "BRAF",
         "mappings": [
             {
@@ -373,7 +373,7 @@ def normalized_abl1():
     """Return normalized core Gene object for ABL1."""
     params = {
         "type": "Gene",
-        "id": "hgnc:76",
+        "id": "normalize.gene.hgnc:76",
         "label": "ABL1",
         "mappings": [
             {
@@ -554,7 +554,7 @@ def normalized_p150():
     """Return normalized core Gene object for p150."""
     params = {
         "type": "Gene",
-        "id": "hgnc:1910",
+        "id": "normalize.gene.hgnc:1910",
         "label": "CHAF1A",
         "mappings": [
             {
@@ -762,7 +762,7 @@ def normalized_loc_653303():
                 "value": "+"
             }
         ],
-        "id": "ncbigene:653303"
+        "id": "normalize.gene.ncbigene:653303"
     }
     return core_models.Gene(**params)
 
@@ -1094,7 +1094,7 @@ def normalized_ifnr():
     """Return normalized core Gene object for IFNR."""
     params = {
         "type": "Gene",
-        "id": "hgnc:5447",
+        "id": "normalize.gene.hgnc:5447",
         "label": "IFNR",
         "mappings": [
             {
@@ -1185,6 +1185,7 @@ def compare_normalize_resp(resp, expected_query, expected_match_type,
     assert resp.query == expected_query
     compare_warnings(resp.warnings, expected_warnings)
     assert resp.match_type == expected_match_type
+    assert resp.normalized_id == expected_gene.id.split("normalize.gene.")[-1]
     compare_gene(expected_gene, resp.gene)
     if not expected_source_meta:
         assert resp.source_meta_ == {}
