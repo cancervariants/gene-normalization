@@ -48,7 +48,7 @@ Normalized gene records are constructed by merging known data from all associate
 The normalized record
 ---------------------
 
-Normalized records are structured as `Gene Descriptors <https://vrsatile.readthedocs.io/en/latest/>`_ in conformance with the `GA4GH VRSATILE project <https://vrsatile.readthedocs.io/en/latest/>`_. The normalized gene concept is provided as a value object, and additional metadata is deposited as a label, xrefs, alternate labels, as well as Extensions for more complex information (such as loci and gene type). The following demonstrates this model for the BRAF gene:
+Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2.0-alpha>`_. The normalized gene concept is provided and additional metadata is deposited as a label, xrefs, alternate labels, as well as Extensions for more complex information (such as loci and gene type). The following demonstrates this model for the BRAF gene:
 
 .. admonition:: Example
 
@@ -56,7 +56,7 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
 
     {
       "id": "normalize.gene:braf",
-      "type": "GeneDescriptor",
+      "type": "Gene",
       "label": "BRAF",
       "extensions": [
         {
@@ -95,7 +95,7 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
           "name": "ensembl_locations",
           "value": [
             {
-              "id": "ga4gh:SL.iwWw9B3tkU3TCLF3d8xu4zSQBhpDZfJ6",
+              "id": "ga4gh:SL.WJ0hsPzXuK54mQyVysTqUNV5jaCATnRf",
               "type": "SequenceLocation",
               "sequenceReference": {
                 "type": "SequenceReference",
@@ -138,7 +138,7 @@ Normalized records are structured as `Gene Descriptors <https://vrsatile.readthe
               "end": "q34"
             },
             {
-              "id": "ga4gh:SL.rXzVqqlchBvUef98MNQA77FvwSJgiOf5",
+              "id": "ga4gh:SL.uNBZoxhjhohl24VlIut-JxPJAGfJ7EQE",
               "type": "SequenceLocation",
               "sequenceReference": {
                 "type": "SequenceReference",

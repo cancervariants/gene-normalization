@@ -1,68 +1,24 @@
 """This module contains data models for representing VICC normalized
 gene records.
 """
-from typing import Literal, List, Optional, Dict, Union, Any
+from typing import Literal, List, Optional, Dict, Union
 from enum import Enum, IntEnum
 
 from pydantic import (
     constr,
     BaseModel,
     StrictBool,
-    field_validator,
     StrictStr,
     StrictInt,
     ConfigDict,
 )
+from ga4gh.core import core_models
 from ga4gh.vrs import models
 
 from gene.version import __version__
 
 
 CURIE = constr(pattern=r"^\w[^:]*:.+$")
-
-
-class Extension(BaseModel):
-    """The Extension class provides VODs with a means to extend descriptions with other
-    attributes unique to a content provider. These extensions are not expected to be
-    natively understood under VRSATILE, but may be used for pre-negotiated exchange of
-    message attributes when needed.
-    """
-
-    type: Literal["Extension"] = "Extension"
-    name: StrictStr
-    value: Optional[Any] = None
-
-
-class GeneValueObject(BaseModel):
-    """A reference to a Gene as defined by an authority. For human genes, the use of
-    `hgnc <https://registry.identifiers.org/registry/hgnc>` as the gene authority is
-    RECOMMENDED.
-    """
-
-    id: CURIE
-    type: Literal["Gene"] = "Gene"
-
-
-class GeneDescriptor(BaseModel, extra="forbid"):
-    """This descriptor is intended to reference VRS Gene value objects."""
-
-    id: Optional[StrictStr] = None
-    type: Literal["GeneDescriptor"] = "GeneDescriptor"
-    gene: Union[CURIE, GeneValueObject]
-    label: Optional[StrictStr] = None
-    description: Optional[StrictStr] = None
-    xrefs: List[CURIE] = []
-    alternate_labels: List[StrictStr] = []
-    extensions: List[Extension] = []
-
-    @field_validator("xrefs")
-    def check_count_value(cls, v):
-        """Check xrefs value"""
-        if v:
-            assert len(v) == len(
-                {xref for xref in v}
-            ), "xrefs must contain unique items"  # noqa: E501
-        return v
 
 
 class SymbolStatus(str, Enum):
@@ -463,7 +419,7 @@ class BaseNormalizationService(BaseModel):
 class NormalizeService(BaseNormalizationService):
     """Define model for returning normalized concept."""
 
-    gene_descriptor: Optional[GeneDescriptor] = None
+    gene: Optional[core_models.Gene] = None
     source_meta_: Dict[SourceName, SourceMeta] = {}
 
     model_config = ConfigDict(
@@ -472,13 +428,73 @@ class NormalizeService(BaseNormalizationService):
                 "query": "BRAF",
                 "warnings": [],
                 "match_type": 100,
-                "gene_descriptor": {
-                    "id": "normalize.gene:BRAF",
-                    "type": "GeneDescriptor",
-                    "gene": "hgnc:1097",
+                "gene": {
+                    "type": "Gene",
+                    "id": "hgnc:1097",
                     "label": "BRAF",
-                    "xrefs": ["ncbigene:673", "ensembl:ENSG00000157764"],
-                    "alternate_labels": ["BRAF1", "RAFB1", "B-raf", "NS7", "B-RAF1"],
+                    "mappings": [
+                        {
+                            "coding": {"code": "673", "system": "ncbigene"},
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {"code": "ENSG00000157764", "system": "ensembl"},
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {"code": "CCDS5863", "system": "ccds"},
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {"code": "1943", "system": "iuphar"},
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {"code": "119066", "system": "orphanet"},
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {"code": "BRAF", "system": "cosmic"},
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {"code": "2284096", "system": "pubmed"},
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {"code": "uc003vwc.5", "system": "ucsc"},
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {"code": "164757", "system": "omim"},
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {"code": "NM_004333", "system": "refseq"},
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {"code": "CCDS87555", "system": "ccds"},
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {"code": "P15056", "system": "uniprot"},
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {"code": "M95712", "system": "ena.embl"},
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {"code": "OTTHUMG00000157457", "system": "vega"},
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {"code": "1565476", "system": "pubmed"},
+                            "relation": "relatedMatch",
+                        },
+                    ],
+                    "aliases": ["BRAF1", "RAFB1", "B-raf", "NS7", "B-RAF1"],
                     "extensions": [
                         {
                             "name": "approved_name",
@@ -488,25 +504,6 @@ class NormalizeService(BaseNormalizationService):
                         {
                             "name": "symbol_status",
                             "value": "approved",
-                            "type": "Extension",
-                        },
-                        {
-                            "name": "associated_with",
-                            "value": [
-                                "ccds:CCDS5863",
-                                "iuphar:1943",
-                                "orphanet:119066",
-                                "cosmic:BRAF",
-                                "pubmed:2284096",
-                                "ucsc:uc003vwc.5",
-                                "omim:164757",
-                                "refseq:NM_004333",
-                                "ccds:CCDS87555",
-                                "uniprot:P15056",
-                                "ena.embl:M95712",
-                                "vega:OTTHUMG00000157457",
-                                "pubmed:1565476",
-                            ],
                             "type": "Extension",
                         },
                         # {
@@ -668,7 +665,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "location_annotations": [],
                                 "locations": [
                                     {
-                                        "id": "ga4gh:SL.oyhehgtv3XV3iMTlul7XtMQ_5RSAvts6",  # noqa: E501
+                                        "id": "ga4gh:SL.dnydHb2Bnv5pwXjI4MpJmrZUADf5QLe1",  # noqa: E501
                                         "type": "SequenceLocation",
                                         "sequenceReference": {
                                             "type": "SequenceReference",
@@ -718,7 +715,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                         # "end": "q22.1"
                                     },
                                     {
-                                        "id": "ga4gh:SL.OuUQ-JYrkb92VioFp1P9JLGAbVQA1Wqs",  # noqa: E501
+                                        "id": "ga4gh:SL.U7vPSlX8eyCKdFSiROIsc9om0Y7pCm2g",  # noqa: E501
                                         "type": "SequenceLocation",
                                         "sequenceReference": {
                                             "type": "SequenceReference",

@@ -1,10 +1,9 @@
 """Module to test the query module."""
-import copy
-
 import pytest
+from ga4gh.core import core_models
 
 from gene.query import QueryHandler, InvalidParameterException
-from gene.schemas import BaseGene, SourceName, MatchType, GeneDescriptor
+from gene.schemas import BaseGene, SourceName, MatchType
 
 
 @pytest.fixture(scope='module')
@@ -30,17 +29,66 @@ def query_handler(database):
 
 @pytest.fixture(scope='module')
 def normalized_ache():
-    """Return normalized Gene Descriptor for ACHE."""
+    """Return normalized core Gene object for ACHE."""
     params = {
-        "id": "normalize.gene:ACHE",
-        "type": "GeneDescriptor",
-        "gene": "hgnc:108",
+        "type": "Gene",
+        "id": "hgnc:108",
         "label": "ACHE",
-        "xrefs": {
-            "ensembl:ENSG00000087085",
-            "ncbigene:43"
-        },
-        "alternate_labels": [
+        "mappings": [
+            {
+                "coding": {"code": "ENSG00000087085", "system": "ensembl"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "43", "system": "ncbigene"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "OTTHUMG00000157033", "system": "vega"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "uc003uxi.4", "system": "ucsc"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "CCDS5710", "system": "ccds"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "CCDS64736", "system": "ccds"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "CCDS5709", "system": "ccds"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "P22303", "system": "uniprot"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "1380483", "system": "pubmed"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "100740", "system": "omim"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "S09.979", "system": "merops"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "2465", "system": "iuphar"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "NM_015831", "system": "refseq"},
+                "relation": "relatedMatch",
+            },
+        ],
+        "aliases": [
             "3.1.1.7",
             "YT",
             "N-ACHE",
@@ -67,23 +115,6 @@ def normalized_ache():
                 "type": "Extension"
             },
             {
-                "name": "associated_with",
-                "value": [
-                    "vega:OTTHUMG00000157033",
-                    "ucsc:uc003uxi.4",
-                    "ccds:CCDS5710",
-                    "ccds:CCDS64736",
-                    "ccds:CCDS5709",
-                    "uniprot:P22303",
-                    "pubmed:1380483",
-                    "omim:100740",
-                    "merops:S09.979",
-                    "iuphar:2465",
-                    "refseq:NM_015831"
-                ],
-                "type": "Extension"
-            },
-            {
                 "name": "ncbi_locations",
                 "value": [
                     # {
@@ -95,7 +126,7 @@ def normalized_ache():
                     #     "start": "q22.1"
                     # },
                     {
-                        "id": "ga4gh:SL.OuUQ-JYrkb92VioFp1P9JLGAbVQA1Wqs",
+                        "id": "ga4gh:SL.U7vPSlX8eyCKdFSiROIsc9om0Y7pCm2g",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -125,7 +156,7 @@ def normalized_ache():
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.oyhehgtv3XV3iMTlul7XtMQ_5RSAvts6",
+                        "id": "ga4gh:SL.dnydHb2Bnv5pwXjI4MpJmrZUADf5QLe1",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -159,22 +190,79 @@ def normalized_ache():
             }
         ]
     }
-    return GeneDescriptor(**params)
+    return core_models.Gene(**params)
 
 
 @pytest.fixture(scope='module')
 def normalized_braf():
-    """Return normalized Gene Descriptor for BRAF."""
+    """Return normalized core Gene object for BRAF."""
     params = {
-        "id": "normalize.gene:BRAF",
-        "type": "GeneDescriptor",
-        "gene": "hgnc:1097",
+        "type": "Gene",
+        "id": "hgnc:1097",
         "label": "BRAF",
-        "xrefs": {
-            "ensembl:ENSG00000157764",
-            "ncbigene:673"
-        },
-        "alternate_labels": [
+        "mappings": [
+            {
+                "coding": {"code": "673", "system": "ncbigene"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "ENSG00000157764", "system": "ensembl"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "CCDS5863", "system": "ccds"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "1943", "system": "iuphar"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "119066", "system": "orphanet"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "BRAF", "system": "cosmic"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "2284096", "system": "pubmed"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "uc003vwc.5", "system": "ucsc"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "164757", "system": "omim"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "NM_004333", "system": "refseq"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "CCDS87555", "system": "ccds"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "P15056", "system": "uniprot"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "M95712", "system": "ena.embl"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "OTTHUMG00000157457", "system": "vega"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "1565476", "system": "pubmed"},
+                "relation": "relatedMatch",
+            },
+        ],
+        "aliases": [
             "BRAF1",
             "BRAF-1",
             "RAFB1",
@@ -191,27 +279,6 @@ def normalized_braf():
             {
                 "name": "symbol_status",
                 "value": "approved",
-                "type": "Extension"
-            },
-            {
-                "name": "associated_with",
-                "value": [
-                    "vega:OTTHUMG00000157457",
-                    "ucsc:uc003vwc.5",
-                    "ccds:CCDS5863",
-                    "ccds:CCDS87555",
-                    "ccds:CCDS94218",
-                    "ccds:CCDS94219",
-                    "uniprot:P15056",
-                    "pubmed:2284096",
-                    "pubmed:1565476",
-                    "cosmic:BRAF",
-                    "omim:164757",
-                    "orphanet:119066",
-                    "iuphar:1943",
-                    "ena.embl:M95712",
-                    "refseq:NM_004333"
-                ],
                 "type": "Extension"
             },
             # {
@@ -232,7 +299,7 @@ def normalized_braf():
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.iwWw9B3tkU3TCLF3d8xu4zSQBhpDZfJ6",
+                        "id": "ga4gh:SL.WJ0hsPzXuK54mQyVysTqUNV5jaCATnRf",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -256,7 +323,7 @@ def normalized_braf():
                     #     "end": "q34"
                     # },
                     {
-                        "id": "ga4gh:SL.rXzVqqlchBvUef98MNQA77FvwSJgiOf5",
+                        "id": "ga4gh:SL.uNBZoxhjhohl24VlIut-JxPJAGfJ7EQE",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -290,22 +357,79 @@ def normalized_braf():
             }
         ]
     }
-    return GeneDescriptor(**params)
+    return core_models.Gene(**params)
 
 
 @pytest.fixture(scope='module')
 def normalized_abl1():
-    """Return normalized Gene Descriptor for ABL1."""
+    """Return normalized core Gene object for ABL1."""
     params = {
-        "id": "normalize.gene:ABL1",
-        "type": "GeneDescriptor",
-        "gene": "hgnc:76",
+        "type": "Gene",
+        "id": "hgnc:76",
         "label": "ABL1",
-        "xrefs": {
-            "ensembl:ENSG00000097007",
-            "ncbigene:25"
-        },
-        "alternate_labels": [
+        "mappings": [
+            {
+                "coding": {"code": "ENSG00000097007", "system": "ensembl"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "25", "system": "ncbigene"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "OTTHUMG00000020813", "system": "vega"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "uc004bzv.4", "system": "ucsc"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "CCDS35166", "system": "ccds"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "CCDS35165", "system": "ccds"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "P00519", "system": "uniprot"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "1857987", "system": "pubmed"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "12626632", "system": "pubmed"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "ABL1", "system": "cosmic"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "189980", "system": "omim"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "117691", "system": "orphanet"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "1923", "system": "iuphar"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "M14752", "system": "ena.embl"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "NM_007313", "system": "refseq"},
+                "relation": "relatedMatch",
+            },
+        ],
+        "aliases": [
             "c-ABL",
             "JTK7",
             "p150",
@@ -338,25 +462,6 @@ def normalized_abl1():
                 "value": "approved",
                 "type": "Extension"
             },
-            {
-                "name": "associated_with",
-                "value": [
-                    "vega:OTTHUMG00000020813",
-                    "ucsc:uc004bzv.4",
-                    "ccds:CCDS35166",
-                    "ccds:CCDS35165",
-                    "uniprot:P00519",
-                    "pubmed:1857987",
-                    "pubmed:12626632",
-                    "cosmic:ABL1",
-                    "omim:189980",
-                    "orphanet:117691",
-                    "iuphar:1923",
-                    "ena.embl:M14752",
-                    "refseq:NM_007313"
-                ],
-                "type": "Extension"
-            },
             # {
             #     "name": "hgnc_locations",
             #     "value": [
@@ -383,7 +488,7 @@ def normalized_abl1():
                     #     "end": "q34.12"
                     # },
                     {
-                        "id": "ga4gh:SL.qwMQXDwguWeHsOb5bd7qoLC8zyfxcHzC",
+                        "id": "ga4gh:SL.F1QUtInXQaBEjAJNR1sYHXdp0XC000Qi",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -399,7 +504,7 @@ def normalized_abl1():
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.mL3bBgmOG_mOb3P68os_hfhlPzbqr1MS",
+                        "id": "ga4gh:SL.P9Qu87GYxoWPYh1BdAQC5bTLorjvvye7",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -433,22 +538,59 @@ def normalized_abl1():
             }
         ]
     }
-    return GeneDescriptor(**params)
+    return core_models.Gene(**params)
 
 
 @pytest.fixture(scope='module')
 def normalized_p150():
-    """Return normalized Gene Descriptor for p150."""
+    """Return normalized core Gene object for p150."""
     params = {
-        "id": "normalize.gene:P150",
-        "type": "GeneDescriptor",
-        "gene": "hgnc:1910",
+        "type": "Gene",
+        "id": "hgnc:1910",
         "label": "CHAF1A",
-        "xrefs": {
-            "ensembl:ENSG00000167670",
-            "ncbigene:10036"
-        },
-        "alternate_labels": [
+        "mappings": [
+            {
+                "coding": {"code": "ENSG00000167670", "system": "ensembl"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "10036", "system": "ncbigene"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "601246", "system": "omim"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "CCDS32875", "system": "ccds"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "7600578", "system": "pubmed"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "OTTHUMG00000181922", "system": "vega"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "Q13111", "system": "uniprot"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "NM_005483", "system": "refseq"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "U20979", "system": "ena.embl"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "uc002mal.4", "system": "ucsc"},
+                "relation": "relatedMatch",
+            },
+        ],
+        "aliases": [
             "CAF1P150",
             "MGC71229",
             "CAF-1",
@@ -466,20 +608,6 @@ def normalized_p150():
             {
                 "name": "symbol_status",
                 "value": "approved",
-                "type": "Extension"
-            },
-            {
-                "name": "associated_with",
-                "value": [
-                    "omim:601246",
-                    "ccds:CCDS32875",
-                    "pubmed:7600578",
-                    "vega:OTTHUMG00000181922",
-                    "uniprot:Q13111",
-                    "refseq:NM_005483",
-                    "ena.embl:U20979",
-                    "ucsc:uc002mal.4"
-                ],
                 "type": "Extension"
             },
             # {
@@ -500,7 +628,7 @@ def normalized_p150():
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.4RCVIbLVXLWPxvhd3IkRA-yI4o99Uwuq",
+                        "id": "ga4gh:SL.tLUFh2LAYq-bsMi0Vob_TIWrz-sE4HgE",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -523,7 +651,7 @@ def normalized_p150():
                     #     "end": "p13.3"
                     # },
                     {
-                        "id": "ga4gh:SL.-EYdfD5JkE4lqRwkCR_NNzaaT0uTYBg2",
+                        "id": "ga4gh:SL.-3T7UXNk6nIkMKB9YGEb0RTYxbVY2TUy",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -561,7 +689,7 @@ def normalized_p150():
             }
         ]
     }
-    return GeneDescriptor(**params)
+    return core_models.Gene(**params)
 
 
 @pytest.fixture(scope="module")
@@ -570,10 +698,9 @@ def normalized_loc_653303():
     normalized results that don't merge records.
     """
     params = {
-        "id": "normalize.gene:LOC653303",
-        "type": "GeneDescriptor",
+        "type": "Gene",
         "label": "LOC653303",
-        "alternate_labels": [
+        "aliases": [
             "LOC196266",
             "LOC654080",
             "LOC731196"
@@ -596,7 +723,7 @@ def normalized_loc_653303():
                     #     "end": "q23.3"
                     # },
                     {
-                        "id": "ga4gh:SL.Iumme4GSaXUPAo0ifaq85LLlA1nT7l5o",
+                        "id": "ga4gh:SL.hgpw5EH5q6_PFX1CTcOx5od0LKUQRuDH",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -627,9 +754,9 @@ def normalized_loc_653303():
                 "value": "+"
             }
         ],
-        "gene": "ncbigene:653303"
+        "id": "ncbigene:653303"
     }
-    return GeneDescriptor(**params)
+    return core_models.Gene(**params)
 
 
 @pytest.fixture(scope="module")
@@ -659,7 +786,7 @@ def normalize_unmerged_loc_653303():
                             #     "end": "q23.3"
                             # },
                             {
-                                "id": "ga4gh:SL.Iumme4GSaXUPAo0ifaq85LLlA1nT7l5o",
+                                "id": "ga4gh:SL.hgpw5EH5q6_PFX1CTcOx5od0LKUQRuDH",
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
@@ -748,7 +875,7 @@ def normalize_unmerged_chaf1a():
                         "location_annotations": [],
                         "locations": [
                             {
-                                "id": "ga4gh:SL.4RCVIbLVXLWPxvhd3IkRA-yI4o99Uwuq",
+                                "id": "ga4gh:SL.tLUFh2LAYq-bsMi0Vob_TIWrz-sE4HgE",
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
@@ -787,7 +914,7 @@ def normalize_unmerged_chaf1a():
                             #     "end": "p13.3"
                             # },
                             {
-                                "id": "ga4gh:SL.-EYdfD5JkE4lqRwkCR_NNzaaT0uTYBg2",
+                                "id": "ga4gh:SL.-3T7UXNk6nIkMKB9YGEb0RTYxbVY2TUy",
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
@@ -845,7 +972,7 @@ def normalize_unmerged_ache():
                             #     "end": "q22.1"
                             # },
                             {
-                                "id": "ga4gh:SL.OuUQ-JYrkb92VioFp1P9JLGAbVQA1Wqs",
+                                "id": "ga4gh:SL.U7vPSlX8eyCKdFSiROIsc9om0Y7pCm2g",
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
@@ -886,7 +1013,7 @@ def normalize_unmerged_ache():
                         "location_annotations": [],
                         "locations": [
                             {
-                                "id": "ga4gh:SL.oyhehgtv3XV3iMTlul7XtMQ_5RSAvts6",
+                                "id": "ga4gh:SL.dnydHb2Bnv5pwXjI4MpJmrZUADf5QLe1",
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
@@ -956,16 +1083,30 @@ def normalize_unmerged_ache():
 
 @pytest.fixture(scope="module")
 def normalized_ifnr():
-    """Return normalized Gene Descriptor for IFNR."""
+    """Return normalized core Gene object for IFNR."""
     params = {
-        "id": "normalize.gene:IFNR",
-        "type": "GeneDescriptor",
-        "gene": "hgnc:5447",
+        "type": "Gene",
+        "id": "hgnc:5447",
         "label": "IFNR",
-        "xrefs": {
-            "ncbigene:3466"
-        },
-        "alternate_labels": [
+        "mappings": [
+            {
+                "coding": {"code": "3466", "system": "ncbigene"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "1906174", "system": "pubmed"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "147573", "system": "omim"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "1193239", "system": "pubmed"},
+                "relation": "relatedMatch",
+            },
+        ],
+        "aliases": [
             "IFNGM",
             "IFNGM2"
         ],
@@ -978,15 +1119,6 @@ def normalized_ifnr():
             {
                 "name": "symbol_status",
                 "value": "approved",
-                "type": "Extension"
-            },
-            {
-                "name": "associated_with",
-                "value": [
-                    "pubmed:1906174",
-                    "omim:147573",
-                    "pubmed:1193239"
-                ],
                 "type": "Extension"
             },
             {
@@ -1006,7 +1138,7 @@ def normalized_ifnr():
             }
         ]
     }
-    return GeneDescriptor(**params)
+    return core_models.Gene(**params)
 
 
 @pytest.fixture(scope='module')
@@ -1039,13 +1171,13 @@ def compare_warnings(actual_warnings, expected_warnings):
 
 
 def compare_normalize_resp(resp, expected_query, expected_match_type,
-                           expected_gene_descriptor, expected_warnings=None,
+                           expected_gene, expected_warnings=None,
                            expected_source_meta=None):
     """Check that normalize response is correct"""
     assert resp.query == expected_query
     compare_warnings(resp.warnings, expected_warnings)
     assert resp.match_type == expected_match_type
-    compare_gene_descriptor(expected_gene_descriptor, resp.gene_descriptor)
+    compare_gene(expected_gene, resp.gene)
     if not expected_source_meta:
         assert resp.source_meta_ == {}
     else:
@@ -1103,19 +1235,35 @@ def compare_service_meta(service_meta):
     assert service_meta.url == 'https://github.com/cancervariants/gene-normalization'
 
 
-def compare_gene_descriptor(test, actual):
-    """Test that actual and expected gene descriptors match."""
+def compare_gene(test, actual):
+    """Test that actual and expected core gene objects match."""
     assert actual.id == test.id
     assert actual.type == test.type
-    assert actual.gene == test.gene
     assert actual.label == test.label
-    if actual.xrefs or test.xrefs:
-        assert set(actual.xrefs) == set(test.xrefs), "xrefs"
-    assert set(actual.alternate_labels) == set(test.alternate_labels), "alt labels"
+
+    assert bool(actual.mappings) == bool(test.mappings)
+    if actual.mappings:
+        no_matches = []
+        for actual_mapping in actual.mappings:
+            match = None
+            for fixture_mapping in test.mappings:
+                if actual_mapping == fixture_mapping:
+                    match = actual_mapping
+                    break
+            if not match:
+                no_matches.append(actual_mapping)
+        assert no_matches == [], no_matches
+        assert len(actual.mappings) == len(test.mappings)
+
+    assert set(actual.aliases) == set(test.aliases), "aliases"
     extensions_present = "extensions" in test.model_fields.keys()
     assert ("extensions" in actual.model_fields.keys()) == extensions_present
     if extensions_present:
-        assert len(actual.extensions) == len(test.extensions), "len of extensions"
+        actual_ext_names = sorted([ext.name for ext in actual.extensions])
+        unique_actual_ext_names = sorted(set(actual_ext_names))
+        assert actual_ext_names == unique_actual_ext_names, "duplicate extension names"
+        test_ext_names = {ext.name for ext in test.extensions}
+        assert set(actual_ext_names) == test_ext_names, "extension names dont match"
         n_ext_correct = 0
         for test_ext in test.extensions:
             for actual_ext in actual.extensions:
@@ -1219,59 +1367,48 @@ def test_ache_query(query_handler, num_sources, normalized_ache, source_meta):
 
     q = "ache"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache = copy.deepcopy(normalized_ache)
-    cpy_normalized_ache.id = "normalize.gene:ache"
-    compare_normalize_resp(resp, q, MatchType.SYMBOL, cpy_normalized_ache,
+    compare_normalize_resp(resp, q, MatchType.SYMBOL, normalized_ache,
                            expected_source_meta=source_meta)
 
     q = "hgnc:108"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache.id = "normalize.gene:hgnc%3A108"
-    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_ache,
+    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, normalized_ache,
                            expected_source_meta=source_meta)
 
     q = "ensembl:ENSG00000087085"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache.id = "normalize.gene:ensembl%3AENSG00000087085"
-    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_ache,
+    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, normalized_ache,
                            expected_source_meta=source_meta)
 
     q = "ncbigene:43"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache.id = "normalize.gene:ncbigene%3A43"
-    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_ache,
+    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, normalized_ache,
                            expected_source_meta=source_meta)
 
     q = "3.1.1.7"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache.id = "normalize.gene:3.1.1.7"
-    compare_normalize_resp(resp, q, MatchType.ALIAS, cpy_normalized_ache,
+    compare_normalize_resp(resp, q, MatchType.ALIAS, normalized_ache,
                            expected_source_meta=source_meta)
 
     q = "ARACHE"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache.id = "normalize.gene:ARACHE"
-    compare_normalize_resp(resp, q, MatchType.ALIAS, cpy_normalized_ache,
+    compare_normalize_resp(resp, q, MatchType.ALIAS, normalized_ache,
                            expected_source_meta=source_meta)
 
     q = "YT"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache.id = "normalize.gene:YT"
-    compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, cpy_normalized_ache,
+    compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, normalized_ache,
                            expected_source_meta=source_meta)
 
     q = "ACEE"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache.id = "normalize.gene:ACEE"
-    compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, cpy_normalized_ache,
+    compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, normalized_ache,
                            expected_source_meta=source_meta)
 
     q = "omim:100740"
     resp = query_handler.normalize(q)
-    cpy_normalized_ache.id = "normalize.gene:omim%3A100740"
     compare_normalize_resp(resp, q, MatchType.ASSOCIATED_WITH,
-                           cpy_normalized_ache,
-                           expected_source_meta=source_meta)
+                           normalized_ache, expected_source_meta=source_meta)
 
 
 def test_braf_query(query_handler, num_sources, normalized_braf, source_meta):
@@ -1307,47 +1444,38 @@ def test_braf_query(query_handler, num_sources, normalized_braf, source_meta):
 
     q = "braf"
     resp = query_handler.normalize(q)
-    cpy_normalized_braf = copy.deepcopy(normalized_braf)
-    cpy_normalized_braf.id = "normalize.gene:braf"
-    compare_normalize_resp(resp, q, MatchType.SYMBOL, cpy_normalized_braf,
+    compare_normalize_resp(resp, q, MatchType.SYMBOL, normalized_braf,
                            expected_source_meta=source_meta)
 
     q = "hgnc:1097"
     resp = query_handler.normalize(q)
-    cpy_normalized_braf.id = "normalize.gene:hgnc%3A1097"
-    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_braf,
+    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, normalized_braf,
                            expected_source_meta=source_meta)
 
     q = "ensembl:ENSG00000157764"
     resp = query_handler.normalize(q)
-    cpy_normalized_braf.id = "normalize.gene:ensembl%3AENSG00000157764"
-    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_braf,
+    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, normalized_braf,
                            expected_source_meta=source_meta)
 
     q = "ncbigene:673"
     resp = query_handler.normalize(q)
-    cpy_normalized_braf.id = "normalize.gene:ncbigene%3A673"
-    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_braf,
+    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, normalized_braf,
                            expected_source_meta=source_meta)
 
     q = "NS7"
     resp = query_handler.normalize(q)
-    cpy_normalized_braf.id = "normalize.gene:NS7"
-    compare_normalize_resp(resp, q, MatchType.ALIAS, cpy_normalized_braf,
+    compare_normalize_resp(resp, q, MatchType.ALIAS, normalized_braf,
                            expected_source_meta=source_meta)
 
     q = "b-raf"
     resp = query_handler.normalize(q)
-    cpy_normalized_braf.id = "normalize.gene:b-raf"
-    compare_normalize_resp(resp, q, MatchType.ALIAS, cpy_normalized_braf,
+    compare_normalize_resp(resp, q, MatchType.ALIAS, normalized_braf,
                            expected_source_meta=source_meta)
 
     q = "omim:164757"
     resp = query_handler.normalize(q)
-    cpy_normalized_braf.id = "normalize.gene:omim%3A164757"
     compare_normalize_resp(resp, q, MatchType.ASSOCIATED_WITH,
-                           cpy_normalized_braf,
-                           expected_source_meta=source_meta)
+                           normalized_braf, expected_source_meta=source_meta)
 
 
 def test_abl1_query(query_handler, num_sources, normalized_abl1, source_meta):
@@ -1383,59 +1511,48 @@ def test_abl1_query(query_handler, num_sources, normalized_abl1, source_meta):
 
     q = "abl1"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1 = copy.deepcopy(normalized_abl1)
-    cpy_normalized_abl1.id = "normalize.gene:abl1"
-    compare_normalize_resp(resp, q, MatchType.SYMBOL, cpy_normalized_abl1,
+    compare_normalize_resp(resp, q, MatchType.SYMBOL, normalized_abl1,
                            expected_source_meta=source_meta)
 
     q = "hgnc:76"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1.id = "normalize.gene:hgnc%3A76"
-    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_abl1,
+    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, normalized_abl1,
                            expected_source_meta=source_meta)
 
     q = "ensembl:ENSG00000097007"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1.id = "normalize.gene:ensembl%3AENSG00000097007"
-    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_abl1,
+    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, normalized_abl1,
                            expected_source_meta=source_meta)
 
     q = "ncbigene:25"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1.id = "normalize.gene:ncbigene%3A25"
-    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, cpy_normalized_abl1,
+    compare_normalize_resp(resp, q, MatchType.CONCEPT_ID, normalized_abl1,
                            expected_source_meta=source_meta)
 
     q = "v-abl"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1.id = "normalize.gene:v-abl"
-    compare_normalize_resp(resp, q, MatchType.ALIAS, cpy_normalized_abl1,
+    compare_normalize_resp(resp, q, MatchType.ALIAS, normalized_abl1,
                            expected_source_meta=source_meta)
 
     q = "LOC116063"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1.id = "normalize.gene:LOC116063"
-    compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, cpy_normalized_abl1,
+    compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, normalized_abl1,
                            expected_source_meta=source_meta)
 
     q = "LOC112779"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1.id = "normalize.gene:LOC112779"
-    compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, cpy_normalized_abl1,
+    compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, normalized_abl1,
                            expected_source_meta=source_meta)
 
     q = "ABL"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1.id = "normalize.gene:ABL"
-    compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, cpy_normalized_abl1,
+    compare_normalize_resp(resp, q, MatchType.PREV_SYMBOL, normalized_abl1,
                            expected_source_meta=source_meta)
 
     q = "refseq:NM_007313"
     resp = query_handler.normalize(q)
-    cpy_normalized_abl1.id = "normalize.gene:refseq%3ANM_007313"
     compare_normalize_resp(resp, q, MatchType.ASSOCIATED_WITH,
-                           cpy_normalized_abl1,
-                           expected_source_meta=source_meta)
+                           normalized_abl1, expected_source_meta=source_meta)
 
 
 def test_multiple_norm_concepts(query_handler, normalized_p150, source_meta):
@@ -1453,7 +1570,7 @@ def test_multiple_norm_concepts(query_handler, normalized_p150, source_meta):
 
 def test_normalize_single_entry(query_handler, normalized_loc_653303):
     """Test that the normalized endpoint correctly shapes unmerged identity
-    records into gene descriptors.
+    records into core gene objects.
     """
     q = "LOC653303"
     resp = query_handler.normalize(q)

@@ -1,11 +1,10 @@
 """This module provides methods for handling queries."""
 import re
 from typing import List, Dict, Set, Any, Tuple, TypeVar, Callable, Optional
-from urllib.parse import quote
 from datetime import datetime
 
 from ga4gh.vrs import models
-from ga4gh.core import ga4gh_identify
+from ga4gh.core import core_models, ga4gh_identify
 
 from gene import logger
 from gene import NAMESPACE_LOOKUP, PREFIX_LOOKUP, ITEM_TYPES
@@ -14,7 +13,7 @@ from gene.database import AbstractDatabase, DatabaseReadException
 from gene.schemas import BaseGene, Gene, NamespacePrefix, RecordType, RefType, \
     MatchType, SourceName, ServiceMeta, SourcePriority, NormalizeService, \
     SearchService, GeneTypeFieldName, UnmergedNormalizationService, MatchesNormalized, \
-    BaseNormalizationService, Extension, GeneDescriptor, SourceMeta
+    BaseNormalizationService, SourceMeta
 
 
 NormService = TypeVar("NormService", bound=BaseNormalizationService)
@@ -76,10 +75,10 @@ class QueryHandler:
         :param loc: GeneSequenceLocation represented as a dict
         :return: VRS sequence location
         """
-        sequence = loc["sequence_id"].split("ga4gh:")[-1]
+        refget_ac = loc["sequence_id"].split("ga4gh:")[-1]
 
         return models.SequenceLocation(
-            sequenceReference=models.SequenceReference(refgetAccession=sequence),
+            sequenceReference=models.SequenceReference(refgetAccession=refget_ac),
             start=int(loc["start"]),
             end=int(loc["end"])
         )
@@ -374,15 +373,21 @@ class QueryHandler:
         :return: completed response object.
         """
         sources_meta = {}
-        gene_descr = response.gene_descriptor
-        xrefs = gene_descr.xrefs or []  # type: ignore
-        ids = [gene_descr.gene] + xrefs  # type: ignore
-        for concept_id in ids:
-            prefix = concept_id.split(':')[0]
-            src_name = PREFIX_LOOKUP[prefix.lower()]
-            if src_name not in sources_meta:
-                _source_meta = self.db.get_source_metadata(src_name)
-                sources_meta[SourceName(src_name)] = SourceMeta(**_source_meta)
+        gene = response.gene
+        sources = [gene.id.split(":")[0]]
+        if gene.mappings:
+            sources += [m.coding.system for m in gene.mappings]
+
+        for src in sources:
+            try:
+                src_name = PREFIX_LOOKUP[src]
+            except KeyError:
+                # not an imported source
+                continue
+            else:
+                if src_name not in sources_meta:
+                    _source_meta = self.db.get_source_metadata(src_name)
+                    sources_meta[SourceName(src_name)] = SourceMeta(**_source_meta)
         response.source_meta_ = sources_meta
         return response
 
@@ -409,57 +414,67 @@ class QueryHandler:
             })
         return response
 
-    def _add_gene_descriptor(
+    def _add_gene(
         self, response: NormalizeService, record: Dict, match_type: MatchType,
         possible_concepts: Optional[List[str]] = None
     ) -> NormalizeService:
-        """Add gene descriptor to response.
+        """Add core Gene object to response.
 
         :param response: Response object
         :param record: Gene record
         :param match_type: query's match type
         :param possible_concepts: List of other normalized concepts found
-        :return: Response with gene descriptor
+        :return: Response with core Gene
         """
-        params = {
-            "id": f"normalize.gene:{quote(response.query)}",
-            "label": record["symbol"],
-            "gene": record["concept_id"]
-        }
+        gene_obj = core_models.Gene(
+            id=record["concept_id"],
+            label=record["symbol"],
+        )
 
-        # xrefs
-        if "xrefs" in record and record["xrefs"]:
-            params["xrefs"] = record["xrefs"]
+        # mappings
+        source_ids = record.get("xrefs", []) + record.get("associated_with", [])
+        mappings = []
+        for source_id in source_ids:
+            system, code = source_id.split(":")
+            mappings.append(
+                core_models.Mapping(
+                    coding=core_models.Coding(
+                        code=core_models.Code(code), system=system.lower()
+                    ),
+                    relation=core_models.Relation.RELATED_MATCH,
+                )
+            )
+        if mappings:
+            gene_obj.mappings = mappings
 
-        # alternate labels
-        alt_labels = set()
+        # aliases
+        aliases = set()
         for key in ["previous_symbols", "aliases"]:
             if key in record and record[key]:
                 val = record[key]
                 if isinstance(val, str):
                     val = [val]
-                alt_labels.update(val)
-        if alt_labels:
-            params["alternate_labels"] = list(alt_labels)
+                aliases.update(val)
+        if aliases:
+            gene_obj.aliases = list(aliases)
 
         # extensions
-        extensions = list()
+        extensions = []
         extension_and_record_labels = [
             ("symbol_status", "symbol_status"),
             ("approved_name", "label"),
-            ("associated_with", "associated_with"),
             ("previous_symbols", "previous_symbols"),
             ("location_annotations", "location_annotations"),
             ("strand", "strand")
         ]
         for ext_label, record_label in extension_and_record_labels:
             if record_label in record and record[record_label]:
-                extensions.append(Extension(
+                extensions.append(core_models.Extension(
                     name=ext_label,
                     value=record[record_label]
                 ))
 
-        record_locations = dict()
+        record_locations = {}
         if record["item_type"] == RecordType.IDENTITY:
             locs = record.get("locations")
             if locs:
@@ -470,17 +485,21 @@ class QueryHandler:
                     record_locations[k] = v
 
         for loc_name, locations in record_locations.items():
-            transformed_locs = list()
+            transformed_locs = []
             for loc in locations:
                 if loc["type"] == "SequenceLocation":
                     transformed_locs.append(self._transform_location(loc))
-            extensions.append(Extension(name=loc_name, value=transformed_locs))
+
+            if transformed_locs:
+                extensions.append(
+                    core_models.Extension(name=loc_name, value=transformed_locs)
+                )
 
         # handle gene types separately because they're wonky
         if record["item_type"] == RecordType.IDENTITY:
             gene_type = record.get("gene_type")
             if gene_type:
-                extensions.append(Extension(
+                extensions.append(core_models.Extension(
                     name=GeneTypeFieldName[record["src_name"].upper()].value,
                     value=gene_type
                 ))
@@ -489,19 +508,19 @@ class QueryHandler:
                 field_name = f.value
                 values = record.get(field_name, [])
                 for value in values:
-                    extensions.append(Extension(
+                    extensions.append(core_models.Extension(
                         name=field_name,
                         value=value
                     ))
         if extensions:
-            params["extensions"] = extensions
+            gene_obj.extensions = extensions
 
         # add warnings
         if possible_concepts:
             response = self._add_alt_matches(response, record,
                                              possible_concepts)
 
-        response.gene_descriptor = GeneDescriptor(**params)
+        response.gene = gene_obj
         response = self._add_merged_meta(response)
         response.match_type = match_type
         return response
@@ -555,17 +574,16 @@ class QueryHandler:
         >>> from gene.database import create_db
         >>> q = QueryHandler(create_db())
         >>> result = q.normalize("BRAF")
-        >>> result.gene_descriptor.gene_id
+        >>> result.gene.id
         'hgnc:1097'
-        >>> result.xrefs
-        ['ensembl:ENSG00000157764', 'ncbigene:673']
+        >>> result.aliases
+        ['BRAF1', 'RAFB1', 'B-raf', 'NS7', 'B-RAF1']
 
         :param query: String to find normalized concept for
         :return: Normalized gene concept
         """
         response = NormalizeService(**self._prepare_normalized_response(query))
-        return self._perform_normalized_lookup(response, query,
-                                               self._add_gene_descriptor)
+        return self._perform_normalized_lookup(response, query, self._add_gene)
 
     def _resolve_merge(
         self, response: NormService, record: Dict, match_type: MatchType,
