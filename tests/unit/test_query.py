@@ -261,6 +261,14 @@ def normalized_braf():
                 "coding": {"code": "1565476", "system": "pubmed"},
                 "relation": "relatedMatch",
             },
+            {
+                "coding": {"code": "CCDS94219", "system": "ccds"},
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {"code": "CCDS94218", "system": "ccds"},
+                "relation": "relatedMatch",
+            },
         ],
         "aliases": [
             "BRAF1",
