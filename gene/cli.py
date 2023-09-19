@@ -1,4 +1,4 @@
-"""This module provides a CLI util to make updates to normalizer database."""
+"""Provides a CLI util to make updates to normalizer database."""
 import logging
 import os
 from pathlib import Path
@@ -8,16 +8,18 @@ from typing import Collection, List, Optional, Set
 import click
 
 from gene import SOURCES
-from gene.database import AbstractDatabase, DatabaseReadException, \
-    DatabaseWriteException
-from gene.database import create_db
+from gene.database import (
+    AbstractDatabase,
+    DatabaseReadException,
+    DatabaseWriteException,
+    create_db,
+)
 from gene.database.database import DatabaseException
-from gene.etl import NCBI, HGNC, Ensembl  # noqa: F401
+from gene.etl import HGNC, NCBI, Ensembl  # noqa: F401
 from gene.etl.merge import Merge
 from gene.schemas import SourceName
 
-
-logger = logging.getLogger('gene')
+logger = logging.getLogger("gene")
 logger.setLevel(logging.DEBUG)
 
 
@@ -67,7 +69,9 @@ def update_from_remote(data_url: Optional[str], db_url: str) -> None:
     try:
         db.load_from_remote(data_url)
     except NotImplementedError:
-        click.echo(f"Error: Fetching remote data dump not supported for {db.__class__.__name__}")  # noqa: E501
+        click.echo(
+            f"Error: Fetching remote data dump not supported for {db.__class__.__name__}"
+        )  # noqa: E501
         click.get_current_context().exit(1)
     except DatabaseException as e:
         click.echo(f"Encountered exception during update: {str(e)}")
@@ -76,12 +80,13 @@ def update_from_remote(data_url: Optional[str], db_url: str) -> None:
 
 @click.command()
 @click.option(
-    "--output_directory", "-o",
+    "--output_directory",
+    "-o",
     help="Output location to write to",
-    type=click.Path(exists=True, path_type=Path)
+    type=click.Path(exists=True, path_type=Path),
 )
 @click.option("--db_url", help="URL endpoint for the application database.")
-def dump_database(output_directory: Path, db_url: str):
+def dump_database(output_directory: Path, db_url: str) -> None:
     """Dump data from database into file.
 
     \f
@@ -95,7 +100,9 @@ def dump_database(output_directory: Path, db_url: str):
     try:
         db.export_db(output_directory)
     except NotImplementedError:
-        click.echo(f"Error: Dumping data to file not supported for {db.__class__.__name__}")  # noqa: E501
+        click.echo(
+            f"Error: Dumping data to file not supported for {db.__class__.__name__}"
+        )  # noqa: E501
         click.get_current_context().exit(1)
     except DatabaseException as e:
         click.echo(f"Encountered exception during update: {str(e)}")
@@ -157,7 +164,7 @@ def _load_source(
     start_load = timer()
 
     # used to get source class name from string
-    SourceClass = eval(n.value)
+    SourceClass = eval(n.value)  # noqa: N806
 
     source = SourceClass(database=db)
     processed_ids += source.perform_etl()
@@ -201,36 +208,24 @@ def _load_merge(db: AbstractDatabase, processed_ids: Set[str]) -> None:
     click.echo("Constructing normalized records...")
     merge.create_merged_concepts(processed_ids)
     end = timer()
-    click.echo(f"Merged concept generation completed in "
-               f"{(end - start):.5f} seconds")
+    click.echo(
+        f"Merged concept generation completed in " f"{(end - start):.5f} seconds"
+    )
 
 
 @click.command()
+@click.option("--sources", help="The source(s) you wish to update separated by spaces.")
+@click.option("--aws_instance", is_flag=True, help="Using AWS DynamodDB instance.")
+@click.option("--db_url", help="URL endpoint for the application database.")
+@click.option("--update_all", is_flag=True, help="Update all normalizer sources.")
 @click.option(
-    '--sources',
-    help="The source(s) you wish to update separated by spaces."
-)
-@click.option(
-    '--aws_instance',
+    "--update_merged",
     is_flag=True,
-    help="Using AWS DynamodDB instance."
+    help="Update concepts for normalize endpoint from accepted sources.",
 )
-@click.option(
-    '--db_url',
-    help="URL endpoint for the application database."
-)
-@click.option(
-    '--update_all',
-    is_flag=True,
-    help='Update all normalizer sources.'
-)
-@click.option(
-    '--update_merged',
-    is_flag=True,
-    help='Update concepts for normalize endpoint from accepted sources.'
-)
-def update_normalizer_db(sources: str, aws_instance: bool, db_url: str,
-                         update_all: bool, update_merged: bool) -> None:
+def update_normalizer_db(
+    sources: str, aws_instance: bool, db_url: str, update_all: bool, update_merged: bool
+) -> None:
     """Update selected normalizer source(s) in the gene database.
 
     :param sources: names of sources to update, comma-separated
@@ -248,7 +243,9 @@ def update_normalizer_db(sources: str, aws_instance: bool, db_url: str,
             _load_merge(db, set())
         else:
             ctx = click.get_current_context()
-            click.echo("Must either enter 1 or more sources, or use `--update_all` parameter")  # noqa: E501
+            click.echo(
+                "Must either enter 1 or more sources, or use `--update_all` parameter"
+            )  # noqa: E501
             click.echo(ctx.get_help())
             ctx.exit()
     else:
@@ -266,5 +263,5 @@ def update_normalizer_db(sources: str, aws_instance: bool, db_url: str,
         _update_normalizer(parsed_source_names, db, update_merged)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     update_normalizer_db()
