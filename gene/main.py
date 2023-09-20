@@ -1,13 +1,13 @@
 """Main application for FastAPI"""
-from fastapi import FastAPI, HTTPException, Query
+import html
 from typing import Optional
+
+from fastapi import FastAPI, HTTPException, Query
+
 from gene import __version__
 from gene.database import create_db
-from gene.query import QueryHandler, InvalidParameterException
-from gene.schemas import SearchService, NormalizeService, \
-    UnmergedNormalizationService
-import html
-
+from gene.query import InvalidParameterException, QueryHandler
+from gene.schemas import NormalizeService, SearchService, UnmergedNormalizationService
 
 db = create_db()
 query_handler = QueryHandler(db)
@@ -52,20 +52,26 @@ excl_descr = """Optional. Comma-separated list of source names to exclude in
              response. Will include all other sources. Returns HTTP status
              code 422: Unprocessable Entity if both 'incl' and 'excl'
              parameters are given."""
-search_description = ("For each source, return strongest-match concepts "
-                      "for query string provided by user")
+search_description = (
+    "For each source, return strongest-match concepts "
+    "for query string provided by user"
+)
 
 
-@app.get("/gene/search",
-         summary=read_query_summary,
-         response_description=response_description,
-         response_model=SearchService,
-         description=search_description,
-         tags=["Query"])
-def search(q: str = Query(..., description=q_descr),  # noqa: D103
-           keyed: Optional[bool] = Query(False, description=keyed_descr),
-           incl: Optional[str] = Query(None, description=incl_descr),
-           excl: Optional[str] = Query(None, description=excl_descr)):
+@app.get(
+    "/gene/search",
+    summary=read_query_summary,
+    response_description=response_description,
+    response_model=SearchService,
+    description=search_description,
+    tags=["Query"],
+)
+def search(
+    q: str = Query(..., description=q_descr),  # noqa: D103
+    keyed: Optional[bool] = Query(False, description=keyed_descr),
+    incl: Optional[str] = Query(None, description=incl_descr),
+    excl: Optional[str] = Query(None, description=excl_descr),
+) -> SearchService:
     """Return strongest match concepts to query string provided by user.
 
     :param str q: gene search term
@@ -80,8 +86,7 @@ def search(q: str = Query(..., description=q_descr),  # noqa: D103
     :return: JSON response with matched records and source metadata
     """
     try:
-        resp = query_handler.search(html.unescape(q), keyed=keyed,
-                                    incl=incl, excl=excl)
+        resp = query_handler.search(html.unescape(q), keyed=keyed, incl=incl, excl=excl)
     except InvalidParameterException as e:
         raise HTTPException(status_code=422, detail=str(e))
 
@@ -94,13 +99,15 @@ normalize_descr = "Return merged highest-match concept for query."
 normalize_q_descr = "Gene to normalize."
 
 
-@app.get("/gene/normalize",
-         summary=normalize_summary,
-         response_description=normalize_response_descr,
-         response_model=NormalizeService,
-         description=normalize_descr,
-         tags=["Query"])
-def normalize(q: str = Query(..., description=normalize_q_descr)):
+@app.get(
+    "/gene/normalize",
+    summary=normalize_summary,
+    response_description=normalize_response_descr,
+    response_model=NormalizeService,
+    description=normalize_descr,
+    tags=["Query"],
+)
+def normalize(q: str = Query(..., description=normalize_q_descr)) -> NormalizeService:
     """Return strongest match concepts to query string provided by user.
 
     :param str q: gene search term
@@ -113,22 +120,28 @@ def normalize(q: str = Query(..., description=normalize_q_descr)):
     return resp
 
 
-unmerged_matches_summary = ("Given query, provide source records corresponding to "
-                            "normalized concept.")
-unmerged_response_descr = ("Response containing source records contained within "
-                           "normalized concept.")
-unmerged_normalize_description = ("Return unmerged records associated with the "
-                                  "normalized result of the user-provided query "
-                                  "string.")
+unmerged_matches_summary = (
+    "Given query, provide source records corresponding to " "normalized concept."
+)
+unmerged_response_descr = (
+    "Response containing source records contained within " "normalized concept."
+)
+unmerged_normalize_description = (
+    "Return unmerged records associated with the "
+    "normalized result of the user-provided query "
+    "string."
+)
 
 
-@app.get("/gene/normalize_unmerged",
-         summary=unmerged_matches_summary,
-         operation_id="getUnmergedRecords",
-         response_description=unmerged_response_descr,
-         response_model=UnmergedNormalizationService,
-         description=unmerged_normalize_description,
-         tags=["Query"])
+@app.get(
+    "/gene/normalize_unmerged",
+    summary=unmerged_matches_summary,
+    operation_id="getUnmergedRecords",
+    response_description=unmerged_response_descr,
+    response_model=UnmergedNormalizationService,
+    description=unmerged_normalize_description,
+    tags=["Query"],
+)
 def normalize_unmerged(
     q: str = Query(..., description=normalize_q_descr)
 ) -> UnmergedNormalizationService:

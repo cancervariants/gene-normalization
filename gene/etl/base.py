@@ -1,34 +1,39 @@
 """A base class for extraction, transformation, and loading of data."""
-import re
-from abc import ABC, abstractmethod
-from typing import Dict, Optional, List
-from pathlib import Path
-from ftplib import FTP
-import gzip
-import shutil
-from os import remove
-from dateutil import parser
 import datetime
+import gzip
 import logging
+import re
+import shutil
+from abc import ABC, abstractmethod
+from ftplib import FTP
+from os import remove
+from pathlib import Path
+from typing import Dict, List, Optional
 
-from gffutils.feature import Feature
-from biocommons.seqrepo import SeqRepo
 import pydantic
+from biocommons.seqrepo import SeqRepo
+from dateutil import parser
+from gffutils.feature import Feature
 
-from gene.database import AbstractDatabase
 from gene import ITEM_TYPES, SEQREPO_ROOT_DIR
-from gene.schemas import Gene, MatchType, SourceName, GeneSequenceLocation
+from gene.database import AbstractDatabase
+from gene.schemas import Gene, GeneSequenceLocation, MatchType, SourceName
 
-logger = logging.getLogger('gene')
+logger = logging.getLogger("gene")
 logger.setLevel(logging.DEBUG)
 
 
 class Base(ABC):
     """The ETL base class."""
 
-    def __init__(self, database: AbstractDatabase, host: str, data_dir: str,
-                 src_data_dir: Path, seqrepo_dir: Path = SEQREPO_ROOT_DIR,
-                 *args, **kwargs) -> None:
+    def __init__(
+        self,
+        database: AbstractDatabase,
+        host: str,
+        data_dir: str,
+        src_data_dir: Path,
+        seqrepo_dir: Path = SEQREPO_ROOT_DIR,
+    ) -> None:
         """Instantiate Base class.
 
         :param database: database instance
@@ -54,17 +59,17 @@ class Base(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def _extract_data(self, *args, **kwargs) -> None:
+    def _extract_data(self, *args, **kwargs) -> None:  # noqa: ANN002
         """Extract data from FTP site or local data directory."""
         raise NotImplementedError
 
     @abstractmethod
-    def _transform_data(self, *args, **kwargs) -> None:
+    def _transform_data(self) -> None:
         """Transform data to model."""
         raise NotImplementedError
 
     @abstractmethod
-    def _add_meta(self, *args, **kwargs) -> None:
+    def _add_meta(self) -> None:
         """Add source meta to database source info."""
         raise NotImplementedError
 
@@ -83,13 +88,12 @@ class Base(ABC):
         try:
             assert Gene(match_type=MatchType.NO_MATCH, **gene)
         except pydantic.ValidationError as e:
-            logger.warning(f"Unable to load {gene} due to validation error: "
-                           f"{e}")
+            logger.warning(f"Unable to load {gene} due to validation error: " f"{e}")
         else:
-            concept_id = gene['concept_id']
-            gene['label_and_type'] = f"{concept_id.lower()}##identity"
+            concept_id = gene["concept_id"]
+            gene["label_and_type"] = f"{concept_id.lower()}##identity"
             gene["src_name"] = self._src_name.value
-            gene['item_type'] = 'identity'
+            gene["item_type"] = "identity"
 
             for attr_type in ITEM_TYPES:
                 if attr_type in gene:
@@ -103,8 +107,9 @@ class Base(ABC):
             self._database.add_record(gene, self._src_name)
             self._processed_ids.append(concept_id)
 
-    def _ftp_download(self, host: str, data_dir: str, fn: str, source_dir: Path,
-                      data_fn: str) -> Optional[str]:
+    def _ftp_download(
+        self, host: str, data_dir: str, fn: str, source_dir: Path, data_fn: str
+    ) -> Optional[str]:
         """Download data file from FTP site.
 
         :param host: Source's FTP host name
@@ -116,16 +121,16 @@ class Base(ABC):
         """
         with FTP(host) as ftp:
             ftp.login()
-            timestamp = ftp.voidcmd(f'MDTM {data_dir}{data_fn}')[4:].strip()
+            timestamp = ftp.voidcmd(f"MDTM {data_dir}{data_fn}")[4:].strip()
             date = str(parser.parse(timestamp)).split()[0]
-            version = \
-                datetime.datetime.strptime(date, '%Y-%m-%d').strftime('%Y%m%d')
+            version = datetime.datetime.strptime(date, "%Y-%m-%d").strftime("%Y%m%d")
             ftp.cwd(data_dir)
             self._ftp_download_file(ftp, data_fn, source_dir, fn)
         return version
 
-    def _ftp_download_file(self, ftp: FTP, data_fn: str, source_dir: Path,
-                           fn: str) -> None:
+    def _ftp_download_file(
+        self, ftp: FTP, data_fn: str, source_dir: Path, fn: str
+    ) -> None:
         """Download data file from FTP
 
         :param ftp: FTP instance
@@ -133,15 +138,15 @@ class Base(ABC):
         :param source_dir: Source's data directory
         :param fn: Filename for downloaded file
         """
-        if data_fn.endswith('.gz'):
-            filepath = source_dir / f'{fn}.gz'
+        if data_fn.endswith(".gz"):
+            filepath = source_dir / f"{fn}.gz"
         else:
             filepath = source_dir / fn
-        with open(filepath, 'wb') as fp:
-            ftp.retrbinary(f'RETR {data_fn}', fp.write)
-        if data_fn.endswith('.gz'):
-            with gzip.open(filepath, 'rb') as f_in:
-                with open(source_dir / fn, 'wb') as f_out:
+        with open(filepath, "wb") as fp:
+            ftp.retrbinary(f"RETR {data_fn}", fp.write)
+        if data_fn.endswith(".gz"):
+            with gzip.open(filepath, "rb") as f_in:
+                with open(source_dir / fn, "wb") as f_out:
                     shutil.copyfileobj(f_in, f_out)
             remove(filepath)
 
@@ -168,7 +173,7 @@ class Base(ABC):
         start_arm_ix = re.search("[pq]", start).start()  # type: ignore
         start_arm = start[start_arm_ix]
 
-        end = loc[range_ix + 1:]
+        end = loc[range_ix + 1 :]
         end_arm_match = re.search("[pq]", end)
 
         if not end_arm_match:
@@ -179,12 +184,14 @@ class Base(ABC):
         end_arm_ix = end_arm_match.start()  # type: ignore
         end_arm = end[end_arm_ix]
 
-        if (start_arm == end_arm and start > end) or \
-                (start_arm != end_arm and start_arm == "p" and end_arm == "q"):
+        if (start_arm == end_arm and start > end) or (
+            start_arm != end_arm and start_arm == "p" and end_arm == "q"
+        ):
             location["start"] = start
             location["end"] = end
-        elif (start_arm == end_arm and start < end) or \
-                (start_arm != end_arm and start_arm == "q" and end_arm == "p"):
+        elif (start_arm == end_arm and start < end) or (
+            start_arm != end_arm and start_arm == "q" and end_arm == "p"
+        ):
             location["start"] = end
             location["end"] = start
 
@@ -228,9 +235,7 @@ class Base(ABC):
             logger.warning(f"SeqRepo raised KeyError: {e}")
         return aliases
 
-    def _get_sequence_location(
-        self, seq_id: str, gene: Feature, params: Dict
-    ) -> Dict:
+    def _get_sequence_location(self, seq_id: str, gene: Feature, params: Dict) -> Dict:
         """Get a gene's GeneSequenceLocation.
 
         :param seq_id: The sequence ID.
@@ -251,9 +256,11 @@ class Base(ABC):
                 location = GeneSequenceLocation(
                     start=gene.start - 1,  # type: ignore
                     end=gene.end,  # type: ignore
-                    sequence_id=sequence
+                    sequence_id=sequence,
                 ).model_dump()  # type: ignore
             else:
-                logger.warning(f"{params['concept_id']} has invalid interval:"
-                               f"start={gene.start - 1} end={gene.end}")  # type: ignore
+                logger.warning(
+                    f"{params['concept_id']} has invalid interval:"
+                    f"start={gene.start - 1} end={gene.end}"
+                )  # type: ignore
         return location
