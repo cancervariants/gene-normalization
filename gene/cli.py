@@ -16,6 +16,7 @@ from gene.database import (
 )
 from gene.database.database import DatabaseException
 from gene.etl import HGNC, NCBI, Ensembl  # noqa: F401
+from gene.etl.exceptions import GeneNormalizerEtlError
 from gene.etl.merge import Merge
 from gene.schemas import SourceName
 
@@ -110,7 +111,10 @@ def dump_database(output_directory: Path, db_url: str) -> None:
 
 
 def _update_normalizer(
-    sources: Collection[SourceName], db: AbstractDatabase, update_merged: bool
+    sources: Collection[SourceName],
+    db: AbstractDatabase,
+    update_merged: bool,
+    use_existing: bool,
 ) -> None:
     """Update selected normalizer sources.
 
@@ -118,11 +122,13 @@ def _update_normalizer(
     :param db: database instance
     :param update_merged: if true, retain processed records to use in updating merged
         records
+    :param use_existing: if True, use most recent local version of source data instead of
+        fetching from remote
     """
     processed_ids = list()
     for n in sources:
         delete_time = _delete_source(n, db)
-        _load_source(n, db, delete_time, processed_ids)
+        _load_source(n, db, delete_time, processed_ids, use_existing)
 
     if update_merged:
         _load_merge(db, processed_ids)
@@ -149,7 +155,11 @@ def _delete_source(n: SourceName, db: AbstractDatabase) -> float:
 
 
 def _load_source(
-    n: SourceName, db: AbstractDatabase, delete_time: float, processed_ids: List[str]
+    n: SourceName,
+    db: AbstractDatabase,
+    delete_time: float,
+    processed_ids: List[str],
+    use_existing: bool,
 ) -> None:
     """Load individual source data.
 
@@ -157,6 +167,8 @@ def _load_source(
     :param db: database instance
     :param delete_time: time taken (in seconds) to run deletion
     :param processed_ids: in-progress list of processed gene IDs
+    :param use_existing: if True, use most recent local data files instead of
+        fetching from remote
     """
     msg = f"Loading {n.value}..."
     click.echo(msg)
@@ -167,7 +179,12 @@ def _load_source(
     SourceClass = eval(n.value)  # noqa: N806
 
     source = SourceClass(database=db)
-    processed_ids += source.perform_etl()
+    try:
+        processed_ids += source.perform_etl(use_existing)
+    except GeneNormalizerEtlError as e:
+        logger.error(e)
+        click.echo(f"Encountered error while loading {n}: {e}.")
+        click.get_current_context().exit()
     end_load = timer()
     load_time = end_load - start_load
     msg = f"Loaded {n.value} in {load_time:.5f} seconds."
@@ -223,21 +240,41 @@ def _load_merge(db: AbstractDatabase, processed_ids: Set[str]) -> None:
     is_flag=True,
     help="Update concepts for normalize endpoint from accepted sources.",
 )
+@click.option(
+    "--use_existing",
+    is_flag=True,
+    default=False,
+    help="Use most recent local source data instead of fetching latest version",
+)
 def update_normalizer_db(
-    sources: str, aws_instance: bool, db_url: str, update_all: bool, update_merged: bool
+    sources: str,
+    aws_instance: bool,
+    db_url: str,
+    update_all: bool,
+    update_merged: bool,
+    use_existing: bool,
 ) -> None:
-    """Update selected normalizer source(s) in the gene database.
+    """Update selected normalizer source(s) in the gene database. For example, the
+    following command will update NCBI and HGNC data, using a database connection at port 8001:
 
+    % gene_norm_update --sources="NCBI HGNC" --db_url=http://localhost:8001
+
+
+
+    See the documentation for more exhaustive information.
+
+    \f
     :param sources: names of sources to update, comma-separated
     :param aws_instance: if true, use cloud instance
     :param db_url: URI pointing to database
     :param update_all: if true, update all sources (ignore `normalizer` parameter)
     :param update_merged: if true, update normalized records
-    """
+    :param use_existing: if True, use most recent local data instead of fetching latest version
+    """  # noqa: D301
     db = create_db(db_url, aws_instance)
 
     if update_all:
-        _update_normalizer(list(SourceName), db, update_merged)
+        _update_normalizer(list(SourceName), db, update_merged, use_existing)
     elif not sources:
         if update_merged:
             _load_merge(db, set())
@@ -260,7 +297,7 @@ def update_normalizer_db(
             raise Exception(f"Not valid source(s): {non_sources}")
 
         parsed_source_names = {SourceName(SOURCES[s]) for s in sources_split}
-        _update_normalizer(parsed_source_names, db, update_merged)
+        _update_normalizer(parsed_source_names, db, update_merged, use_existing)
 
 
 if __name__ == "__main__":

@@ -8,7 +8,7 @@ from abc import ABC, abstractmethod
 from ftplib import FTP
 from os import remove
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Callable, Dict, List, Optional
 
 import pydantic
 from biocommons.seqrepo import SeqRepo
@@ -42,21 +42,26 @@ class Base(ABC):
         :param src_data_dir: Data directory for source
         :param seqrepo_dir: Path to seqrepo directory
         """
+        self.src_data_dir = src_data_dir
+        self.src_data_dir.mkdir(exist_ok=True, parents=True)
         self._src_name = SourceName(self.__class__.__name__)
         self._database = database
         self._host = host
         self._data_dir = data_dir
-        self.src_data_dir = src_data_dir
         self._processed_ids = list()
         self.seqrepo = self.get_seqrepo(seqrepo_dir)
 
-    @abstractmethod
-    def perform_etl(self) -> List[str]:
+    def perform_etl(self, use_existing: bool = False) -> List[str]:
         """Extract, Transform, and Load data into database.
 
+        :param use_existing: if true, use most recent available local files
         :return: Concept IDs of concepts successfully loaded
         """
-        raise NotImplementedError
+        self._extract_data(use_existing)
+        self._add_meta()
+        self._transform_data()
+        self._database.complete_write_transaction()
+        return self._processed_ids
 
     @abstractmethod
     def _extract_data(self, *args, **kwargs) -> None:  # noqa: ANN002
@@ -73,9 +78,39 @@ class Base(ABC):
         """Add source meta to database source info."""
         raise NotImplementedError
 
-    def _create_data_directory(self) -> None:
-        """Create data directory for source."""
-        self.src_data_dir.mkdir(exist_ok=True, parents=True)
+    def _acquire_data_file(
+        self,
+        file_glob: str,
+        use_existing: bool,
+        check_latest_callback: Callable[[Path], bool],
+        download_callback: Callable[[], Path],
+    ) -> Path:
+        """Acquire data file.
+
+        :param file_glob: pattern to match relevant files against
+        :param use_existing: don't fetch from remote origin if local versions are
+            available
+        :param check_latest_callback: function to check whether local data is up-to-date
+        :param download_callback: function to download from remote
+        :return: path to acquired data file
+        :raise FileNotFoundError: if unable to find any files matching the pattern
+        """
+        matching_files = list(self.src_data_dir.glob(file_glob))
+        if not matching_files:
+            if use_existing:
+                raise FileNotFoundError(
+                    f"No local files matching pattern {self.src_data_dir.absolute().as_uri() + file_glob}"
+                )
+            else:
+                return download_callback()
+        else:
+            latest_file = list(sorted(matching_files))[-1]
+            if use_existing:
+                return latest_file
+            if not check_latest_callback(latest_file):
+                return download_callback()
+            else:
+                return latest_file
 
     def _load_gene(self, gene: Dict) -> None:
         """Load a gene record into database. This method takes responsibility for:
@@ -117,7 +152,7 @@ class Base(ABC):
         :param fn: Filename for downloaded file
         :param source_dir: Source's data directory
         :param data_fn: Filename on FTP site to be downloaded
-        :return: Time file was last updated
+        :return: Date file was last updated
         """
         with FTP(host) as ftp:
             ftp.login()

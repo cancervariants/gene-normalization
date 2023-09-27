@@ -1,5 +1,4 @@
 """Test DynamoDB and ETL methods."""
-import shutil
 from os import environ
 from pathlib import Path
 
@@ -95,19 +94,10 @@ def test_tables_created(db_fixture):
 def test_ensembl_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     """Test that ensembl etl methods work correctly."""
     test_get_seqrepo.return_value = None
-    e = Ensembl(db_fixture.db)
-
-    e.src_data_dir = etl_data_path / "ensembl"
-    e._download_data()
-    e._extract_data()
-    shutil.rmtree(e.src_data_dir)
-
-    e._get_seq_id_aliases = _get_aliases
-    e._data_src = etl_data_path / "ensembl_110.gff3"
-    e._add_meta()
-    e._transform_data()
-    db_fixture.db.complete_write_transaction()
-    processed_ids += e._processed_ids
+    e = Ensembl(db_fixture.db, src_data_dir=etl_data_path)
+    e._get_seq_id_aliases = _get_aliases  # type: ignore
+    ensembl_ids = e.perform_etl(use_existing=True)
+    processed_ids += ensembl_ids
 
 
 @pytest.mark.skipif(not IS_TEST_ENV, reason="not in test environment")
@@ -115,19 +105,9 @@ def test_ensembl_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path)
 def test_hgnc_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     """Test that hgnc etl methods work correctly."""
     test_get_seqrepo.return_value = None
-    h = HGNC(db_fixture.db)
-
-    h.src_data_dir = etl_data_path / "hgnc"
-    h._download_data()
-    h._extract_data()
-    shutil.rmtree(h.src_data_dir)
-
-    h._data_src = etl_data_path / "hgnc_20210810.json"
-    h._version = "20210810"
-    h._add_meta()
-    h._transform_data()
-    db_fixture.db.complete_write_transaction()
-    processed_ids += h._processed_ids
+    h = HGNC(db_fixture.db, src_data_dir=etl_data_path)
+    hgnc_ids = h.perform_etl(use_existing=True)
+    processed_ids += hgnc_ids
 
 
 @pytest.mark.skipif(not IS_TEST_ENV, reason="not in test environment")
@@ -135,21 +115,10 @@ def test_hgnc_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
 def test_ncbi_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     """Test that ncbi etl methods work correctly."""
     test_get_seqrepo.return_value = None
-    n = NCBI(db_fixture.db)
-
-    n.src_data_dir = etl_data_path / "ncbi"
-    n._extract_data()
-    shutil.rmtree(n.src_data_dir)
-
-    n._get_seq_id_aliases = _get_aliases
-    n._info_src = etl_data_path / "ncbi_info_20210813.tsv"
-    n._history_src = etl_data_path / "ncbi_history_20210813.tsv"
-    n._gff_src = etl_data_path / "ncbi_GRCh38.p14.gff"
-    n._version = n._info_src.stem.split("_")[-1]
-    n._add_meta()
-    n._transform_data()
-    db_fixture.db.complete_write_transaction()
-    processed_ids += n._processed_ids
+    n = NCBI(db_fixture.db, src_data_dir=etl_data_path)
+    n._get_seq_id_aliases = _get_aliases  # type: ignore
+    ncbi_ids = n.perform_etl(use_existing=True)
+    processed_ids += ncbi_ids
 
 
 @pytest.mark.skipif(not IS_TEST_ENV, reason="not in test environment")
