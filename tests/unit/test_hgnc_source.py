@@ -812,8 +812,10 @@ def test_no_match(hgnc):
 def test_meta_info(hgnc):
     """Test that the meta field is correct."""
     resp = hgnc.search("HGNC:37133")
-    assert resp.source_meta_.data_license == "custom"
-    assert resp.source_meta_.data_license_url == "https://www.genenames.org/about/"
+    assert resp.source_meta_.data_license == "CC0"
+    assert (
+        resp.source_meta_.data_license_url == "https://www.genenames.org/about/license/"
+    )
     assert datetime.strptime(resp.source_meta_.version, "%Y%m%d")
     assert resp.source_meta_.data_url == {
         "complete_set_archive": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
