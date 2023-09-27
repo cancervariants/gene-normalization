@@ -311,6 +311,7 @@ def normalized_braf():
             },
             {"name": "ensembl_biotype", "type": "Extension", "value": "protein_coding"},
             {"name": "strand", "type": "Extension", "value": "-"},
+            {"name": "symbol_status", "type": "Extension", "value": "approved"},
         ],
     }
     return core_models.Gene(**params)
@@ -471,6 +472,7 @@ def normalized_abl1():
             },
             {"name": "ensembl_biotype", "type": "Extension", "value": "protein_coding"},
             {"name": "strand", "type": "Extension", "value": "+"},
+            {"name": "symbol_status", "type": "Extension", "value": "approved"},
         ],
     }
     return core_models.Gene(**params)
@@ -605,6 +607,7 @@ def normalized_p150():
                 "value": ["LOC107985297"],
             },
             {"name": "strand", "type": "Extension", "value": "+"},
+            {"name": "symbol_status", "type": "Extension", "value": "approved"},
         ],
     }
     return core_models.Gene(**params)
@@ -977,16 +980,7 @@ def normalized_ifnr():
                 "type": "Extension",
             },
             {"name": "symbol_status", "value": "approved", "type": "Extension"},
-            {
-                "name": "ncbi_gene_type",
-                "type": "Extension",
-            },
             {"name": "symbol_status", "value": "approved", "type": "Extension"},
-            {
-                "name": "associated_with",
-                "value": ["pubmed:1906174", "omim:147573", "pubmed:1193239"],
-                "type": "Extension",
-            },
             {"name": "ncbi_gene_type", "type": "Extension", "value": "unknown"},
             {"name": "hgnc_locus_type", "type": "Extension", "value": "unknown"},
             {"name": "location_annotations", "type": "Extension", "value": ["16"]},
