@@ -300,8 +300,8 @@ class HGNC(Base):
     def _add_meta(self) -> None:
         """Add HGNC metadata."""
         metadata = SourceMeta(
-            data_license="custom",
-            data_license_url="https://www.genenames.org/about/",
+            data_license="CC0",
+            data_license_url="https://www.genenames.org/about/license/",
             version=self._version,
             data_url=self._data_url,
             rdp_url=None,
