@@ -9,7 +9,7 @@ fastapi = "*"
 uvicorn = "*"
 click = "*"
 boto3 = "*"
-"ga4gh.vrs" = {version = "==2.0.0.dev0"}
+"ga4gh.vrs" = "~=2.0.0a1"
 
 [dev-packages]
 gene = {editable = true, path = "."}

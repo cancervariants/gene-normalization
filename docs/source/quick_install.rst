@@ -49,9 +49,9 @@ The beginning of the response to a GET request to http://localhost:5000/gene/nor
         "name": "gene-normalizer",
         "url": "https://github.com/cancervariants/gene-normalization"
       },
-      "gene_descriptor": {
-        "id": "normalize.gene:braf",
-        "type": "GeneDescriptor",
+      "gene": {
+        "id": "normalize.gene.hgnc:107",
+        "type": "Gene",
         "label": "BRAF",
 
         ...

@@ -66,7 +66,7 @@ def dpf1():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.oLxKdt9nWsqa0pXO81Pfpyx6rqIZc6t7",
+                "id": "ga4gh:SL.0bmpLh_dlBRrzfviiQY9Vg4iEH0XeR20",
                 "end": 38229695,
                 "start": 38211005,
                 "sequenceReference": {
@@ -106,7 +106,7 @@ def pdp1_symbol():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.ZcdRLYcMf2AvkpcpofRalXf1v7LMM1L1",
+                "id": "ga4gh:SL.-455M-S51D8nXPFoGH0dYNFVFAJxm5dG",
                 "end": 93926068,
                 "start": 93916922,
                 "sequenceReference": {
@@ -146,7 +146,7 @@ def pdp1_alias():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.SsroS4-L34LHf4Aeh950IZJz0HoUwno9",
+                "id": "ga4gh:SL.VI_0P0-ei90MDsLjAeUrDfeXBlZVJtJY",
                 "end": 4665258,
                 "start": 4662293,
                 "sequenceReference": {
@@ -195,7 +195,7 @@ def spry3():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.tSNZjm5jNs6yveiX4KsFkeWKI1dWL8_P",
+                "id": "ga4gh:SL.2N5aguRIvBdGemRgABZFutmLTV925dsV",
                 "end": 155782459,
                 "start": 155612585,
                 "sequenceReference": {
@@ -205,7 +205,7 @@ def spry3():
                 "type": "SequenceLocation",
             },
             {
-                "id": "ga4gh:SL.CqpZwgas9C6armUezb4pKVi-GccILGOh",
+                "id": "ga4gh:SL.U9E9WtQdzFc4elR3t1qw48nueHgfWFWL",
                 "end": 56968979,
                 "start": 56954315,
                 "sequenceReference": {
@@ -290,7 +290,7 @@ def znf84():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.QCbFjOlA2uBs8WyLmeRlRYU5CewYqgeS",
+                "id": "ga4gh:SL.IRsls9vud2-CiA7Jq4L3ry2VVK7LoNud",
                 "end": 133063299,
                 "start": 133037508,
                 "sequenceReference": {
@@ -339,7 +339,7 @@ def slc25a6():
             #     "end": "p11.2"
             # },
             {
-                "id": "ga4gh:SL.bFu_HjMueWqLR1aC1DiEtE5pxFI5SVgg",
+                "id": "ga4gh:SL.dvD-ZopQGZkVWx4Z-vFpP9ateicPHgQ6",
                 "type": "SequenceLocation",
                 "sequenceReference": {
                     "type": "SequenceReference",
@@ -349,7 +349,7 @@ def slc25a6():
                 "end": 1392113,
             },
             {
-                "id": "ga4gh:SL.3j0Ns_ZkksT5_WubJ2Tw5WuA9IlHiPGz",
+                "id": "ga4gh:SL.bv3LobZZ-sERq5cIthyS4w_tmSwV2QSg",
                 "type": "SequenceLocation",
                 "sequenceReference": {
                     "type": "SequenceReference",
@@ -484,7 +484,7 @@ def prkrap1():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.mkpAMHHHoXgIPXGY3Mr1mF6YQzHftZ7g",
+                "id": "ga4gh:SL.LwWy5JYncZVnOM9hWiLWW_z0n2eY-peb",
                 "end": 3941874,
                 "start": 3940269,
                 "sequenceReference": {
@@ -494,7 +494,7 @@ def prkrap1():
                 "type": "SequenceLocation",
             },
             {
-                "id": "ga4gh:SL.vPF_uudaVkiByZywvLxiDd1b5AYKG6Ea",
+                "id": "ga4gh:SL.q36ql_fX4HrZy_G2EXX_SGWl-7X5Bq6c",
                 "end": 3932085,
                 "start": 3930480,
                 "sequenceReference": {

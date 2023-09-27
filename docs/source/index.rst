@@ -20,9 +20,9 @@ The Gene Normalizer provides tools for resolving ambiguous human gene references
     >>> from gene.database import create_db
     >>> q = QueryHandler(create_db())
     >>> result = q.normalize("BRAF")
-    >>> result.gene_descriptor.gene
+    >>> result.normalized_id
     "hgnc:1097"
-    >>> result.gene_descriptor.alternate_labels
+    >>> result.gene.aliases
     ['NS7', 'RAFB1', 'B-raf', 'BRAF-1', 'BRAF1', 'B-RAF1']
 
 See the `public REST instance of the service <https://normalize.cancervariants.org/gene>`_ for a demonstration of all queryable endpoints.

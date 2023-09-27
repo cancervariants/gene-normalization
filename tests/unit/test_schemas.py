@@ -3,7 +3,7 @@ import pydantic
 import pytest
 from ga4gh.vrs import models
 
-from gene.schemas import Gene, GeneValueObject
+from gene.schemas import Gene
 
 # @pytest.fixture(scope='module')
 # def chromosome_location():
@@ -102,7 +102,7 @@ def test_gene(gene, sequence_location):
             match_type=100,
             concept_id="hgnc:1096",
             symbol="BRAF",
-            locations=[GeneValueObject(id="hgnc:1")],
+            locations=["GRCh38:chr1"],
         )
 
     # location not a list
