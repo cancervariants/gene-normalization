@@ -341,8 +341,8 @@ class HGNC(Base):
                 "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
             )
         metadata = SourceMeta(
-            data_license="custom",
-            data_license_url="https://www.genenames.org/about/",
+            data_license="CC0",
+            data_license_url="https://www.genenames.org/about/license/",
             version=self._version,
             data_url={"complete_set_archive": self._data_url},
             rdp_url=None,
