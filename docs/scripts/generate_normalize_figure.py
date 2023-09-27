@@ -7,8 +7,8 @@ just call like so: ::
 Embeddable HTML for the normalization figure should be deposited in the correct
 location, at docs/source/_static/html/normalize_her2.html.
 """
-from typing import Dict
 import json
+from typing import Dict
 
 import gravis as gv
 
@@ -17,17 +17,20 @@ from gene.database import create_db
 from gene.query import QueryHandler
 from gene.schemas import UnmergedNormalizationService
 
-
 COLORS = [
     "#F8766D",
     "#00BA38",
     "#00B9E3",
 ]
 
-GENE = 'OTX2P1'
+GENE = "OTX2P1"
 
 
 def create_gjgf(result: UnmergedNormalizationService) -> Dict:
+    """Create gravis input.
+
+    :param result: result from Unmerged Normalization search
+    """
     graph = {
         "graph": {
             "label": f"Reference Network for Search Term '{GENE}'",
@@ -37,8 +40,8 @@ def create_gjgf(result: UnmergedNormalizationService) -> Dict:
                 "arrow_size": 15,
                 "node_size": 15,
                 "node_label_size": 20,
-                "edge_size": 2
-            }
+                "edge_size": 2,
+            },
         }
     }
 
@@ -48,7 +51,7 @@ def create_gjgf(result: UnmergedNormalizationService) -> Dict:
                 "metadata": {
                     "color": COLORS[i],
                     "hover": f"{match.concept_id}\n{match.symbol}\n<i>{match.label}</i>",  # noqa: E501
-                    "click": f"<p color='black'>{json.dumps(match.model_dump(), indent=2)}</p>"  # noqa: E501
+                    "click": f"<p color='black'>{json.dumps(match.model_dump(), indent=2)}</p>",  # noqa: E501
                 }
             }
             for xref in match.xrefs:
@@ -58,8 +61,10 @@ def create_gjgf(result: UnmergedNormalizationService) -> Dict:
 
     included_edges = []
     for edge in graph["graph"]["edges"]:
-        if edge["target"] in graph["graph"]["nodes"] and \
-                edge["source"] in graph["graph"]["nodes"]:
+        if (
+            edge["target"] in graph["graph"]["nodes"]
+            and edge["source"] in graph["graph"]["nodes"]
+        ):
             included_edges.append(edge)
     graph["graph"]["edges"] = included_edges
 
@@ -75,20 +80,32 @@ def create_gjgf(result: UnmergedNormalizationService) -> Dict:
     return graph
 
 
-def gen_norm_figure():
+def gen_norm_figure() -> None:
+    """Generate normalized graph figure for docs."""
     q = QueryHandler(create_db())
     result = q.normalize_unmerged(GENE)
 
     graph = create_gjgf(result)
 
     fig = gv.d3(
-        data=graph, graph_height=200, node_hover_neighborhood=True,
-        use_links_force=True, links_force_distance=0.01, links_force_strength=0.01,
-        node_label_font="arial"
+        data=graph,
+        graph_height=200,
+        node_hover_neighborhood=True,
+        use_links_force=True,
+        links_force_distance=0.01,
+        links_force_strength=0.01,
+        node_label_font="arial",
     )
     fig.export_html(
-        (APP_ROOT.parents[0] / "docs" / "source" / "_static" / "html" / f"normalize_{GENE.lower()}.html").absolute(),  # noqa: E501
-        overwrite=True
+        (
+            APP_ROOT.parents[0]
+            / "docs"
+            / "source"
+            / "_static"
+            / "html"
+            / f"normalize_{GENE.lower()}.html"
+        ).absolute(),  # noqa: E501
+        overwrite=True,
     )
 
 

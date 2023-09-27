@@ -1,22 +1,19 @@
-"""This module contains data models for representing VICC normalized
-gene records.
-"""
-from typing import Literal, List, Optional, Dict, Union
+"""Contains data models for representing VICC normalized gene records."""
 from enum import Enum, IntEnum
+from typing import Dict, List, Literal, Optional, Union
 
-from pydantic import (
-    constr,
-    BaseModel,
-    StrictBool,
-    StrictStr,
-    StrictInt,
-    ConfigDict,
-)
 from ga4gh.core import core_models
 from ga4gh.vrs import models
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    StrictBool,
+    StrictInt,
+    StrictStr,
+    constr,
+)
 
 from gene.version import __version__
-
 
 CURIE = constr(pattern=r"^\w[^:]*:.+$")
 
@@ -129,7 +126,7 @@ class Gene(BaseGene):
                 "location_annotations": [],
                 "associated_with": [],
                 "gene_type": None,
-                "match_type": 100
+                "match_type": 100,
             }
         }
     )
@@ -324,7 +321,9 @@ class ServiceMeta(BaseModel):
     name: Literal["gene-normalizer"] = "gene-normalizer"
     version: StrictStr
     response_datetime: StrictStr
-    url: Literal["https://github.com/cancervariants/gene-normalization"] = "https://github.com/cancervariants/gene-normalization"  # noqa: E501
+    url: Literal[
+        "https://github.com/cancervariants/gene-normalization"
+    ] = "https://github.com/cancervariants/gene-normalization"  # noqa: E501
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -671,7 +670,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                         "type": "SequenceLocation",
                                         "sequenceReference": {
                                             "type": "SequenceReference",
-                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"  # noqa: E501
+                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
                                         },
                                         "start": 100889993,
                                         "end": 100896974,
@@ -721,7 +720,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                         "type": "SequenceLocation",
                                         "sequenceReference": {
                                             "type": "SequenceReference",
-                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"  # noqa: E501
+                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
                                         },
                                         "start": 100889993,
                                         "end": 100896994,

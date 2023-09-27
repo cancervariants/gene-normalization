@@ -1,12 +1,14 @@
 """Test that the gene normalizer works as intended for the Ensembl source."""
 import pytest
-from gene.schemas import Gene, MatchType, SourceName
+
 from gene.query import QueryHandler
+from gene.schemas import Gene, MatchType, SourceName
 
 
 @pytest.fixture(scope="module")
 def ensembl(database):
     """Build ensembl test fixture."""
+
     class QueryGetter:
         def __init__(self):
             self.query_handler = QueryHandler(database)
@@ -39,14 +41,14 @@ def ddx11l1():
                 "start": 11868,
                 "sequenceReference": {
                     "type": "SequenceReference",
-                    "refgetAccession": "SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO"
+                    "refgetAccession": "SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
                 },
-                "type": "SequenceLocation"
+                "type": "SequenceLocation",
             }
         ],
         "strand": "+",
         "associated_with": [],
-        "gene_type": "transcribed_unprocessed_pseudogene"
+        "gene_type": "transcribed_unprocessed_pseudogene",
     }
     return Gene(**params)
 
@@ -71,20 +73,20 @@ def tp53():
                 "start": 7661778,
                 "sequenceReference": {
                     "type": "SequenceReference",
-                    "refgetAccession": "SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7"
+                    "refgetAccession": "SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7",
                 },
-                "type": "SequenceLocation"
+                "type": "SequenceLocation",
             }
         ],
         "strand": "-",
         "associated_with": [],
-        "gene_type": "protein_coding"
+        "gene_type": "protein_coding",
     }
     return Gene(**params)
 
 
 @pytest.fixture(scope="module")
-def ATP6AP1_DT():
+def ATP6AP1_DT():  # noqa: N802
     """Create a ATP6AP1-DT test fixture."""
     params = {
         "match_type": MatchType.NO_MATCH,
@@ -103,14 +105,14 @@ def ATP6AP1_DT():
                 "start": 154424377,
                 "sequenceReference": {
                     "type": "SequenceReference",
-                    "refgetAccession": "SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP"
+                    "refgetAccession": "SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
                 },
-                "type": "SequenceLocation"
+                "type": "SequenceLocation",
             }
         ],
         "strand": "-",
         "associated_with": [],
-        "gene_type": "lncRNA"
+        "gene_type": "lncRNA",
     }
     return Gene(**params)
 
@@ -135,14 +137,14 @@ def hsa_mir_1253():
                 "start": 2748077,
                 "sequenceReference": {
                     "type": "SequenceReference",
-                    "refgetAccession": "SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7"
+                    "refgetAccession": "SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7",
                 },
-                "type": "SequenceLocation"
+                "type": "SequenceLocation",
             }
         ],
         "strand": "+",
         "associated_with": ["mirbase:MI0006387"],
-        "gene_type": "lncRNA"
+        "gene_type": "lncRNA",
     }
     return Gene(**params)
 
@@ -167,14 +169,14 @@ def spry3():
                 "start": 155612571,
                 "sequenceReference": {
                     "type": "SequenceReference",
-                    "refgetAccession": "SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP"
+                    "refgetAccession": "SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
                 },
-                "type": "SequenceLocation"
+                "type": "SequenceLocation",
             }
         ],
         "strand": "+",
         "associated_with": [],
-        "gene_type": "protein_coding"
+        "gene_type": "protein_coding",
     }
     return Gene(**params)
 
@@ -219,7 +221,7 @@ def test_tp53(check_resp_single_record, ensembl, tp53):
     check_resp_single_record(resp, tp53, MatchType.SYMBOL)
 
 
-def test_ATP6AP1_DT(check_resp_single_record, ensembl, ATP6AP1_DT):
+def test_ATP6AP1_DT(check_resp_single_record, ensembl, ATP6AP1_DT):  # noqa: N802 N803
     """Test that ATP6AP1-DT normalizes to correct gene concept."""
     # Concept ID
     resp = ensembl.search("ensembl:ENSG00000197180")
@@ -301,15 +303,19 @@ def test_meta_info(ensembl):
     """Test that the meta field is correct."""
     resp = ensembl.search("chromosome:1")
     assert resp.source_meta_.data_license == "custom"
-    assert resp.source_meta_.data_license_url == \
-        "https://useast.ensembl.org/info/about/legal/disclaimer.html"
+    assert (
+        resp.source_meta_.data_license_url
+        == "https://useast.ensembl.org/info/about/legal/disclaimer.html"
+    )
     assert resp.source_meta_.version == "110"
-    assert resp.source_meta_.data_url == \
-        "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz"  # noqa: E501
+    assert (
+        resp.source_meta_.data_url
+        == "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz"
+    )  # noqa: E501
     assert resp.source_meta_.rdp_url is None
     assert resp.source_meta_.genome_assemblies == ["GRCh38"]
     assert resp.source_meta_.data_license_attributes == {
         "non_commercial": False,
         "share_alike": False,
-        "attribution": False
+        "attribution": False,
     }

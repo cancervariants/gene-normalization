@@ -3,8 +3,8 @@ from datetime import datetime
 
 import pytest
 
-from gene.schemas import Gene, MatchType, SourceName, SymbolStatus
 from gene.query import QueryHandler
+from gene.schemas import Gene, MatchType, SourceName, SymbolStatus
 
 
 def check_ncbi_discontinued_gene(normalizer_response, concept_id, symbol, match_type):
@@ -28,6 +28,7 @@ def check_ncbi_discontinued_gene(normalizer_response, concept_id, symbol, match_
 @pytest.fixture(scope="module")
 def ncbi(database):
     """Build ncbi test fixture."""
+
     class QueryGetter:
         def __init__(self):
             self.query_handler = QueryHandler(database)
@@ -70,12 +71,12 @@ def dpf1():
                 "start": 38211005,
                 "sequenceReference": {
                     "type": "SequenceReference",
-                    "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl"
+                    "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
                 },
-                "type": "SequenceLocation"
+                "type": "SequenceLocation",
             }
         ],
-        "gene_type": "protein-coding"
+        "gene_type": "protein-coding",
     }
     return Gene(**params)
 
@@ -110,13 +111,12 @@ def pdp1_symbol():
                 "start": 93916922,
                 "sequenceReference": {
                     "type": "SequenceReference",
-                    "refgetAccession": "SQ.209Z7zJ-mFypBEWLk4rNC6S_OxY5p7bs"
+                    "refgetAccession": "SQ.209Z7zJ-mFypBEWLk4rNC6S_OxY5p7bs",
                 },
-                "type": "SequenceLocation"
+                "type": "SequenceLocation",
             }
         ],
-        "gene_type": "protein-coding"
-
+        "gene_type": "protein-coding",
     }
     return Gene(**params)
 
@@ -151,12 +151,12 @@ def pdp1_alias():
                 "start": 4662293,
                 "sequenceReference": {
                     "type": "SequenceReference",
-                    "refgetAccession": "SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI"
+                    "refgetAccession": "SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
                 },
-                "type": "SequenceLocation"
+                "type": "SequenceLocation",
             }
         ],
-        "gene_type": "protein-coding"
+        "gene_type": "protein-coding",
     }
     return Gene(**params)
 
@@ -200,9 +200,9 @@ def spry3():
                 "start": 155612585,
                 "sequenceReference": {
                     "type": "SequenceReference",
-                    "refgetAccession": "SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP"
+                    "refgetAccession": "SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
                 },
-                "type": "SequenceLocation"
+                "type": "SequenceLocation",
             },
             {
                 "id": "ga4gh:SL.U9E9WtQdzFc4elR3t1qw48nueHgfWFWL",
@@ -210,12 +210,12 @@ def spry3():
                 "start": 56954315,
                 "sequenceReference": {
                     "type": "SequenceReference",
-                    "refgetAccession": "SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5"
+                    "refgetAccession": "SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
                 },
-                "type": "SequenceLocation"
-            }
+                "type": "SequenceLocation",
+            },
         ],
-        "gene_type": "protein-coding"
+        "gene_type": "protein-coding",
     }
     return Gene(**params)
 
@@ -237,7 +237,7 @@ def adcp1():
         "strand": None,
         "location_annotations": ["6"],
         "locations": [],
-        "gene_type": "unknown"
+        "gene_type": "unknown",
     }
     return Gene(**params)
 
@@ -259,7 +259,7 @@ def afa():
         "strand": None,
         "location_annotations": [],
         "locations": [],
-        "gene_type": "unknown"
+        "gene_type": "unknown",
     }
     return Gene(**params)
 
@@ -295,12 +295,12 @@ def znf84():
                 "start": 133037508,
                 "sequenceReference": {
                     "type": "SequenceReference",
-                    "refgetAccession": "SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl"
+                    "refgetAccession": "SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl",
                 },
-                "type": "SequenceLocation"
+                "type": "SequenceLocation",
             }
         ],
-        "gene_type": "protein-coding"
+        "gene_type": "protein-coding",
     }
     return Gene(**params)
 
@@ -343,23 +343,23 @@ def slc25a6():
                 "type": "SequenceLocation",
                 "sequenceReference": {
                     "type": "SequenceReference",
-                    "refgetAccession": "SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP"
+                    "refgetAccession": "SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
                 },
                 "start": 1386151,
-                "end": 1392113
+                "end": 1392113,
             },
             {
                 "id": "ga4gh:SL.bv3LobZZ-sERq5cIthyS4w_tmSwV2QSg",
                 "type": "SequenceLocation",
                 "sequenceReference": {
                     "type": "SequenceReference",
-                    "refgetAccession": "SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5"
+                    "refgetAccession": "SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
                 },
                 "start": 1386151,
-                "end": 1392113
-            }
+                "end": 1392113,
+            },
         ],
-        "gene_type": "protein-coding"
+        "gene_type": "protein-coding",
     }
     return Gene(**params)
 
@@ -390,7 +390,7 @@ def loc106783576():
             #     "type": "ChromosomeLocation"
             # }
         ],
-        "gene_type": "biological-region"
+        "gene_type": "biological-region",
     }
     return Gene(**params)
 
@@ -421,7 +421,7 @@ def glc1b():
             #     "type": "ChromosomeLocation"
             # }
         ],
-        "gene_type": "unknown"
+        "gene_type": "unknown",
     }
     return Gene(**params)
 
@@ -452,7 +452,7 @@ def hdpa():
             #     "type": "ChromosomeLocation"
             # }
         ],
-        "gene_type": "unknown"
+        "gene_type": "unknown",
     }
     return Gene(**params)
 
@@ -464,7 +464,7 @@ def prkrap1():
     params = {
         "match_type": MatchType.NO_MATCH,
         "label": "protein activator of interferon induced protein kinase "
-                 "EIF2AK2 pseudogene 1",
+        "EIF2AK2 pseudogene 1",
         "concept_id": "ncbigene:731716",
         "symbol": "PRKRAP1",
         "aliases": [],
@@ -489,9 +489,9 @@ def prkrap1():
                 "start": 3940269,
                 "sequenceReference": {
                     "type": "SequenceReference",
-                    "refgetAccession": "SQ.MjujHSAsgNWRTX4w3ysM7b5OVhZpdXu1"
+                    "refgetAccession": "SQ.MjujHSAsgNWRTX4w3ysM7b5OVhZpdXu1",
                 },
-                "type": "SequenceLocation"
+                "type": "SequenceLocation",
             },
             {
                 "id": "ga4gh:SL.q36ql_fX4HrZy_G2EXX_SGWl-7X5Bq6c",
@@ -499,12 +499,12 @@ def prkrap1():
                 "start": 3930480,
                 "sequenceReference": {
                     "type": "SequenceReference",
-                    "refgetAccession": "SQ.Q8IworEhpLeXwpz1CHM7C3luysh-ltx-"
+                    "refgetAccession": "SQ.Q8IworEhpLeXwpz1CHM7C3luysh-ltx-",
                 },
-                "type": "SequenceLocation"
-            }
+                "type": "SequenceLocation",
+            },
         ],
-        "gene_type": "pseudo"
+        "gene_type": "pseudo",
     }
     return Gene(**params)
 
@@ -535,7 +535,7 @@ def mhb():
             #     "type": "ChromosomeLocation"
             # }
         ],
-        "gene_type": "unknown"
+        "gene_type": "unknown",
     }
     return Gene(**params)
 
@@ -566,7 +566,7 @@ def spg37():
             #     "type": "ChromosomeLocation"
             # }
         ],
-        "gene_type": "unknown"
+        "gene_type": "unknown",
     }
     return Gene(**params)
 
@@ -806,29 +806,35 @@ def test_discontinued_genes(ncbi):
     """Test searches for discontinued genes."""
     # HOTS
     resp = ncbi.search("ncbigene:103344718")
-    check_ncbi_discontinued_gene(resp, "ncbigene:103344718",
-                                 "HOTS", MatchType.CONCEPT_ID)
+    check_ncbi_discontinued_gene(
+        resp, "ncbigene:103344718", "HOTS", MatchType.CONCEPT_ID
+    )
 
     resp = ncbi.search("HOTS")
-    check_ncbi_discontinued_gene(resp, "ncbigene:103344718",
-                                 "HOTS", MatchType.CONCEPT_ID)
+    check_ncbi_discontinued_gene(
+        resp, "ncbigene:103344718", "HOTS", MatchType.CONCEPT_ID
+    )
 
     resp = ncbi.search("hots")
-    check_ncbi_discontinued_gene(resp, "ncbigene:103344718",
-                                 "HOTS", MatchType.CONCEPT_ID)
+    check_ncbi_discontinued_gene(
+        resp, "ncbigene:103344718", "HOTS", MatchType.CONCEPT_ID
+    )
 
     # AASTH23
     resp = ncbi.search("ncbigene:544580")
-    check_ncbi_discontinued_gene(resp, "ncbigene:544580",
-                                 "AASTH23", MatchType.CONCEPT_ID)
+    check_ncbi_discontinued_gene(
+        resp, "ncbigene:544580", "AASTH23", MatchType.CONCEPT_ID
+    )
 
     resp = ncbi.search("AASTH23")
-    check_ncbi_discontinued_gene(resp, "ncbigene:544580",
-                                 "AASTH23", MatchType.CONCEPT_ID)
+    check_ncbi_discontinued_gene(
+        resp, "ncbigene:544580", "AASTH23", MatchType.CONCEPT_ID
+    )
 
     resp = ncbi.search("aastH23")
-    check_ncbi_discontinued_gene(resp, "ncbigene:544580",
-                                 "AASTH23", MatchType.CONCEPT_ID)
+    check_ncbi_discontinued_gene(
+        resp, "ncbigene:544580", "AASTH23", MatchType.CONCEPT_ID
+    )
 
 
 def test_no_match(ncbi):
@@ -837,8 +843,10 @@ def test_no_match(ncbi):
     assert len(response.records) == 0
     # double-check that meta still populates
     assert response.source_meta_.data_license == "custom"
-    assert response.source_meta_.data_license_url == \
-           "https://www.ncbi.nlm.nih.gov/home/about/policies/"
+    assert (
+        response.source_meta_.data_license_url
+        == "https://www.ncbi.nlm.nih.gov/home/about/policies/"
+    )
     assert datetime.strptime(response.source_meta_.version, "%Y%m%d")
     assert response.source_meta_.data_url == "ftp://ftp.ncbi.nlm.nih.gov"
     assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
@@ -881,8 +889,10 @@ def test_meta(ncbi):
     """Test NCBI source metadata."""
     response = ncbi.search("PDP1")
     assert response.source_meta_.data_license == "custom"
-    assert response.source_meta_.data_license_url == \
-        "https://www.ncbi.nlm.nih.gov/home/about/policies/"
+    assert (
+        response.source_meta_.data_license_url
+        == "https://www.ncbi.nlm.nih.gov/home/about/policies/"
+    )
     assert datetime.strptime(response.source_meta_.version, "%Y%m%d")
     assert response.source_meta_.data_url == "ftp://ftp.ncbi.nlm.nih.gov"
     assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
@@ -890,5 +900,5 @@ def test_meta(ncbi):
     assert response.source_meta_.data_license_attributes == {
         "non_commercial": False,
         "share_alike": False,
-        "attribution": False
+        "attribution": False,
     }

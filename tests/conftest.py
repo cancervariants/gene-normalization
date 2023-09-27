@@ -1,5 +1,6 @@
 """Provide utilities for test cases."""
 import pytest
+
 from gene.database import AbstractDatabase, create_db
 
 
@@ -23,8 +24,9 @@ def _compare_records(normalized_gene, test_gene, match_type):
     assert len(normalized_gene.locations) == len(test_gene.locations)
     for loc in normalized_gene.locations:
         assert loc in test_gene.locations
-    assert set(normalized_gene.location_annotations) == \
-           set(test_gene.location_annotations)
+    assert set(normalized_gene.location_annotations) == set(
+        test_gene.location_annotations
+    )
     assert normalized_gene.strand == test_gene.strand
     assert normalized_gene.gene_type == test_gene.gene_type
 

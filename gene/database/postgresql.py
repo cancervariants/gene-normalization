@@ -1,23 +1,30 @@
 """Provide PostgreSQL client."""
-import tarfile
 import atexit
 import json
 import logging
 import os
-from pathlib import Path
-from typing import Any, Dict, Generator, List, Optional, Set, Tuple
+import tarfile
 import tempfile
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, Generator, List, Optional, Set, Tuple
 
 import psycopg
-from psycopg.errors import DuplicateObject, DuplicateTable, UndefinedTable, \
-    UniqueViolation
 import requests
+from psycopg.errors import (
+    DuplicateObject,
+    DuplicateTable,
+    UndefinedTable,
+    UniqueViolation,
+)
 
-from gene.database import AbstractDatabase, DatabaseException, DatabaseReadException, \
-    DatabaseWriteException
+from gene.database import (
+    AbstractDatabase,
+    DatabaseException,
+    DatabaseReadException,
+    DatabaseWriteException,
+)
 from gene.schemas import RecordType, RefType, SourceMeta, SourceName
-
 
 logger = logging.getLogger(__name__)
 
@@ -288,12 +295,14 @@ class PostgresDatabase(AbstractDatabase):
                     "attribution": metadata_result[7],
                     "share_alike": metadata_result[8],
                 },
-                "genome_assemblies": metadata_result[9]
+                "genome_assemblies": metadata_result[9],
             }
             self._cached_sources[src_name] = metadata
             return metadata
 
-    _get_record_query = b"SELECT * FROM record_lookup_view WHERE lower(concept_id) = %s;"  # noqa: E501
+    _get_record_query = (
+        b"SELECT * FROM record_lookup_view WHERE lower(concept_id) = %s;"  # noqa: E501
+    )
 
     def _format_source_record(self, source_row: Tuple) -> Dict:
         """Restructure row from gene_concepts table as source record result object.
@@ -365,7 +374,9 @@ class PostgresDatabase(AbstractDatabase):
         }
         return {k: v for k, v in merged_record.items() if v}
 
-    _get_merged_record_query = b"SELECT * FROM gene_merged WHERE lower(concept_id) = %s;"  # noqa: E501
+    _get_merged_record_query = (
+        b"SELECT * FROM gene_merged WHERE lower(concept_id) = %s;"  # noqa: E501
+    )
 
     def _get_merged_record(
         self, concept_id: str, case_sensitive: bool
@@ -385,8 +396,9 @@ class PostgresDatabase(AbstractDatabase):
             return None
         return self._format_merged_record(result)
 
-    def get_record_by_id(self, concept_id: str, case_sensitive: bool = True,
-                         merge: bool = False) -> Optional[Dict]:
+    def get_record_by_id(
+        self, concept_id: str, case_sensitive: bool = True, merge: bool = False
+    ) -> Optional[Dict]:
         """Fetch record corresponding to provided concept ID
         :param str concept_id: concept ID for gene record
         :param bool case_sensitive:
@@ -404,7 +416,7 @@ class PostgresDatabase(AbstractDatabase):
         RefType.PREVIOUS_SYMBOLS: b"SELECT concept_id FROM gene_previous_symbols WHERE lower(prev_symbol) = %s;",  # noqa: E501
         RefType.ALIASES: b"SELECT concept_id FROM gene_aliases WHERE lower(alias) = %s;",  # noqa: E501
         RefType.XREFS: b"SELECT concept_id FROM gene_xrefs WHERE lower(xref) = %s;",
-        RefType.ASSOCIATED_WITH: b"SELECT concept_id FROM gene_associations WHERE lower(associated_with) = %s;"  # noqa: E501
+        RefType.ASSOCIATED_WITH: b"SELECT concept_id FROM gene_associations WHERE lower(associated_with) = %s;",  # noqa: E501
     }
 
     def get_refs_by_type(self, search_term: str, ref_type: RefType) -> List[str]:
@@ -420,7 +432,7 @@ class PostgresDatabase(AbstractDatabase):
             raise ValueError("invalid reference type")
 
         with self.conn.cursor() as cur:
-            cur.execute(query, (search_term.lower(), ))
+            cur.execute(query, (search_term.lower(),))
             concept_ids = cur.fetchall()
         if concept_ids:
             return [i[0] for i in concept_ids]
@@ -440,7 +452,9 @@ class PostgresDatabase(AbstractDatabase):
         return {i[0] for i in ids_tuple}
 
     _get_all_normalized_records_query = b"SELECT * FROM gene_merged;"
-    _get_all_unmerged_source_records_query = b"SELECT * FROM record_lookup_view WHERE merge_ref IS NULL;"  # noqa: E501
+    _get_all_unmerged_source_records_query = (
+        b"SELECT * FROM record_lookup_view WHERE merge_ref IS NULL;"  # noqa: E501
+    )
     _get_all_source_records_query = b"SELECT * FROM record_lookup_view;"
 
     def get_all_records(self, record_type: RecordType) -> Generator[Dict, None, None]:
@@ -464,31 +478,31 @@ class PostgresDatabase(AbstractDatabase):
         :param record_type: type of result to return
         :return: Generator that lazily provides records as they are retrieved
         """
-        BATCH_SIZE = 500
+        batch_size = 500
 
         if record_type == RecordType.MERGER:
             with self.conn.cursor() as cur:
                 results = cur.execute(self._get_all_normalized_records_query)
-                fetched = results.fetchmany(BATCH_SIZE)
+                fetched = results.fetchmany(batch_size)
                 while fetched:
                     for row in fetched:
                         yield self._format_merged_record(row)
-                    fetched = results.fetchmany(BATCH_SIZE)
+                    fetched = results.fetchmany(batch_size)
             with self.conn.cursor() as cur:
                 results = cur.execute(self._get_all_unmerged_source_records_query)
-                fetched = results.fetchmany(BATCH_SIZE)
+                fetched = results.fetchmany(batch_size)
                 while fetched:
                     for result in fetched:
                         yield self._format_source_record(result)
-                    fetched = results.fetchmany(BATCH_SIZE)
+                    fetched = results.fetchmany(batch_size)
         else:
             with self.conn.cursor() as cur:
                 results = cur.execute(self._get_all_source_records_query)
-                fetched = results.fetchmany(BATCH_SIZE)
+                fetched = results.fetchmany(batch_size)
                 while fetched:
                     for result in fetched:
                         yield self._format_source_record(result)
-                    fetched = results.fetchmany(BATCH_SIZE)
+                    fetched = results.fetchmany(batch_size)
 
     _add_source_metadata_query = b"""
         INSERT INTO gene_sources(
@@ -511,13 +525,16 @@ class PostgresDatabase(AbstractDatabase):
                 self._add_source_metadata_query,
                 [
                     src_name.value,
-                    meta.data_license, meta.data_license_url, meta.version,
-                    meta.data_url, meta.rdp_url,
+                    meta.data_license,
+                    meta.data_license_url,
+                    meta.version,
+                    meta.data_url,
+                    meta.rdp_url,
                     meta.data_license_attributes["non_commercial"],
                     meta.data_license_attributes["attribution"],
                     meta.data_license_attributes["share_alike"],
-                    meta.genome_assemblies
-                ]
+                    meta.genome_assemblies,
+                ],
             )
         self.conn.commit()
 
@@ -528,7 +545,9 @@ class PostgresDatabase(AbstractDatabase):
     )
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
     """
-    _ins_symbol_query = b"INSERT INTO gene_symbols (symbol, concept_id) VALUES (%s, %s);"  # noqa: E501
+    _ins_symbol_query = (
+        b"INSERT INTO gene_symbols (symbol, concept_id) VALUES (%s, %s);"  # noqa: E501
+    )
     _ins_prev_symbol_query = b"INSERT INTO gene_previous_symbols (prev_symbol, concept_id) VALUES (%s, %s);"  # noqa: E501
     _ins_alias_query = b"INSERT INTO gene_aliases (alias, concept_id) VALUES (%s, %s);"
     _ins_xref_query = b"INSERT INTO gene_xrefs (xref, concept_id) VALUES (%s, %s);"
@@ -546,13 +565,19 @@ class PostgresDatabase(AbstractDatabase):
             locations = None
         with self.conn.cursor() as cur:
             try:
-                cur.execute(self._add_record_query, [
-                    concept_id, record["src_name"], record.get("symbol_status"),
-                    record.get("label"), record.get("strand"),
-                    record.get("location_annotations"),
-                    locations,
-                    record.get("gene_type")
-                ])
+                cur.execute(
+                    self._add_record_query,
+                    [
+                        concept_id,
+                        record["src_name"],
+                        record.get("symbol_status"),
+                        record.get("label"),
+                        record.get("strand"),
+                        record.get("location_annotations"),
+                        locations,
+                        record.get("gene_type"),
+                    ],
+                )
                 for a in record.get("aliases", []):
                     cur.execute(self._ins_alias_query, [a, concept_id])
                 for x in record.get("xrefs", []):
@@ -593,24 +618,27 @@ class PostgresDatabase(AbstractDatabase):
         if hgnc_locations:
             hgnc_locations = [json.dumps(i) for i in hgnc_locations]
         with self.conn.cursor() as cur:
-            cur.execute(self._add_merged_record_query, [
-                record["concept_id"],
-                record.get("symbol"),
-                record.get("symbol_status"),
-                record.get("previous_symbols"),
-                record.get("label"),
-                record.get("strand"),
-                record.get("location_annotations"),
-                ensembl_locations,
-                hgnc_locations,
-                ncbi_locations,
-                record.get("hgnc_locus_type"),
-                record.get("ensembl_biotype"),
-                record.get("ncbi_gene_type"),
-                record.get("aliases"),
-                record.get("associated_with"),
-                record.get("xrefs"),
-            ])
+            cur.execute(
+                self._add_merged_record_query,
+                [
+                    record["concept_id"],
+                    record.get("symbol"),
+                    record.get("symbol_status"),
+                    record.get("previous_symbols"),
+                    record.get("label"),
+                    record.get("strand"),
+                    record.get("location_annotations"),
+                    ensembl_locations,
+                    hgnc_locations,
+                    ncbi_locations,
+                    record.get("hgnc_locus_type"),
+                    record.get("ensembl_biotype"),
+                    record.get("ncbi_gene_type"),
+                    record.get("aliases"),
+                    record.get("associated_with"),
+                    record.get("xrefs"),
+                ],
+            )
             self.conn.commit()
 
     _update_merge_ref_query = b"""
@@ -619,7 +647,7 @@ class PostgresDatabase(AbstractDatabase):
     WHERE concept_id = %(concept_id)s;
     """
 
-    def update_merge_ref(self, concept_id: str, merge_ref: Any) -> None:
+    def update_merge_ref(self, concept_id: str, merge_ref: Any) -> None:  # noqa: ANN401
         """Update the merged record reference of an individual record to a new value.
 
         :param concept_id: record to update
@@ -629,7 +657,7 @@ class PostgresDatabase(AbstractDatabase):
         with self.conn.cursor() as cur:
             cur.execute(
                 self._update_merge_ref_query,
-                {"merge_ref": merge_ref, "concept_id": concept_id}
+                {"merge_ref": merge_ref, "concept_id": concept_id},
             )
             row_count = cur.rowcount
             self.conn.commit()
@@ -797,7 +825,9 @@ class PostgresDatabase(AbstractDatabase):
         :raise DatabaseException: if psql call fails
         """
         if not output_directory.is_dir() or not output_directory.exists():
-            raise ValueError(f"Output location {output_directory} isn't a directory or doesn't exist")  # noqa: E501
+            raise ValueError(
+                f"Output location {output_directory} isn't a directory or doesn't exist"
+            )  # noqa: E501
         now = datetime.now().strftime("%Y%m%d%H%M%S")
         output_location = output_directory / f"gene_norm_{now}.sql"
         user = self.conn.info.user
