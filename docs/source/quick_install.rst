@@ -50,7 +50,7 @@ The beginning of the response to a GET request to http://localhost:5000/gene/nor
         "url": "https://github.com/cancervariants/gene-normalization"
       },
       "gene": {
-        "id": "hgnc:107",
+        "id": "normalize.gene.hgnc:107",
         "type": "Gene",
         "label": "BRAF",
 
