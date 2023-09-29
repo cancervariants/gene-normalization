@@ -151,6 +151,9 @@ def _delete_source(n: SourceName, db: AbstractDatabase) -> float:
     return delete_time
 
 
+_etl_dependency_help = "Are ETL dependencies installed? See the Installation page in the documentation for more info."
+
+
 def _load_source(
     n: SourceName,
     db: AbstractDatabase,
@@ -178,7 +181,7 @@ def _load_source(
         from gene.etl.exceptions import GeneNormalizerEtlError
     except ModuleNotFoundError as e:
         click.echo(
-            f"Encountered ModuleNotFoundError attempting to import {e.name}. Are ETL dependencies installed?"
+            f"Encountered ModuleNotFoundError attempting to import {e.name}. {_etl_dependency_help}"
         )
         click.get_current_context().exit()
     SourceClass = eval(n.value)  # noqa: N806
@@ -231,7 +234,7 @@ def _load_merge(db: AbstractDatabase, processed_ids: Set[str]) -> None:
         from gene.etl.merge import Merge
     except ModuleNotFoundError as e:
         click.echo(
-            f"Encountered ModuleNotFoundError attempting to import {e.name}. Are ETL dependencies installed?"
+            f"Encountered ModuleNotFoundError attempting to import {e.name}. {_etl_dependency_help}"
         )
         click.get_current_context().exit()
 
@@ -272,8 +275,6 @@ def update_normalizer_db(
     following command will update NCBI and HGNC data, using a database connection at port 8001:
 
     % gene_norm_update --sources="NCBI HGNC" --db_url=http://localhost:8001
-
-
 
     See the documentation for more exhaustive information.
 
