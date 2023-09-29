@@ -181,7 +181,7 @@ class NCBI(Base):
         :raise GeneFileVersionError: if parsing version from local file fails
         """
         try:
-            version = re.match(r"ncbi_history_(\d+).tsv", gene_file.name).groups()[0]
+            version = re.match(r"ncbi_info_(\d+).tsv", gene_file.name).groups()[0]
         except (IndexError, AttributeError):
             raise GeneFileVersionError(
                 f"Unable to parse version from NCBI gene file: {gene_file.absolute()}"
