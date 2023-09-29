@@ -15,9 +15,6 @@ from gene.database import (
     create_db,
 )
 from gene.database.database import DatabaseException
-from gene.etl import HGNC, NCBI, Ensembl  # noqa: F401
-from gene.etl.exceptions import GeneNormalizerEtlError
-from gene.etl.merge import Merge
 from gene.schemas import SourceName
 
 logger = logging.getLogger("gene")
@@ -176,6 +173,14 @@ def _load_source(
     start_load = timer()
 
     # used to get source class name from string
+    try:
+        from gene.etl import HGNC, NCBI, Ensembl  # noqa: F401
+        from gene.etl.exceptions import GeneNormalizerEtlError
+    except ModuleNotFoundError as e:
+        click.echo(
+            f"Encountered ModuleNotFoundError attempting to import {e.name}. Are ETL dependencies installed?"
+        )
+        click.get_current_context().exit()
     SourceClass = eval(n.value)  # noqa: N806
 
     source = SourceClass(database=db)
@@ -221,6 +226,15 @@ def _load_merge(db: AbstractDatabase, processed_ids: Set[str]) -> None:
     _delete_normalized_data(db)
     if not processed_ids:
         processed_ids = db.get_all_concept_ids()
+
+    try:
+        from gene.etl.merge import Merge
+    except ModuleNotFoundError as e:
+        click.echo(
+            f"Encountered ModuleNotFoundError attempting to import {e.name}. Are ETL dependencies installed?"
+        )
+        click.get_current_context().exit()
+
     merge = Merge(database=db)
     click.echo("Constructing normalized records...")
     merge.create_merged_concepts(processed_ids)
