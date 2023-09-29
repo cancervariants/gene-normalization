@@ -19,11 +19,10 @@ A `public REST instance of the service <https://normalize.cancervariants.org/gen
 .. code-block:: pycon
 
    >>> import requests
-   >>> result = requests.get("https://normalize.cancervariants.org/gene/normalize?q=braf")
-   >>> gene = result.json()['gene']
-   >>> print(gene['id'])
-   "normalize.gene.hgnc:1097"
-   >>> print(gene['aliases'])
+   >>> result = requests.get("https://normalize.cancervariants.org/gene/normalize?q=braf").json()
+   >>> result["normalized_id"]
+   'hgnc:1097'
+   >>> result["gene"]["aliases"]
    ['B-raf', 'NS7', 'B-RAF1', 'BRAF-1', 'BRAF1', 'RAFB1']
 
 The Gene Normalizer can also be installed locally as a Python package for fast access:
@@ -35,7 +34,7 @@ The Gene Normalizer can also be installed locally as a Python package for fast a
     >>> q = QueryHandler(create_db())
     >>> result = q.normalize("BRAF")
     >>> result.normalized_id
-    "hgnc:1097"
+    'hgnc:1097'
     >>> result.gene.aliases
     ['NS7', 'RAFB1', 'B-raf', 'BRAF-1', 'BRAF1', 'B-RAF1']
 

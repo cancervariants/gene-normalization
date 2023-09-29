@@ -65,25 +65,24 @@ The beginning of the response to a GET request to http://localhost:5000/gene/nor
 
 .. code-block::
 
-    {
-      "query": "braf",
-      "warnings": [],
-      "match_type": 100,
-      "service_meta_": {
-        "version": "0.1.33",
-        "response_datetime": "2023-03-29 15:10:58.579675",
-        "name": "gene-normalizer",
-        "url": "https://github.com/cancervariants/gene-normalization"
-      },
-      "gene_descriptor": {
-        "id": "normalize.gene:braf",
-        "type": "GeneDescriptor",
-        "label": "BRAF",
+   {
+     "query": "BRAF",
+     "warnings": [],
+     "match_type": 100,
+     "service_meta_": {
+       "name": "gene-normalizer",
+       "version": "0.3.0-dev1",
+       "response_datetime": "2023-09-29 14:53:07.329897",
+       "url": "https://github.com/cancervariants/gene-normalization"
+     },
+     "normalized_id": "hgnc:1097",
+     "gene": {
+       "id": "normalize.gene.hgnc:1097",
+       "label": "BRAF",
 
-        ...
-      }
-    }
-
+       ...
+     }
+   }
 
 .. _full-install:
 

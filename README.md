@@ -60,8 +60,8 @@ Or utilize the [Python API](https://gene-normalizer.readthedocs.io/en/latest/api
 >>> from gene.query import QueryHandler
 >>> q = QueryHandler(create_db())
 >>> result = q.normalize("KRAS")
->>> print(result.gene.id)
-"normalize.gene.hgnc:6407"
+>>> result.normalized_id
+'hgnc:6407'
 ```
 
 See the [usage](https://gene-normalizer.readthedocs.io/en/latest/usage.html) and [normalization](https://gene-normalizer.readthedocs.io/en/latest/normalizing_data/normalization.html) entries in the documentation for more.
