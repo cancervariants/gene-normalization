@@ -20,10 +20,10 @@ A `public REST instance of the service <https://normalize.cancervariants.org/gen
 
    >>> import requests
    >>> result = requests.get("https://normalize.cancervariants.org/gene/normalize?q=braf")
-   >>> gene = result.json()['gene_descriptor']
-   >>> print((gene['gene_id']))
-   "hgnc:1097"
-   >>> print(gene['alternate_labels'])
+   >>> gene = result.json()['gene']
+   >>> print(gene['id'])
+   "normalize.gene.hgnc:1097"
+   >>> print(gene['aliases'])
    ['B-raf', 'NS7', 'B-RAF1', 'BRAF-1', 'BRAF1', 'RAFB1']
 
 The Gene Normalizer can also be installed locally as a Python package for fast access:

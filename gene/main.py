@@ -84,7 +84,6 @@ def search(
         resp = query_handler.search(html.unescape(q), incl=incl, excl=excl)
     except InvalidParameterException as e:
         raise HTTPException(status_code=422, detail=str(e))
-    breakpoint()
     return resp
 
 

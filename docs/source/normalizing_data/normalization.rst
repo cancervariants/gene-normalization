@@ -22,6 +22,7 @@ The ``gene.etl`` package contains classes for extracting relevant data for each 
    :members:
    :undoc-members:
    :show-inheritance:
+   :exclude-members:  model_config, model_fields
 
 .. _build_normalization:
 
@@ -36,7 +37,7 @@ Once all source records have been loaded into the database, normalized concept c
 * The HGNC record for OTX2P2, ``hgnc:54560``, references Ensembl record ``ensembl:ENSG00000227134`` and NCBI record ``ncbigene:100419816``
 * The Ensembl record for OTX2P2, ``ensembl:ENSG00000227134``, references HGNC record ``hgnc:54560``
 
-From this, the Gene Normalizer is able to produce twoa concept groups (one for each record), which the following visual makes clear:
+From this, the Gene Normalizer is able to produce two concept groups (one for each record), which the following visual makes clear:
 
 .. The detail text in the figure below is invisible in dark mode, because it's just in a generic <p> block. We could probably invest some time into injecting custom SCSS and assigning it the "--color-foreground-primary" value at a later date. Once we're there, it'd be nice to update the colors and background of the figure as well.
 
@@ -59,140 +60,310 @@ Normalized gene records are constructed by merging known data from all associate
 The normalized record
 ---------------------
 
-Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2.0-alpha>`_. The normalized gene concept is provided and additional metadata is deposited as a label, xrefs, alternate labels, as well as Extensions for more complex information (such as loci and gene type). The following demonstrates this model for the BRAF gene:
+Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2.0-alpha>`_ per the VRS 2.x schema. The normalized gene concept is provided and additional metadata is deposited as a label, xrefs, alternate labels, as well as Extensions for more complex information (such as loci and gene type). The following demonstrates this model for the BRAF gene:
 
 .. admonition:: Example
 
   .. code-block:: json
 
-    {
-      "id": "normalize.gene:braf",
-      "type": "Gene",
-      "label": "BRAF",
-      "extensions": [
-        {
-          "type": "Extension",
-          "name": "symbol_status",
-          "value": "approved"
-        },
-        {
-          "type": "Extension",
-          "name": "approved_name",
-          "value": "B-Raf proto-oncogene, serine/threonine kinase"
-        },
-        {
-          "type": "Extension",
-          "name": "associated_with",
-          "value": [
-            "ucsc:uc003vwc.5",
-            "ccds:CCDS87555",
-            "ena.embl:M95712",
-            "uniprot:P15056",
-            "ccds:CCDS5863",
-            "pubmed:1565476",
-            "vega:OTTHUMG00000157457",
-            "cosmic:BRAF",
-            "pubmed:2284096",
-            "omim:164757",
-            "iuphar:1943",
-            "ccds:CCDS94218",
-            "refseq:NM_004333",
-            "ccds:CCDS94219",
-            "orphanet:119066"
-          ]
-        },
-        {
-          "type": "Extension",
-          "name": "ensembl_locations",
-          "value": [
-            {
-              "id": "ga4gh:SL.WJ0hsPzXuK54mQyVysTqUNV5jaCATnRf",
-              "type": "SequenceLocation",
-              "sequenceReference": {
-                "type": "SequenceReference",
-                "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
-              },
-              "start": 140719326,
-              "end": 140924929
-            }
-          ]
-        },
-        {
-          "type": "Extension",
-          "name": "strand",
-          "value": "-"
-        },
-        {
-          "type": "Extension",
-          "name": "ensembl_locations",
-          "value": [
-            {
-              "id": "ga4gh:CL.ZZZYpOwuW1BLLJXc_Dm4eVZ5E0smVYCc",
-              "type": "ChromosomeLocation",
-              "species_id": "taxonomy:9606",
-              "chr": "7",
-              "start": "q34",
-              "end": "q34"
-            }
-          ]
-        },
-        {
-          "type": "Extension",
-          "name": "ncbi_locations",
-          "value": [
-            {
-              "id": "ga4gh:CL.ZZZYpOwuW1BLLJXc_Dm4eVZ5E0smVYCc",
-              "type": "ChromosomeLocation",
-              "species_id": "taxonomy:9606",
-              "chr": "7",
-              "start": "q34",
-              "end": "q34"
-            },
-            {
-              "id": "ga4gh:SL.uNBZoxhjhohl24VlIut-JxPJAGfJ7EQE",
-              "type": "SequenceLocation",
-              "sequenceReference": {
-                "type": "SequenceReference",
-                "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
-              },
-              "start": 140713327,
-              "end": 140924929
-            }
-          ]
-        },
-        {
-          "type": "Extension",
-          "name": "strand",
-          "value": "-"
-        },
-        {
-          "type": "Extension",
-          "name": "hgnc_locus_type",
-          "value": "gene with protein product"
-        },
-        {
-          "type": "Extension",
-          "name": "ncbi_gene_type",
-          "value": "protein-coding"
-        },
-        {
-          "type": "Extension",
-          "name": "ensembl_biotype",
-          "value": "protein_coding"
-        }
-      ],
-      "description": null,
-      "xrefs": [
-        "ensembl:ENSG00000157764",
-        "ncbigene:673"
-      ],
-      "alternate_labels": [
-        "B-raf",
-        "BRAF1",
-        "NS7",
-        "B-RAF1",
-        "BRAF-1",
-        "RAFB1"
-      ],
-      "gene": "hgnc:1097"
-    }
+   {
+     "id": "normalize.gene.hgnc:1097",
+     "label": "BRAF",
+     "description": null,
+     "extensions": [
+       {
+         "type": "Extension",
+         "name": "symbol_status",
+         "value": "approved"
+       },
+       {
+         "type": "Extension",
+         "name": "approved_name",
+         "value": "B-Raf proto-oncogene, serine/threonine kinase"
+       },
+       {
+         "type": "Extension",
+         "name": "strand",
+         "value": "-"
+       },
+       {
+         "type": "Extension",
+         "name": "ensembl_locations",
+         "value": [
+           {
+             "id": "ga4gh:SL.WJ0hsPzXuK54mQyVysTqUNV5jaCATnRf",
+             "type": "SequenceLocation",
+             "sequenceReference": {
+               "type": "SequenceReference",
+               "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
+             },
+             "start": 140719326,
+             "end": 140924929
+           }
+         ]
+       },
+       {
+         "type": "Extension",
+         "name": "ncbi_locations",
+         "value": [
+           {
+             "id": "ga4gh:SL.uNBZoxhjhohl24VlIut-JxPJAGfJ7EQE",
+             "type": "SequenceLocation",
+             "sequenceReference": {
+               "type": "SequenceReference",
+               "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
+             },
+             "start": 140713327,
+             "end": 140924929
+           }
+         ]
+       },
+       {
+         "type": "Extension",
+         "name": "hgnc_locus_type",
+         "value": "gene with protein product"
+       },
+       {
+         "type": "Extension",
+         "name": "ncbi_gene_type",
+         "value": "protein-coding"
+       },
+       {
+         "type": "Extension",
+         "name": "ensembl_biotype",
+         "value": "protein_coding"
+       }
+     ],
+     "mappings": [
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "ncbigene",
+           "version": null,
+           "code": "673"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "ensembl",
+           "version": null,
+           "code": "ENSG00000157764"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "iuphar",
+           "version": null,
+           "code": "1943"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "omim",
+           "version": null,
+           "code": "164757"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "ccds",
+           "version": null,
+           "code": "CCDS94218"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "pubmed",
+           "version": null,
+           "code": "1565476"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "vega",
+           "version": null,
+           "code": "OTTHUMG00000157457"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "ucsc",
+           "version": null,
+           "code": "uc003vwc.5"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "ena.embl",
+           "version": null,
+           "code": "M95712"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "ccds",
+           "version": null,
+           "code": "CCDS87555"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "ccds",
+           "version": null,
+           "code": "CCDS5863"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "cosmic",
+           "version": null,
+           "code": "BRAF"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "pubmed",
+           "version": null,
+           "code": "2284096"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "orphanet",
+           "version": null,
+           "code": "119066"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "refseq",
+           "version": null,
+           "code": "NM_004333"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "uniprot",
+           "version": null,
+           "code": "P15056"
+         },
+         "relation": "relatedMatch"
+       },
+       {
+         "id": null,
+         "label": null,
+         "description": null,
+         "extensions": null,
+         "coding": {
+           "label": null,
+           "system": "ccds",
+           "version": null,
+           "code": "CCDS94219"
+         },
+         "relation": "relatedMatch"
+       }
+     ],
+     "type": "Gene",
+     "aliases": [
+       "RAFB1",
+       "B-RAF1",
+       "BRAF1",
+       "BRAF-1",
+       "B-raf",
+       "NS7"
+     ]
+   }

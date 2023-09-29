@@ -12,7 +12,7 @@ The Gene Normalizer provides tools for resolving ambiguous human gene references
 
 **[Live service](https://normalize.cancervariants.org/gene)**
 
-**[Documentation](https://gene-normalizer.readthedocs.io/en/latest/.html)** · [Installation](https://gene-normalizer.readthedocs.io/en/latest/install.html) · [Usage](https://gene-normalizer.readthedocs.io/en/latest/usage.html) · [API reference](https://gene-normalizer.readthedocs.io/en/latest/api/api.html)
+**[Documentation](https://gene-normalizer.readthedocs.io/en/latest/)** · [Installation](https://gene-normalizer.readthedocs.io/en/latest/install.html) · [Usage](https://gene-normalizer.readthedocs.io/en/latest/usage.html) · [API reference](https://gene-normalizer.readthedocs.io/en/latest/api/api.html)
 
 ---
 
@@ -35,14 +35,12 @@ $ curl 'https://normalize.cancervariants.org/gene/normalize?q=BRAF' | python -m 
 {
     "query": "BRAF",
     "match_type": 100,
-    "gene_descriptor": {
+    "gene": {
+        "type": "Gene",
+        "id": "normalize.gene.hgnc:1097"
         "label": "BRAF",
         "gene_id": "hgnc:1097",
-        "xrefs": [
-            "ensembl:ENSG00000157764",
-            "ncbigene:673"
-        ],
-        "alternate_labels": [
+        "aliases": [
             "BRAF1",
             "B-RAF1",
             "NS7",
@@ -62,19 +60,11 @@ Or utilize the [Python API](https://gene-normalizer.readthedocs.io/en/latest/api
 >>> from gene.query import QueryHandler
 >>> q = QueryHandler(create_db())
 >>> result = q.normalize("KRAS")
->>> print(result.gene_descriptor.gene_id)
-"hgnc:6407"
+>>> print(result.gene.id)
+"normalize.gene.hgnc:6407"
 ```
 
 See the [usage](https://gene-normalizer.readthedocs.io/en/latest/usage.html) and [normalization](https://gene-normalizer.readthedocs.io/en/latest/normalizing_data/normalization.html) entries in the documentation for more.
-
-```
->>> result = q.normalize("BRAF")
->>> result.normalized_id
-"hgnc:1097"
->>> result.gene.aliases
-['NS7', 'RAFB1', 'B-raf', 'BRAF-1', 'BRAF1', 'B-RAF1']
-```
 
 ## Feedback and contributing
 

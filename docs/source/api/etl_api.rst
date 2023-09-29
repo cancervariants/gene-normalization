@@ -14,7 +14,7 @@ Base
 Exceptions
 ----------
 
-.. automodule:: gene.etl.Exceptions
+.. automodule:: gene.etl.exceptions
     :members:
     :show-inheritance:
 
