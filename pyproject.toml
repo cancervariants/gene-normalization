@@ -1,6 +1,77 @@
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta:__legacy__"
+[project]
+name = "gene-normalizer"
+version = "0.3.0-dev1"
+authors = [
+    {name = "Alex Wagner"},
+    {name = "Kori Kuzma"},
+    {name = "James Stevenson"}
+]
+readme = "README.md"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11"
+]
+requires-python = ">=3.8"
+description = "VICC normalization routines for genes"
+license = {file = "LICENSE"}
+dependencies = [
+    "pydantic",
+    "fastapi",
+    "uvicorn",
+    "click",
+    "boto3",
+    "ga4gh.vrs~=2.0.0a1"
+]
+
+[project.optional-dependencies]
+pg = ["psycopg[binary]"]
+
+etl = ["gffutils", "biocommons.seqrepo"]
+
+test = ["pytest", "pytest-cov", "mock"]
+
+dev = ["pre-commit", "black", "ruff"]
+
+docs = [
+    "sphinx==6.1.3",
+    "sphinx-autodoc-typehints==1.22.0",
+    "sphinx-autobuild==2021.3.14",
+    "sphinx-copybutton==0.5.2",
+    "sphinxext-opengraph==0.8.2",
+    "sphinxcontrib-bibtex==2.5.0",
+    "furo==2023.3.27",
+    "gravis==0.1.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/cancervariants/gene-normalization"
+Documentation = "https://gene-normalizer.readthedocs.io/en/latest/"
+Changelog = "https://github.com/cancervariants/gene-normalization/releases"
+Source = "https://github.com/cancervariants/gene-normalization"
+"Bug Tracker" = "https://github.com/cancervariants/gene-normalization/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"gene.database" = ["*.sql"]
+
+[project.scripts]
+gene_norm_update = "gene.cli:update_normalizer_db"
+gene_norm_update_remote = "gene.cli:update_from_remote"
+gene_norm_dump = "gene.cli:dump_database"
+gene_norm_check_db = "gene.cli:check_db"
+
+[tool.pytest]
+addopts = "--ignore setup.py --ignore dynamodb_local_latest/ --ignore docs/ --doctest-modules --cov-report term-missing --cov=."
 
 [tool.black]
 line-length = 88
