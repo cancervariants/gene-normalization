@@ -99,6 +99,7 @@ normalize_q_descr = "Gene to normalize."
     summary=normalize_summary,
     response_description=normalize_response_descr,
     response_model=NormalizeService,
+    response_model_exclude_none=True,
     description=normalize_descr,
     tags=["Query"],
 )
