@@ -10,7 +10,7 @@ uvicorn = "*"
 click = "*"
 boto3 = "*"
 "ga4gh.vrs" = "~=2.0.0a1"
-"importlib_resources"
+importlib_resources = "*"
 
 [dev-packages]
 gene = {editable = true, path = "."}
