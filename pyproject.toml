@@ -39,7 +39,7 @@ pg = ["psycopg[binary]"]
 
 etl = ["gffutils", "biocommons.seqrepo"]
 
-test = ["pytest", "pytest-cov", "mock"]
+test = ["pytest>=6.0", "pytest-cov", "mock"]
 
 dev = ["pre-commit", "black", "ruff"]
 
@@ -75,8 +75,12 @@ where = ["src"]
 [tool.setuptools.package-data]
 "gene.database.postgresql" = ["*.sql"]
 
-[tool.pytest]
-addopts = "--ignore docs/ --doctest-modules --cov-report term-missing --cov=."
+[tool.pytest.ini_options]
+addopts = "--cov=src --cov-report term-missing"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
 
 [tool.black]
 line-length = 88
