@@ -8,6 +8,9 @@ authors = [
 readme = "README.md"
 classifiers = [
     "Development Status :: 3 - Alpha",
+    "Framework :: FastAPI",
+    "Framework :: Pydantic",
+    "Framework :: Pydantic :: 2",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
@@ -16,7 +19,8 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11"
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12"
 ]
 requires-python = ">=3.8"
 description = "VICC normalization routines for genes"
