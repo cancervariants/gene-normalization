@@ -5,7 +5,7 @@ from pathlib import Path
 
 from .version import __version__  # noqa: F401
 
-APP_ROOT = Path(__file__).parent
+APP_ROOT = Path(__file__).resolve().parent
 
 logging.basicConfig(
     filename="gene.log", format="[%(asctime)s] - %(name)s - %(levelname)s : %(message)s"
