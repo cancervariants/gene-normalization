@@ -4,7 +4,7 @@ VRS Compliance
 As mentioned earlier in the documentation, the Gene Normalizer incorporates structures from the `GA4GH Variation Representation Specification (VRS) <https://vrs.ga4gh.org/en/stable/>`_ to integrate more smoothly with other related libraries. The Gene Normalizer is currently released in two branches, corresponding to different VRS releases:
 
 .. list-table::
-   :widths: 25 25 25 25
+   :widths: 25 25 25
    :header-rows: 1
 
    * - Gene Normalizer branch

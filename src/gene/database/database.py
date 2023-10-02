@@ -278,8 +278,8 @@ def create_db(
     and creates a DB instance.
 
     Generally prefers to return a DynamoDB instance, unless all DDB-relevant
-    environment variables are unset and a libpq-compliant URI is passed to
-    `db_url`. See the `usage` section of the documentation for details.
+    environment variables are unset and a ``libpq``-compliant URI is assigned to
+    ``db_url``. See the Usage section of the documentation for details.
 
     Some examples:
 
