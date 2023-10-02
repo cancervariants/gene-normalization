@@ -35,6 +35,7 @@ $ curl 'https://normalize.cancervariants.org/gene/normalize?q=BRAF' | python -m 
 {
     "query": "BRAF",
     "match_type": 100,
+    "normalized_id": "hgnc:1097",
     "gene": {
         "type": "Gene",
         "id": "normalize.gene.hgnc:1097"

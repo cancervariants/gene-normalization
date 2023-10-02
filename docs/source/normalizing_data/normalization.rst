@@ -60,7 +60,7 @@ Normalized gene records are constructed by merging known data from all associate
 The normalized record
 ---------------------
 
-Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2.0-alpha>`_ per the VRS 2.x schema. The normalized gene concept is provided and additional metadata is deposited as a label, xrefs, alternate labels, as well as Extensions for more complex information (such as loci and gene type). The following demonstrates this model for the BRAF gene:
+Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2.0-alpha>`_ per the VRS 2.x schema. The normalized gene concept ID is given, and additional metadata such as a label, mappings, aliases, and Extensions (for more complex information such as loci and gene type) is included. For example, the normalized result for the BRAF gene may be described as follows:
 
 .. admonition:: Example
 
@@ -69,7 +69,6 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
    {
      "id": "normalize.gene.hgnc:1097",
      "label": "BRAF",
-     "description": null,
      "extensions": [
        {
          "type": "Extension",
@@ -136,222 +135,120 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
      ],
      "mappings": [
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "ncbigene",
-           "version": null,
            "code": "673"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "ensembl",
-           "version": null,
            "code": "ENSG00000157764"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "iuphar",
-           "version": null,
            "code": "1943"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "omim",
-           "version": null,
            "code": "164757"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "ccds",
-           "version": null,
            "code": "CCDS94218"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "pubmed",
-           "version": null,
            "code": "1565476"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "vega",
-           "version": null,
            "code": "OTTHUMG00000157457"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "ucsc",
-           "version": null,
            "code": "uc003vwc.5"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "ena.embl",
-           "version": null,
            "code": "M95712"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "ccds",
-           "version": null,
            "code": "CCDS87555"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "ccds",
-           "version": null,
            "code": "CCDS5863"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "cosmic",
-           "version": null,
            "code": "BRAF"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "pubmed",
-           "version": null,
            "code": "2284096"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "orphanet",
-           "version": null,
            "code": "119066"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "refseq",
-           "version": null,
            "code": "NM_004333"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "uniprot",
-           "version": null,
            "code": "P15056"
          },
          "relation": "relatedMatch"
        },
        {
-         "id": null,
-         "label": null,
-         "description": null,
-         "extensions": null,
          "coding": {
-           "label": null,
            "system": "ccds",
-           "version": null,
            "code": "CCDS94219"
          },
          "relation": "relatedMatch"
