@@ -1,6 +1,5 @@
 [project]
 name = "gene-normalizer"
-version = "0.3.0-dev1"
 authors = [
     {name = "Alex Wagner"},
     {name = "Kori Kuzma"},
@@ -31,6 +30,7 @@ dependencies = [
     "ga4gh.vrs~=2.0.0a1",
     "importlib_resources"
 ]
+dynamic = ["version"]
 
 [project.optional-dependencies]
 pg = ["psycopg[binary]"]
@@ -59,17 +59,20 @@ Changelog = "https://github.com/cancervariants/gene-normalization/releases"
 Source = "https://github.com/cancervariants/gene-normalization"
 "Bug Tracker" = "https://github.com/cancervariants/gene-normalization/issues"
 
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.setuptools.package-data]
-"gene.database.postgresql" = ["*.sql"]
-
 [project.scripts]
 gene_norm_update = "gene.cli:update_normalizer_db"
 gene_norm_update_remote = "gene.cli:update_from_remote"
 gene_norm_dump = "gene.cli:dump_database"
 gene_norm_check_db = "gene.cli:check_db"
+
+[tool.setuptools.dynamic]
+version = {attr = "gene.version.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"gene.database.postgresql" = ["*.sql"]
 
 [tool.pytest]
 addopts = "--ignore setup.py --ignore dynamodb_local_latest/ --ignore docs/ --doctest-modules --cov-report term-missing --cov=."

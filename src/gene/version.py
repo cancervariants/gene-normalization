@@ -1,4 +1,2 @@
 """Gene normalizer version"""
-from importlib.metadata import version
-
-__version__ = version("gene-normalizer")
+__version__ = "0.3.0-dev1"
