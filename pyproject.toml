@@ -101,9 +101,6 @@ fixable = ["I", "F401"]
 # E501 - line-too-long
 ignore = ["D203", "D205", "D213", "D400", "D415", "ANN101", "ANN003", "E501"]
 
-# [tool.ruff.isort]
-# known-first-party = ["gene"]
-
 [tool.ruff.flake8-quotes]
 docstring-quotes = "double"
 
