@@ -3,9 +3,11 @@ import logging
 from os import environ
 from pathlib import Path
 
+from importlib_resources import files
+
 from .version import __version__  # noqa: F401
 
-APP_ROOT = Path(__file__).resolve().parents[0]
+APP_ROOT = files("gene")
 
 logging.basicConfig(
     filename="gene.log", format="[%(asctime)s] - %(name)s - %(levelname)s : %(message)s"

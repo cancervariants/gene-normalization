@@ -11,6 +11,7 @@ from typing import Any, Dict, Generator, List, Optional, Set, Tuple
 
 import psycopg
 import requests
+from importlib_resources import files
 from psycopg.errors import (
     DuplicateObject,
     DuplicateTable,
@@ -29,7 +30,7 @@ from gene.schemas import RecordType, RefType, SourceMeta, SourceName
 logger = logging.getLogger(__name__)
 
 
-SCRIPTS_DIR = Path(__file__).parent / "postgresql"
+SCRIPTS_DIR = files("gene.database") / "postgresql"
 
 
 class PostgresDatabase(AbstractDatabase):
