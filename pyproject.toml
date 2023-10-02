@@ -63,7 +63,7 @@ Source = "https://github.com/cancervariants/gene-normalization"
 where = ["src"]
 
 [tool.setuptools.package-data]
-"gene.database" = ["*.sql"]
+"gene.database.postgresql" = ["*.sql"]
 
 [project.scripts]
 gene_norm_update = "gene.cli:update_normalizer_db"
