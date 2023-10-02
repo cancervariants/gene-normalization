@@ -77,7 +77,7 @@ where = ["src"]
 "gene.database.postgresql" = ["*.sql"]
 
 [tool.pytest]
-addopts = "--ignore setup.py --ignore dynamodb_local_latest/ --ignore docs/ --doctest-modules --cov-report term-missing --cov=."
+addopts = "--ignore docs/ --doctest-modules --cov-report term-missing --cov=."
 
 [tool.black]
 line-length = 88
