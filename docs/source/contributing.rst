@@ -8,7 +8,7 @@ Bugs and new feature requests can be submitted to the Gene Normalizer `issue tra
 
 Development prerequisites
 -------------------------
-For a development install, we recommend using Pipenv. See the `pipenv docs <https://pipenv-fork.readthedocs.io/en/latest/#install-pipenv-today>`_ for direction on installing Pipenv in your environment.
+For a development install, we recommend using Pipenv. See the `Pipenv docs <https://pipenv-fork.readthedocs.io/en/latest/#install-pipenv-today>`_ for direction on installing Pipenv in your environment.
 
 Setup
 -----
@@ -31,7 +31,7 @@ Alternatively, use a virtual environment and install all dependency groups: ::
 
 We use `pre-commit <https://pre-commit.com/#usage>`_ to run conformance tests before commits. This provides checks for:
 
-* Code style
+* Code format and style
 * Added large files
 * AWS credentials
 * Private keys
@@ -69,7 +69,7 @@ By default, tests will utilize an existing database, and won't load any new data
 Documentation
 -------------
 
-The documentation is built with Sphinx, which is included as part of the developer dependencies. To build a local copy, ensure that the Gene Normalizer is installed in your current Python environment, then navigate to the `docs/` subdirectory and use `make` to build the HTML version: ::
+The documentation is built with Sphinx, which is included as part of the Pipenv developer dependencies, or in the ``docs`` dependency group. Navigate to the `docs/` subdirectory and use `make` to build the HTML version: ::
 
     pipenv shell
     cd docs
