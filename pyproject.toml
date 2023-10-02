@@ -120,7 +120,6 @@ docstring-quotes = "double"
 # I001 - Import block unsorted or unformatted
 # N805 - invalid-first-argument-name-for-method
 "tests/*" = ["ANN001", "ANN102", "ANN2"]
-"setup.py" = ["F821"]
 "*__init__.py" = ["F401"]
 "gene/schemas.py" = ["ANN001", "ANN201", "N805"]
 "docs/source/conf.py" = ["D100", "I001", "D103", "ANN201", "ANN001"]
