@@ -28,7 +28,6 @@ dependencies = [
     "click",
     "boto3",
     "ga4gh.vrs~=2.0.0a1",
-    "importlib_resources"
 ]
 dynamic = ["version"]
 
