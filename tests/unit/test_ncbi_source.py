@@ -2,14 +2,14 @@
 from datetime import datetime
 
 import pytest
-
-from gene.query import QueryHandler
-from gene.schemas import Gene, MatchType, SourceName
 from tests.conftest import (
     assertion_checks,
     check_ncbi_discontinued_gene,
     check_resp_single_record,
 )
+
+from gene.query import QueryHandler
+from gene.schemas import Gene, MatchType, SourceName
 
 
 @pytest.fixture(scope="module")
