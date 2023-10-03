@@ -108,10 +108,7 @@ def normalize(q: str = Query(..., description=normalize_q_descr)) -> NormalizeSe
     :param str q: gene search term
     :return: JSON response with normalized gene concept
     """
-    try:
-        resp = query_handler.normalize(html.unescape(q))
-    except InvalidParameterException as e:
-        raise HTTPException(status_code=422, detail=str(e))
+    resp = query_handler.normalize(html.unescape(q))
     return resp
 
 
@@ -145,8 +142,5 @@ def normalize_unmerged(
     :param q: Gene search term
     :returns: JSON response with matching normalized record and source metadata
     """
-    try:
-        response = query_handler.normalize_unmerged(html.unescape(q))
-    except InvalidParameterException as e:
-        raise HTTPException(status_code=422, detail=str(e))
+    response = query_handler.normalize_unmerged(html.unescape(q))
     return response
