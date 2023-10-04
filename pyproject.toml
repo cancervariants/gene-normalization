@@ -1,12 +1,94 @@
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta:__legacy__"
+[project]
+name = "gene-normalizer"
+authors = [
+    {name = "Alex Wagner"},
+    {name = "Kori Kuzma"},
+    {name = "James Stevenson"}
+]
+readme = "README.md"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: FastAPI",
+    "Framework :: Pydantic",
+    "Framework :: Pydantic :: 2",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+requires-python = ">=3.8"
+description = "VICC normalization routines for genes"
+license = {file = "LICENSE"}
+dependencies = [
+    "pydantic",
+    "fastapi",
+    "uvicorn",
+    "click",
+    "boto3",
+    "ga4gh.vrsatile.pydantic~=0.0.12",
+    "ga4gh.vrs~=0.8.1"
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+pg = ["psycopg[binary]"]
+
+etl = ["gffutils", "biocommons.seqrepo"]
+
+test = ["pytest>=6.0", "pytest-cov", "mock", "httpx"]
+
+dev = ["pre-commit", "black", "ruff"]
+
+docs = [
+    "sphinx==6.1.3",
+    "sphinx-autodoc-typehints==1.22.0",
+    "sphinx-autobuild==2021.3.14",
+    "sphinx-copybutton==0.5.2",
+    "sphinxext-opengraph==0.8.2",
+    "furo==2023.3.27",
+    "gravis==0.1.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/cancervariants/gene-normalization"
+Documentation = "https://gene-normalizer.readthedocs.io/en/latest/"
+Changelog = "https://github.com/cancervariants/gene-normalization/releases"
+Source = "https://github.com/cancervariants/gene-normalization"
+"Bug Tracker" = "https://github.com/cancervariants/gene-normalization/issues"
+
+[project.scripts]
+gene_norm_update = "gene.cli:update_normalizer_db"
+gene_norm_update_remote = "gene.cli:update_from_remote"
+gene_norm_dump = "gene.cli:dump_database"
+gene_norm_check_db = "gene.cli:check_db"
+
+[tool.setuptools.dynamic]
+version = {attr = "gene.version.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"gene.database.postgresql" = ["*.sql"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=src --cov-report term-missing"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
 
 [tool.black]
 line-length = 88
 extend-exclude = "^/docs/source/conf.py"
 
 [tool.ruff]
+src = ["src"]
 # pycodestyle (E, W)
 # Pyflakes (F)
 # flake8-annotations (ANN)
@@ -40,7 +122,6 @@ docstring-quotes = "double"
 # I001 - Import block unsorted or unformatted
 # N805 - invalid-first-argument-name-for-method
 "tests/*" = ["ANN001", "ANN102", "ANN2"]
-"setup.py" = ["F821"]
 "*__init__.py" = ["F401"]
 "gene/schemas.py" = ["ANN001", "ANN201", "N805"]
 "docs/source/conf.py" = ["D100", "I001", "D103", "ANN201", "ANN001"]
