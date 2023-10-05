@@ -22,7 +22,7 @@ def ncbi(database):
 
         def search(self, query_str, incl="ncbi"):
             resp = self.query_handler.search(query_str, incl=incl)
-            return resp.source_matches[SourceName.NCBI.value]
+            return resp.source_matches[SourceName.NCBI]
 
     n = QueryGetter()
     return n

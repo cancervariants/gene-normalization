@@ -356,7 +356,7 @@ class DynamoDbDatabase(AbstractDatabase):
         :raise DatabaseWriteException: if write fails
         """
         src_name_value = src_name.value
-        metadata_item = metadata.dict()
+        metadata_item = metadata.model_dump()
         metadata_item["src_name"] = src_name_value
         metadata_item["label_and_type"] = f"{str(src_name_value).lower()}##source"
         metadata_item["concept_id"] = f"source:{str(src_name_value).lower()}"

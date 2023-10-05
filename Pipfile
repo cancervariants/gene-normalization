@@ -9,7 +9,7 @@ fastapi = "*"
 uvicorn = "*"
 click = "*"
 boto3 = "*"
-"ga4gh.vrsatile.pydantic" = "~=0.0.12"
+"ga4gh.vrsatile.pydantic" = "~=0.2.0"
 "ga4gh.vrs" = "~=0.8.1"
 
 [dev-packages]

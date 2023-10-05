@@ -1,6 +1,6 @@
 """Contains data models for representing VICC normalized gene records."""
 from enum import Enum, IntEnum
-from typing import Any, Dict, List, Literal, Optional, Type, Union
+from typing import Dict, List, Literal, Optional, Union
 
 from ga4gh.vrsatile.pydantic import return_value
 from ga4gh.vrsatile.pydantic.vrs_models import (
@@ -10,8 +10,14 @@ from ga4gh.vrsatile.pydantic.vrs_models import (
     VRSTypes,
 )
 from ga4gh.vrsatile.pydantic.vrsatile_models import GeneDescriptor
-from pydantic import BaseModel, StrictBool, validator
-from pydantic.types import StrictInt, StrictStr
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    StrictBool,
+    StrictInt,
+    StrictStr,
+    field_validator,
+)
 
 
 class SymbolStatus(str, Enum):
@@ -85,9 +91,9 @@ class BaseGene(BaseModel):
 
     concept_id: CURIE
     symbol: StrictStr
-    symbol_status: Optional[SymbolStatus]
-    label: Optional[StrictStr]
-    strand: Optional[Strand]
+    symbol_status: Optional[SymbolStatus] = None
+    label: Optional[StrictStr] = None
+    strand: Optional[Strand] = None
     location_annotations: Optional[List[StrictStr]] = []
     locations: Optional[
         Union[
@@ -99,13 +105,11 @@ class BaseGene(BaseModel):
     previous_symbols: Optional[List[StrictStr]] = []
     xrefs: Optional[List[CURIE]] = []
     associated_with: Optional[List[CURIE]] = []
-    gene_type: Optional[StrictStr]
+    gene_type: Optional[StrictStr] = None
 
-    _get_concept_id_val = validator("concept_id", allow_reuse=True)(return_value)
-    _get_xrefs_val = validator("xrefs", allow_reuse=True)(return_value)
-    _get_associated_with_val = validator("associated_with", allow_reuse=True)(
-        return_value
-    )
+    _get_concept_id_val = field_validator("concept_id")(return_value)
+    _get_xrefs_val = field_validator("xrefs")(return_value)
+    _get_associated_with_val = field_validator("associated_with")(return_value)
 
 
 class Gene(BaseGene):
@@ -113,19 +117,9 @@ class Gene(BaseGene):
 
     match_type: MatchType
 
-    class Config:
-        """Configure model example"""
-
-        use_enum_values = True
-
-        @staticmethod
-        def schema_extra(schema: Dict[str, Any], model: Type["Gene"]) -> None:
-            """Configure OpenAPI schema"""
-            if "title" in schema.keys():
-                schema.pop("title", None)
-            for p in schema.get("properties", {}).values():
-                p.pop("title", None)
-            schema["example"] = {
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
                 "label": None,
                 "concept_id": "ensembl:ENSG00000157764",
                 "symbol": "BRAF",
@@ -136,6 +130,8 @@ class Gene(BaseGene):
                 "strand": "-",
                 "location": [],
             }
+        }
+    )
 
 
 class GeneGroup(Gene):
@@ -236,23 +232,13 @@ class SourceMeta(BaseModel):
     data_license_url: StrictStr
     version: StrictStr
     data_url: Dict[str, str]
-    rdp_url: Optional[StrictStr]
+    rdp_url: Optional[StrictStr] = None
     data_license_attributes: Dict[StrictStr, StrictBool]
-    genome_assemblies: Optional[List[StrictStr]]
+    genome_assemblies: Optional[List[StrictStr]] = None
 
-    class Config:
-        """Configure model example"""
-
-        use_enum_values = True
-
-        @staticmethod
-        def schema_extra(schema: Dict[str, Any], model: Type["SourceMeta"]) -> None:
-            """Configure OpenAPI schema"""
-            if "title" in schema.keys():
-                schema.pop("title", None)
-            for prop in schema.get("properties", {}).values():
-                prop.pop("title", None)
-            schema["example"] = {
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
                 "data_license": "custom",
                 "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
                 "version": "20201215",
@@ -269,6 +255,8 @@ class SourceMeta(BaseModel):
                 },
                 "genome_assemblies": None,
             }
+        }
+    )
 
 
 class SourceSearchMatches(BaseModel):
@@ -277,21 +265,9 @@ class SourceSearchMatches(BaseModel):
     records: List[Gene]
     source_meta_: SourceMeta
 
-    class Config:
-        """Configure model example"""
-
-        use_enum_values = True
-
-        @staticmethod
-        def schema_extra(
-            schema: Dict[str, Any], model: Type["SourceSearchMatches"]
-        ) -> None:
-            """Configure OpenAPI schema"""
-            if "title" in schema.keys():
-                schema.pop("title", None)
-            for prop in schema.get("properties", {}).values():
-                prop.pop("title", None)
-            schema["example"] = {
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
                 "NCBI": {
                     "match_type": 0,
                     "records": [],
@@ -314,57 +290,43 @@ class SourceSearchMatches(BaseModel):
                     },
                 }
             }
+        }
+    )
 
 
 class ServiceMeta(BaseModel):
     """Metadata regarding the gene-normalization service."""
 
-    name = "gene-normalizer"
+    name: Literal["gene-normalizer"] = "gene-normalizer"
     version: StrictStr
     response_datetime: StrictStr
-    url = "https://github.com/cancervariants/gene-normalization"
+    url: Literal[
+        "https://github.com/cancervariants/gene-normalization"
+    ] = "https://github.com/cancervariants/gene-normalization"
 
-    class Config:
-        """Configure model example"""
-
-        use_enum_values = True
-
-        @staticmethod
-        def schema_extra(schema: Dict[str, Any], model: Type["ServiceMeta"]) -> None:
-            """Configure OpenAPI schema"""
-            if "title" in schema.keys():
-                schema.pop("title", None)
-            for prop in schema.get("properties", {}).values():
-                prop.pop("title", None)
-            schema["example"] = {
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
                 "name": "gene-normalizer",
                 "version": "0.1.0",
                 "response_datetime": "2022-03-23 15:57:14.180908",
                 "url": "https://github.com/cancervariants/gene-normalization",
             }
+        }
+    )
 
 
 class SearchService(BaseModel):
     """Define model for returning highest match typed concepts from sources."""
 
     query: StrictStr
-    warnings: Optional[List[Dict]]
+    warnings: Optional[List[Dict]] = None
     source_matches: Dict[SourceName, SourceSearchMatches]
     service_meta_: ServiceMeta
 
-    class Config:
-        """Configure model example"""
-
-        use_enum_values = True
-
-        @staticmethod
-        def schema_extra(schema: Dict[str, Any], model: Type["SearchService"]) -> None:
-            """Configure OpenAPI schema"""
-            if "title" in schema.keys():
-                schema.pop("title", None)
-            for prop in schema.get("properties", {}).values():
-                prop.pop("title", None)
-            schema["example"] = {
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
                 "query": "NCBIgene:293",
                 "warnings": [],
                 "source_matches": {
@@ -420,6 +382,8 @@ class SearchService(BaseModel):
                     "url": "https://github.com/cancervariants/gene-normalization",
                 },
             }
+        }
+    )
 
 
 class GeneTypeFieldName(str, Enum):
@@ -436,7 +400,7 @@ class BaseNormalizationService(BaseModel):
     """Base method providing shared attributes to Normalization service classes."""
 
     query: StrictStr
-    warnings: Optional[List[Dict]]
+    warnings: Optional[List[Dict]] = None
     match_type: MatchType
     service_meta_: ServiceMeta
 
@@ -444,24 +408,12 @@ class BaseNormalizationService(BaseModel):
 class NormalizeService(BaseNormalizationService):
     """Define model for returning normalized concept."""
 
-    gene_descriptor: Optional[GeneDescriptor]
-    source_meta_: Optional[Dict[SourceName, SourceMeta]]
+    gene_descriptor: Optional[GeneDescriptor] = None
+    source_meta_: Optional[Dict[SourceName, SourceMeta]] = None
 
-    class Config:
-        """Configure model example"""
-
-        use_enum_values = True
-
-        @staticmethod
-        def schema_extra(
-            schema: Dict[str, Any], model: Type["NormalizeService"]
-        ) -> None:
-            """Configure OpenAPI schema"""
-            if "title" in schema.keys():
-                schema.pop("title", None)
-            for prop in schema.get("properties", {}).values():
-                prop.pop("title", None)
-            schema["example"] = {
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
                 "query": "BRAF",
                 "warnings": [],
                 "match_type": 100,
@@ -575,6 +527,8 @@ class NormalizeService(BaseNormalizationService):
                     "url": "https://github.com/cancervariants/gene-normalization",  # noqa: E501
                 },
             }
+        }
+    )
 
 
 class MatchesNormalized(BaseModel):
@@ -583,19 +537,6 @@ class MatchesNormalized(BaseModel):
     records: List[BaseGene]
     source_meta_: SourceMeta
 
-    class Config:
-        """Configure OpenAPI schema"""
-
-        @staticmethod
-        def schema_extra(
-            schema: Dict[str, Any], model: Type["MatchesNormalized"]
-        ) -> None:
-            """Configure OpenAPI schema"""
-            if "title" in schema.keys():
-                schema.pop("title", None)
-            for prop in schema.get("properties", {}).values():
-                prop.pop("title", None)
-
 
 class UnmergedNormalizationService(BaseNormalizationService):
     """Response providing source records corresponding to normalization of user query.
@@ -603,22 +544,12 @@ class UnmergedNormalizationService(BaseNormalizationService):
     attributes.
     """
 
-    normalized_concept_id: Optional[CURIE]
+    normalized_concept_id: Optional[CURIE] = None
     source_matches: Dict[SourceName, MatchesNormalized]
 
-    class Config:
-        """Configure OpenAPI schema"""
-
-        @staticmethod
-        def schema_extra(
-            schema: Dict[str, Any], model: Type["UnmergedNormalizationService"]
-        ) -> None:
-            """Configure OpenAPI schema example"""
-            if "title" in schema.keys():
-                schema.pop("title", None)
-            for prop in schema.get("properties", {}).values():
-                prop.pop("title", None)
-            schema["example"] = {
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
                 "query": "hgnc:108",
                 "warnings": [],
                 "match_type": 100,
@@ -802,3 +733,5 @@ class UnmergedNormalizationService(BaseNormalizationService):
                     },
                 },
             }
+        }
+    )
