@@ -24,6 +24,7 @@ from gene.schemas import (
     RefType,
     SearchService,
     ServiceMeta,
+    SourceMeta,
     SourceName,
     SourcePriority,
     UnmergedNormalizationService,
@@ -370,7 +371,8 @@ class QueryHandler:
             prefix = concept_id.split(":")[0]
             src_name = PREFIX_LOOKUP[prefix.lower()]
             if src_name not in sources_meta:
-                sources_meta[src_name] = self.db.get_source_metadata(src_name)
+                _sources_meta = self.db.get_source_metadata(src_name)
+                sources_meta[SourceName(src_name)] = SourceMeta(**_sources_meta)
         response.source_meta_ = sources_meta
         return response
 

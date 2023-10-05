@@ -52,7 +52,7 @@ class SequenceLocation:
                     start=gene.start - 1,  # type: ignore
                     end=gene.end,  # type: ignore
                     sequence_id=sequence_id,
-                ).dict()  # type: ignore
+                ).model_dump()  # type: ignore
             else:
                 logger.info(
                     f"{params['concept_id']} has invalid interval:"

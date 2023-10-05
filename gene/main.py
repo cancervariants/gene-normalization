@@ -61,6 +61,7 @@ search_description = (
     summary=read_query_summary,
     response_description=response_description,
     response_model=SearchService,
+    response_model_exclude_none=True,
     description=search_description,
     tags=["Query"],
 )
@@ -99,6 +100,7 @@ normalize_q_descr = "Gene to normalize."
     summary=normalize_summary,
     response_description=normalize_response_descr,
     response_model=NormalizeService,
+    response_model_exclude_none=True,
     description=normalize_descr,
     tags=["Query"],
 )
@@ -134,6 +136,7 @@ unmerged_normalize_description = (
     operation_id="getUnmergedRecords",
     response_description=unmerged_response_descr,
     response_model=UnmergedNormalizationService,
+    response_model_exclude_none=True,
     description=unmerged_normalize_description,
     tags=["Query"],
 )

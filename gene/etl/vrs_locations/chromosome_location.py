@@ -32,7 +32,7 @@ class ChromosomeLocation:
             try:
                 chr_location = GeneChromosomeLocation(
                     chr=location["chr"], start=location["start"], end=location["end"]
-                ).dict()
+                ).model_dump()
             except ValidationError as e:
                 logger.info(f"{e} for {gene['symbol']}")
             else:

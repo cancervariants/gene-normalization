@@ -49,7 +49,7 @@ def create_gjgf(result: UnmergedNormalizationService) -> Dict:
                 "metadata": {
                     "color": COLORS[i],
                     "hover": f"{match.concept_id}\n{match.symbol}\n<i>{match.label}</i>",  # noqa: E501
-                    "click": f"<p color='black'>{json.dumps(match.dict(), indent=2)}</p>",  # noqa: E501
+                    "click": f"<p color='black'>{json.dumps(match.model_dump(), indent=2)}</p>",  # noqa: E501
                 }
             }
             for xref in match.xrefs:
