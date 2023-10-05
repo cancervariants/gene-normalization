@@ -2,10 +2,10 @@
 from datetime import datetime
 
 import pytest
+from tests.conftest import check_resp_single_record
 
 from gene.query import QueryHandler
 from gene.schemas import Gene, MatchType, SourceName
-from tests.conftest import check_resp_single_record
 
 
 @pytest.fixture(scope="module")
