@@ -66,6 +66,10 @@ gene_norm_update_remote = "gene.cli:update_from_remote"
 gene_norm_dump = "gene.cli:dump_database"
 gene_norm_check_db = "gene.cli:check_db"
 
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
 [tool.setuptools.dynamic]
 version = {attr = "gene.version.__version__"}
 
