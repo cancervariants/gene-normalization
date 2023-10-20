@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pydantic = "*"
+pydantic = "== 2.*"
 fastapi = "*"
 uvicorn = "*"
 click = "*"

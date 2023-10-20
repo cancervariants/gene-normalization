@@ -25,7 +25,7 @@ requires-python = ">=3.8"
 description = "VICC normalization routines for genes"
 license = {file = "LICENSE"}
 dependencies = [
-    "pydantic",
+    "pydantic==2.*",
     "fastapi",
     "uvicorn",
     "click",
