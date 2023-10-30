@@ -1,7 +1,7 @@
 """Provides methods for handling queries."""
 import re
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, TypeVar
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, TypeVar
 
 from ga4gh.core import core_models, ga4gh_identify
 from ga4gh.vrs import models
@@ -220,7 +220,7 @@ class QueryHandler:
                     records = sorted(records, key=lambda k: k.match_type, reverse=True)
         return resp
 
-    def _get_search_response(self, query: str, sources: Set[str]) -> Dict:
+    def _get_search_response(self, query: str, sources: Iterable[SourceName]) -> Dict:
         """Return response as dict where key is source name and value is a list of
         records.
 
@@ -231,7 +231,7 @@ class QueryHandler:
         resp = {
             "query": query,
             "warnings": self._emit_warnings(query),
-            "source_matches": {source: None for source in sources},
+            "source_matches": {source.value: None for source in sources},
         }
         if query == "":
             return self._post_process_resp(resp)
@@ -283,9 +283,7 @@ class QueryHandler:
     def search(
         self,
         query_str: str,
-        incl: str = "",
-        excl: str = "",
-        **params,
+        sources: Optional[List[SourceName]] = None,
     ) -> SearchService:
         """Return highest match for each source.
 
@@ -297,57 +295,16 @@ class QueryHandler:
         'ncbigene:673'
 
         :param query_str: query, a string, to search for
-        :param incl: str containing comma-separated names of sources to use. Will
-            exclude all other sources. Case-insensitive.
-        :param excl: str containing comma-separated names of source to exclude. Will
-            include all other source. Case-insensitive.
+        :param sources: If given, only return records from these sources
         :return: SearchService class containing all matches found in sources.
         :raise InvalidParameterException: if both `incl` and `excl` args are provided,
             or if invalid source names are given
         """
-        possible_sources = {
-            name.value.lower(): name.value for name in SourceName.__members__.values()
-        }
-        sources = dict()
-        for k, v in possible_sources.items():
-            if self.db.get_source_metadata(v):
-                sources[k] = v
-
-        if not incl and not excl:
-            query_sources = set(sources.values())
-        elif incl and excl:
-            detail = "Cannot request both source inclusions and exclusions."
-            raise InvalidParameterException(detail)
-        elif incl:
-            req_sources = [n.strip() for n in incl.split(",")]
-            invalid_sources = []
-            query_sources = set()
-            for source in req_sources:
-                if source.lower() in sources.keys():
-                    query_sources.add(sources[source.lower()])
-                else:
-                    invalid_sources.append(source)
-            if invalid_sources:
-                detail = f"Invalid source name(s): {invalid_sources}"
-                raise InvalidParameterException(detail)
-        else:
-            req_exclusions = [n.strip() for n in excl.lower().split(",")]
-            req_excl_dict = {r.lower(): r for r in req_exclusions}
-            invalid_sources = []
-            query_sources = set()
-            for req_l, req in req_excl_dict.items():
-                if req_l not in sources.keys():
-                    invalid_sources.append(req)
-            for src_l, src in sources.items():
-                if src_l not in req_excl_dict.keys():
-                    query_sources.add(src)
-            if invalid_sources:
-                detail = f"Invalid source name(s): {invalid_sources}"
-                raise InvalidParameterException(detail)
+        if not sources:
+            sources = list(SourceName.__members__.values())
 
         query_str = query_str.strip()
-
-        resp = self._get_search_response(query_str, query_sources)
+        resp = self._get_search_response(query_str, sources)
 
         resp["service_meta_"] = self._get_service_meta()
         return SearchService(**resp)
