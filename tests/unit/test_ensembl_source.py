@@ -13,8 +13,8 @@ def ensembl(database):
         def __init__(self):
             self.query_handler = QueryHandler(database)
 
-        def search(self, query_str, incl="ensembl"):
-            resp = self.query_handler.search(query_str, incl=incl)
+        def search(self, query_str):
+            resp = self.query_handler.search(query_str, sources=[SourceName.ENSEMBL])
             return resp.source_matches[SourceName.ENSEMBL]
 
     e = QueryGetter()

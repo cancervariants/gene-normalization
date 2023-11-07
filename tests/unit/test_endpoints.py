@@ -8,6 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from gene.main import app
+from gene.schemas import SourceName
 
 
 @pytest.fixture(scope="module")
@@ -16,16 +17,31 @@ def api_client():
     return TestClient(app)
 
 
-def test_search(api_client):
+def test_search(api_client: TestClient):
     """Test /search endpoint."""
     response = api_client.get("/gene/search?q=braf")
-    assert response.status_code == 200
+    response.raise_for_status()
     assert (
         response.json()["source_matches"]["HGNC"]["records"][0]["concept_id"]
         == "hgnc:1097"
     )
+    assert len(response.json()["source_matches"]) == 3
 
-    response = api_client.get("/gene/search?q=braf&incl=sdkl")
+    response = api_client.get("/gene/search?q=braf&sources=Hgnc")
+    response.raise_for_status()
+    assert SourceName.HGNC.value in response.json()["source_matches"]
+    assert len(response.json()["source_matches"]) == 1
+
+    response = api_client.get("/gene/search?q=braf&sources=EnsEMBL, NCBI")
+    response.raise_for_status()
+    assert SourceName.NCBI.value in response.json()["source_matches"]
+    assert SourceName.ENSEMBL.value in response.json()["source_matches"]
+    assert len(response.json()["source_matches"]) == 2
+
+    response = api_client.get("/gene/search?q=braf&sources=EnsEMBL, NCBzI")
+    assert response.status_code == 422
+
+    response = api_client.get("/gene/search?q=braf&sources=sdkl")
     assert response.status_code == 422
 
 
