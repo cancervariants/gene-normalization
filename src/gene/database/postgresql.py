@@ -546,12 +546,16 @@ class PostgresDatabase(AbstractDatabase):
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
     """
     _ins_symbol_query = (
-        b"INSERT INTO gene_symbols (symbol, concept_id) VALUES (%s, %s);"  # noqa: E501
+        b"INSERT INTO gene_symbols (symbol, concept_id) VALUES (%s, %s);"
     )
-    _ins_prev_symbol_query = b"INSERT INTO gene_previous_symbols (prev_symbol, concept_id) VALUES (%s, %s);"  # noqa: E501
+    _ins_prev_symbol_query = (
+        b"INSERT INTO gene_previous_symbols (prev_symbol, concept_id) VALUES (%s, %s);"
+    )
     _ins_alias_query = b"INSERT INTO gene_aliases (alias, concept_id) VALUES (%s, %s);"
     _ins_xref_query = b"INSERT INTO gene_xrefs (xref, concept_id) VALUES (%s, %s);"
-    _ins_assoc_query = b"INSERT INTO gene_associations (associated_with, concept_id) VALUES (%s, %s);"  # noqa: E501
+    _ins_assoc_query = (
+        b"INSERT INTO gene_associations (associated_with, concept_id) VALUES (%s, %s);"
+    )
 
     def add_record(self, record: Dict, src_name: SourceName) -> None:
         """Add new record to database.

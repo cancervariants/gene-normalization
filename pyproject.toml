@@ -41,7 +41,7 @@ etl = ["gffutils", "biocommons.seqrepo"]
 
 test = ["pytest>=6.0", "pytest-cov", "mock", "httpx"]
 
-dev = ["pre-commit", "black", "ruff"]
+dev = ["pre-commit", "ruff>=0.1.2"]
 
 docs = [
     "sphinx==6.1.3",
