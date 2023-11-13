@@ -15,7 +15,7 @@ jobs:
         run: python3 -m pip install ".[dev]"
 
       - name: Check style
-        run: python3 -m ruff check src/ tests/ && python3 -m ruff format --check src/ tests/
+        run: python3 -m ruff check . && python3 -m ruff format --check .
 
   test:
     runs-on: ubuntu-latest
