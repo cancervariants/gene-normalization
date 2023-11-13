@@ -94,8 +94,7 @@ class BaseGene(BaseModel):
     strand: Optional[Strand] = None
     location_annotations: List[StrictStr] = []
     locations: Union[
-        List[models.SequenceLocation],
-        List[GeneSequenceLocation]
+        List[models.SequenceLocation], List[GeneSequenceLocation]
         # List[Union[SequenceLocation, ChromosomeLocation]],
         # List[Union[GeneSequenceLocation, GeneChromosomeLocation]]  # dynamodb
     ] = []
