@@ -2,11 +2,10 @@
 import logging
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 
 import click
 
-from gene import SOURCES
 from gene.database import (
     create_db,
 )
@@ -41,7 +40,7 @@ def cli() -> None:
     help="Use most recent local source data instead of fetching latest version",
 )
 def update(
-    sources: str,
+    sources: Tuple[str],
     aws_instance: bool,
     db_url: str,
     update_all: bool,
@@ -50,7 +49,7 @@ def update(
 ) -> None:
     """Update provided normalizer SOURCES in the gene database.
 
-    Valid SOURCES are "HGNC", "NCBI", and "Ensembl". Case is irrelevant. SOURCES are
+    Valid SOURCES are "HGNC", "NCBI", and "Ensembl" (case is irrelevant). SOURCES are
     optional, but if not provided, either --update_all or --update_merged must be used.
 
     For example, the following command will update NCBI and HGNC data:
@@ -62,7 +61,7 @@ def update(
     % gene-normalizer update --update_all --update_merged
 
     \f
-    :param sources: names of sources to update, space-separated (see example above)
+    :param sources: tuple of raw names of sources to update
     :param aws_instance: if true, use cloud instance
     :param db_url: URI pointing to database
     :param update_all: if True, update all sources (ignore ``sources``)
@@ -83,24 +82,21 @@ def update(
     if update_all:
         processed_ids = update_all_sources(db, use_existing, silent=False)
     elif sources:
-        raw_source_names = sources.lower().strip().split()
-        if len(raw_source_names) == 0:
-            click.echo(
-                "Error: must provide source names argument to ``--sources``. See example for more information."
-            )
-            ctx = click.get_current_context()
-            click.echo(ctx.get_help())
-            ctx.exit(1)
-
-        non_sources = set(raw_source_names) - set(SOURCES)
-        if len(non_sources) != 0:
-            click.echo(f"Error: unrecognized sources: {non_sources}")
+        parsed_sources = []
+        failed_source_names = []
+        for source in sources:
+            try:
+                parsed_sources.append(SourceName[source.upper()])
+            except KeyError:
+                failed_source_names.append(source)
+        if len(failed_source_names) != 0:
+            click.echo(f"Error: unrecognized sources: {failed_source_names}")
             click.echo(f"Valid source options are {list(SourceName)}")
             click.get_current_context().exit(1)
 
-        parsed_source_names = {SourceName(SOURCES[s]) for s in raw_source_names}
+        parsed_sources = list(set(parsed_sources))
         processed_ids = set()
-        for source_name in parsed_source_names:
+        for source_name in parsed_sources:
             processed_ids |= update_source(
                 source_name, db, use_existing=use_existing, silent=False
             )
