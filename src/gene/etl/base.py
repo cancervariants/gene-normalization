@@ -6,7 +6,7 @@ import re
 import shutil
 from abc import ABC, abstractmethod
 from ftplib import FTP
-from os import remove
+from os import environ, remove
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
 
@@ -15,12 +15,17 @@ from biocommons.seqrepo import SeqRepo
 from dateutil import parser
 from gffutils.feature import Feature
 
-from gene import ITEM_TYPES, SEQREPO_ROOT_DIR
 from gene.database import AbstractDatabase
-from gene.schemas import Gene, GeneSequenceLocation, MatchType, SourceName
+from gene.schemas import ITEM_TYPES, Gene, GeneSequenceLocation, MatchType, SourceName
 
 logger = logging.getLogger("gene")
 logger.setLevel(logging.DEBUG)
+
+
+APP_ROOT = Path(__file__).resolve().parent
+SEQREPO_ROOT_DIR = Path(
+    environ.get("SEQREPO_ROOT_DIR", "/usr/local/share/seqrepo/latest")
+)
 
 
 class Base(ABC):

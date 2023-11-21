@@ -9,15 +9,15 @@ from typing import Dict, List, Optional
 
 import gffutils
 
-from gene import APP_ROOT, PREFIX_LOOKUP
 from gene.database import AbstractDatabase
-from gene.etl.base import Base
+from gene.etl.base import APP_ROOT, Base
 from gene.etl.exceptions import (
     GeneFileVersionError,
     GeneNormalizerEtlError,
     GeneSourceFetchError,
 )
 from gene.schemas import (
+    PREFIX_LOOKUP,
     Annotation,
     Chromosome,
     NamespacePrefix,

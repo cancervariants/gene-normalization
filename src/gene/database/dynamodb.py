@@ -11,7 +11,6 @@ import click
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 
-from gene import ITEM_TYPES, PREFIX_LOOKUP
 from gene.database.database import (
     AWS_ENV_VAR_NAME,
     SKIP_AWS_DB_ENV_NAME,
@@ -23,7 +22,14 @@ from gene.database.database import (
     DatabaseWriteException,
     confirm_aws_db_use,
 )
-from gene.schemas import RecordType, RefType, SourceMeta, SourceName
+from gene.schemas import (
+    ITEM_TYPES,
+    PREFIX_LOOKUP,
+    RecordType,
+    RefType,
+    SourceMeta,
+    SourceName,
+)
 
 logger = logging.getLogger(__name__)
 
