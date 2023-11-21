@@ -97,6 +97,17 @@ def update_source(
 ) -> Set[str]:
     """Refresh data for an individual gene data source
 
+    For example, to completely refresh HGNC data:
+
+    .. code-block: python
+
+       from gene.schemas import SourceName
+       from gene.database import create_db
+       from gene.etl.update import update_source
+
+       db = create_db()
+       processed_ids = update_source(SourceName.HGNC, db)
+
     :param source: name of source to update
     :param db: database instance
     :param use_existing: if True, use latest available local data
@@ -193,6 +204,16 @@ def update_all_and_normalize(
     db: AbstractDatabase, use_existing: bool, silent: bool = True
 ) -> None:
     """Update all sources as well as normalized records.
+
+    For example, to completely refresh all Gene Normalizer data:
+
+    .. code-block: python
+
+       from gene.database import create_db
+       from gene.etl.update import update_all_and_normalize
+
+       db = create_db()
+       update_all_and_normalize(db)
 
     :param db: database instance
     :param use_existing: if True, use latest local copy of data
