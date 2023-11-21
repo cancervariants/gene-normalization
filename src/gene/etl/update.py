@@ -18,7 +18,7 @@ _logger = logging.getLogger(__name__)
 def delete_source(
     source: SourceName, db: AbstractDatabase, silent: bool = True
 ) -> float:
-    """Delete all data for an individual source
+    """Delete all data for an individual source.
 
     :param source: name of source to delete data for
     :param db: database instance
@@ -95,18 +95,15 @@ def load_source(
 def update_source(
     source: SourceName, db: AbstractDatabase, use_existing: bool, silent: bool = True
 ) -> Set[str]:
-    """Refresh data for an individual gene data source
+    """Refresh data for an individual gene data source.
 
     For example, to completely refresh HGNC data:
 
-    .. code-block: python
-
-       from gene.schemas import SourceName
-       from gene.database import create_db
-       from gene.etl.update import update_source
-
-       db = create_db()
-       processed_ids = update_source(SourceName.HGNC, db)
+    >>> from gene.schemas import SourceName
+    >>> from gene.database import create_db
+    >>> from gene.etl.update import update_source
+    >>> db = create_db()
+    >>> processed_ids = update_source(SourceName.HGNC, db)
 
     :param source: name of source to update
     :param db: database instance
@@ -126,7 +123,7 @@ def update_source(
 def update_all_sources(
     db: AbstractDatabase, use_existing: bool, silent: bool = True
 ) -> Set[str]:
-    """Refresh data for all gene record sources
+    """Refresh data for all gene record sources.
 
     :param db: database instance
     :param use_existing: if True, use latest available local data for all sources
@@ -141,7 +138,7 @@ def update_all_sources(
 
 
 def delete_normalized(database: AbstractDatabase, silent: bool = True) -> None:
-    """Delete normalized concepts
+    """Delete normalized concepts.
 
     :param database: DB instance
     :param silent: if True, suppress console output
@@ -167,7 +164,7 @@ def delete_normalized(database: AbstractDatabase, silent: bool = True) -> None:
 def update_normalized(
     db: AbstractDatabase, processed_ids: Optional[Set[str]], silent: bool = True
 ) -> None:
-    """Delete existing and update merged normalized records
+    """Delete existing and update merged normalized records.
 
     :param db: database instance
     :param processed_ids: IDs to form normalized records from. Provide if available to
@@ -207,13 +204,10 @@ def update_all_and_normalize(
 
     For example, to completely refresh all Gene Normalizer data:
 
-    .. code-block: python
-
-       from gene.database import create_db
-       from gene.etl.update import update_all_and_normalize
-
-       db = create_db()
-       update_all_and_normalize(db)
+    >>> from gene.database import create_db
+    >>> from gene.etl.update import update_all_and_normalize
+    >>> db = create_db()
+    >>> update_all_and_normalize(db)
 
     :param db: database instance
     :param use_existing: if True, use latest local copy of data
