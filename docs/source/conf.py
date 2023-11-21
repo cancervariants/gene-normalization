@@ -87,32 +87,55 @@ pygements_dark_style = "monokai"
 
 # -- sphinx-click ------------------------------------------------------------
 from typing import List
+import re
+CMD_PATTERN = r"--[^ ]+"
+STR_PATTERN = r"\"[^ ]+\""
+SNAKE_PATTERN = r"[A-Z]+_[A-Z_]*[A-Z]"
+
+def _add_formatting_to_string(line: str) -> str:
+    """Add fixed-width code formatting to span sections in lines:
+
+    * shell options, eg `--update_all`
+    * strings, eg `"HGNC"`
+    * env vars, eg `GENE_NORM_REMOTE_DB_URL`
+    """
+    for pattern in (CMD_PATTERN, STR_PATTERN, SNAKE_PATTERN):
+        line = re.sub(pattern, lambda x: f"``{x.group()}``", line)
+    return line
 
 def process_description(app, ctx, lines: List[str]):
-    """Format sphinx-click autodocs
-
-    * Don't show function params (they're formatted weird)
-    * Format shell command examples as Sphinx code blocks
-    """
+    """Add custom formatting to sphinx-click autodocs"""
+    # chop off params
     param_boundary = None
-    shell_block_line = None
-    for i, line_number in enumerate(lines):
-        if line_number.startswith("% "):
-            if shell_block_line is not None:
-                raise Exception("We'll need a more complicated solution to handle multiple examples: see docs/source/conf.py")
-            shell_block_line = i
-        if ":param" in line_number:
-            print(line_number)
+    for i, line in enumerate(lines):
+        if ":param" in line:
             param_boundary = i
             break
     if param_boundary is not None:
         del lines[param_boundary:]
         lines[-1] = ""
 
-    if shell_block_line:
-        new_section = [".. code-block:: sh", "", "   " + lines[shell_block_line]]
-        del lines[shell_block_line]
-        lines[shell_block_line:shell_block_line] = new_section
+    # add code formatting to strings, commands, and env vars
+    lines_to_fmt = []
+    for i, line in enumerate(lines):
+        if line.startswith("% "):
+            continue  # skip example code blocks
+        if any([
+            re.findall(CMD_PATTERN, line),
+            re.findall(STR_PATTERN, line),
+            re.findall(SNAKE_PATTERN, line)]
+        ):
+            lines_to_fmt.append(i)
+    for line_num in lines_to_fmt:
+        lines[line_num] = _add_formatting_to_string(lines[line_num])
+
+    # add code block formatting to example commands
+    for i in range(len(lines) - 1, -1, -1):
+        if lines[i].startswith('% '):
+            lines[i] = "   " + lines[i]
+            lines.insert(i, "")
+            lines.insert(i, ".. code-block:: sh")
+            lines.insert(i + 2, "")
 
 
 def setup(app):

@@ -48,9 +48,9 @@ Set the environment variable ``GENE_NORM_DB_URL`` to a connection description fo
 Load data
 +++++++++
 
-Use the ``gene_norm_update_remote`` shell command to load data from the most recent remotely-stored data dump: ::
+Use the ``gene-normalizer update-from-remote`` shell command to load data from the most recent remotely-stored data dump: ::
 
-    gene_norm_update_remote
+    gene-normalizer update-from-remote
 
 Start service
 +++++++++++++
@@ -145,7 +145,7 @@ Load data
 
 To load all source data, and then generate normalized records, use the following shell command: ::
 
-    gene_norm_update --update_all --update_merged
+    gene-normalizer update --update_all --update_merged
 
 This will download the latest available versions of all source data files, extract and transform recognized gene concepts, load them into the database, and construct normalized concept groups. For more specific update commands, see :ref:`Loading and updating data <loading_and_updating_data>`.
 
