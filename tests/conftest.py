@@ -1,4 +1,6 @@
 """Provide utilities for test cases."""
+import logging
+
 import pytest
 
 from gene.database import AbstractDatabase, create_db
@@ -8,6 +10,26 @@ from gene.database import AbstractDatabase, create_db
 def database() -> AbstractDatabase:
     """Create database instance."""
     return create_db()
+
+
+def pytest_addoption(parser):
+    """Add custom commands to pytest invocation.
+    See https://docs.pytest.org/en/7.1.x/reference/reference.html#parser
+    """
+    parser.addoption(
+        "--verbose-logs",
+        action="store_true",
+        default=False,
+        help="show noisy module logs",
+    )
+
+
+def pytest_configure(config):
+    """Configure pytest setup."""
+    if not config.getoption("--verbose-logs"):
+        logging.getLogger("botocore").setLevel(logging.ERROR)
+        logging.getLogger("boto3").setLevel(logging.ERROR)
+        logging.getLogger("urllib3.connectionpool").setLevel(logging.ERROR)
 
 
 def _compare_records(normalized_gene, test_gene, match_type):
