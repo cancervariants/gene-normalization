@@ -106,14 +106,14 @@ def dump_database(output_directory: Path, db_url: str) -> None:
 
 @click.command()
 @click.option("--sources", help="The source(s) you wish to update separated by spaces.")
-@click.option("--aws_instance", is_flag=True, help="Using AWS DynamodDB instance.")
-@click.option("--db_url", help="URL endpoint for the application database.")
 @click.option("--update_all", is_flag=True, help="Update all normalizer sources.")
 @click.option(
     "--update_merged",
     is_flag=True,
     help="Update concepts for normalize endpoint from accepted sources.",
 )
+@click.option("--db_url", help="URL endpoint for the application database.")
+@click.option("--aws_instance", is_flag=True, help="Using AWS DynamodDB instance.")
 @click.option(
     "--use_existing",
     is_flag=True,
@@ -132,6 +132,9 @@ def update_normalizer_db(
     following command will update NCBI and HGNC data, using a database connection at port 8001:
 
     % gene_norm_update --sources="NCBI HGNC" --db_url=http://localhost:8001
+
+    At least one option of ``--sources`` (with an argument), ``--update_all``, or
+    ``--update_merged`` must be called.
 
     See the documentation for more exhaustive information.
 

@@ -55,3 +55,9 @@ This command is equivalent to the combination of the database classes' ``check_s
    from gene.database import create_db
    db = create_db()
    db_is_healthy = db.check_schema_initialized() and db.check_tables_populated()
+
+Full CLI command specs
+----------------------
+
+.. click:: gene.cli:update_normalizer_db
+   :prog: gene-normalizer

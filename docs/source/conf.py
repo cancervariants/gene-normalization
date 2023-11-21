@@ -19,6 +19,7 @@ extensions = [
     "sphinx_autodoc_typehints",
     "sphinx.ext.linkcode",
     "sphinx_copybutton",
+    "sphinx_click",
 ]
 
 templates_path = ["_templates"]
@@ -83,3 +84,36 @@ def linkcode_resolve(domain, info):
 # -- code block style --------------------------------------------------------
 pygments_style = "default"
 pygements_dark_style = "monokai"
+
+# -- sphinx-click ------------------------------------------------------------
+from typing import List
+
+def process_description(app, ctx, lines: List[str]):
+    """Format sphinx-click autodocs
+
+    * Don't show function params (they're formatted weird)
+    * Format shell command examples as Sphinx code blocks
+    """
+    param_boundary = None
+    shell_block_line = None
+    for i, line_number in enumerate(lines):
+        if line_number.startswith("% "):
+            if shell_block_line is not None:
+                raise Exception("We'll need a more complicated solution to handle multiple examples: see docs/source/conf.py")
+            shell_block_line = i
+        if ":param" in line_number:
+            print(line_number)
+            param_boundary = i
+            break
+    if param_boundary is not None:
+        del lines[param_boundary:]
+        lines[-1] = ""
+
+    if shell_block_line:
+        new_section = [".. code-block:: sh", "", "   " + lines[shell_block_line]]
+        del lines[shell_block_line]
+        lines[shell_block_line:shell_block_line] = new_section
+
+
+def setup(app):
+    app.connect("sphinx-click-process-description", process_description)
