@@ -12,8 +12,8 @@ from typing import Dict
 
 import gravis as gv
 
-from gene import APP_ROOT
 from gene.database import create_db
+from gene.etl.base import APP_ROOT
 from gene.query import QueryHandler
 from gene.schemas import UnmergedNormalizationService
 

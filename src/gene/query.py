@@ -1,4 +1,5 @@
 """Provides methods for handling queries."""
+import logging
 import re
 from datetime import datetime
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, TypeVar
@@ -6,9 +7,11 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, TypeVar
 from ga4gh.core import core_models, ga4gh_identify
 from ga4gh.vrs import models
 
-from gene import ITEM_TYPES, NAMESPACE_LOOKUP, PREFIX_LOOKUP, logger
 from gene.database import AbstractDatabase, DatabaseReadException
 from gene.schemas import (
+    ITEM_TYPES,
+    NAMESPACE_LOOKUP,
+    PREFIX_LOOKUP,
     BaseGene,
     BaseNormalizationService,
     Gene,
@@ -28,6 +31,7 @@ from gene.schemas import (
 )
 from gene.version import __version__
 
+_logger = logging.getLogger(__name__)
 NormService = TypeVar("NormService", bound=BaseNormalizationService)
 
 
@@ -72,7 +76,7 @@ class QueryHandler:
                     "non_breaking_space_characters": "Query contains non-breaking space characters"
                 }
             ]
-            logger.warning(
+            _logger.warning(
                 f"Query ({query_str}) contains non-breaking space characters."
             )
         return warnings
@@ -188,14 +192,14 @@ class QueryHandler:
         try:
             match = self.db.get_record_by_id(concept_id, case_sensitive=False)
         except DatabaseReadException as e:
-            logger.error(
+            _logger.error(
                 f"Encountered DatabaseReadException looking up {concept_id}: {e}"
             )
         else:
             if match:
                 self._add_record(response, match, match_type)
             else:
-                logger.error(
+                _logger.error(
                     f"Unable to find expected record for {concept_id} matching as {match_type}"
                 )  # noqa: E501
 
@@ -263,7 +267,7 @@ class QueryHandler:
                             matched_concept_ids.append(ref)
 
             except DatabaseReadException as e:
-                logger.error(
+                _logger.error(
                     f"Encountered DatabaseReadException looking up {item_type}"
                     f" {term}: {e}"
                 )
@@ -492,7 +496,7 @@ class QueryHandler:
         :param query: original query value
         :return: response with no match
         """
-        logger.error(
+        _logger.error(
             f"Merge ref lookup failed for ref {record['merge_ref']} "
             f"in record {record['concept_id']} from query {query}"
         )
@@ -557,7 +561,7 @@ class QueryHandler:
             merge = self.db.get_record_by_id(merge_ref, False, True)
             if merge is None:
                 query = response.query
-                logger.error(
+                _logger.error(
                     f"Merge ref lookup failed for ref {record['merge_ref']} "
                     f"in record {record['concept_id']} from query `{query}`"
                 )

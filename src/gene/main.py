@@ -4,10 +4,11 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Query
 
-from gene import SOURCES, __version__
+from gene import __version__
 from gene.database import create_db
 from gene.query import QueryHandler
 from gene.schemas import (
+    SOURCES,
     NormalizeService,
     SearchService,
     SourceName,

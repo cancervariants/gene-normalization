@@ -7,7 +7,6 @@ from typing import Collection, List, Optional, Set
 
 import click
 
-from gene import SOURCES
 from gene.database import (
     AbstractDatabase,
     DatabaseReadException,
@@ -15,7 +14,7 @@ from gene.database import (
     create_db,
 )
 from gene.database.database import DatabaseException
-from gene.schemas import SourceName
+from gene.schemas import SOURCES, SourceName
 
 logger = logging.getLogger("gene")
 logger.setLevel(logging.DEBUG)
