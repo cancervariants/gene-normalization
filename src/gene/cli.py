@@ -20,7 +20,6 @@ logger.setLevel(logging.DEBUG)
 @click.group()
 def cli() -> None:
     """Manage Gene Normalizer data."""
-    pass
 
 
 @cli.command()
@@ -95,11 +94,13 @@ def update(
             click.get_current_context().exit(1)
 
         parsed_sources = list(set(parsed_sources))
-        processed_ids = set()
+        working_processed_ids = set()
         for source_name in parsed_sources:
-            processed_ids |= update_source(
+            working_processed_ids |= update_source(
                 source_name, db, use_existing=use_existing, silent=False
             )
+        if len(sources) == len(SourceName):
+            processed_ids = working_processed_ids
 
     if update_merged:
         update_normalized(db, processed_ids, silent=False)
@@ -147,7 +148,7 @@ def check_db(db_url: str, verbose: bool = False) -> None:
     >>> from gene.database import create_db
     >>> db = create_db()
     >>> db.check_schema_initialized() and db.check_tables_populated()
-    True  # nice!
+    True  # DB passes checks
 
     \f
     :param db_url: URL to normalizer database
