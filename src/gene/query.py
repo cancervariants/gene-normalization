@@ -1,14 +1,17 @@
 """Provides methods for handling queries."""
+import logging
 import re
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, TypeVar
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, TypeVar
 
 from ga4gh.core import core_models, ga4gh_identify
 from ga4gh.vrs import models
 
-from gene import ITEM_TYPES, NAMESPACE_LOOKUP, PREFIX_LOOKUP, logger
 from gene.database import AbstractDatabase, DatabaseReadException
 from gene.schemas import (
+    ITEM_TYPES,
+    NAMESPACE_LOOKUP,
+    PREFIX_LOOKUP,
     BaseGene,
     BaseNormalizationService,
     Gene,
@@ -28,6 +31,7 @@ from gene.schemas import (
 )
 from gene.version import __version__
 
+_logger = logging.getLogger(__name__)
 NormService = TypeVar("NormService", bound=BaseNormalizationService)
 
 
@@ -72,7 +76,7 @@ class QueryHandler:
                     "non_breaking_space_characters": "Query contains non-breaking space characters"
                 }
             ]
-            logger.warning(
+            _logger.warning(
                 f"Query ({query_str}) contains non-breaking space characters."
             )
         return warnings
@@ -188,14 +192,14 @@ class QueryHandler:
         try:
             match = self.db.get_record_by_id(concept_id, case_sensitive=False)
         except DatabaseReadException as e:
-            logger.error(
+            _logger.error(
                 f"Encountered DatabaseReadException looking up {concept_id}: {e}"
             )
         else:
             if match:
                 self._add_record(response, match, match_type)
             else:
-                logger.error(
+                _logger.error(
                     f"Unable to find expected record for {concept_id} matching as {match_type}"
                 )  # noqa: E501
 
@@ -220,7 +224,7 @@ class QueryHandler:
                     records = sorted(records, key=lambda k: k.match_type, reverse=True)
         return resp
 
-    def _get_search_response(self, query: str, sources: Set[str]) -> Dict:
+    def _get_search_response(self, query: str, sources: Iterable[SourceName]) -> Dict:
         """Return response as dict where key is source name and value is a list of
         records.
 
@@ -231,7 +235,7 @@ class QueryHandler:
         resp = {
             "query": query,
             "warnings": self._emit_warnings(query),
-            "source_matches": {source: None for source in sources},
+            "source_matches": {source.value: None for source in sources},
         }
         if query == "":
             return self._post_process_resp(resp)
@@ -263,7 +267,7 @@ class QueryHandler:
                             matched_concept_ids.append(ref)
 
             except DatabaseReadException as e:
-                logger.error(
+                _logger.error(
                     f"Encountered DatabaseReadException looking up {item_type}"
                     f" {term}: {e}"
                 )
@@ -283,9 +287,7 @@ class QueryHandler:
     def search(
         self,
         query_str: str,
-        incl: str = "",
-        excl: str = "",
-        **params,
+        sources: Optional[List[SourceName]] = None,
     ) -> SearchService:
         """Return highest match for each source.
 
@@ -297,57 +299,16 @@ class QueryHandler:
         'ncbigene:673'
 
         :param query_str: query, a string, to search for
-        :param incl: str containing comma-separated names of sources to use. Will
-            exclude all other sources. Case-insensitive.
-        :param excl: str containing comma-separated names of source to exclude. Will
-            include all other source. Case-insensitive.
+        :param sources: If given, only return records from these sources
         :return: SearchService class containing all matches found in sources.
         :raise InvalidParameterException: if both `incl` and `excl` args are provided,
             or if invalid source names are given
         """
-        possible_sources = {
-            name.value.lower(): name.value for name in SourceName.__members__.values()
-        }
-        sources = dict()
-        for k, v in possible_sources.items():
-            if self.db.get_source_metadata(v):
-                sources[k] = v
-
-        if not incl and not excl:
-            query_sources = set(sources.values())
-        elif incl and excl:
-            detail = "Cannot request both source inclusions and exclusions."
-            raise InvalidParameterException(detail)
-        elif incl:
-            req_sources = [n.strip() for n in incl.split(",")]
-            invalid_sources = []
-            query_sources = set()
-            for source in req_sources:
-                if source.lower() in sources.keys():
-                    query_sources.add(sources[source.lower()])
-                else:
-                    invalid_sources.append(source)
-            if invalid_sources:
-                detail = f"Invalid source name(s): {invalid_sources}"
-                raise InvalidParameterException(detail)
-        else:
-            req_exclusions = [n.strip() for n in excl.lower().split(",")]
-            req_excl_dict = {r.lower(): r for r in req_exclusions}
-            invalid_sources = []
-            query_sources = set()
-            for req_l, req in req_excl_dict.items():
-                if req_l not in sources.keys():
-                    invalid_sources.append(req)
-            for src_l, src in sources.items():
-                if src_l not in req_excl_dict.keys():
-                    query_sources.add(src)
-            if invalid_sources:
-                detail = f"Invalid source name(s): {invalid_sources}"
-                raise InvalidParameterException(detail)
+        if not sources:
+            sources = list(SourceName.__members__.values())
 
         query_str = query_str.strip()
-
-        resp = self._get_search_response(query_str, query_sources)
+        resp = self._get_search_response(query_str, sources)
 
         resp["service_meta_"] = self._get_service_meta()
         return SearchService(**resp)
@@ -535,7 +496,7 @@ class QueryHandler:
         :param query: original query value
         :return: response with no match
         """
-        logger.error(
+        _logger.error(
             f"Merge ref lookup failed for ref {record['merge_ref']} "
             f"in record {record['concept_id']} from query {query}"
         )
@@ -600,7 +561,7 @@ class QueryHandler:
             merge = self.db.get_record_by_id(merge_ref, False, True)
             if merge is None:
                 query = response.query
-                logger.error(
+                _logger.error(
                     f"Merge ref lookup failed for ref {record['merge_ref']} "
                     f"in record {record['concept_id']} from query `{query}`"
                 )

@@ -2,7 +2,7 @@
 import pytest
 from ga4gh.core import core_models
 
-from gene.query import InvalidParameterException, QueryHandler
+from gene.query import QueryHandler
 from gene.schemas import BaseGene, MatchType, SourceName
 
 
@@ -14,8 +14,8 @@ def query_handler(database):
         def __init__(self):
             self.query_handler = QueryHandler(database)
 
-        def search(self, query_str, incl="", excl=""):
-            return self.query_handler.search(query_str=query_str, incl=incl, excl=excl)
+        def search(self, query_str, sources=None):
+            return self.query_handler.search(query_str=query_str, sources=sources)
 
         def normalize(self, query_str):
             return self.query_handler.normalize(query_str)
@@ -1149,35 +1149,22 @@ def test_search_query(query_handler, num_sources):
     assert len(matches) == num_sources
 
 
-def test_search_query_inc_exc(query_handler, num_sources):
-    """Test that query incl and excl work correctly."""
-    sources = "hgnc, ensembl, ncbi"
-    resp = query_handler.search("BRAF", excl=sources)
+def test_search_query_source_filters(query_handler):
+    """Test query source filtering."""
+    sources = [SourceName.HGNC, SourceName.NCBI]
+    resp = query_handler.search("BRAF", sources=sources)
     matches = resp.source_matches
-    assert len(matches) == num_sources - len(sources.split())
-
-    sources = "Hgnc, NCBi"
-    resp = query_handler.search("BRAF", incl=sources)
-    matches = resp.source_matches
-    assert len(matches) == len(sources.split())
+    assert len(matches) == len(sources)
     assert SourceName.HGNC in matches
     assert SourceName.NCBI in matches
 
-    sources = "HGnC"
-    resp = query_handler.search("BRAF", excl=sources)
+    sources = [SourceName.HGNC, SourceName.NCBI, SourceName.ENSEMBL]
+    resp = query_handler.search("BRAF", sources=sources)
     matches = resp.source_matches
-    assert len(matches) == num_sources - len(sources.split())
+    assert len(matches) == len(sources)
     assert SourceName.ENSEMBL in matches
     assert SourceName.NCBI in matches
-
-
-def test_search_invalid_parameter_exception(query_handler):
-    """Test that Invalid parameter exception works correctly."""
-    with pytest.raises(InvalidParameterException):
-        _ = query_handler.search("BRAF", incl="hgn")  # noqa: F841, E501
-
-    with pytest.raises(InvalidParameterException):
-        resp = query_handler.search("BRAF", incl="hgnc", excl="hgnc")  # noqa: F841
+    assert SourceName.HGNC in matches
 
 
 def test_ache_query(query_handler, num_sources, normalized_ache, source_meta):

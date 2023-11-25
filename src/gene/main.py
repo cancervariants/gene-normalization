@@ -6,8 +6,14 @@ from fastapi import FastAPI, HTTPException, Query
 
 from gene import __version__
 from gene.database import create_db
-from gene.query import InvalidParameterException, QueryHandler
-from gene.schemas import NormalizeService, SearchService, UnmergedNormalizationService
+from gene.query import QueryHandler
+from gene.schemas import (
+    SOURCES,
+    NormalizeService,
+    SearchService,
+    SourceName,
+    UnmergedNormalizationService,
+)
 
 db = create_db()
 query_handler = QueryHandler(db)
@@ -42,14 +48,10 @@ app = FastAPI(
 read_query_summary = "Given query, provide best-matching source records."
 response_description = "A response to a validly-formed query"
 q_descr = "Gene to normalize."
-incl_descr = """Optional. Comma-separated list of source names to include in
-             response. Will exclude all other sources. Returns HTTP status code
-             422: Unprocessable Entity if both 'incl' and 'excl' parameters
-             are given."""
-excl_descr = """Optional. Comma-separated list of source names to exclude in
-             response. Will include all other sources. Returns HTTP status
-             code 422: Unprocessable Entity if both 'incl' and 'excl'
-             parameters are given."""
+sources_descr = (
+    "Optional. Comma-separated list of source names to include in response, if given. "
+    "Will exclude all other sources."
+)
 search_description = (
     "For each source, return strongest-match concepts "
     "for query string provided by user"
@@ -66,24 +68,29 @@ search_description = (
 )
 def search(
     q: str = Query(..., description=q_descr),  # noqa: D103
-    incl: Optional[str] = Query(None, description=incl_descr),
-    excl: Optional[str] = Query(None, description=excl_descr),
+    sources: Optional[str] = Query(None, description=sources_descr),
 ) -> SearchService:
     """Return strongest match concepts to query string provided by user.
 
-    :param str q: gene search term
-    :param Optional[str] incl: comma-separated list of sources to include,
-        with all others excluded. Raises HTTPException if both `incl` and
-        `excl` are given.
-    :param Optional[str] excl: comma-separated list of sources exclude, with
-        all others included. Raises HTTPException if both `incl` and `excl`
-        are given.
+    :param q: gene search term
+    :param sources: If given, search only for records from these sources.
+        Provide as string of source names separated by commas.
     :return: JSON response with matched records and source metadata
     """
-    try:
-        resp = query_handler.search(html.unescape(q), incl=incl, excl=excl)
-    except InvalidParameterException as e:
-        raise HTTPException(status_code=422, detail=str(e))
+    parsed_sources = []
+    if sources:
+        for candidate_source in sources.split(","):
+            try:
+                parsed_source = SourceName[
+                    SOURCES[candidate_source.strip().lower()].upper()
+                ]
+            except KeyError:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"Unable to parse source name: {candidate_source}",
+                )
+            parsed_sources.append(parsed_source)
+    resp = query_handler.search(html.unescape(q), sources=parsed_sources)
     return resp
 
 

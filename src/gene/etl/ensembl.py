@@ -10,9 +10,8 @@ import gffutils
 import requests
 from gffutils.feature import Feature
 
-from gene import APP_ROOT
 from gene.database import AbstractDatabase
-from gene.etl.base import Base
+from gene.etl.base import APP_ROOT, Base
 from gene.etl.exceptions import (
     GeneFileVersionError,
     GeneNormalizerEtlError,

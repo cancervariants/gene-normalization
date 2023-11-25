@@ -147,6 +147,12 @@ class SourceName(Enum):
     NCBI = "NCBI"
 
 
+# lowercase imported source name to correctly-cased name, e.g. {"ensembl": "Ensembl"}
+SOURCES = {
+    source.value.lower(): source.value for source in SourceName.__members__.values()
+}
+
+
 class SourcePriority(IntEnum):
     """Define priorities for sources when building merged concepts."""
 
@@ -196,6 +202,23 @@ class NamespacePrefix(Enum):
     RFAM = "rfam"
 
 
+# use to fetch source name from schema based on concept id namespace
+# e.g. {"hgnc": "HGNC"}
+PREFIX_LOOKUP = {
+    v.value: SourceName[k].value
+    for k, v in NamespacePrefix.__members__.items()
+    if k in SourceName.__members__.keys()
+}
+
+# use to generate namespace prefix from source ID value
+# e.g. {"ensg": "ensembl"}
+NAMESPACE_LOOKUP = {
+    v.value.lower(): NamespacePrefix[k].value
+    for k, v in SourceIDAfterNamespace.__members__.items()
+    if v.value != ""
+}
+
+
 class DataLicenseAttributes(BaseModel):
     """Define constraints for data license attributes."""
 
@@ -220,6 +243,10 @@ class RefType(str, Enum):
     ALIASES = "alias"
     XREFS = "xref"
     ASSOCIATED_WITH = "associated_with"
+
+
+# collective name to singular name, e.g. {"previous_symbols": "prev_symbol"}
+ITEM_TYPES = {k.lower(): v.value for k, v in RefType.__members__.items()}
 
 
 class SourceMeta(BaseModel):
