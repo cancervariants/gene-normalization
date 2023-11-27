@@ -6,9 +6,7 @@ from typing import Optional, Tuple
 
 import click
 
-from gene.database import (
-    create_db,
-)
+from gene.database import create_db
 from gene.database.database import DatabaseException
 from gene.etl.update import update_all_sources, update_normalized, update_source
 from gene.schemas import SourceName
