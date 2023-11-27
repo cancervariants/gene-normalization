@@ -1,19 +1,15 @@
 """A base class for extraction, transformation, and loading of data."""
-import datetime
-import gzip
 import logging
 import re
-import shutil
 from abc import ABC, abstractmethod
-from ftplib import FTP
-from os import remove
 from pathlib import Path
-from typing import Callable, Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
+import click
 import pydantic
 from biocommons.seqrepo import SeqRepo
-from dateutil import parser
 from gffutils.feature import Feature
+from wags_tails import EnsemblData, HgncData, NcbiGeneData
 
 from gene import ITEM_TYPES, SEQREPO_ROOT_DIR
 from gene.database import AbstractDatabase
@@ -23,50 +19,75 @@ logger = logging.getLogger("gene")
 logger.setLevel(logging.DEBUG)
 
 
+DATA_DISPATCH = {
+    SourceName.HGNC: HgncData,
+    SourceName.ENSEMBL: EnsemblData,
+    SourceName.NCBI: NcbiGeneData,
+}
+
+
 class Base(ABC):
     """The ETL base class."""
 
     def __init__(
         self,
         database: AbstractDatabase,
-        host: str,
-        data_dir: str,
-        src_data_dir: Path,
         seqrepo_dir: Path = SEQREPO_ROOT_DIR,
+        data_path: Optional[Path] = None,
+        silent: bool = True,
     ) -> None:
         """Instantiate Base class.
 
         :param database: database instance
-        :param host: Hostname of FTP site
-        :param data_dir: Data directory of FTP site to look at
-        :param src_data_dir: Data directory for source
         :param seqrepo_dir: Path to seqrepo directory
+        :param data_path: path to app data directory
+        :param silent: if True, don't print ETL result to console
         """
-        self.src_data_dir = src_data_dir
-        self.src_data_dir.mkdir(exist_ok=True, parents=True)
+        self._silent = silent
         self._src_name = SourceName(self.__class__.__name__)
+        self._data_source = self._get_data_handler(data_path)
         self._database = database
-        self._host = host
-        self._data_dir = data_dir
-        self._processed_ids = list()
         self.seqrepo = self.get_seqrepo(seqrepo_dir)
+        self._processed_ids = list()
+
+    def _get_data_handler(
+        self, data_path: Optional[Path] = None
+    ) -> Union[HgncData, EnsemblData, NcbiGeneData]:
+        """Construct data handler instance for source. Overwrite for edge-case sources.
+
+        :param data_path: location of data storage
+        :return: instance of wags_tails.DataSource to manage source file(s)
+        """
+        return DATA_DISPATCH[self._src_name](data_dir=data_path, silent=self._silent)
 
     def perform_etl(self, use_existing: bool = False) -> List[str]:
-        """Extract, Transform, and Load data into database.
+        """Public-facing method to begin ETL procedures on given data.
+        Returned concept IDs can be passed to Merge method for computing
+        merged concepts.
 
-        :param use_existing: if true, use most recent available local files
-        :return: Concept IDs of concepts successfully loaded
+        :param use_existing: if True, don't try to retrieve latest source data
+        :return: list of concept IDs which were successfully processed and
+            uploaded.
         """
         self._extract_data(use_existing)
+        if not self._silent:
+            click.echo("Transforming and loading data to DB...")
         self._add_meta()
         self._transform_data()
         self._database.complete_write_transaction()
         return self._processed_ids
 
-    @abstractmethod
-    def _extract_data(self, *args, **kwargs) -> None:  # noqa: ANN002
-        """Extract data from FTP site or local data directory."""
-        raise NotImplementedError
+    def _extract_data(self, use_existing: bool) -> None:
+        """Acquire source data.
+
+        This method is responsible for initializing an instance of a data handler and,
+        in most cases, setting ``self._data_file`` and ``self._version``.
+
+        :param bool use_existing: if True, don't try to fetch latest source data
+        """
+        self._data_file, self._version = self._data_source.get_latest(
+            from_local=use_existing
+        )
 
     @abstractmethod
     def _transform_data(self) -> None:
@@ -77,40 +98,6 @@ class Base(ABC):
     def _add_meta(self) -> None:
         """Add source meta to database source info."""
         raise NotImplementedError
-
-    def _acquire_data_file(
-        self,
-        file_glob: str,
-        use_existing: bool,
-        check_latest_callback: Callable[[Path], bool],
-        download_callback: Callable[[], Path],
-    ) -> Path:
-        """Acquire data file.
-
-        :param file_glob: pattern to match relevant files against
-        :param use_existing: don't fetch from remote origin if local versions are
-            available
-        :param check_latest_callback: function to check whether local data is up-to-date
-        :param download_callback: function to download from remote
-        :return: path to acquired data file
-        :raise FileNotFoundError: if unable to find any files matching the pattern
-        """
-        matching_files = list(self.src_data_dir.glob(file_glob))
-        if not matching_files:
-            if use_existing:
-                raise FileNotFoundError(
-                    f"No local files matching pattern {self.src_data_dir.absolute().as_uri() + file_glob}"
-                )
-            else:
-                return download_callback()
-        else:
-            latest_file = list(sorted(matching_files))[-1]
-            if use_existing:
-                return latest_file
-            if not check_latest_callback(latest_file):
-                return download_callback()
-            else:
-                return latest_file
 
     def _load_gene(self, gene: Dict) -> None:
         """Load a gene record into database. This method takes responsibility for:
@@ -141,49 +128,6 @@ class Base(ABC):
 
             self._database.add_record(gene, self._src_name)
             self._processed_ids.append(concept_id)
-
-    def _ftp_download(
-        self, host: str, data_dir: str, fn: str, source_dir: Path, data_fn: str
-    ) -> Optional[str]:
-        """Download data file from FTP site.
-
-        :param host: Source's FTP host name
-        :param data_dir: Data directory located on FTP site
-        :param fn: Filename for downloaded file
-        :param source_dir: Source's data directory
-        :param data_fn: Filename on FTP site to be downloaded
-        :return: Date file was last updated
-        """
-        with FTP(host) as ftp:
-            ftp.login()
-            timestamp = ftp.voidcmd(f"MDTM {data_dir}{data_fn}")[4:].strip()
-            date = str(parser.parse(timestamp)).split()[0]
-            version = datetime.datetime.strptime(date, "%Y-%m-%d").strftime("%Y%m%d")
-            ftp.cwd(data_dir)
-            self._ftp_download_file(ftp, data_fn, source_dir, fn)
-        return version
-
-    def _ftp_download_file(
-        self, ftp: FTP, data_fn: str, source_dir: Path, fn: str
-    ) -> None:
-        """Download data file from FTP
-
-        :param ftp: FTP instance
-        :param data_fn: Filename on FTP site to be downloaded
-        :param source_dir: Source's data directory
-        :param fn: Filename for downloaded file
-        """
-        if data_fn.endswith(".gz"):
-            filepath = source_dir / f"{fn}.gz"
-        else:
-            filepath = source_dir / fn
-        with open(filepath, "wb") as fp:
-            ftp.retrbinary(f"RETR {data_fn}", fp.write)
-        if data_fn.endswith(".gz"):
-            with gzip.open(filepath, "rb") as f_in:
-                with open(source_dir / fn, "wb") as f_out:
-                    shutil.copyfileobj(f_in, f_out)
-            remove(filepath)
 
     def get_seqrepo(self, seqrepo_dir: Path) -> SeqRepo:
         """Return SeqRepo instance if seqrepo_dir exists.

@@ -115,7 +115,7 @@ def test_hgnc_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
 def test_ncbi_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     """Test that ncbi etl methods work correctly."""
     test_get_seqrepo.return_value = None
-    n = NCBI(db_fixture.db, src_data_dir=etl_data_path)
+    n = NCBI(db_fixture.db, data_path=etl_data_path)
     n._get_seq_id_aliases = _get_aliases  # type: ignore
     ncbi_ids = n.perform_etl(use_existing=True)
     processed_ids += ncbi_ids
