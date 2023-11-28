@@ -47,10 +47,6 @@ class NCBI(Base):
         """
         super().__init__(database, seqrepo_dir, data_path, silent)
         self._genome_data_handler = NcbiGenomeData(data_path, silent)
-        self._assembly = None
-        self._gene_url = None
-        self._history_url = None
-        self._assembly_url = None
 
     def _extract_data(self, use_existing: bool) -> None:
         """Acquire NCBI data file and get metadata.
