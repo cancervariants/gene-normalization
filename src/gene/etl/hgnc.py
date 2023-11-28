@@ -248,7 +248,7 @@ class HGNC(Base):
 
         :raise GeneNormalizerEtlError: if requisite metadata is unset
         """
-        if not all([self._version, self._data_url]):
+        if not self._version:
             raise GeneNormalizerEtlError(
                 "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
             )
@@ -256,7 +256,9 @@ class HGNC(Base):
             data_license="CC0",
             data_license_url="https://www.genenames.org/about/license/",
             version=self._version,
-            data_url={"complete_set_archive": self._data_url},
+            data_url={
+                "complete_set_archive": "ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
+            },
             rdp_url=None,
             data_license_attributes={
                 "non_commercial": False,

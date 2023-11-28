@@ -30,9 +30,9 @@ class Ensembl(Base):
         self._data_file, raw_version = self._data_source.get_latest(
             from_local=use_existing
         )
-        match = re.match(r"ensembl_(GRCh\d+)_(\d+)\.gff3", raw_version)
+        match = re.match(r"(GRCh\d+)_(\d+)", raw_version)
         self._assembly = match.groups()[0]
-        self._assembly = match.groups()[1]
+        self._version = match.groups()[1]
 
     def _transform_data(self) -> None:
         """Transform the Ensembl source."""
