@@ -2,21 +2,12 @@
 import json
 import logging
 import re
-import shutil
-from datetime import datetime
-from ftplib import FTP
-from pathlib import Path
 from typing import Dict
 
-from dateutil import parser
-
-from gene import APP_ROOT, PREFIX_LOOKUP
-from gene.database import AbstractDatabase
+from gene import PREFIX_LOOKUP
 from gene.etl.base import Base
 from gene.etl.exceptions import (
-    GeneFileVersionError,
     GeneNormalizerEtlError,
-    GeneSourceFetchError,
 )
 from gene.schemas import (
     Annotation,
@@ -34,85 +25,10 @@ logger.setLevel(logging.DEBUG)
 class HGNC(Base):
     """ETL the HGNC source into the normalized database."""
 
-    def __init__(
-        self,
-        database: AbstractDatabase,
-        host: str = "ftp.ebi.ac.uk",
-        data_dir: str = "pub/databases/genenames/hgnc/json/",
-        src_data_dir: Path = APP_ROOT / "data" / "hgnc",
-        fn: str = "hgnc_complete_set.json",
-    ) -> None:
-        """Initialize HGNC ETL class.
-
-        :param database: gene database for adding new data
-        :param host: FTP host name
-        :param data_dir: FTP data directory to use
-        :param src_data_dir: Data directory for HGNC
-        :param fn: Data file to download
-        """
-        super().__init__(database, host, data_dir, src_data_dir)
-        self._data_file_pattern = re.compile(r"hgnc_(\d+)\.json")
-        self._data_url = f"ftp://{host}/{data_dir}{fn}"
-        self._fn = fn
-        self._version = None
-
-    def _is_up_to_date(self, data_file: Path) -> bool:
-        """Verify whether local data is up-to-date with latest available remote file.
-
-        :param data_file: path to latest local file
-        :return: True if data is up-to-date
-        :raise GeneFileVersionError: if unable to get version from local HGNC file
-        :raise GeneSourceFetchError: if unable to get latest version available from HGNC
-        """
-        local_match = re.match(self._data_file_pattern, data_file.name)
-        if not local_match:
-            raise GeneFileVersionError(
-                f"Unable to parse version number from local HGNC file: {data_file.absolute()}"
-            )
-        version = local_match.groups()[0]
-        with FTP(self._host) as ftp:
-            ftp.login()
-            timestamp = ftp.voidcmd(f"MDTM {self._data_dir}{self._fn}")[4:].strip()
-        date = str(parser.parse(timestamp)).split()[0]
-        try:
-            remote_version = datetime.strptime(date, "%Y-%m-%d").strftime("%Y%m%d")
-        except ValueError:
-            raise GeneSourceFetchError(
-                f"Unable to parse version number from remote HGNC timestamp: {date}"
-            )
-        return version == remote_version
-
-    def _download_data(self) -> Path:
-        """Download HGNC JSON data file.
-
-        :return: path to newly-downloaded file
-        """
-        logger.info("Downloading HGNC data file...")
-
-        tmp_fn = "hgnc_version.json"
-        version = self._ftp_download(
-            self._host, self._data_dir, tmp_fn, self.src_data_dir, self._fn
-        )
-        final_location = f"{self.src_data_dir}/hgnc_{version}.json"
-        shutil.move(f"{self.src_data_dir}/{tmp_fn}", final_location)
-        logger.info(f"Successfully downloaded HGNC data file to {final_location}.")
-        return Path(final_location)
-
-    def _extract_data(self, use_existing: bool) -> None:
-        """Acquire HGNC data file and get metadata.
-
-        :param use_existing: if True, use latest available local file
-        """
-        self._data_file = self._acquire_data_file(
-            "hgnc_*.json", use_existing, self._is_up_to_date, self._download_data
-        )
-        match = self._data_file_pattern.match(self._data_file.name)
-        self._version = match.groups()[0]
-
     def _transform_data(self) -> None:
         """Transform the HGNC source."""
         logger.info("Transforming HGNC...")
-        with open(self._data_file, "r") as f:
+        with open(self._data_file, "r") as f:  # type: ignore
             data = json.load(f)
 
         records = data["response"]["docs"]
@@ -332,7 +248,7 @@ class HGNC(Base):
 
         :raise GeneNormalizerEtlError: if requisite metadata is unset
         """
-        if not all([self._version, self._data_url]):
+        if not self._version:
             raise GeneNormalizerEtlError(
                 "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
             )
@@ -340,7 +256,9 @@ class HGNC(Base):
             data_license="CC0",
             data_license_url="https://www.genenames.org/about/license/",
             version=self._version,
-            data_url={"complete_set_archive": self._data_url},
+            data_url={
+                "complete_set_archive": "ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
+            },
             rdp_url=None,
             data_license_attributes={
                 "non_commercial": False,

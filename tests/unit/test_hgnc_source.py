@@ -818,7 +818,7 @@ def test_meta_info(hgnc):
     )
     assert datetime.strptime(resp.source_meta_.version, "%Y%m%d")
     assert resp.source_meta_.data_url == {
-        "complete_set_archive": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
+        "complete_set_archive": "ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
     }
     assert resp.source_meta_.rdp_url is None
     assert resp.source_meta_.genome_assemblies == []
