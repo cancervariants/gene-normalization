@@ -25,7 +25,7 @@ class Ensembl(Base):
         This method is responsible for initializing an instance of a data handler and,
         in most cases, setting ``self._data_file`` and ``self._version``.
 
-        :param bool use_existing: if True, don't try to fetch latest source data
+        :param use_existing: if True, don't try to fetch latest source data
         """
         self._data_file, raw_version = self._data_source.get_latest(
             from_local=use_existing
@@ -180,7 +180,7 @@ class Ensembl(Base):
             "/legal/disclaimer.html",
             version=self._version,
             data_url={
-                "genome_annotations": f"ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.{self._assembly}.{self._version}.gff3.gz"
+                "genome_annotations": f"ftp://ftp.ensembl.org/pub/release-{self._version}/gff3/homo_sapiens/Homo_sapiens.{self._assembly}.{self._version}.gff3.gz"
             },
             rdp_url=None,
             data_license_attributes={
