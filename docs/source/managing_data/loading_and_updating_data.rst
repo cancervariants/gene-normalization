@@ -11,21 +11,21 @@ Loading and updating data
 Refreshing all data
 -------------------
 
-Calling the Gene Normalizer update command with the ``--update_all`` and ``--update_merged`` flags will delete all existing data, fetch new source data if available, and then perform a complete reload of the database (including merged records):
+Calling the Gene Normalizer update command with the ``--all`` and ``--normalize`` flags will delete all existing data, fetch new source data if available, and then perform a complete reload of the database (including merged records):
 
 .. code-block:: shell
 
-    gene-normalizer update --update_all --update_merged
+    gene-normalizer update --all --normalize
 
 
 Reload individual sources
 -------------------------
 
-To update specific sources, provide them as arguments to the ``update`` command. While it is possible to update individual source data without also updating the normalized record data, that may affect the proper function of the normalized query endpoints, so it is recommended to include the ``--update_merged`` flag as well.
+To update specific sources, provide them as arguments to the ``update`` command. While it is possible to update individual source data without also updating the normalized record data, that may affect the proper function of the normalized query endpoints, so it is recommended to include the ``--normalize`` flag as well.
 
 .. code-block:: shell
 
-    gene-normalizer update --update_merged HGNC NCBI
+    gene-normalizer update --normalize HGNC NCBI
 
 
 Use local data
@@ -35,7 +35,7 @@ The Gene Normalizer will fetch the latest available data from all sources if loc
 
 .. code-block:: shell
 
-    gene-normalizer update --update_all --use_existing
+    gene-normalizer update --all --use_existing
 
 
 Check DB health

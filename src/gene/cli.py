@@ -22,12 +22,8 @@ def cli() -> None:
 
 @cli.command()
 @click.argument("sources", nargs=-1)
-@click.option("--update_all", is_flag=True, help="Update all normalizer sources.")
-@click.option(
-    "--update_merged",
-    is_flag=True,
-    help="Update concepts for normalize endpoint from accepted sources.",
-)
+@click.option("--all", is_flag=True, help="Update records for all sources.")
+@click.option("--normalize", is_flag=True, help="Update normalized concepts.")
 @click.option("--db_url", help="URL endpoint for the application database.")
 @click.option("--aws_instance", is_flag=True, help="Using AWS DynamodDB instance.")
 @click.option(
@@ -40,34 +36,35 @@ def update(
     sources: Tuple[str],
     aws_instance: bool,
     db_url: str,
-    update_all: bool,
-    update_merged: bool,
+    all: bool,
+    normalize: bool,
     use_existing: bool,
 ) -> None:
     """Update provided normalizer SOURCES in the gene database.
 
     Valid SOURCES are "HGNC", "NCBI", and "Ensembl" (case is irrelevant). SOURCES are
-    optional, but if not provided, either --update_all or --update_merged must be used.
+    optional, but if not provided, either --all or --normalize must be used.
 
-    For example, the following command will update NCBI and HGNC data:
+    For example, the following command will update NCBI and HGNC source records:
 
     % gene-normalizer update HGNC NCBI
 
-    To completely reload all data, use the --update_all and --update_merged options:
+    To completely reload all source records and construct normalized concepts, use the
+    --all and --normalize options:
 
-    % gene-normalizer update --update_all --update_merged
+    % gene-normalizer update --all --normalize
 
     \f
     :param sources: tuple of raw names of sources to update
     :param aws_instance: if true, use cloud instance
     :param db_url: URI pointing to database
-    :param update_all: if True, update all sources (ignore ``sources``)
-    :param update_merged: if True, update normalized records
+    :param all: if True, update all sources (ignore ``sources``)
+    :param normalize: if True, update normalized records
     :param use_existing: if True, use most recent local data instead of fetching latest version
     """  # noqa: D301
-    if (not sources) and (not update_all) and (not update_merged):
+    if (not sources) and (not all) and (not normalize):
         click.echo(
-            "Error: must provide SOURCES or at least one of --update_all, --update_merged\n"
+            "Error: must provide SOURCES or at least one of --all, --normalize\n"
         )
         ctx = click.get_current_context()
         click.echo(ctx.get_help())
@@ -76,7 +73,7 @@ def update(
     db = create_db(db_url, aws_instance)
 
     processed_ids = None
-    if update_all:
+    if all:
         processed_ids = update_all_sources(db, use_existing, silent=False)
     elif sources:
         parsed_sources = []
@@ -100,7 +97,7 @@ def update(
         if len(sources) == len(SourceName):
             processed_ids = working_processed_ids
 
-    if update_merged:
+    if normalize:
         update_normalized(db, processed_ids, silent=False)
 
 

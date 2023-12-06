@@ -145,7 +145,7 @@ Load data
 
 To load all source data, and then generate normalized records, use the following shell command: ::
 
-    gene-normalizer update --update_all --update_merged
+    gene-normalizer update --all --normalize
 
 This will download the latest available versions of all source data files, extract and transform recognized gene concepts, load them into the database, and construct normalized concept groups. For more specific update commands, see :ref:`Loading and updating data <loading_and_updating_data>`.
 
