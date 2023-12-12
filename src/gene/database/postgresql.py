@@ -29,7 +29,7 @@ from gene.schemas import RecordType, RefType, SourceMeta, SourceName
 logger = logging.getLogger(__name__)
 
 
-SCRIPTS_DIR = Path(__file__).parent / 'postgresql'
+SCRIPTS_DIR = Path(__file__).parent / "postgresql"
 
 
 class PostgresDatabase(AbstractDatabase):
@@ -56,16 +56,16 @@ class PostgresDatabase(AbstractDatabase):
         """
         if db_url:
             conninfo = db_url
-        elif 'GENE_NORM_DB_URL' in os.environ:
-            conninfo = os.environ['GENE_NORM_DB_URL']
+        elif "GENE_NORM_DB_URL" in os.environ:
+            conninfo = os.environ["GENE_NORM_DB_URL"]
         else:
-            user = db_args.get('user', 'postgres')
-            password = db_args.get('password', '')
-            db_name = db_args.get('db_name', 'gene_normalizer')
+            user = db_args.get("user", "postgres")
+            password = db_args.get("password", "")
+            db_name = db_args.get("db_name", "gene_normalizer")
             if password:
-                conninfo = f'dbname={db_name} user={user} password={password}'
+                conninfo = f"dbname={db_name} user={user} password={password}"
             else:
-                conninfo = f'dbname={db_name} user={user}'
+                conninfo = f"dbname={db_name} user={user}"
 
         self.conn = psycopg.connect(conninfo)
         self.initialize_db()
@@ -119,7 +119,7 @@ class PostgresDatabase(AbstractDatabase):
         with self.conn.cursor() as cur:
             cur.execute(self._drop_db_query)
             self.conn.commit()
-        logger.info('Dropped all existing gene normalizer tables.')
+        logger.info("Dropped all existing gene normalizer tables.")
 
     def check_schema_initialized(self) -> bool:
         """Check if database schema is properly initialized.
@@ -128,48 +128,48 @@ class PostgresDatabase(AbstractDatabase):
         """
         try:
             with self.conn.cursor() as cur:
-                cur.execute((SCRIPTS_DIR / 'create_tables.sql').read_bytes())
+                cur.execute((SCRIPTS_DIR / "create_tables.sql").read_bytes())
         except DuplicateTable:
             self.conn.rollback()
         else:
-            logger.info('Gene table existence check failed.')
+            logger.info("Gene table existence check failed.")
             self.conn.rollback()
             return False
         try:
             with self.conn.cursor() as cur:
-                cur.execute((SCRIPTS_DIR / 'add_fkeys.sql').read_bytes())
+                cur.execute((SCRIPTS_DIR / "add_fkeys.sql").read_bytes())
         except DuplicateObject:
             self.conn.rollback()
         else:
-            logger.info('Gene foreign key existence check failed.')
+            logger.info("Gene foreign key existence check failed.")
             self.conn.rollback()
             return False
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
-                    (SCRIPTS_DIR / 'create_record_lookup_view.sql').read_bytes()
+                    (SCRIPTS_DIR / "create_record_lookup_view.sql").read_bytes()
                 )
         except DuplicateTable:
             self.conn.rollback()
         else:
-            logger.info('Gene normalized view lookup failed.')
+            logger.info("Gene normalized view lookup failed.")
             self.conn.rollback()
             return False
         try:
             with self.conn.cursor() as cur:
-                cur.execute((SCRIPTS_DIR / 'add_indexes.sql').read_bytes())
+                cur.execute((SCRIPTS_DIR / "add_indexes.sql").read_bytes())
         except DuplicateTable:
             self.conn.rollback()
         else:
-            logger.info('Gene indexes check failed.')
+            logger.info("Gene indexes check failed.")
             self.conn.rollback()
             return False
 
         return True
 
-    _check_sources_query = b'SELECT name FROM gene_sources;'
-    _check_concepts_query = b'SELECT COUNT(1) FROM gene_concepts LIMIT 1;'
-    _check_merged_query = b'SELECT COUNT(1) FROM gene_merged LIMIT 1;'
+    _check_sources_query = b"SELECT name FROM gene_sources;"
+    _check_concepts_query = b"SELECT COUNT(1) FROM gene_concepts LIMIT 1;"
+    _check_merged_query = b"SELECT COUNT(1) FROM gene_merged LIMIT 1;"
 
     def check_tables_populated(self) -> bool:
         """Perform rudimentary checks to see if tables are populated.
@@ -184,21 +184,21 @@ class PostgresDatabase(AbstractDatabase):
             cur.execute(self._check_sources_query)
             results = cur.fetchall()
         if len(results) < len(SourceName):
-            logger.info('Gene sources table is missing expected sources.')
+            logger.info("Gene sources table is missing expected sources.")
             return False
 
         with self.conn.cursor() as cur:
             cur.execute(self._check_concepts_query)
             result = cur.fetchone()
         if not result or result[0] < 1:
-            logger.info('Gene records table is empty.')
+            logger.info("Gene records table is empty.")
             return False
 
         with self.conn.cursor() as cur:
             cur.execute(self._check_merged_query)
             result = cur.fetchone()
         if not result or result[0] < 1:
-            logger.info('Normalized gene records table is empty.')
+            logger.info("Normalized gene records table is empty.")
             return False
 
         return True
@@ -213,12 +213,12 @@ class PostgresDatabase(AbstractDatabase):
 
     def _create_views(self) -> None:
         """Create materialized views."""
-        create_view_query = (SCRIPTS_DIR / 'create_record_lookup_view.sql').read_bytes()
+        create_view_query = (SCRIPTS_DIR / "create_record_lookup_view.sql").read_bytes()
         with self.conn.cursor() as cur:
             cur.execute(create_view_query)
             self.conn.commit()
 
-    _refresh_views_query = b'REFRESH MATERIALIZED VIEW record_lookup_view;'
+    _refresh_views_query = b"REFRESH MATERIALIZED VIEW record_lookup_view;"
 
     def _refresh_views(self) -> None:
         """Update materialized views.
@@ -232,36 +232,36 @@ class PostgresDatabase(AbstractDatabase):
 
     def _add_fkeys(self) -> None:
         """Add fkey relationships."""
-        add_fkey_query = (SCRIPTS_DIR / 'add_fkeys.sql').read_bytes()
+        add_fkey_query = (SCRIPTS_DIR / "add_fkeys.sql").read_bytes()
         with self.conn.cursor() as cur:
             cur.execute(add_fkey_query)
             self.conn.commit()
 
     def _drop_fkeys(self) -> None:
         """Drop fkey relationships."""
-        drop_fkey_query = (SCRIPTS_DIR / 'drop_fkeys.sql').read_bytes()
+        drop_fkey_query = (SCRIPTS_DIR / "drop_fkeys.sql").read_bytes()
         with self.conn.cursor() as cur:
             cur.execute(drop_fkey_query)
             self.conn.commit()
 
     def _add_indexes(self) -> None:
         """Create core search indexes."""
-        add_indexes_query = (SCRIPTS_DIR / 'add_indexes.sql').read_bytes()
+        add_indexes_query = (SCRIPTS_DIR / "add_indexes.sql").read_bytes()
         with self.conn.cursor() as cur:
             cur.execute(add_indexes_query)
             self.conn.commit()
 
     def _drop_indexes(self) -> None:
         """Drop all custom indexes."""
-        drop_indexes_query = (SCRIPTS_DIR / 'drop_indexes.sql').read_bytes()
+        drop_indexes_query = (SCRIPTS_DIR / "drop_indexes.sql").read_bytes()
         with self.conn.cursor() as cur:
             cur.execute(drop_indexes_query)
             self.conn.commit()
 
     def _create_tables(self) -> None:
         """Create all tables, indexes, and views."""
-        logger.debug('Creating new gene normalizer tables.')
-        tables_query = (SCRIPTS_DIR / 'create_tables.sql').read_bytes()
+        logger.debug("Creating new gene normalizer tables.")
+        tables_query = (SCRIPTS_DIR / "create_tables.sql").read_bytes()
 
         with self.conn.cursor() as cur:
             cur.execute(tables_query)
@@ -278,30 +278,30 @@ class PostgresDatabase(AbstractDatabase):
         if src_name in self._cached_sources:
             return self._cached_sources[src_name]
 
-        metadata_query = 'SELECT * FROM gene_sources WHERE name = %s;'
+        metadata_query = "SELECT * FROM gene_sources WHERE name = %s;"
         with self.conn.cursor() as cur:
             cur.execute(metadata_query, [src_name])
             metadata_result = cur.fetchone()
             if not metadata_result:
-                raise DatabaseReadException(f'{src_name} metadata lookup failed')
+                raise DatabaseReadException(f"{src_name} metadata lookup failed")
             metadata = {
-                'data_license': metadata_result[1],
-                'data_license_url': metadata_result[2],
-                'version': metadata_result[3],
-                'data_url': metadata_result[4],
-                'rdp_url': metadata_result[5],
-                'data_license_attributes': {
-                    'non_commercial': metadata_result[6],
-                    'attribution': metadata_result[7],
-                    'share_alike': metadata_result[8],
+                "data_license": metadata_result[1],
+                "data_license_url": metadata_result[2],
+                "version": metadata_result[3],
+                "data_url": metadata_result[4],
+                "rdp_url": metadata_result[5],
+                "data_license_attributes": {
+                    "non_commercial": metadata_result[6],
+                    "attribution": metadata_result[7],
+                    "share_alike": metadata_result[8],
                 },
-                'genome_assemblies': metadata_result[9],
+                "genome_assemblies": metadata_result[9],
             }
             self._cached_sources[src_name] = metadata
             return metadata
 
     _get_record_query = (
-        b'SELECT * FROM record_lookup_view WHERE lower(concept_id) = %s;'
+        b"SELECT * FROM record_lookup_view WHERE lower(concept_id) = %s;"
     )
 
     def _format_source_record(self, source_row: Tuple) -> Dict:
@@ -311,21 +311,21 @@ class PostgresDatabase(AbstractDatabase):
         :return: reformatted dictionary keying gene properties to row values
         """
         gene_record = {
-            'concept_id': source_row[0],
-            'symbol_status': source_row[1],
-            'label': source_row[2],
-            'strand': source_row[3],
-            'location_annotations': source_row[4],
-            'locations': source_row[5],
-            'gene_type': source_row[6],
-            'aliases': source_row[7],
-            'associated_with': source_row[8],
-            'previous_symbols': source_row[9],
-            'symbol': source_row[10],
-            'xrefs': source_row[11],
-            'src_name': source_row[12],
-            'merge_ref': source_row[13],
-            'item_type': RecordType.IDENTITY.value,
+            "concept_id": source_row[0],
+            "symbol_status": source_row[1],
+            "label": source_row[2],
+            "strand": source_row[3],
+            "location_annotations": source_row[4],
+            "locations": source_row[5],
+            "gene_type": source_row[6],
+            "aliases": source_row[7],
+            "associated_with": source_row[8],
+            "previous_symbols": source_row[9],
+            "symbol": source_row[10],
+            "xrefs": source_row[11],
+            "src_name": source_row[12],
+            "merge_ref": source_row[13],
+            "item_type": RecordType.IDENTITY.value,
         }
         return {k: v for k, v in gene_record.items() if v}
 
@@ -354,28 +354,28 @@ class PostgresDatabase(AbstractDatabase):
         :return: reformatted dictionary keying normalized gene properties to row values
         """
         merged_record = {
-            'concept_id': merged_row[0],
-            'symbol': merged_row[1],
-            'symbol_status': merged_row[2],
-            'previous_symbols': merged_row[3],
-            'label': merged_row[4],
-            'strand': merged_row[5],
-            'ensembl_locations': merged_row[6],
-            'hgnc_locations': merged_row[7],
-            'ncbi_locations': merged_row[8],
-            'location_annotations': merged_row[9],
-            'ensembl_biotype': merged_row[10],
-            'hgnc_locus_type': merged_row[11],
-            'ncbi_gene_type': merged_row[12],
-            'aliases': merged_row[13],
-            'associated_with': merged_row[14],
-            'xrefs': merged_row[15],
-            'item_type': RecordType.MERGER.value,
+            "concept_id": merged_row[0],
+            "symbol": merged_row[1],
+            "symbol_status": merged_row[2],
+            "previous_symbols": merged_row[3],
+            "label": merged_row[4],
+            "strand": merged_row[5],
+            "ensembl_locations": merged_row[6],
+            "hgnc_locations": merged_row[7],
+            "ncbi_locations": merged_row[8],
+            "location_annotations": merged_row[9],
+            "ensembl_biotype": merged_row[10],
+            "hgnc_locus_type": merged_row[11],
+            "ncbi_gene_type": merged_row[12],
+            "aliases": merged_row[13],
+            "associated_with": merged_row[14],
+            "xrefs": merged_row[15],
+            "item_type": RecordType.MERGER.value,
         }
         return {k: v for k, v in merged_record.items() if v}
 
     _get_merged_record_query = (
-        b'SELECT * FROM gene_merged WHERE lower(concept_id) = %s;'
+        b"SELECT * FROM gene_merged WHERE lower(concept_id) = %s;"
     )
 
     def _get_merged_record(
@@ -412,11 +412,11 @@ class PostgresDatabase(AbstractDatabase):
             return self._get_record(concept_id, case_sensitive)
 
     _ref_types_query = {
-        RefType.SYMBOL: b'SELECT concept_id FROM gene_symbols WHERE lower(symbol) = %s;',
-        RefType.PREVIOUS_SYMBOLS: b'SELECT concept_id FROM gene_previous_symbols WHERE lower(prev_symbol) = %s;',
-        RefType.ALIASES: b'SELECT concept_id FROM gene_aliases WHERE lower(alias) = %s;',
-        RefType.XREFS: b'SELECT concept_id FROM gene_xrefs WHERE lower(xref) = %s;',
-        RefType.ASSOCIATED_WITH: b'SELECT concept_id FROM gene_associations WHERE lower(associated_with) = %s;',
+        RefType.SYMBOL: b"SELECT concept_id FROM gene_symbols WHERE lower(symbol) = %s;",
+        RefType.PREVIOUS_SYMBOLS: b"SELECT concept_id FROM gene_previous_symbols WHERE lower(prev_symbol) = %s;",
+        RefType.ALIASES: b"SELECT concept_id FROM gene_aliases WHERE lower(alias) = %s;",
+        RefType.XREFS: b"SELECT concept_id FROM gene_xrefs WHERE lower(xref) = %s;",
+        RefType.ASSOCIATED_WITH: b"SELECT concept_id FROM gene_associations WHERE lower(associated_with) = %s;",
     }
 
     def get_refs_by_type(self, search_term: str, ref_type: RefType) -> List[str]:
@@ -429,7 +429,7 @@ class PostgresDatabase(AbstractDatabase):
         """
         query = self._ref_types_query.get(ref_type)
         if not query:
-            raise ValueError('invalid reference type')
+            raise ValueError("invalid reference type")
 
         with self.conn.cursor() as cur:
             cur.execute(query, (search_term.lower(),))
@@ -439,7 +439,7 @@ class PostgresDatabase(AbstractDatabase):
         else:
             return []
 
-    _ids_query = b'SELECT concept_id FROM gene_concepts;'
+    _ids_query = b"SELECT concept_id FROM gene_concepts;"
 
     def get_all_concept_ids(self) -> Set[str]:
         """Retrieve concept IDs for use in generating normalized records.
@@ -451,11 +451,11 @@ class PostgresDatabase(AbstractDatabase):
             ids_tuple = cur.fetchall()
         return {i[0] for i in ids_tuple}
 
-    _get_all_normalized_records_query = b'SELECT * FROM gene_merged;'
+    _get_all_normalized_records_query = b"SELECT * FROM gene_merged;"
     _get_all_unmerged_source_records_query = (
-        b'SELECT * FROM record_lookup_view WHERE merge_ref IS NULL;'
+        b"SELECT * FROM record_lookup_view WHERE merge_ref IS NULL;"
     )
-    _get_all_source_records_query = b'SELECT * FROM record_lookup_view;'
+    _get_all_source_records_query = b"SELECT * FROM record_lookup_view;"
 
     def get_all_records(self, record_type: RecordType) -> Generator[Dict, None, None]:
         """Retrieve all source or normalized records. Either return all source records,
@@ -530,9 +530,9 @@ class PostgresDatabase(AbstractDatabase):
                     meta.version,
                     json.dumps(meta.data_url),
                     meta.rdp_url,
-                    meta.data_license_attributes['non_commercial'],
-                    meta.data_license_attributes['attribution'],
-                    meta.data_license_attributes['share_alike'],
+                    meta.data_license_attributes["non_commercial"],
+                    meta.data_license_attributes["attribution"],
+                    meta.data_license_attributes["share_alike"],
                     meta.genome_assemblies,
                 ],
             )
@@ -546,15 +546,15 @@ class PostgresDatabase(AbstractDatabase):
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
     """
     _ins_symbol_query = (
-        b'INSERT INTO gene_symbols (symbol, concept_id) VALUES (%s, %s);'
+        b"INSERT INTO gene_symbols (symbol, concept_id) VALUES (%s, %s);"
     )
     _ins_prev_symbol_query = (
-        b'INSERT INTO gene_previous_symbols (prev_symbol, concept_id) VALUES (%s, %s);'
+        b"INSERT INTO gene_previous_symbols (prev_symbol, concept_id) VALUES (%s, %s);"
     )
-    _ins_alias_query = b'INSERT INTO gene_aliases (alias, concept_id) VALUES (%s, %s);'
-    _ins_xref_query = b'INSERT INTO gene_xrefs (xref, concept_id) VALUES (%s, %s);'
+    _ins_alias_query = b"INSERT INTO gene_aliases (alias, concept_id) VALUES (%s, %s);"
+    _ins_xref_query = b"INSERT INTO gene_xrefs (xref, concept_id) VALUES (%s, %s);"
     _ins_assoc_query = (
-        b'INSERT INTO gene_associations (associated_with, concept_id) VALUES (%s, %s);'
+        b"INSERT INTO gene_associations (associated_with, concept_id) VALUES (%s, %s);"
     )
 
     def add_record(self, record: Dict, src_name: SourceName) -> None:
@@ -563,8 +563,8 @@ class PostgresDatabase(AbstractDatabase):
         :param record: record to upload
         :param src_name: name of source for record. Not used by PostgreSQL instance.
         """
-        concept_id = record['concept_id']
-        locations = [json.dumps(loc) for loc in record.get('locations', [])]
+        concept_id = record["concept_id"]
+        locations = [json.dumps(loc) for loc in record.get("locations", [])]
         if not locations:
             locations = None
         with self.conn.cursor() as cur:
@@ -573,28 +573,28 @@ class PostgresDatabase(AbstractDatabase):
                     self._add_record_query,
                     [
                         concept_id,
-                        record['src_name'],
-                        record.get('symbol_status'),
-                        record.get('label'),
-                        record.get('strand'),
-                        record.get('location_annotations'),
+                        record["src_name"],
+                        record.get("symbol_status"),
+                        record.get("label"),
+                        record.get("strand"),
+                        record.get("location_annotations"),
                         locations,
-                        record.get('gene_type'),
+                        record.get("gene_type"),
                     ],
                 )
-                for a in record.get('aliases', []):
+                for a in record.get("aliases", []):
                     cur.execute(self._ins_alias_query, [a, concept_id])
-                for x in record.get('xrefs', []):
+                for x in record.get("xrefs", []):
                     cur.execute(self._ins_xref_query, [x, concept_id])
-                for a in record.get('associated_with', []):
+                for a in record.get("associated_with", []):
                     cur.execute(self._ins_assoc_query, [a, concept_id])
-                for p in record.get('previous_symbols', []):
+                for p in record.get("previous_symbols", []):
                     cur.execute(self._ins_prev_symbol_query, [p, concept_id])
-                if record.get('symbol'):
-                    cur.execute(self._ins_symbol_query, [record['symbol'], concept_id])
+                if record.get("symbol"):
+                    cur.execute(self._ins_symbol_query, [record["symbol"], concept_id])
                 self.conn.commit()
             except UniqueViolation:
-                logger.error(f'Record with ID {concept_id} already exists')
+                logger.error(f"Record with ID {concept_id} already exists")
                 self.conn.rollback()
 
     _add_merged_record_query = b"""
@@ -612,35 +612,35 @@ class PostgresDatabase(AbstractDatabase):
 
         :param record: merged record to add
         """
-        ensembl_locations = record.get('ensembl_locations')
+        ensembl_locations = record.get("ensembl_locations")
         if ensembl_locations:
             ensembl_locations = [json.dumps(i) for i in ensembl_locations]
-        ncbi_locations = record.get('ncbi_locations')
+        ncbi_locations = record.get("ncbi_locations")
         if ncbi_locations:
             ncbi_locations = [json.dumps(i) for i in ncbi_locations]
-        hgnc_locations = record.get('hgnc_locations')
+        hgnc_locations = record.get("hgnc_locations")
         if hgnc_locations:
             hgnc_locations = [json.dumps(i) for i in hgnc_locations]
         with self.conn.cursor() as cur:
             cur.execute(
                 self._add_merged_record_query,
                 [
-                    record['concept_id'],
-                    record.get('symbol'),
-                    record.get('symbol_status'),
-                    record.get('previous_symbols'),
-                    record.get('label'),
-                    record.get('strand'),
-                    record.get('location_annotations'),
+                    record["concept_id"],
+                    record.get("symbol"),
+                    record.get("symbol_status"),
+                    record.get("previous_symbols"),
+                    record.get("label"),
+                    record.get("strand"),
+                    record.get("location_annotations"),
                     ensembl_locations,
                     hgnc_locations,
                     ncbi_locations,
-                    record.get('hgnc_locus_type'),
-                    record.get('ensembl_biotype'),
-                    record.get('ncbi_gene_type'),
-                    record.get('aliases'),
-                    record.get('associated_with'),
-                    record.get('xrefs'),
+                    record.get("hgnc_locus_type"),
+                    record.get("ensembl_biotype"),
+                    record.get("ncbi_gene_type"),
+                    record.get("aliases"),
+                    record.get("associated_with"),
+                    record.get("xrefs"),
                 ],
             )
             self.conn.commit()
@@ -661,7 +661,7 @@ class PostgresDatabase(AbstractDatabase):
         with self.conn.cursor() as cur:
             cur.execute(
                 self._update_merge_ref_query,
-                {'merge_ref': merge_ref, 'concept_id': concept_id},
+                {"merge_ref": merge_ref, "concept_id": concept_id},
             )
             row_count = cur.rowcount
             self.conn.commit()
@@ -669,7 +669,7 @@ class PostgresDatabase(AbstractDatabase):
         # UPDATE will fail silently unless we check the # of affected rows
         if row_count < 1:
             raise DatabaseWriteException(
-                f'No such record exists for primary key {concept_id}'
+                f"No such record exists for primary key {concept_id}"
             )
 
     def delete_normalized_concepts(self) -> None:
@@ -687,7 +687,7 @@ class PostgresDatabase(AbstractDatabase):
         :raise DatabaseWriteException: if deletion call fails
         """
         with self.conn.cursor() as cur:
-            cur.execute((SCRIPTS_DIR / 'delete_normalized_concepts.sql').read_bytes())
+            cur.execute((SCRIPTS_DIR / "delete_normalized_concepts.sql").read_bytes())
         self.conn.commit()
 
     _drop_aliases_query = b"""
@@ -725,8 +725,8 @@ class PostgresDatabase(AbstractDatabase):
         WHERE gc.source = %s
     );
     """
-    _drop_concepts_query = b'DELETE FROM gene_concepts WHERE source = %s;'
-    _drop_source_query = b'DELETE FROM gene_sources gs WHERE gs.name = %s;'
+    _drop_concepts_query = b"DELETE FROM gene_concepts WHERE source = %s;"
+    _drop_source_query = b"DELETE FROM gene_sources gs WHERE gs.name = %s;"
 
     def delete_source(self, src_name: SourceName) -> None:
         """Delete all data for a source. Use when updating source data.
@@ -784,35 +784,35 @@ class PostgresDatabase(AbstractDatabase):
             command fails
         """
         if not url:
-            url = 'https://vicc-normalizers.s3.us-east-2.amazonaws.com/gene_normalization/postgresql/gene_norm_latest.sql.tar.gz'
+            url = "https://vicc-normalizers.s3.us-east-2.amazonaws.com/gene_normalization/postgresql/gene_norm_latest.sql.tar.gz"
         with tempfile.TemporaryDirectory() as tempdir:
             tempdir_path = Path(tempdir)
-            temp_tarfile = tempdir_path / 'gene_norm_latest.tar.gz'
+            temp_tarfile = tempdir_path / "gene_norm_latest.tar.gz"
             with requests.get(url, stream=True) as r:
                 try:
                     r.raise_for_status()
                 except requests.HTTPError:
                     raise DatabaseException(
-                        f'Unable to retrieve PostgreSQL dump file from {url}'
+                        f"Unable to retrieve PostgreSQL dump file from {url}"
                     )
-                with open(temp_tarfile, 'wb') as h:
+                with open(temp_tarfile, "wb") as h:
                     for chunk in r.iter_content(chunk_size=8192):
                         if chunk:
                             h.write(chunk)
-            tar = tarfile.open(temp_tarfile, 'r:gz')
+            tar = tarfile.open(temp_tarfile, "r:gz")
             tar_dump_file = [
-                f for f in tar.getmembers() if f.name.startswith('gene_norm_')
+                f for f in tar.getmembers() if f.name.startswith("gene_norm_")
             ][0]
             tar.extractall(path=tempdir_path, members=[tar_dump_file])
             dump_file = tempdir_path / tar_dump_file.name
 
             if self.conn.info.password:
-                pw_param = f'-W {self.conn.info.password}'
+                pw_param = f"-W {self.conn.info.password}"
             else:
-                pw_param = '-w'
+                pw_param = "-w"
 
             self.drop_db()
-            system_call = f'psql -d {self.conn.info.dbname} -U {self.conn.info.user} {pw_param} -f {dump_file.absolute()}'
+            system_call = f"psql -d {self.conn.info.dbname} -U {self.conn.info.user} {pw_param} -f {dump_file.absolute()}"
             result = os.system(system_call)
         if result != 0:
             raise DatabaseException(
@@ -832,18 +832,18 @@ class PostgresDatabase(AbstractDatabase):
             raise ValueError(
                 f"Output location {output_directory} isn't a directory or doesn't exist"
             )
-        now = datetime.now().strftime('%Y%m%d%H%M%S')
-        output_location = output_directory / f'gene_norm_{now}.sql'
+        now = datetime.now().strftime("%Y%m%d%H%M%S")
+        output_location = output_directory / f"gene_norm_{now}.sql"
         user = self.conn.info.user
         host = self.conn.info.host
         port = self.conn.info.port
         database_name = self.conn.info.dbname
         if self.conn.info.password:
-            pw_param = f'-W {self.conn.info.password}'
+            pw_param = f"-W {self.conn.info.password}"
         else:
-            pw_param = '-w'
+            pw_param = "-w"
 
-        system_call = f'pg_dump -E UTF8 -f {output_location} -U {user} {pw_param} -h {host} -p {port} {database_name}'
+        system_call = f"pg_dump -E UTF8 -f {output_location} -U {user} {pw_param} -h {host} -p {port} {database_name}"
         result = os.system(system_call)
         if result != 0:
             raise DatabaseException(

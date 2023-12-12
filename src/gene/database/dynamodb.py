@@ -39,48 +39,48 @@ class DynamoDbDatabase(AbstractDatabase):
             * region_name: AWS region (defaults to "us-east-2")
         :raise DatabaseInitializationException: if initial setup fails
         """
-        self.gene_table = environ.get('GENE_DYNAMO_TABLE', 'gene_normalizer')
-        region_name = db_args.get('region_name', 'us-east-2')
+        self.gene_table = environ.get("GENE_DYNAMO_TABLE", "gene_normalizer")
+        region_name = db_args.get("region_name", "us-east-2")
 
         if AWS_ENV_VAR_NAME in environ:
-            if 'GENE_TEST' in environ:
+            if "GENE_TEST" in environ:
                 raise DatabaseInitializationException(
-                    f'Cannot have both GENE_TEST and {AWS_ENV_VAR_NAME} set.'
+                    f"Cannot have both GENE_TEST and {AWS_ENV_VAR_NAME} set."
                 )
 
             aws_env = environ[AWS_ENV_VAR_NAME]
             if aws_env not in VALID_AWS_ENV_NAMES:
                 raise DatabaseInitializationException(
-                    f'{AWS_ENV_VAR_NAME} must be one of {VALID_AWS_ENV_NAMES}'
+                    f"{AWS_ENV_VAR_NAME} must be one of {VALID_AWS_ENV_NAMES}"
                 )
 
             skip_confirmation = environ.get(SKIP_AWS_DB_ENV_NAME)
             if (not skip_confirmation) or (
-                skip_confirmation and skip_confirmation != 'true'
+                skip_confirmation and skip_confirmation != "true"
             ):
                 confirm_aws_db_use(environ[AWS_ENV_VAR_NAME])
 
-            boto_params = {'region_name': region_name}
+            boto_params = {"region_name": region_name}
 
             if aws_env == AwsEnvName.DEVELOPMENT:
                 self.gene_table = environ.get(
-                    'GENE_DYNAMO_TABLE', 'gene_normalizer_nonprod'
+                    "GENE_DYNAMO_TABLE", "gene_normalizer_nonprod"
                 )
         else:
             if db_url:
                 endpoint_url = db_url
-            elif 'GENE_NORM_DB_URL' in environ:
-                endpoint_url = environ['GENE_NORM_DB_URL']
+            elif "GENE_NORM_DB_URL" in environ:
+                endpoint_url = environ["GENE_NORM_DB_URL"]
             else:
-                endpoint_url = 'http://localhost:8000'
-            click.echo(f'***Using Gene Database Endpoint: {endpoint_url}***')
-            boto_params = {'region_name': region_name, 'endpoint_url': endpoint_url}
+                endpoint_url = "http://localhost:8000"
+            click.echo(f"***Using Gene Database Endpoint: {endpoint_url}***")
+            boto_params = {"region_name": region_name, "endpoint_url": endpoint_url}
 
-        self.dynamodb = boto3.resource('dynamodb', **boto_params)
-        self.dynamodb_client = boto3.client('dynamodb', **boto_params)
+        self.dynamodb = boto3.resource("dynamodb", **boto_params)
+        self.dynamodb_client = boto3.client("dynamodb", **boto_params)
 
         # Only create tables for local instance
-        envs_do_not_create_tables = {AWS_ENV_VAR_NAME, 'GENE_TEST'}
+        envs_do_not_create_tables = {AWS_ENV_VAR_NAME, "GENE_TEST"}
         if not set(envs_do_not_create_tables) & set(environ):
             self.initialize_db()
 
@@ -94,7 +94,7 @@ class DynamoDbDatabase(AbstractDatabase):
 
         :return: Table names in DynamoDB
         """
-        return self.dynamodb_client.list_tables()['TableNames']
+        return self.dynamodb_client.list_tables()["TableNames"]
 
     def drop_db(self) -> None:
         """Delete all tables from database. Requires manual confirmation.
@@ -116,36 +116,36 @@ class DynamoDbDatabase(AbstractDatabase):
         self.dynamodb.create_table(
             TableName=self.gene_table,
             KeySchema=[
-                {'AttributeName': 'label_and_type', 'KeyType': 'HASH'},  # Partition key
-                {'AttributeName': 'concept_id', 'KeyType': 'RANGE'},  # Sort key
+                {"AttributeName": "label_and_type", "KeyType": "HASH"},  # Partition key
+                {"AttributeName": "concept_id", "KeyType": "RANGE"},  # Sort key
             ],
             AttributeDefinitions=[
-                {'AttributeName': 'label_and_type', 'AttributeType': 'S'},
-                {'AttributeName': 'concept_id', 'AttributeType': 'S'},
-                {'AttributeName': 'src_name', 'AttributeType': 'S'},
-                {'AttributeName': 'item_type', 'AttributeType': 'S'},
+                {"AttributeName": "label_and_type", "AttributeType": "S"},
+                {"AttributeName": "concept_id", "AttributeType": "S"},
+                {"AttributeName": "src_name", "AttributeType": "S"},
+                {"AttributeName": "item_type", "AttributeType": "S"},
             ],
             GlobalSecondaryIndexes=[
                 {
-                    'IndexName': 'src_index',
-                    'KeySchema': [{'AttributeName': 'src_name', 'KeyType': 'HASH'}],
-                    'Projection': {'ProjectionType': 'KEYS_ONLY'},
-                    'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 10,
-                        'WriteCapacityUnits': 10,
+                    "IndexName": "src_index",
+                    "KeySchema": [{"AttributeName": "src_name", "KeyType": "HASH"}],
+                    "Projection": {"ProjectionType": "KEYS_ONLY"},
+                    "ProvisionedThroughput": {
+                        "ReadCapacityUnits": 10,
+                        "WriteCapacityUnits": 10,
                     },
                 },
                 {
-                    'IndexName': 'item_type_index',
-                    'KeySchema': [{'AttributeName': 'item_type', 'KeyType': 'HASH'}],
-                    'Projection': {'ProjectionType': 'KEYS_ONLY'},
-                    'ProvisionedThroughput': {
-                        'ReadCapacityUnits': 10,
-                        'WriteCapacityUnits': 10,
+                    "IndexName": "item_type_index",
+                    "KeySchema": [{"AttributeName": "item_type", "KeyType": "HASH"}],
+                    "Projection": {"ProjectionType": "KEYS_ONLY"},
+                    "ProvisionedThroughput": {
+                        "ReadCapacityUnits": 10,
+                        "WriteCapacityUnits": 10,
                     },
                 },
             ],
-            ProvisionedThroughput={'ReadCapacityUnits': 10, 'WriteCapacityUnits': 10},
+            ProvisionedThroughput={"ReadCapacityUnits": 10, "WriteCapacityUnits": 10},
         )
 
     def check_schema_initialized(self) -> bool:
@@ -156,7 +156,7 @@ class DynamoDbDatabase(AbstractDatabase):
         existing_tables = self.list_tables()
         exists = self.gene_table in existing_tables
         if not exists:
-            logger.info(f'{self.gene_table} table is missing or unavailable.')
+            logger.info(f"{self.gene_table} table is missing or unavailable.")
         return exists
 
     def check_tables_populated(self) -> bool:
@@ -169,29 +169,29 @@ class DynamoDbDatabase(AbstractDatabase):
         :return: True if queries successful, false if DB appears empty
         """
         sources = self.genes.query(
-            IndexName='item_type_index',
-            KeyConditionExpression=Key('item_type').eq('source'),
-        ).get('Items', [])
+            IndexName="item_type_index",
+            KeyConditionExpression=Key("item_type").eq("source"),
+        ).get("Items", [])
         if len(sources) < len(SourceName):
-            logger.info('Gene sources table is missing expected sources.')
+            logger.info("Gene sources table is missing expected sources.")
             return False
 
         records = self.genes.query(
-            IndexName='item_type_index',
-            KeyConditionExpression=Key('item_type').eq('identity'),
+            IndexName="item_type_index",
+            KeyConditionExpression=Key("item_type").eq("identity"),
             Limit=1,
         )
-        if len(records.get('Items', [])) < 1:
-            logger.info('Gene records index is empty.')
+        if len(records.get("Items", [])) < 1:
+            logger.info("Gene records index is empty.")
             return False
 
         normalized_records = self.genes.query(
-            IndexName='item_type_index',
-            KeyConditionExpression=Key('item_type').eq(RecordType.MERGER.value),
+            IndexName="item_type_index",
+            KeyConditionExpression=Key("item_type").eq(RecordType.MERGER.value),
             Limit=1,
         )
-        if len(normalized_records.get('Items', [])) < 1:
-            logger.info('Normalized gene records index is empty.')
+        if len(normalized_records.get("Items", [])) < 1:
+            logger.info("Normalized gene records index is empty.")
             return False
 
         return True
@@ -211,14 +211,14 @@ class DynamoDbDatabase(AbstractDatabase):
         if src_name in self._cached_sources:
             return self._cached_sources[src_name]
         else:
-            pk = f'{src_name.lower()}##source'
-            concept_id = f'source:{src_name.lower()}'
+            pk = f"{src_name.lower()}##source"
+            concept_id = f"source:{src_name.lower()}"
             metadata = self.genes.get_item(
-                Key={'label_and_type': pk, 'concept_id': concept_id}
-            ).get('Item')
+                Key={"label_and_type": pk, "concept_id": concept_id}
+            ).get("Item")
             if not metadata:
                 raise DatabaseReadException(
-                    f'Unable to retrieve data for source {src_name}'
+                    f"Unable to retrieve data for source {src_name}"
                 )
             self._cached_sources[src_name] = metadata
             return metadata
@@ -238,19 +238,19 @@ class DynamoDbDatabase(AbstractDatabase):
         """
         try:
             if merge:
-                pk = f'{concept_id.lower()}##{RecordType.MERGER.value}'
+                pk = f"{concept_id.lower()}##{RecordType.MERGER.value}"
             else:
-                pk = f'{concept_id.lower()}##{RecordType.IDENTITY.value}'
+                pk = f"{concept_id.lower()}##{RecordType.IDENTITY.value}"
             if case_sensitive:
                 match = self.genes.get_item(
-                    Key={'label_and_type': pk, 'concept_id': concept_id}
+                    Key={"label_and_type": pk, "concept_id": concept_id}
                 )
-                return match['Item']
+                return match["Item"]
             else:
-                exp = Key('label_and_type').eq(pk)
+                exp = Key("label_and_type").eq(pk)
                 response = self.genes.query(KeyConditionExpression=exp)
-                record = response['Items'][0]
-                del record['label_and_type']
+                record = response["Items"][0]
+                del record["label_and_type"]
                 return record
         except ClientError as e:
             logger.error(
@@ -270,11 +270,11 @@ class DynamoDbDatabase(AbstractDatabase):
         :param ref_type: type of match to look for.
         :return: list of associated concept IDs. Empty if lookup fails.
         """
-        pk = f'{search_term}##{ref_type.value.lower()}'
-        filter_exp = Key('label_and_type').eq(pk)
+        pk = f"{search_term}##{ref_type.value.lower()}"
+        filter_exp = Key("label_and_type").eq(pk)
         try:
             matches = self.genes.query(KeyConditionExpression=filter_exp)
-            return [m['concept_id'] for m in matches.get('Items', None)]
+            return [m["concept_id"] for m in matches.get("Items", None)]
         except ClientError as e:
             logger.error(
                 f"boto3 client error on get_refs_by_type for "
@@ -291,7 +291,7 @@ class DynamoDbDatabase(AbstractDatabase):
         last_evaluated_key = None
         concept_ids = []
         params = {
-            'ProjectionExpression': 'concept_id',
+            "ProjectionExpression": "concept_id",
         }
         while True:
             if last_evaluated_key:
@@ -300,10 +300,10 @@ class DynamoDbDatabase(AbstractDatabase):
                 )
             else:
                 response = self.genes.scan(**params)
-            records = response['Items']
+            records = response["Items"]
             for record in records:
-                concept_ids.append(record['concept_id'])
-            last_evaluated_key = response.get('LastEvaluatedKey')
+                concept_ids.append(record["concept_id"])
+            last_evaluated_key = response.get("LastEvaluatedKey")
             if not last_evaluated_key:
                 break
         return set(concept_ids)
@@ -332,19 +332,19 @@ class DynamoDbDatabase(AbstractDatabase):
                 )
             else:
                 response = self.genes.scan()
-            records = response.get('Items', [])
+            records = response.get("Items", [])
             for record in records:
-                incoming_record_type = record.get('item_type')
+                incoming_record_type = record.get("item_type")
                 if record_type == RecordType.IDENTITY:
                     if incoming_record_type == record_type:
                         yield record
                 else:
                     if (
                         incoming_record_type == RecordType.IDENTITY
-                        and not record.get('merge_ref')
+                        and not record.get("merge_ref")
                     ) or incoming_record_type == RecordType.MERGER:
                         yield record
-            last_evaluated_key = response.get('LastEvaluatedKey')
+            last_evaluated_key = response.get("LastEvaluatedKey")
             if not last_evaluated_key:
                 break
 
@@ -357,10 +357,10 @@ class DynamoDbDatabase(AbstractDatabase):
         """
         src_name_value = src_name.value
         metadata_item = metadata.model_dump()
-        metadata_item['src_name'] = src_name_value
-        metadata_item['label_and_type'] = f'{str(src_name_value).lower()}##source'
-        metadata_item['concept_id'] = f'source:{str(src_name_value).lower()}'
-        metadata_item['item_type'] = 'source'
+        metadata_item["src_name"] = src_name_value
+        metadata_item["label_and_type"] = f"{str(src_name_value).lower()}##source"
+        metadata_item["concept_id"] = f"source:{str(src_name_value).lower()}"
+        metadata_item["item_type"] = "source"
         try:
             self.genes.put_item(Item=metadata_item)
         except ClientError as e:
@@ -372,11 +372,11 @@ class DynamoDbDatabase(AbstractDatabase):
         :param Dict record: record to upload
         :param SourceName src_name: name of source for record
         """
-        concept_id = record['concept_id']
-        record['src_name'] = src_name.value
-        label_and_type = f'{concept_id.lower()}##identity'
-        record['label_and_type'] = label_and_type
-        record['item_type'] = 'identity'
+        concept_id = record["concept_id"]
+        record["src_name"] = src_name.value
+        label_and_type = f"{concept_id.lower()}##identity"
+        record["label_and_type"] = label_and_type
+        record["item_type"] = "identity"
         try:
             self.batch.put_item(Item=record)
         except ClientError as e:
@@ -395,7 +395,7 @@ class DynamoDbDatabase(AbstractDatabase):
                     items = {item.lower() for item in value}
                 for item in items:
                     self._add_ref_record(
-                        item, record['concept_id'], item_type, src_name
+                        item, record["concept_id"], item_type, src_name
                     )
 
     def add_merged_record(self, record: Dict) -> None:
@@ -403,12 +403,12 @@ class DynamoDbDatabase(AbstractDatabase):
 
         :param record: merged record to add
         """
-        concept_id = record['concept_id']
-        id_prefix = concept_id.split(':')[0].lower()
-        record['src_name'] = PREFIX_LOOKUP[id_prefix]
-        label_and_type = f'{concept_id.lower()}##{RecordType.MERGER.value}'
-        record['label_and_type'] = label_and_type
-        record['item_type'] = RecordType.MERGER.value
+        concept_id = record["concept_id"]
+        id_prefix = concept_id.split(":")[0].lower()
+        record["src_name"] = PREFIX_LOOKUP[id_prefix]
+        label_and_type = f"{concept_id.lower()}##{RecordType.MERGER.value}"
+        record["label_and_type"] = label_and_type
+        record["item_type"] = RecordType.MERGER.value
         try:
             self.batch.put_item(Item=record)
         except ClientError as e:
@@ -428,12 +428,12 @@ class DynamoDbDatabase(AbstractDatabase):
             'associated_with'}
         :param src_name: name of source for record
         """
-        label_and_type = f'{term.lower()}##{ref_type}'
+        label_and_type = f"{term.lower()}##{ref_type}"
         record = {
-            'label_and_type': label_and_type,
-            'concept_id': concept_id.lower(),
-            'src_name': src_name.value,
-            'item_type': ref_type,
+            "label_and_type": label_and_type,
+            "concept_id": concept_id.lower(),
+            "src_name": src_name.value,
+            "item_type": ref_type,
         }
         try:
             self.batch.put_item(Item=record)
@@ -451,11 +451,11 @@ class DynamoDbDatabase(AbstractDatabase):
         :param merge_ref: new ref value
         :raise DatabaseWriteException: if attempting to update non-existent record
         """
-        label_and_type = f'{concept_id.lower()}##identity'
-        key = {'label_and_type': label_and_type, 'concept_id': concept_id}
-        update_expression = 'set merge_ref=:r'
-        update_values = {':r': merge_ref.lower()}
-        condition_expression = 'attribute_exists(label_and_type)'
+        label_and_type = f"{concept_id.lower()}##identity"
+        key = {"label_and_type": label_and_type, "concept_id": concept_id}
+        update_expression = "set merge_ref=:r"
+        update_values = {":r": merge_ref.lower()}
+        condition_expression = "attribute_exists(label_and_type)"
         try:
             self.genes.update_item(
                 Key=key,
@@ -464,10 +464,10 @@ class DynamoDbDatabase(AbstractDatabase):
                 ConditionExpression=condition_expression,
             )
         except ClientError as e:
-            code = e.response.get('Error', {}).get('Code')
-            if code == 'ConditionalCheckFailedException':
+            code = e.response.get("Error", {}).get("Code")
+            if code == "ConditionalCheckFailedException":
                 raise DatabaseWriteException(
-                    f'No such record exists for keys {label_and_type}, {concept_id}'
+                    f"No such record exists for keys {label_and_type}, {concept_id}"
                 )
             else:
                 logger.error(
@@ -485,25 +485,25 @@ class DynamoDbDatabase(AbstractDatabase):
         """
         while True:
             with self.genes.batch_writer(
-                overwrite_by_pkeys=['label_and_type', 'concept_id']
+                overwrite_by_pkeys=["label_and_type", "concept_id"]
             ) as batch:
                 try:
                     response = self.genes.query(
-                        IndexName='item_type_index',
-                        KeyConditionExpression=Key('item_type').eq(
+                        IndexName="item_type_index",
+                        KeyConditionExpression=Key("item_type").eq(
                             RecordType.MERGER.value
                         ),
                     )
                 except ClientError as e:
                     raise DatabaseReadException(e)
-                records = response['Items']
+                records = response["Items"]
                 if not records:
                     break
                 for record in records:
                     batch.delete_item(
                         Key={
-                            'label_and_type': record['label_and_type'],
-                            'concept_id': record['concept_id'],
+                            "label_and_type": record["label_and_type"],
+                            "concept_id": record["concept_id"],
                         }
                     )
 
@@ -518,23 +518,23 @@ class DynamoDbDatabase(AbstractDatabase):
         while True:
             try:
                 response = self.genes.query(
-                    IndexName='src_index',
-                    KeyConditionExpression=Key('src_name').eq(src_name.value),
+                    IndexName="src_index",
+                    KeyConditionExpression=Key("src_name").eq(src_name.value),
                 )
             except ClientError as e:
                 raise DatabaseReadException(e)
-            records = response['Items']
+            records = response["Items"]
             if not records:
                 break
             with self.genes.batch_writer(
-                overwrite_by_pkeys=['label_and_type', 'concept_id']
+                overwrite_by_pkeys=["label_and_type", "concept_id"]
             ) as batch:
                 for record in records:
                     try:
                         batch.delete_item(
                             Key={
-                                'label_and_type': record['label_and_type'],
-                                'concept_id': record['concept_id'],
+                                "label_and_type": record["label_and_type"],
+                                "concept_id": record["concept_id"],
                             }
                         )
                     except ClientError as e:

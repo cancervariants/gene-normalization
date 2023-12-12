@@ -15,22 +15,22 @@ from pydantic import (
 
 from gene.version import __version__
 
-CURIE = constr(pattern=r'^\w[^:]*:.+$')
+CURIE = constr(pattern=r"^\w[^:]*:.+$")
 
 
 class SymbolStatus(str, Enum):
     """Define string constraints for symbol status attribute."""
 
-    WITHDRAWN = 'withdrawn'
-    APPROVED = 'approved'
-    DISCONTINUED = 'discontinued'
+    WITHDRAWN = "withdrawn"
+    APPROVED = "approved"
+    DISCONTINUED = "discontinued"
 
 
 class Strand(str, Enum):
     """Define string constraints for strand attribute."""
 
-    FORWARD = '+'
-    REVERSE = '-'
+    FORWARD = "+"
+    REVERSE = "-"
 
 
 class Annotation(str, Enum):
@@ -38,16 +38,16 @@ class Annotation(str, Enum):
     is absent.
     """
 
-    NOT_FOUND_ON_REFERENCE = 'not on reference assembly'
-    UNPLACED = 'unplaced'
-    RESERVED = 'reserved'
-    ALT_LOC = 'alternate reference locus'
+    NOT_FOUND_ON_REFERENCE = "not on reference assembly"
+    UNPLACED = "unplaced"
+    RESERVED = "reserved"
+    ALT_LOC = "alternate reference locus"
 
 
 class Chromosome(str, Enum):
     """Define string constraints for chromosomes."""
 
-    MITOCHONDRIA = 'MT'
+    MITOCHONDRIA = "MT"
 
 
 class MatchType(IntEnum):
@@ -66,10 +66,10 @@ class MatchType(IntEnum):
 class GeneSequenceLocation(BaseModel):
     """Sequence Location model when storing in DynamoDB."""
 
-    type: Literal['SequenceLocation'] = 'SequenceLocation'
+    type: Literal["SequenceLocation"] = "SequenceLocation"
     start: StrictInt
     end: StrictInt
-    sequence_id: constr(pattern=r'^ga4gh:SQ.[0-9A-Za-z_\-]{32}$')  # noqa: F722
+    sequence_id: constr(pattern=r"^ga4gh:SQ.[0-9A-Za-z_\-]{32}$")  # noqa: F722
 
 
 # class GeneChromosomeLocation(BaseModel):
@@ -112,20 +112,20 @@ class Gene(BaseGene):
 
     model_config = ConfigDict(
         json_schema_extra={
-            'example': {
-                'label': None,
-                'concept_id': 'ensembl:ENSG00000157764',
-                'symbol': 'BRAF',
-                'previous_symbols': [],
-                'aliases': [],
-                'xrefs': [],
-                'symbol_status': None,
-                'strand': '-',
-                'locations': [],
-                'location_annotations': [],
-                'associated_with': [],
-                'gene_type': None,
-                'match_type': 100,
+            "example": {
+                "label": None,
+                "concept_id": "ensembl:ENSG00000157764",
+                "symbol": "BRAF",
+                "previous_symbols": [],
+                "aliases": [],
+                "xrefs": [],
+                "symbol_status": None,
+                "strand": "-",
+                "locations": [],
+                "location_annotations": [],
+                "associated_with": [],
+                "gene_type": None,
+                "match_type": 100,
             }
         }
     )
@@ -142,9 +142,9 @@ class GeneGroup(Gene):
 class SourceName(Enum):
     """Define string constraints to ensure consistent capitalization."""
 
-    HGNC = 'HGNC'
-    ENSEMBL = 'Ensembl'
-    NCBI = 'NCBI'
+    HGNC = "HGNC"
+    ENSEMBL = "Ensembl"
+    NCBI = "NCBI"
 
 
 class SourcePriority(IntEnum):
@@ -158,42 +158,42 @@ class SourcePriority(IntEnum):
 class SourceIDAfterNamespace(Enum):
     """Define string constraints after namespace."""
 
-    HGNC = ''
-    ENSEMBL = 'ENSG'
-    NCBI = ''
+    HGNC = ""
+    ENSEMBL = "ENSG"
+    NCBI = ""
 
 
 class NamespacePrefix(Enum):
     """Define string constraints for namespace prefixes on concept IDs."""
 
-    HGNC = 'hgnc'
-    ENSEMBL = 'ensembl'
-    NCBI = 'ncbigene'
+    HGNC = "hgnc"
+    ENSEMBL = "ensembl"
+    NCBI = "ncbigene"
     ENTREZ = NCBI
-    VEGA = 'vega'
-    UCSC = 'ucsc'
-    ENA = 'ena.embl'
-    REFSEQ = 'refseq'
-    CCDS = 'ccds'
-    UNIPROT = 'uniprot'
-    PUBMED = 'pubmed'
-    COSMIC = 'cosmic'
-    OMIM = 'omim'
-    MIRBASE = 'mirbase'
-    HOMEODB = 'homeodb'
-    SNORNABASE = 'snornabase'
-    ORPHANET = 'orphanet'
-    PSEUDOGENE = 'pseudogene.org'
-    HORDE = 'hordedb'
-    MEROPS = 'merops'
-    IUPHAR = 'iuphar'
-    KZNF = 'knzfgc'
-    MAMIT = 'mamittrnadb'
-    CD = 'hcdmdb'
-    LNCRNADB = 'lncrnadb'
-    IMGT = 'imgt'  # .hla? .ligm? leave as is?
-    IMGT_GENE_DB = 'imgt/gene-db'  # redundant w/ above?
-    RFAM = 'rfam'
+    VEGA = "vega"
+    UCSC = "ucsc"
+    ENA = "ena.embl"
+    REFSEQ = "refseq"
+    CCDS = "ccds"
+    UNIPROT = "uniprot"
+    PUBMED = "pubmed"
+    COSMIC = "cosmic"
+    OMIM = "omim"
+    MIRBASE = "mirbase"
+    HOMEODB = "homeodb"
+    SNORNABASE = "snornabase"
+    ORPHANET = "orphanet"
+    PSEUDOGENE = "pseudogene.org"
+    HORDE = "hordedb"
+    MEROPS = "merops"
+    IUPHAR = "iuphar"
+    KZNF = "knzfgc"
+    MAMIT = "mamittrnadb"
+    CD = "hcdmdb"
+    LNCRNADB = "lncrnadb"
+    IMGT = "imgt"  # .hla? .ligm? leave as is?
+    IMGT_GENE_DB = "imgt/gene-db"  # redundant w/ above?
+    RFAM = "rfam"
 
 
 class DataLicenseAttributes(BaseModel):
@@ -207,19 +207,19 @@ class DataLicenseAttributes(BaseModel):
 class RecordType(str, Enum):
     """Record item types."""
 
-    IDENTITY = 'identity'
-    MERGER = 'merger'
+    IDENTITY = "identity"
+    MERGER = "merger"
 
 
 class RefType(str, Enum):
     """Reference item types."""
 
     # Must be in descending MatchType order.
-    SYMBOL = 'symbol'
-    PREVIOUS_SYMBOLS = 'prev_symbol'
-    ALIASES = 'alias'
-    XREFS = 'xref'
-    ASSOCIATED_WITH = 'associated_with'
+    SYMBOL = "symbol"
+    PREVIOUS_SYMBOLS = "prev_symbol"
+    ALIASES = "alias"
+    XREFS = "xref"
+    ASSOCIATED_WITH = "associated_with"
 
 
 class SourceMeta(BaseModel):
@@ -235,22 +235,22 @@ class SourceMeta(BaseModel):
 
     model_config = ConfigDict(
         json_schema_extra={
-            'example': {
-                'data_license': 'custom',
-                'data_license_url': 'https://www.ncbi.nlm.nih.gov/home/about/policies/',
-                'version': '20201215',
-                'data_url': {
-                    'info_file': 'ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz',
-                    'history_file': 'ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz',
-                    'assembly_file': 'ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/',
+            "example": {
+                "data_license": "custom",
+                "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",
+                "version": "20201215",
+                "data_url": {
+                    "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
+                    "history_file": "ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz",
+                    "assembly_file": "ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/",
                 },
-                'rdp_url': 'https://reusabledata.org/ncbi-gene.html',
-                'data_license_attributes': {
-                    'non_commercial': False,
-                    'share_alike': False,
-                    'attribution': False,
+                "rdp_url": "https://reusabledata.org/ncbi-gene.html",
+                "data_license_attributes": {
+                    "non_commercial": False,
+                    "share_alike": False,
+                    "attribution": False,
                 },
-                'genome_assemblies': [],
+                "genome_assemblies": [],
             }
         }
     )
@@ -262,26 +262,26 @@ class SourceSearchMatches(BaseModel):
     records: List[Gene] = []
     source_meta_: SourceMeta
 
-    model_config = ConfigDict(json_schema_extra={'example': {}})  # TODO
+    model_config = ConfigDict(json_schema_extra={"example": {}})  # TODO
 
 
 class ServiceMeta(BaseModel):
     """Metadata regarding the gene-normalization service."""
 
-    name: Literal['gene-normalizer'] = 'gene-normalizer'
+    name: Literal["gene-normalizer"] = "gene-normalizer"
     version: StrictStr
     response_datetime: StrictStr
     url: Literal[
-        'https://github.com/cancervariants/gene-normalization'
-    ] = 'https://github.com/cancervariants/gene-normalization'
+        "https://github.com/cancervariants/gene-normalization"
+    ] = "https://github.com/cancervariants/gene-normalization"
 
     model_config = ConfigDict(
         json_schema_extra={
-            'example': {
-                'name': 'gene-normalizer',
-                'version': __version__,
-                'response_datetime': '2022-03-23 15:57:14.180908',
-                'url': 'https://github.com/cancervariants/gene-normalization',
+            "example": {
+                "name": "gene-normalizer",
+                "version": __version__,
+                "response_datetime": "2022-03-23 15:57:14.180908",
+                "url": "https://github.com/cancervariants/gene-normalization",
             }
         }
     )
@@ -303,9 +303,9 @@ class GeneTypeFieldName(str, Enum):
     internal records.
     """
 
-    HGNC = 'hgnc_locus_type'
-    NCBI = 'ncbi_gene_type'
-    ENSEMBL = 'ensembl_biotype'
+    HGNC = "hgnc_locus_type"
+    NCBI = "ncbi_gene_type"
+    ENSEMBL = "ensembl_biotype"
 
 
 class BaseNormalizationService(BaseModel):
@@ -326,88 +326,88 @@ class NormalizeService(BaseNormalizationService):
 
     model_config = ConfigDict(
         json_schema_extra={
-            'example': {
-                'query': 'BRAF',
-                'warnings': [],
-                'match_type': 100,
-                'normalized_id': 'hgnc:1037',
-                'gene': {
-                    'type': 'Gene',
-                    'id': 'normalize.gene.hgnc:1097',
-                    'label': 'BRAF',
-                    'mappings': [
+            "example": {
+                "query": "BRAF",
+                "warnings": [],
+                "match_type": 100,
+                "normalized_id": "hgnc:1037",
+                "gene": {
+                    "type": "Gene",
+                    "id": "normalize.gene.hgnc:1097",
+                    "label": "BRAF",
+                    "mappings": [
                         {
-                            'coding': {'code': '673', 'system': 'ncbigene'},
-                            'relation': 'relatedMatch',
+                            "coding": {"code": "673", "system": "ncbigene"},
+                            "relation": "relatedMatch",
                         },
                         {
-                            'coding': {'code': 'ENSG00000157764', 'system': 'ensembl'},
-                            'relation': 'relatedMatch',
+                            "coding": {"code": "ENSG00000157764", "system": "ensembl"},
+                            "relation": "relatedMatch",
                         },
                         {
-                            'coding': {'code': 'CCDS5863', 'system': 'ccds'},
-                            'relation': 'relatedMatch',
+                            "coding": {"code": "CCDS5863", "system": "ccds"},
+                            "relation": "relatedMatch",
                         },
                         {
-                            'coding': {'code': '1943', 'system': 'iuphar'},
-                            'relation': 'relatedMatch',
+                            "coding": {"code": "1943", "system": "iuphar"},
+                            "relation": "relatedMatch",
                         },
                         {
-                            'coding': {'code': '119066', 'system': 'orphanet'},
-                            'relation': 'relatedMatch',
+                            "coding": {"code": "119066", "system": "orphanet"},
+                            "relation": "relatedMatch",
                         },
                         {
-                            'coding': {'code': 'BRAF', 'system': 'cosmic'},
-                            'relation': 'relatedMatch',
+                            "coding": {"code": "BRAF", "system": "cosmic"},
+                            "relation": "relatedMatch",
                         },
                         {
-                            'coding': {'code': '2284096', 'system': 'pubmed'},
-                            'relation': 'relatedMatch',
+                            "coding": {"code": "2284096", "system": "pubmed"},
+                            "relation": "relatedMatch",
                         },
                         {
-                            'coding': {'code': 'uc003vwc.5', 'system': 'ucsc'},
-                            'relation': 'relatedMatch',
+                            "coding": {"code": "uc003vwc.5", "system": "ucsc"},
+                            "relation": "relatedMatch",
                         },
                         {
-                            'coding': {'code': '164757', 'system': 'omim'},
-                            'relation': 'relatedMatch',
+                            "coding": {"code": "164757", "system": "omim"},
+                            "relation": "relatedMatch",
                         },
                         {
-                            'coding': {'code': 'NM_004333', 'system': 'refseq'},
-                            'relation': 'relatedMatch',
+                            "coding": {"code": "NM_004333", "system": "refseq"},
+                            "relation": "relatedMatch",
                         },
                         {
-                            'coding': {'code': 'CCDS87555', 'system': 'ccds'},
-                            'relation': 'relatedMatch',
+                            "coding": {"code": "CCDS87555", "system": "ccds"},
+                            "relation": "relatedMatch",
                         },
                         {
-                            'coding': {'code': 'P15056', 'system': 'uniprot'},
-                            'relation': 'relatedMatch',
+                            "coding": {"code": "P15056", "system": "uniprot"},
+                            "relation": "relatedMatch",
                         },
                         {
-                            'coding': {'code': 'M95712', 'system': 'ena.embl'},
-                            'relation': 'relatedMatch',
+                            "coding": {"code": "M95712", "system": "ena.embl"},
+                            "relation": "relatedMatch",
                         },
                         {
-                            'coding': {'code': 'OTTHUMG00000157457', 'system': 'vega'},
-                            'relation': 'relatedMatch',
+                            "coding": {"code": "OTTHUMG00000157457", "system": "vega"},
+                            "relation": "relatedMatch",
                         },
                         {
-                            'coding': {'code': '1565476', 'system': 'pubmed'},
-                            'relation': 'relatedMatch',
+                            "coding": {"code": "1565476", "system": "pubmed"},
+                            "relation": "relatedMatch",
                         },
                     ],
-                    'aliases': ['BRAF1', 'RAFB1', 'B-raf', 'NS7', 'B-RAF1'],
-                    'extensions': [
+                    "aliases": ["BRAF1", "RAFB1", "B-raf", "NS7", "B-RAF1"],
+                    "extensions": [
                         {
-                            'name': 'approved_name',
-                            'value': 'B-Raf proto-oncogene, serine/threonine kinase',
-                            'type': 'Extension',
+                            "name": "approved_name",
+                            "value": "B-Raf proto-oncogene, serine/threonine kinase",
+                            "type": "Extension",
                         },
                         {
-                            'name': 'symbol_status',
-                            'value': 'approved',
-                            'type': 'Extension',
+                            "name": "symbol_status",
+                            "value": "approved",
+                            "type": "Extension",
                         },
                         # {
                         #     "name": "chromosome_location",
@@ -423,60 +423,60 @@ class NormalizeService(BaseNormalizationService):
                         # }
                     ],
                 },
-                'source_meta_': {
-                    'HGNC': {
-                        'data_license': 'custom',
-                        'data_license_url': 'https://www.genenames.org/about/',
-                        'version': '20210810',
-                        'data_url': {
-                            'complete_set_archive': 'ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json'
+                "source_meta_": {
+                    "HGNC": {
+                        "data_license": "custom",
+                        "data_license_url": "https://www.genenames.org/about/",
+                        "version": "20210810",
+                        "data_url": {
+                            "complete_set_archive": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
                         },
-                        'rdp_url': None,
-                        'data_license_attributes': {
-                            'non_commercial': False,
-                            'attribution': False,
-                            'share_alike': False,
+                        "rdp_url": None,
+                        "data_license_attributes": {
+                            "non_commercial": False,
+                            "attribution": False,
+                            "share_alike": False,
                         },
-                        'genome_assemblies': [],
+                        "genome_assemblies": [],
                     },
-                    'Ensembl': {
-                        'data_license': 'custom',
-                        'data_license_url': 'https://useast.ensembl.org/info/about/legal/disclaimer.html',
-                        'version': '104',
-                        'data_url': {
-                            'genome_annotations': 'ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz'
+                    "Ensembl": {
+                        "data_license": "custom",
+                        "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",
+                        "version": "104",
+                        "data_url": {
+                            "genome_annotations": "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz"
                         },
-                        'rdp_url': None,
-                        'data_license_attributes': {
-                            'non_commercial': False,
-                            'attribution': False,
-                            'share_alike': False,
+                        "rdp_url": None,
+                        "data_license_attributes": {
+                            "non_commercial": False,
+                            "attribution": False,
+                            "share_alike": False,
                         },
-                        'genome_assemblies': ['GRCh38'],
+                        "genome_assemblies": ["GRCh38"],
                     },
-                    'NCBI': {
-                        'data_license': 'custom',
-                        'data_license_url': 'https://www.ncbi.nlm.nih.gov/home/about/policies/',
-                        'version': '20210813',
-                        'data_url': {
-                            'info_file': 'ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz',
-                            'history_file': 'ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz',
-                            'assembly_file': 'ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/',
+                    "NCBI": {
+                        "data_license": "custom",
+                        "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",
+                        "version": "20210813",
+                        "data_url": {
+                            "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
+                            "history_file": "ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz",
+                            "assembly_file": "ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/",
                         },
-                        'rdp_url': 'https://reusabledata.org/ncbi-gene.html',
-                        'data_license_attributes': {
-                            'non_commercial': False,
-                            'attribution': False,
-                            'share_alike': False,
+                        "rdp_url": "https://reusabledata.org/ncbi-gene.html",
+                        "data_license_attributes": {
+                            "non_commercial": False,
+                            "attribution": False,
+                            "share_alike": False,
                         },
-                        'genome_assemblies': ['GRCh38.p13'],
+                        "genome_assemblies": ["GRCh38.p13"],
                     },
                 },
-                'service_meta_': {
-                    'name': 'gene-normalizer',
-                    'version': __version__,
-                    'response_datetime': '2022-03-23 15:57:14.180908',
-                    'url': 'https://github.com/cancervariants/gene-normalization',
+                "service_meta_": {
+                    "name": "gene-normalizer",
+                    "version": __version__,
+                    "response_datetime": "2022-03-23 15:57:14.180908",
+                    "url": "https://github.com/cancervariants/gene-normalization",
                 },
             }
         }
@@ -501,28 +501,28 @@ class UnmergedNormalizationService(BaseNormalizationService):
 
     model_config = ConfigDict(
         json_schema_extra={
-            'example': {
-                'query': 'hgnc:108',
-                'warnings': [],
-                'match_type': 100,
-                'service_meta_': {
-                    'version': __version__,
-                    'response_datetime': '2022-04-26 14:20:54.180240',
-                    'name': 'gene-normalizer',
-                    'url': 'https://github.com/cancervariants/gene-normalization',
+            "example": {
+                "query": "hgnc:108",
+                "warnings": [],
+                "match_type": 100,
+                "service_meta_": {
+                    "version": __version__,
+                    "response_datetime": "2022-04-26 14:20:54.180240",
+                    "name": "gene-normalizer",
+                    "url": "https://github.com/cancervariants/gene-normalization",
                 },
-                'normalized_concept_id': 'hgnc:108',
-                'source_matches': {
-                    'HGNC': {
-                        'records': [
+                "normalized_concept_id": "hgnc:108",
+                "source_matches": {
+                    "HGNC": {
+                        "records": [
                             {
-                                'concept_id': 'hgnc:108',
-                                'symbol': 'ACHE',
-                                'symbol_status': 'approved',
-                                'label': 'acetylcholinesterase (Cartwright blood group)',
-                                'strand': None,
-                                'location_annotations': [],
-                                'locations': [
+                                "concept_id": "hgnc:108",
+                                "symbol": "ACHE",
+                                "symbol_status": "approved",
+                                "label": "acetylcholinesterase (Cartwright blood group)",
+                                "strand": None,
+                                "location_annotations": [],
+                                "locations": [
                                     # {
                                     #     "type": "ChromosomeLocation",
                                     #     "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
@@ -532,95 +532,95 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                     #     "end": "q22.1"
                                     # }
                                 ],
-                                'aliases': ['3.1.1.7'],
-                                'previous_symbols': ['YT'],
-                                'xrefs': ['ncbigene:43', 'ensembl:ENSG00000087085'],
-                                'associated_with': [
-                                    'ucsc:uc003uxi.4',
-                                    'vega:OTTHUMG00000157033',
-                                    'merops:S09.979',
-                                    'ccds:CCDS5710',
-                                    'omim:100740',
-                                    'iuphar:2465',
-                                    'ccds:CCDS5709',
-                                    'refseq:NM_015831',
-                                    'pubmed:1380483',
-                                    'uniprot:P22303',
-                                    'ccds:CCDS64736',
+                                "aliases": ["3.1.1.7"],
+                                "previous_symbols": ["YT"],
+                                "xrefs": ["ncbigene:43", "ensembl:ENSG00000087085"],
+                                "associated_with": [
+                                    "ucsc:uc003uxi.4",
+                                    "vega:OTTHUMG00000157033",
+                                    "merops:S09.979",
+                                    "ccds:CCDS5710",
+                                    "omim:100740",
+                                    "iuphar:2465",
+                                    "ccds:CCDS5709",
+                                    "refseq:NM_015831",
+                                    "pubmed:1380483",
+                                    "uniprot:P22303",
+                                    "ccds:CCDS64736",
                                 ],
-                                'gene_type': 'gene with protein product',
+                                "gene_type": "gene with protein product",
                             }
                         ],
-                        'source_meta_': {
-                            'data_license': 'custom',
-                            'data_license_url': 'https://www.genenames.org/about/',
-                            'version': '20220407',
-                            'data_url': {
-                                'complete_set_archive': 'ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json'
+                        "source_meta_": {
+                            "data_license": "custom",
+                            "data_license_url": "https://www.genenames.org/about/",
+                            "version": "20220407",
+                            "data_url": {
+                                "complete_set_archive": "ftp://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
                             },
-                            'rdp_url': None,
-                            'data_license_attributes': {
-                                'non_commercial': False,
-                                'share_alike': False,
-                                'attribution': False,
+                            "rdp_url": None,
+                            "data_license_attributes": {
+                                "non_commercial": False,
+                                "share_alike": False,
+                                "attribution": False,
                             },
-                            'genome_assemblies': [],
+                            "genome_assemblies": [],
                         },
                     },
-                    'Ensembl': {
-                        'records': [
+                    "Ensembl": {
+                        "records": [
                             {
-                                'concept_id': 'ensembl:ENSG00000087085',
-                                'symbol': 'ACHE',
-                                'symbol_status': None,
-                                'label': 'acetylcholinesterase (Cartwright blood group)',
-                                'strand': '-',
-                                'location_annotations': [],
-                                'locations': [
+                                "concept_id": "ensembl:ENSG00000087085",
+                                "symbol": "ACHE",
+                                "symbol_status": None,
+                                "label": "acetylcholinesterase (Cartwright blood group)",
+                                "strand": "-",
+                                "location_annotations": [],
+                                "locations": [
                                     {
-                                        'id': 'ga4gh:SL.dnydHb2Bnv5pwXjI4MpJmrZUADf5QLe1',
-                                        'type': 'SequenceLocation',
-                                        'sequenceReference': {
-                                            'type': 'SequenceReference',
-                                            'refgetAccession': 'SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul',
+                                        "id": "ga4gh:SL.dnydHb2Bnv5pwXjI4MpJmrZUADf5QLe1",
+                                        "type": "SequenceLocation",
+                                        "sequenceReference": {
+                                            "type": "SequenceReference",
+                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                                         },
-                                        'start': 100889993,
-                                        'end': 100896974,
+                                        "start": 100889993,
+                                        "end": 100896974,
                                     }
                                 ],
-                                'aliases': [],
-                                'previous_symbols': [],
-                                'xrefs': ['hgnc:108'],
-                                'associated_with': [],
-                                'gene_type': 'protein_coding',
+                                "aliases": [],
+                                "previous_symbols": [],
+                                "xrefs": ["hgnc:108"],
+                                "associated_with": [],
+                                "gene_type": "protein_coding",
                             }
                         ],
-                        'source_meta_': {
-                            'data_license': 'custom',
-                            'data_license_url': 'https://useast.ensembl.org/info/about/legal/disclaimer.html',
-                            'version': '104',
-                            'data_url': {
-                                'genome_annotations': 'ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz'
+                        "source_meta_": {
+                            "data_license": "custom",
+                            "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",
+                            "version": "104",
+                            "data_url": {
+                                "genome_annotations": "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz"
                             },
-                            'rdp_url': None,
-                            'data_license_attributes': {
-                                'non_commercial': False,
-                                'share_alike': False,
-                                'attribution': False,
+                            "rdp_url": None,
+                            "data_license_attributes": {
+                                "non_commercial": False,
+                                "share_alike": False,
+                                "attribution": False,
                             },
-                            'genome_assemblies': ['GRCh38'],
+                            "genome_assemblies": ["GRCh38"],
                         },
                     },
-                    'NCBI': {
-                        'records': [
+                    "NCBI": {
+                        "records": [
                             {
-                                'concept_id': 'ncbigene:43',
-                                'symbol': 'ACHE',
-                                'symbol_status': None,
-                                'label': 'acetylcholinesterase (Cartwright blood group)',
-                                'strand': '-',
-                                'location_annotations': [],
-                                'locations': [
+                                "concept_id": "ncbigene:43",
+                                "symbol": "ACHE",
+                                "symbol_status": None,
+                                "label": "acetylcholinesterase (Cartwright blood group)",
+                                "strand": "-",
+                                "location_annotations": [],
+                                "locations": [
                                     {
                                         # "type": "ChromosomeLocation",
                                         # "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
@@ -630,39 +630,39 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                         # "end": "q22.1"
                                     },
                                     {
-                                        'id': 'ga4gh:SL.U7vPSlX8eyCKdFSiROIsc9om0Y7pCm2g',
-                                        'type': 'SequenceLocation',
-                                        'sequenceReference': {
-                                            'type': 'SequenceReference',
-                                            'refgetAccession': 'SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul',
+                                        "id": "ga4gh:SL.U7vPSlX8eyCKdFSiROIsc9om0Y7pCm2g",
+                                        "type": "SequenceLocation",
+                                        "sequenceReference": {
+                                            "type": "SequenceReference",
+                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                                         },
-                                        'start': 100889993,
-                                        'end': 100896994,
+                                        "start": 100889993,
+                                        "end": 100896994,
                                     },
                                 ],
-                                'aliases': ['YT', 'ARACHE', 'ACEE', 'N-ACHE'],
-                                'previous_symbols': ['ACEE'],
-                                'xrefs': ['hgnc:108', 'ensembl:ENSG00000087085'],
-                                'associated_with': ['omim:100740'],
-                                'gene_type': 'protein-coding',
+                                "aliases": ["YT", "ARACHE", "ACEE", "N-ACHE"],
+                                "previous_symbols": ["ACEE"],
+                                "xrefs": ["hgnc:108", "ensembl:ENSG00000087085"],
+                                "associated_with": ["omim:100740"],
+                                "gene_type": "protein-coding",
                             }
                         ],
-                        'source_meta_': {
-                            'data_license': 'custom',
-                            'data_license_url': 'https://www.ncbi.nlm.nih.gov/home/about/policies/',
-                            'version': '20220407',
-                            'data_url': {
-                                'info_file': 'ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz',
-                                'history_file': 'ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz',
-                                'assembly_file': 'ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/',
+                        "source_meta_": {
+                            "data_license": "custom",
+                            "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",
+                            "version": "20220407",
+                            "data_url": {
+                                "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
+                                "history_file": "ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz",
+                                "assembly_file": "ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/",
                             },
-                            'rdp_url': 'https://reusabledata.org/ncbi-gene.html',
-                            'data_license_attributes': {
-                                'non_commercial': False,
-                                'share_alike': False,
-                                'attribution': False,
+                            "rdp_url": "https://reusabledata.org/ncbi-gene.html",
+                            "data_license_attributes": {
+                                "non_commercial": False,
+                                "share_alike": False,
+                                "attribution": False,
                             },
-                            'genome_assemblies': ['GRCh38.p13'],
+                            "genome_assemblies": ["GRCh38.p13"],
                         },
                     },
                 },

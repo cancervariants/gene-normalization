@@ -61,12 +61,12 @@ class AbstractDatabase(abc.ABC):
         :raise DatabaseWriteException: if skip confirmation variable is set -- manual
         approval is required.
         """
-        if environ.get(AWS_ENV_VAR_NAME, '') == AwsEnvName.PRODUCTION:
-            if environ.get(SKIP_AWS_DB_ENV_NAME, '') == 'true':
+        if environ.get(AWS_ENV_VAR_NAME, "") == AwsEnvName.PRODUCTION:
+            if environ.get(SKIP_AWS_DB_ENV_NAME, "") == "true":
                 raise DatabaseWriteException(
-                    f'Must unset {SKIP_AWS_DB_ENV_NAME} env variable to enable drop_db()'
+                    f"Must unset {SKIP_AWS_DB_ENV_NAME} env variable to enable drop_db()"
                 )
-            return click.confirm('Are you sure you want to delete existing data?')
+            return click.confirm("Are you sure you want to delete existing data?")
         else:
             return True
 
@@ -242,19 +242,19 @@ class AbstractDatabase(abc.ABC):
 
 # can be set to either `Dev`, `Staging`, or `Prod`
 # ONLY set when wanting to access aws instance
-AWS_ENV_VAR_NAME = 'GENE_NORM_ENV'
+AWS_ENV_VAR_NAME = "GENE_NORM_ENV"
 
 # Set to "true" if want to skip db confirmation check. Should ONLY be used for
 # deployment needs
-SKIP_AWS_DB_ENV_NAME = 'SKIP_AWS_CONFIRMATION'
+SKIP_AWS_DB_ENV_NAME = "SKIP_AWS_CONFIRMATION"
 
 
 class AwsEnvName(str, Enum):
     """AWS environment name that is being used"""
 
-    DEVELOPMENT = 'Dev'
-    STAGING = 'Staging'
-    PRODUCTION = 'Prod'
+    DEVELOPMENT = "Dev"
+    STAGING = "Staging"
+    PRODUCTION = "Prod"
 
 
 VALID_AWS_ENV_NAMES = {v.value for v in AwsEnvName.__members__.values()}
@@ -263,11 +263,11 @@ VALID_AWS_ENV_NAMES = {v.value for v in AwsEnvName.__members__.values()}
 def confirm_aws_db_use(env_name: str) -> None:
     """Check to ensure that AWS instance should actually be used."""
     if click.confirm(
-        f'Are you sure you want to use the AWS {env_name} database?', default=False
+        f"Are you sure you want to use the AWS {env_name} database?", default=False
     ):
-        click.echo(f'***GENE AWS {env_name.upper()} DATABASE IN USE***')
+        click.echo(f"***GENE AWS {env_name.upper()} DATABASE IN USE***")
     else:
-        click.echo('Exiting.')
+        click.echo("Exiting.")
         sys.exit()
 
 
@@ -324,13 +324,13 @@ def create_db(
     else:
         if db_url:
             endpoint_url = db_url
-        elif 'GENE_NORM_DB_URL' in environ.keys():
-            endpoint_url = environ['GENE_NORM_DB_URL']
+        elif "GENE_NORM_DB_URL" in environ.keys():
+            endpoint_url = environ["GENE_NORM_DB_URL"]
         else:
-            endpoint_url = 'http://localhost:8000'
+            endpoint_url = "http://localhost:8000"
 
         # prefer DynamoDB unless connection explicitly reads like a libpq URI
-        if endpoint_url.startswith('postgres'):
+        if endpoint_url.startswith("postgres"):
             from gene.database.postgresql import PostgresDatabase
 
             db = PostgresDatabase(endpoint_url)
