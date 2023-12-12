@@ -3,27 +3,25 @@ import logging
 from os import environ
 from pathlib import Path
 
-from .version import __version__  # noqa: F401
-
 APP_ROOT = Path(__file__).resolve().parent
 
 logging.basicConfig(
-    filename="gene.log", format="[%(asctime)s] - %(name)s - %(levelname)s : %(message)s"
+    filename='gene.log', format='[%(asctime)s] - %(name)s - %(levelname)s : %(message)s'
 )
-logger = logging.getLogger("gene")
+logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
 logger.handlers = []
 
-logging.getLogger("boto3").setLevel(logging.INFO)
-logging.getLogger("botocore").setLevel(logging.INFO)
-logging.getLogger("urllib3").setLevel(logging.INFO)
-logging.getLogger("python_jsonschema_objects").setLevel(logging.INFO)
-logging.getLogger("biocommons.seqrepo.seqaliasdb.seqaliasdb").setLevel(logging.INFO)
-logging.getLogger("biocommons.seqrepo.fastadir.fastadir").setLevel(logging.INFO)
+logging.getLogger('boto3').setLevel(logging.INFO)
+logging.getLogger('botocore').setLevel(logging.INFO)
+logging.getLogger('urllib3').setLevel(logging.INFO)
+logging.getLogger('python_jsonschema_objects').setLevel(logging.INFO)
+logging.getLogger('biocommons.seqrepo.seqaliasdb.seqaliasdb').setLevel(logging.INFO)
+logging.getLogger('biocommons.seqrepo.fastadir.fastadir').setLevel(logging.INFO)
 
 
 SEQREPO_ROOT_DIR = Path(
-    environ.get("SEQREPO_ROOT_DIR", "/usr/local/share/seqrepo/latest")
+    environ.get('SEQREPO_ROOT_DIR', '/usr/local/share/seqrepo/latest')
 )
 
 
@@ -61,5 +59,5 @@ PREFIX_LOOKUP = {
 NAMESPACE_LOOKUP = {
     v.value.lower(): NamespacePrefix[k].value
     for k, v in SourceIDAfterNamespace.__members__.items()
-    if v.value != ""
+    if v.value != ''
 }

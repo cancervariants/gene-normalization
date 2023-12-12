@@ -57,14 +57,14 @@ html_theme_options = {
     ],
 }
 # -- autodoc things ----------------------------------------------------------
-import os  # noqa: E402
-import sys  # noqa: E402
+import os
+import sys
 
 sys.path.insert(0, os.path.abspath("../../gene"))
 autodoc_preserve_defaults = True
 
 # -- get version -------------------------------------------------------------
-from gene import __version__  # noqa: E402
+from gene import __version__
 
 version = __version__
 release = version
@@ -77,7 +77,7 @@ def linkcode_resolve(domain, info):
     if not info["module"]:
         return None
     filename = info["module"].replace(".", "/")
-    return f"https://github.com/cancervariants/gene-normalization/blob/main/{filename}.py"  # noqa: E501
+    return f"https://github.com/cancervariants/gene-normalization/blob/main/{filename}.py"
 
 
 # -- code block style --------------------------------------------------------

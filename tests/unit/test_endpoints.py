@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 from gene.main import app
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope='module')
 def api_client():
     """Provide test client fixture."""
     return TestClient(app)
@@ -18,26 +18,26 @@ def api_client():
 
 def test_search(api_client):
     """Test /search endpoint."""
-    response = api_client.get("/gene/search?q=braf")
+    response = api_client.get('/gene/search?q=braf')
     assert response.status_code == 200
     assert (
-        response.json()["source_matches"]["HGNC"]["records"][0]["concept_id"]
-        == "hgnc:1097"
+        response.json()['source_matches']['HGNC']['records'][0]['concept_id']
+        == 'hgnc:1097'
     )
 
-    response = api_client.get("/gene/search?q=braf&incl=sdkl")
+    response = api_client.get('/gene/search?q=braf&incl=sdkl')
     assert response.status_code == 422
 
 
 def test_normalize(api_client):
     """Test /normalize endpoint."""
-    response = api_client.get("/gene/normalize?q=braf")
+    response = api_client.get('/gene/normalize?q=braf')
     assert response.status_code == 200
-    assert response.json()["normalized_id"] == "hgnc:1097"
+    assert response.json()['normalized_id'] == 'hgnc:1097'
 
 
 def test_normalize_unmerged(api_client):
     """Test /normalize_unmerged endpoint."""
-    response = api_client.get("/gene/normalize_unmerged?q=braf")
+    response = api_client.get('/gene/normalize_unmerged?q=braf')
     assert response.status_code == 200
-    assert response.json()["normalized_concept_id"] == "hgnc:1097"
+    assert response.json()['normalized_concept_id'] == 'hgnc:1097'

@@ -6,7 +6,7 @@ import pytest
 from gene.database import AbstractDatabase, create_db
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def database() -> AbstractDatabase:
     """Create database instance."""
     return create_db()
@@ -17,19 +17,19 @@ def pytest_addoption(parser):
     See https://docs.pytest.org/en/7.1.x/reference/reference.html#parser
     """
     parser.addoption(
-        "--verbose-logs",
-        action="store_true",
+        '--verbose-logs',
+        action='store_true',
         default=False,
-        help="show noisy module logs",
+        help='show noisy module logs',
     )
 
 
 def pytest_configure(config):
     """Configure pytest setup."""
-    if not config.getoption("--verbose-logs"):
-        logging.getLogger("botocore").setLevel(logging.ERROR)
-        logging.getLogger("boto3").setLevel(logging.ERROR)
-        logging.getLogger("urllib3.connectionpool").setLevel(logging.ERROR)
+    if not config.getoption('--verbose-logs'):
+        logging.getLogger('botocore').setLevel(logging.ERROR)
+        logging.getLogger('boto3').setLevel(logging.ERROR)
+        logging.getLogger('urllib3.connectionpool').setLevel(logging.ERROR)
 
 
 def _compare_records(normalized_gene, test_gene, match_type):
@@ -53,7 +53,7 @@ def _compare_records(normalized_gene, test_gene, match_type):
     assert normalized_gene.gene_type == test_gene.gene_type
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def compare_records():
     """Provide record(s) comparison function"""
     return _compare_records
@@ -65,7 +65,7 @@ def _check_resp_single_record(resp, test_gene, match_type):
     _compare_records(resp.records[0], test_gene, match_type)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope='session')
 def check_resp_single_record():
     """Provide record comparison function for single record"""
     return _check_resp_single_record

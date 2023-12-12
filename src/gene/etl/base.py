@@ -15,7 +15,7 @@ from gene import ITEM_TYPES, SEQREPO_ROOT_DIR
 from gene.database import AbstractDatabase
 from gene.schemas import Gene, GeneSequenceLocation, MatchType, SourceName
 
-logger = logging.getLogger("gene")
+logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
 
 
@@ -71,7 +71,7 @@ class Base(ABC):
         """
         self._extract_data(use_existing)
         if not self._silent:
-            click.echo("Transforming and loading data to DB...")
+            click.echo('Transforming and loading data to DB...')
         self._add_meta()
         self._transform_data()
         self._database.complete_write_transaction()
@@ -110,12 +110,12 @@ class Base(ABC):
         try:
             assert Gene(match_type=MatchType.NO_MATCH, **gene)
         except pydantic.ValidationError as e:
-            logger.warning(f"Unable to load {gene} due to validation error: " f"{e}")
+            logger.warning(f'Unable to load {gene} due to validation error: ' f'{e}')
         else:
-            concept_id = gene["concept_id"]
-            gene["label_and_type"] = f"{concept_id.lower()}##identity"
-            gene["src_name"] = self._src_name.value
-            gene["item_type"] = "identity"
+            concept_id = gene['concept_id']
+            gene['label_and_type'] = f'{concept_id.lower()}##identity'
+            gene['src_name'] = self._src_name.value
+            gene['item_type'] = 'identity'
 
             for attr_type in ITEM_TYPES:
                 if attr_type in gene:
@@ -136,7 +136,7 @@ class Base(ABC):
         :return: SeqRepo instance
         """
         if not Path(seqrepo_dir).exists():
-            raise NotADirectoryError(f"Could not find {seqrepo_dir}")
+            raise NotADirectoryError(f'Could not find {seqrepo_dir}')
         return SeqRepo(seqrepo_dir)
 
     def _set_cl_interval_range(self, loc: str, arm_ix: int, location: Dict) -> None:
@@ -146,33 +146,33 @@ class Base(ABC):
         :param arm_ix: The index of the q or p arm for a given location
         :param location: VRS chromosome location. This will be mutated.
         """
-        range_ix = re.search("-", loc).start()  # type: ignore
+        range_ix = re.search('-', loc).start()  # type: ignore
 
         start = loc[arm_ix:range_ix]
-        start_arm_ix = re.search("[pq]", start).start()  # type: ignore
+        start_arm_ix = re.search('[pq]', start).start()  # type: ignore
         start_arm = start[start_arm_ix]
 
         end = loc[range_ix + 1 :]
-        end_arm_match = re.search("[pq]", end)
+        end_arm_match = re.search('[pq]', end)
 
         if not end_arm_match:
             # Does not specify the arm, so use the same as start"s
-            end = f"{start[0]}{end}"
-            end_arm_match = re.search("[pq]", end)
+            end = f'{start[0]}{end}'
+            end_arm_match = re.search('[pq]', end)
 
         end_arm_ix = end_arm_match.start()  # type: ignore
         end_arm = end[end_arm_ix]
 
         if (start_arm == end_arm and start > end) or (
-            start_arm != end_arm and start_arm == "p" and end_arm == "q"
+            start_arm != end_arm and start_arm == 'p' and end_arm == 'q'
         ):
-            location["start"] = start
-            location["end"] = end
+            location['start'] = start
+            location['end'] = end
         elif (start_arm == end_arm and start < end) or (
-            start_arm != end_arm and start_arm == "q" and end_arm == "p"
+            start_arm != end_arm and start_arm == 'q' and end_arm == 'p'
         ):
-            location["start"] = end
-            location["end"] = start
+            location['start'] = end
+            location['end'] = start
 
     # Add back once VRS Chromosome Location is supported in 2.0-alpha
     # def _get_chromosome_location(self, location: Dict, gene: Dict) -> Optional[Dict]:
@@ -209,9 +209,9 @@ class Base(ABC):
         """
         aliases = []
         try:
-            aliases = self.seqrepo.translate_alias(seq_id, target_namespaces="ga4gh")
+            aliases = self.seqrepo.translate_alias(seq_id, target_namespaces='ga4gh')
         except KeyError as e:
-            logger.warning(f"SeqRepo raised KeyError: {e}")
+            logger.warning(f'SeqRepo raised KeyError: {e}')
         return aliases
 
     def _get_sequence_location(self, seq_id: str, gene: Feature, params: Dict) -> Dict:
@@ -230,7 +230,7 @@ class Base(ABC):
 
         sequence = aliases[0]
 
-        if gene.start != "." and gene.end != "." and sequence:
+        if gene.start != '.' and gene.end != '.' and sequence:
             if 0 <= gene.start <= gene.end:  # type: ignore
                 location = GeneSequenceLocation(
                     start=gene.start - 1,  # type: ignore

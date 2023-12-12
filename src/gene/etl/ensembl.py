@@ -12,7 +12,7 @@ from gene.etl.exceptions import (
 )
 from gene.schemas import NamespacePrefix, SourceMeta, SourceName, Strand
 
-logger = logging.getLogger("gene")
+logger = logging.getLogger('gene')
 logger.setLevel(logging.DEBUG)
 
 
@@ -30,36 +30,36 @@ class Ensembl(Base):
         self._data_file, raw_version = self._data_source.get_latest(
             from_local=use_existing
         )
-        match = re.match(r"(GRCh\d+)_(\d+)", raw_version)
+        match = re.match(r'(GRCh\d+)_(\d+)', raw_version)
         self._assembly = match.groups()[0]
         self._version = match.groups()[1]
 
     def _transform_data(self) -> None:
         """Transform the Ensembl source."""
-        logger.info("Transforming Ensembl...")
+        logger.info('Transforming Ensembl...')
         db = gffutils.create_db(
             str(self._data_file),
-            dbfn=":memory:",
+            dbfn=':memory:',
             force=True,
-            merge_strategy="create_unique",
+            merge_strategy='create_unique',
             keep_order=True,
         )
 
         # Get accession numbers
         accession_numbers = dict()
-        for item in db.features_of_type("scaffold"):
-            accession_numbers[item[0]] = item[8]["Alias"][-1]
-        for item in db.features_of_type("chromosome"):
-            accession_numbers[item[0]] = item[8]["Alias"][-1]
+        for item in db.features_of_type('scaffold'):
+            accession_numbers[item[0]] = item[8]['Alias'][-1]
+        for item in db.features_of_type('chromosome'):
+            accession_numbers[item[0]] = item[8]['Alias'][-1]
 
         for f in db.all_features():
-            if f.attributes.get("ID"):
-                f_id = f.attributes.get("ID")[0].split(":")[0]
-                if f_id == "gene":
+            if f.attributes.get('ID'):
+                f_id = f.attributes.get('ID')[0].split(':')[0]
+                if f_id == 'gene':
                     gene = self._add_gene(f, accession_numbers)
                     if gene:
                         self._load_gene(gene)
-        logger.info("Successfully transformed Ensembl.")
+        logger.info('Successfully transformed Ensembl.')
 
     def _add_gene(self, f: Feature, accession_numbers: Dict) -> Dict:
         """Create a transformed gene record.
@@ -69,19 +69,19 @@ class Ensembl(Base):
         :return: A gene dictionary containing data if the ID attribute exists.
         """
         gene = dict()
-        if f.strand == "-":
-            gene["strand"] = Strand.REVERSE.value
-        elif f.strand == "+":
-            gene["strand"] = Strand.FORWARD.value
-        gene["src_name"] = SourceName.ENSEMBL.value
+        if f.strand == '-':
+            gene['strand'] = Strand.REVERSE.value
+        elif f.strand == '+':
+            gene['strand'] = Strand.FORWARD.value
+        gene['src_name'] = SourceName.ENSEMBL.value
 
         self._add_attributes(f, gene)
         location = self._add_location(f, gene, accession_numbers)
         if location:
-            gene["locations"] = [location]
+            gene['locations'] = [location]
 
-        gene["label_and_type"] = f"{gene['concept_id'].lower()}##identity"
-        gene["item_type"] = "identity"
+        gene['label_and_type'] = f"{gene['concept_id'].lower()}##identity"
+        gene['item_type'] = 'identity'
 
         return gene
 
@@ -92,10 +92,10 @@ class Ensembl(Base):
         :param gene: A transformed gene record
         """
         attributes = {
-            "ID": "concept_id",
-            "Name": "symbol",
-            "description": "xrefs",
-            "biotype": "gene_type",
+            'ID': 'concept_id',
+            'Name': 'symbol',
+            'description': 'xrefs',
+            'biotype': 'gene_type',
         }
 
         for attribute in f.attributes.items():
@@ -106,30 +106,30 @@ class Ensembl(Base):
 
                 if len(val) == 1:
                     val = val[0]
-                    if key == "ID":
-                        if val.startswith("gene"):
+                    if key == 'ID':
+                        if val.startswith('gene'):
                             val = (
                                 f"{NamespacePrefix.ENSEMBL.value}:"
                                 f"{val.split(':')[1]}"
                             )
 
-                if key == "description":
-                    gene["label"] = val.split("[")[0].strip()
-                    if "Source:" in val:
+                if key == 'description':
+                    gene['label'] = val.split('[')[0].strip()
+                    if 'Source:' in val:
                         src_name = (
-                            val.split("[")[-1]
-                            .split("Source:")[-1]
-                            .split("Acc")[0]
-                            .split(";")[0]
+                            val.split('[')[-1]
+                            .split('Source:')[-1]
+                            .split('Acc')[0]
+                            .split(';')[0]
                         )
-                        src_id = val.split("Acc:")[-1].split("]")[0]
-                        if ":" in src_id:
-                            src_id = src_id.split(":")[-1]
+                        src_id = val.split('Acc:')[-1].split(']')[0]
+                        if ':' in src_id:
+                            src_id = src_id.split(':')[-1]
                         source = self._get_xref_associated_with(src_name, src_id)
-                        if "xrefs" in source:
-                            gene["xrefs"] = source["xrefs"]
-                        elif "associated_with" in source:
-                            gene["associated_with"] = source["associated_with"]
+                        if 'xrefs' in source:
+                            gene['xrefs'] = source['xrefs']
+                        elif 'associated_with' in source:
+                            gene['associated_with'] = source['associated_with']
                     continue
 
                 gene[attributes[key]] = val
@@ -153,16 +153,16 @@ class Ensembl(Base):
         :return: A dict containing an other identifier or xref
         """
         source = dict()
-        if src_name.startswith("HGNC"):
-            source["xrefs"] = [f"{NamespacePrefix.HGNC.value}:{src_id}"]
-        elif src_name.startswith("NCBI"):
-            source["xrefs"] = [f"{NamespacePrefix.NCBI.value}:{src_id}"]
-        elif src_name.startswith("UniProt"):
-            source["associated_with"] = [f"{NamespacePrefix.UNIPROT.value}:{src_id}"]
-        elif src_name.startswith("miRBase"):
-            source["associated_with"] = [f"{NamespacePrefix.MIRBASE.value}:{src_id}"]
-        elif src_name.startswith("RFAM"):
-            source["associated_with"] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]
+        if src_name.startswith('HGNC'):
+            source['xrefs'] = [f'{NamespacePrefix.HGNC.value}:{src_id}']
+        elif src_name.startswith('NCBI'):
+            source['xrefs'] = [f'{NamespacePrefix.NCBI.value}:{src_id}']
+        elif src_name.startswith('UniProt'):
+            source['associated_with'] = [f'{NamespacePrefix.UNIPROT.value}:{src_id}']
+        elif src_name.startswith('miRBase'):
+            source['associated_with'] = [f'{NamespacePrefix.MIRBASE.value}:{src_id}']
+        elif src_name.startswith('RFAM'):
+            source['associated_with'] = [f'{NamespacePrefix.RFAM.value}:{src_id}']
         return source
 
     def _add_meta(self) -> None:
@@ -172,21 +172,21 @@ class Ensembl(Base):
         """
         if not self._version or not self._assembly:
             raise GeneNormalizerEtlError(
-                "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
+                'Source metadata unavailable -- was data properly acquired before attempting to load DB?'
             )
         metadata = SourceMeta(
-            data_license="custom",
-            data_license_url="https://useast.ensembl.org/info/about"
-            "/legal/disclaimer.html",
+            data_license='custom',
+            data_license_url='https://useast.ensembl.org/info/about'
+            '/legal/disclaimer.html',
             version=self._version,
             data_url={
-                "genome_annotations": f"ftp://ftp.ensembl.org/pub/release-{self._version}/gff3/homo_sapiens/Homo_sapiens.{self._assembly}.{self._version}.gff3.gz"
+                'genome_annotations': f'ftp://ftp.ensembl.org/pub/release-{self._version}/gff3/homo_sapiens/Homo_sapiens.{self._assembly}.{self._version}.gff3.gz'
             },
             rdp_url=None,
             data_license_attributes={
-                "non_commercial": False,
-                "share_alike": False,
-                "attribution": False,
+                'non_commercial': False,
+                'share_alike': False,
+                'attribution': False,
             },
             genome_assemblies=[self._assembly],
         )
