@@ -142,7 +142,7 @@ unmerged_normalize_description = (
     tags=["Query"],
 )
 def normalize_unmerged(
-    q: str = Query(..., description=normalize_q_descr)
+    q: str = Query(..., description=normalize_q_descr),
 ) -> UnmergedNormalizationService:
     """Return all individual records associated with a normalized concept.
 
