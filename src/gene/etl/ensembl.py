@@ -1,21 +1,14 @@
 """Defines the Ensembl ETL methods."""
 import logging
 import re
-from ftplib import FTP
-from json import dumps
-from pathlib import Path
 from typing import Dict
 
 import gffutils
-import requests
 from gffutils.feature import Feature
 
-from gene.database import AbstractDatabase
-from gene.etl.base import APP_ROOT, Base
+from gene.etl.base import Base
 from gene.etl.exceptions import (
-    GeneFileVersionError,
     GeneNormalizerEtlError,
-    GeneSourceFetchError,
 )
 from gene.schemas import NamespacePrefix, SourceMeta, SourceName, Strand
 
@@ -26,95 +19,18 @@ logger.setLevel(logging.DEBUG)
 class Ensembl(Base):
     """ETL the Ensembl source into the normalized database."""
 
-    def __init__(
-        self,
-        database: AbstractDatabase,
-        host: str = "ftp.ensembl.org",
-        data_dir: str = "pub/current_gff3/homo_sapiens/",
-        src_data_dir: Path = APP_ROOT / "data" / "ensembl",
-    ) -> None:
-        """Initialize Ensembl ETL class.
-
-        :param database: gene database for adding new data
-        :param host: FTP host name
-        :param data_dir: FTP data directory to use
-        :param src_data_dir: Data directory for Ensembl
-        """
-        super().__init__(database, host, data_dir, src_data_dir)
-        self._data_file_pattern = re.compile(r"ensembl_(GRCh\d+)_(\d+)\.gff3")
-        self._version = None
-        self._data_url = {}
-        self._assembly = None
-
-    def _is_up_to_date(self, data_file: Path) -> bool:
-        """Verify whether local data is up-to-date with latest available remote file.
-
-        :param data_file: path to latest local file
-        :return: True if data is up-to-date
-        :raise GeneFileVersionError: if unable to parse version number from local file
-        :raise GeneSourceFetchError: if unable to get latest version from remote source
-        """
-        local_match = re.match(self._data_file_pattern, data_file.name)
-        try:
-            version = int(local_match.groups()[1])
-        except (AttributeError, IndexError, ValueError):
-            raise GeneFileVersionError(
-                f"Unable to parse version number from local file: {data_file.absolute()}"
-            )
-
-        ensembl_api = (
-            "https://rest.ensembl.org/info/data/?content-type=application/json"
-        )
-        response = requests.get(ensembl_api)
-        if response.status_code != 200:
-            raise GeneSourceFetchError(
-                f"Unable to get response from Ensembl version API endpoint: {ensembl_api}"
-            )
-        releases = response.json().get("releases")
-        if not releases:
-            raise GeneSourceFetchError(
-                f"Malformed response from Ensembl version API endpoint: {dumps(response.json())}"
-            )
-        releases.sort()
-        return version == releases[-1]
-
-    def _download_data(self) -> Path:
-        """Download latest Ensembl GFF3 data file.
-
-        :return: path to acquired file
-        :raise GeneSourceFetchError: if unable to find file matching expected pattern
-        """
-        logger.info("Downloading latest Ensembl data file...")
-        pattern = r"Homo_sapiens\.(?P<assembly>GRCh\d+)\.(?P<version>\d+)\.gff3\.gz"
-        with FTP(self._host) as ftp:
-            ftp.login()
-            ftp.cwd(self._data_dir)
-            files = ftp.nlst()
-            for f in files:
-                match = re.match(pattern, f)
-                if match:
-                    resp = match.groupdict()
-                    assembly = resp["assembly"]
-                    version = resp["version"]
-                    new_fn = f"ensembl_{assembly}_{version}.gff3"
-                    self._ftp_download_file(ftp, f, self.src_data_dir, new_fn)
-                    logger.info(
-                        f"Successfully downloaded Ensembl {version} data to {self.src_data_dir / new_fn}."
-                    )
-                    return self.src_data_dir / new_fn
-        raise GeneSourceFetchError(
-            "Unable to find file matching expected Ensembl pattern via FTP"
-        )
-
     def _extract_data(self, use_existing: bool) -> None:
-        """Acquire Ensembl data file and get metadata.
+        """Acquire source data.
 
-        :param use_existing: if True, use latest available local file
+        This method is responsible for initializing an instance of a data handler and,
+        in most cases, setting ``self._data_file`` and ``self._version``.
+
+        :param use_existing: if True, don't try to fetch latest source data
         """
-        self._data_src = self._acquire_data_file(
-            "ensembl_*.gff3", use_existing, self._is_up_to_date, self._download_data
+        self._data_file, raw_version = self._data_source.get_latest(
+            from_local=use_existing
         )
-        match = re.match(self._data_file_pattern, self._data_src.name)
+        match = re.match(r"(GRCh\d+)_(\d+)", raw_version)
         self._assembly = match.groups()[0]
         self._version = match.groups()[1]
 
@@ -122,7 +38,7 @@ class Ensembl(Base):
         """Transform the Ensembl source."""
         logger.info("Transforming Ensembl...")
         db = gffutils.create_db(
-            str(self._data_src),
+            str(self._data_file),
             dbfn=":memory:",
             force=True,
             merge_strategy="create_unique",
@@ -254,7 +170,7 @@ class Ensembl(Base):
 
         :raise GeneNormalizerEtlError: if requisite metadata is unset
         """
-        if not all([self._version, self._host, self._data_dir, self._assembly]):
+        if not self._version or not self._assembly:
             raise GeneNormalizerEtlError(
                 "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
             )
@@ -264,7 +180,7 @@ class Ensembl(Base):
             "/legal/disclaimer.html",
             version=self._version,
             data_url={
-                "genome_annotations": f"ftp://{self._host}/{self._data_dir}Homo_sapiens.{self._assembly}.{self._version}.gff3.gz"
+                "genome_annotations": f"ftp://ftp.ensembl.org/pub/release-{self._version}/gff3/homo_sapiens/Homo_sapiens.{self._assembly}.{self._version}.gff3.gz"
             },
             rdp_url=None,
             data_license_attributes={

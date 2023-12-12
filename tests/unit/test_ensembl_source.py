@@ -309,7 +309,7 @@ def test_meta_info(ensembl):
     )
     assert resp.source_meta_.version == "110"
     assert resp.source_meta_.data_url == {
-        "genome_annotations": "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz"
+        "genome_annotations": "ftp://ftp.ensembl.org/pub/release-110/gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz"
     }
     assert resp.source_meta_.rdp_url is None
     assert resp.source_meta_.genome_assemblies == ["GRCh38"]
