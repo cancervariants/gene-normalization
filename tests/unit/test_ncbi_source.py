@@ -575,9 +575,9 @@ def spg37():
 def source_urls():
     """Provide source data URLs fixture."""
     return {
-        "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
-        "history_file": "ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz",
-        "assembly_file": "ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/",
+        "info_file": "ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
+        "history_file": "ftp.ncbi.nlm.nih.gov/gene/DATA/gene_history.gz",
+        "assembly_file": "ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/",
     }
 
 

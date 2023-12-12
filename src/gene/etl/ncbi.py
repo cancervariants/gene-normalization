@@ -62,11 +62,9 @@ class NCBI(Base):
         )  # type: ignore
         self._info_src = gene_paths.gene_info
         self._history_src = gene_paths.gene_history
-        self._gene_url = (
-            "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz"
-        )
-        self._history_url = "ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz"
-        self._assembly_url = "ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/"
+        self._gene_url = "ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz"
+        self._history_url = "ftp.ncbi.nlm.nih.gov/gene/DATA/gene_history.gz"
+        self._assembly_url = "ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/"
 
     def _get_prev_symbols(self) -> Dict[str, str]:
         """Store a gene's symbol history.
