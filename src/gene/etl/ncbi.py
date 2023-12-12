@@ -26,8 +26,7 @@ from gene.schemas import (
     SymbolStatus,
 )
 
-logger = logging.getLogger("gene")
-logger.setLevel(logging.DEBUG)
+_logger = logging.getLogger(__name__)
 
 
 class NCBI(Base):
@@ -113,7 +112,7 @@ class NCBI(Base):
         :return: Path to downloaded file
         :raise SourceFetchError: if unable to identify latest available file
         """
-        logger.info("Downloading NCBI genome annotation file...")
+        _logger.info("Downloading NCBI genome annotation file...")
         genomic_gff_pattern = r"GCF_\d+\.\d+_(GRCh\d+\.\w\d+)_genomic.gff.gz"
         with FTP(self._host) as ftp:
             ftp.login()
@@ -133,7 +132,7 @@ class NCBI(Base):
             self._ftp_download_file(
                 ftp, genomic_filename, self.src_data_dir, new_filename
             )
-        logger.info(
+        _logger.info(
             f"Downloaded NCBI genome annotation file to {self.src_data_dir / new_filename}"
         )
         return self.src_data_dir / new_filename
@@ -162,7 +161,7 @@ class NCBI(Base):
 
         :return: Path to downloaded file
         """
-        logger.info("Downloading NCBI gene_history...")
+        _logger.info("Downloading NCBI gene_history...")
         tmp_fn = "ncbi_history_tmp.tsv"
         data_fn = "gene_history.gz"
         version = self._ftp_download(
@@ -170,7 +169,7 @@ class NCBI(Base):
         )
         final_location = f"{self.src_data_dir}/ncbi_history_{version}.tsv"
         shutil.move(f"{self.src_data_dir}/{tmp_fn}", final_location)
-        logger.info(f"Successfully downloaded NCBI gene_history to {final_location}.")
+        _logger.info(f"Successfully downloaded NCBI gene_history to {final_location}.")
         return Path(final_location)
 
     def _gene_file_is_up_to_date(self, gene_file: Path) -> bool:
@@ -200,13 +199,13 @@ class NCBI(Base):
         data_dir = f"{self._data_dir}GENE_INFO/Mammalia/"
         tmp_fn = "ncbi_info_tmp.tsv"
         data_fn = "Homo_sapiens.gene_info.gz"
-        logger.info("Downloading NCBI gene_info....")
+        _logger.info("Downloading NCBI gene_info....")
         version = self._ftp_download(
             self._host, data_dir, tmp_fn, self.src_data_dir, data_fn
         )
         final_location = f"{self.src_data_dir}/ncbi_info_{version}.tsv"
         shutil.move(f"{self.src_data_dir}/{tmp_fn}", final_location)
-        logger.info(f"Successfully downloaded NCBI gene_info to {final_location}.")
+        _logger.info(f"Successfully downloaded NCBI gene_info to {final_location}.")
         return Path(final_location)
 
     def _extract_data(self, use_existing: bool) -> None:
@@ -300,7 +299,7 @@ class NCBI(Base):
                 if prefix:
                     params["associated_with"].append(f"{prefix}:{src_id}")
                 else:
-                    logger.info(f"{src_name} is not in NameSpacePrefix.")
+                    _logger.info(f"{src_name} is not in NameSpacePrefix.")
         if not params["xrefs"]:
             del params["xrefs"]
         if not params["associated_with"]:
@@ -494,7 +493,7 @@ class NCBI(Base):
 
             if len(chromosomes) >= 2:
                 if chromosomes and "X" not in chromosomes and "Y" not in chromosomes:
-                    logger.info(
+                    _logger.info(
                         f"{row[2]} contains multiple distinct "
                         f"chromosomes: {chromosomes}."
                     )
@@ -520,7 +519,7 @@ class NCBI(Base):
             # Exclude genes where there are multiple distinct locations
             # i.e. OMS: '10q26.3', '19q13.42-q13.43', '3p25.3'
             if len(locations) > 2:
-                logger.info(
+                _logger.info(
                     f"{row[2]} contains multiple distinct " f"locations: {locations}."
                 )
                 locations = None
@@ -531,7 +530,7 @@ class NCBI(Base):
                 for i in range(len(locations)):
                     loc = locations[i].strip()
                     if not re.match("^([1-9][0-9]?|X[pq]?|Y[pq]?)", loc):
-                        logger.info(
+                        _logger.warning(
                             f"{row[2]} contains invalid map location:" f"{loc}."
                         )
                         params["location_annotations"].append(loc)
@@ -619,7 +618,7 @@ class NCBI(Base):
 
     def _transform_data(self) -> None:
         """Modify data and pass to loading functions."""
-        logger.info("Transforming NCBI...")
+        _logger.info("Transforming NCBI...")
         prev_symbols = self._get_prev_symbols()
         info_genes = self._get_gene_info(prev_symbols)
 
@@ -636,7 +635,7 @@ class NCBI(Base):
 
         for gene in info_genes.keys():
             self._load_gene(info_genes[gene])
-        logger.info("Successfully transformed NCBI.")
+        _logger.info("Successfully transformed NCBI.")
 
     def _add_meta(self) -> None:
         """Add Ensembl metadata.

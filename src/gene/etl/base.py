@@ -18,8 +18,7 @@ from gffutils.feature import Feature
 from gene.database import AbstractDatabase
 from gene.schemas import ITEM_TYPES, Gene, GeneSequenceLocation, MatchType, SourceName
 
-logger = logging.getLogger("gene")
-logger.setLevel(logging.DEBUG)
+_logger = logging.getLogger(__name__)
 
 
 APP_ROOT = Path(__file__).resolve().parent
@@ -128,7 +127,7 @@ class Base(ABC):
         try:
             assert Gene(match_type=MatchType.NO_MATCH, **gene)
         except pydantic.ValidationError as e:
-            logger.warning(f"Unable to load {gene} due to validation error: " f"{e}")
+            _logger.warning(f"Unable to load {gene} due to validation error: " f"{e}")
         else:
             concept_id = gene["concept_id"]
             gene["label_and_type"] = f"{concept_id.lower()}##identity"
@@ -272,7 +271,7 @@ class Base(ABC):
         try:
             aliases = self.seqrepo.translate_alias(seq_id, target_namespaces="ga4gh")
         except KeyError as e:
-            logger.warning(f"SeqRepo raised KeyError: {e}")
+            _logger.warning(f"SeqRepo raised KeyError: {e}")
         return aliases
 
     def _get_sequence_location(self, seq_id: str, gene: Feature, params: Dict) -> Dict:
@@ -299,7 +298,7 @@ class Base(ABC):
                     sequence_id=sequence,
                 ).model_dump()  # type: ignore
             else:
-                logger.warning(
+                _logger.warning(
                     f"{params['concept_id']} has invalid interval:"
                     f"start={gene.start - 1} end={gene.end}"
                 )  # type: ignore

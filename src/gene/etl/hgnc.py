@@ -27,8 +27,7 @@ from gene.schemas import (
     SymbolStatus,
 )
 
-logger = logging.getLogger("gene")
-logger.setLevel(logging.DEBUG)
+_logger = logging.getLogger(__name__)
 
 
 class HGNC(Base):
@@ -87,7 +86,7 @@ class HGNC(Base):
 
         :return: path to newly-downloaded file
         """
-        logger.info("Downloading HGNC data file...")
+        _logger.info("Downloading HGNC data file...")
 
         tmp_fn = "hgnc_version.json"
         version = self._ftp_download(
@@ -95,7 +94,7 @@ class HGNC(Base):
         )
         final_location = f"{self.src_data_dir}/hgnc_{version}.json"
         shutil.move(f"{self.src_data_dir}/{tmp_fn}", final_location)
-        logger.info(f"Successfully downloaded HGNC data file to {final_location}.")
+        _logger.info(f"Successfully downloaded HGNC data file to {final_location}.")
         return Path(final_location)
 
     def _extract_data(self, use_existing: bool) -> None:
@@ -111,7 +110,7 @@ class HGNC(Base):
 
     def _transform_data(self) -> None:
         """Transform the HGNC source."""
-        logger.info("Transforming HGNC...")
+        _logger.info("Transforming HGNC...")
         with open(self._data_file, "r") as f:
             data = json.load(f)
 
@@ -142,7 +141,7 @@ class HGNC(Base):
             if "locus_type" in r:
                 gene["gene_type"] = r["locus_type"]
                 self._load_gene(gene)
-        logger.info("Successfully transformed HGNC.")
+        _logger.info("Successfully transformed HGNC.")
 
     def _get_aliases(self, r: Dict, gene: Dict) -> None:
         """Store aliases in a gene record.
@@ -223,7 +222,7 @@ class HGNC(Base):
                     else:
                         self._get_xref_associated_with(key, src, r, associated_with)
                 else:
-                    logger.warning(f"{key} not in schemas.py")
+                    _logger.warning(f"{key} not in schemas.py")
 
         if xrefs:
             gene["xrefs"] = xrefs

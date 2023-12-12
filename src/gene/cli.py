@@ -16,8 +16,7 @@ from gene.database import (
 from gene.database.database import DatabaseException
 from gene.schemas import SOURCES, SourceName
 
-logger = logging.getLogger("gene")
-logger.setLevel(logging.DEBUG)
+_logger = logging.getLogger(__name__)
 
 
 @click.command()
@@ -139,14 +138,14 @@ def _delete_source(n: SourceName, db: AbstractDatabase) -> float:
     """
     msg = f"Deleting {n.value}..."
     click.echo(f"\n{msg}")
-    logger.info(msg)
+    _logger.info(msg)
     start_delete = timer()
     db.delete_source(n)
     end_delete = timer()
     delete_time = end_delete - start_delete
     msg = f"Deleted {n.value} in {delete_time:.5f} seconds."
     click.echo(f"{msg}\n")
-    logger.info(msg)
+    _logger.info(msg)
     return delete_time
 
 
@@ -171,7 +170,7 @@ def _load_source(
     """
     msg = f"Loading {n.value}..."
     click.echo(msg)
-    logger.info(msg)
+    _logger.info(msg)
     start_load = timer()
 
     # used to get source class name from string
@@ -189,17 +188,17 @@ def _load_source(
     try:
         processed_ids += source.perform_etl(use_existing)
     except GeneNormalizerEtlError as e:
-        logger.error(e)
+        _logger.error(e)
         click.echo(f"Encountered error while loading {n}: {e}.")
         click.get_current_context().exit()
     end_load = timer()
     load_time = end_load - start_load
     msg = f"Loaded {n.value} in {load_time:.5f} seconds."
     click.echo(msg)
-    logger.info(msg)
+    _logger.info(msg)
     msg = f"Total time for {n.value}: {(delete_time + load_time):.5f} seconds."
     click.echo(msg)
-    logger.info(msg)
+    _logger.info(msg)
 
 
 def _delete_normalized_data(database: AbstractDatabase) -> None:
