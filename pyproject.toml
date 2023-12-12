@@ -121,7 +121,7 @@ ignore = [
 ]
 
 [tool.ruff.format]
-quote-style = "single"
+quote-style = "double"
 
 [tool.ruff.per-file-ignores]
 # ANN001 - missing-type-function-argument
