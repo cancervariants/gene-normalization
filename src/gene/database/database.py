@@ -260,8 +260,11 @@ class AwsEnvName(str, Enum):
 VALID_AWS_ENV_NAMES = {v.value for v in AwsEnvName.__members__.values()}
 
 
-def confirm_aws_db_use(env_name: str) -> None:
-    """Check to ensure that AWS instance should actually be used."""
+def confirm_aws_db_use(env_name: AwsEnvName) -> None:
+    """Check to ensure that AWS instance should actually be used.
+
+    :param env_name: name of database environment.
+    """
     if click.confirm(
         f"Are you sure you want to use the AWS {env_name} database?", default=False
     ):
@@ -272,7 +275,7 @@ def confirm_aws_db_use(env_name: str) -> None:
 
 
 def create_db(
-    db_url: Optional[str] = None, aws_instance: bool = False
+    db_url: Optional[str] = None, aws_instance: bool = False, silent: bool = False
 ) -> AbstractDatabase:
     """Database factory method. Checks environment variables and provided parameters
     and creates a DB instance.
@@ -313,6 +316,7 @@ def create_db(
 
     :param db_url: address to database instance
     :param aws_instance: use hosted DynamoDB instance, not local DB
+    :param silent: if True, suppress console output
     :return: constructed Database instance
     """
     aws_env_var_set = AWS_ENV_VAR_NAME in environ
@@ -320,7 +324,7 @@ def create_db(
     if aws_env_var_set or aws_instance:
         from gene.database.dynamodb import DynamoDbDatabase
 
-        db = DynamoDbDatabase()
+        db = DynamoDbDatabase(silent=silent)
     else:
         if db_url:
             endpoint_url = db_url
@@ -333,9 +337,9 @@ def create_db(
         if endpoint_url.startswith("postgres"):
             from gene.database.postgresql import PostgresDatabase
 
-            db = PostgresDatabase(endpoint_url)
+            db = PostgresDatabase(endpoint_url, silent=silent)
         else:
             from gene.database.dynamodb import DynamoDbDatabase
 
-            db = DynamoDbDatabase(endpoint_url)
+            db = DynamoDbDatabase(endpoint_url, silent=silent)
     return db

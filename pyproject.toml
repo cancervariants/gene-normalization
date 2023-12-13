@@ -46,7 +46,8 @@ docs = [
     "sphinx-copybutton==0.5.2",
     "sphinxext-opengraph==0.8.2",
     "furo==2023.3.27",
-    "gravis==0.1.0"
+    "gravis==0.1.0",
+    "sphinx-click==5.0.1",
 ]
 
 [project.urls]
@@ -57,10 +58,7 @@ Source = "https://github.com/cancervariants/gene-normalization"
 "Bug Tracker" = "https://github.com/cancervariants/gene-normalization/issues"
 
 [project.scripts]
-gene_norm_update = "gene.cli:update_normalizer_db"
-gene_norm_update_remote = "gene.cli:update_from_remote"
-gene_norm_dump = "gene.cli:dump_database"
-gene_norm_check_db = "gene.cli:check_db"
+gene-normalizer = "gene.cli:cli"
 
 [build-system]
 requires = ["setuptools>=61.0"]

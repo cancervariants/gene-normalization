@@ -3,13 +3,11 @@
 Source ETL API
 ==============
 
-Base
-----
+Update methods
+--------------
 
-.. autoclass:: gene.etl.base.Base
-    :members:
-    :special-members: __init__
-    :undoc-members:
+.. automodule:: gene.etl.update
+   :members:
 
 Exceptions
 ----------

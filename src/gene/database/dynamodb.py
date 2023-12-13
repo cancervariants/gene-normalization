@@ -43,6 +43,7 @@ class DynamoDbDatabase(AbstractDatabase):
         :param str db_url: URL endpoint for DynamoDB source
         :Keyword Arguments:
             * region_name: AWS region (defaults to "us-east-2")
+            * silent: if True, suppress console output
         :raise DatabaseInitializationException: if initial setup fails
         """
         self.gene_table = environ.get("GENE_DYNAMO_TABLE", "gene_normalizer")
@@ -53,18 +54,17 @@ class DynamoDbDatabase(AbstractDatabase):
                 raise DatabaseInitializationException(
                     f"Cannot have both GENE_TEST and {AWS_ENV_VAR_NAME} set."
                 )  # noqa: E501
-
-            aws_env = environ[AWS_ENV_VAR_NAME]
-            if aws_env not in VALID_AWS_ENV_NAMES:
+            try:
+                aws_env = AwsEnvName(environ[AWS_ENV_VAR_NAME])
+            except ValueError:
                 raise DatabaseInitializationException(
-                    f"{AWS_ENV_VAR_NAME} must be one of {VALID_AWS_ENV_NAMES}"
-                )  # noqa: E501
-
+                    f"{AWS_ENV_VAR_NAME} must be one of {VALID_AWS_ENV_NAMES}: found {environ[AWS_ENV_VAR_NAME]} instead."
+                )
             skip_confirmation = environ.get(SKIP_AWS_DB_ENV_NAME)
             if (not skip_confirmation) or (
                 skip_confirmation and skip_confirmation != "true"
             ):  # noqa: E501
-                confirm_aws_db_use(environ[AWS_ENV_VAR_NAME])
+                confirm_aws_db_use(aws_env)
 
             boto_params = {"region_name": region_name}
 
@@ -79,7 +79,10 @@ class DynamoDbDatabase(AbstractDatabase):
                 endpoint_url = environ["GENE_NORM_DB_URL"]
             else:
                 endpoint_url = "http://localhost:8000"
-            click.echo(f"***Using Gene Database Endpoint: {endpoint_url}***")
+            if db_args.get("silent") != True:  # noqa: E712
+                click.echo(
+                    f"***Using Gene-Normalizer DynamoDB endpoint: {endpoint_url}***"
+                )
             boto_params = {"region_name": region_name, "endpoint_url": endpoint_url}
 
         self.dynamodb = boto3.resource("dynamodb", **boto_params)
