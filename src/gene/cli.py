@@ -59,7 +59,7 @@ def update(
 
     The Gene Normalizer will fetch the latest available data from all sources if local
     data is out-of-date. To suppress this and force usage of local files only, use the
-    –use_existing flag:
+    --use_existing flag:
 
         $ gene-normalizer update --all --use_existing
 
