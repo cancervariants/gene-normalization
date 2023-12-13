@@ -74,6 +74,7 @@ def update(
     :param all: if True, update all sources (ignore ``sources``)
     :param normalize: if True, update normalized records
     :param use_existing: if True, use most recent local data instead of fetching latest version
+    :param silent: if True, suppress console output
     """  # noqa: D301
     if (not sources) and (not all) and (not normalize):
         click.echo(
@@ -83,7 +84,7 @@ def update(
         click.echo(ctx.get_help())
         ctx.exit(1)
 
-    db = create_db(db_url, aws_instance)
+    db = create_db(db_url, aws_instance, silent)
 
     processed_ids = None
     if all:
@@ -117,7 +118,10 @@ def update(
 @cli.command()
 @click.option("--data_url", help="URL to data dump")
 @click.option("--db_url", help=url_description)
-def update_from_remote(data_url: Optional[str], db_url: str) -> None:
+@click.option(
+    "--silent", "-s", is_flag=True, default=False, help="Suppress console output."
+)
+def update_from_remote(data_url: Optional[str], db_url: str, silent: bool) -> None:
     """Update data from remotely-hosted DB dump. By default, fetches from latest
     available dump on VICC S3 bucket; specific URLs can be provided instead by
     command line option or GENE_NORM_REMOTE_DB_URL environment variable.
@@ -125,12 +129,13 @@ def update_from_remote(data_url: Optional[str], db_url: str) -> None:
     \f
     :param data_url: user-specified location to pull DB dump from
     :param db_url: URL to normalizer database
+    :param silent: if True, suppress console output
     """  # noqa: D301
     if not click.confirm("Are you sure you want to overwrite existing data?"):
         click.get_current_context().exit()
     if not data_url:
         data_url = os.environ.get("GENE_NORM_REMOTE_DB_URL")
-    db = create_db(db_url, False)
+    db = create_db(db_url, False, silent)
     try:
         db.load_from_remote(data_url)
     except NotImplementedError:
@@ -145,8 +150,17 @@ def update_from_remote(data_url: Optional[str], db_url: str) -> None:
 
 @cli.command()
 @click.option("--db_url", help=url_description)
-@click.option("--verbose", "-v", is_flag=True, help="Print result to console if set.")
-def check_db(db_url: str, verbose: bool = False) -> None:
+@click.option(
+    "--verbose",
+    "-v",
+    is_flag=True,
+    default=False,
+    help="Print result to console if set.",
+)
+@click.option(
+    "--silent", "-s", is_flag=True, default=False, help="Suppress console output."
+)
+def check_db(db_url: str, verbose: bool, silent: bool) -> None:
     """Perform basic checks on DB health and population. Exits with status code 1
     if DB schema is uninitialized or if critical tables appear to be empty.
 
@@ -165,8 +179,9 @@ def check_db(db_url: str, verbose: bool = False) -> None:
     \f
     :param db_url: URL to normalizer database
     :param verbose: if true, print result to console
+    :param silent: if True, suppress console output
     """  # noqa: D301
-    db = create_db(db_url, False)
+    db = create_db(db_url, False, silent)
     if not db.check_schema_initialized():
         if verbose:
             click.echo("Health check failed: DB schema uninitialized.")
@@ -189,17 +204,21 @@ def check_db(db_url: str, verbose: bool = False) -> None:
     type=click.Path(exists=True, path_type=Path),
 )
 @click.option("--db_url", help=url_description)
-def dump_database(output_directory: Path, db_url: str) -> None:
+@click.option(
+    "--silent", "-s", is_flag=True, default=False, help="Suppress console output."
+)
+def dump_database(output_directory: Path, db_url: str, silent: bool) -> None:
     """Dump data from database into file.
 
     \f
     :param output_directory: path to existing directory
     :param db_url: URL to normalizer database
+    :param silent: if True, suppress console output
     """  # noqa: D301
     if not output_directory:
         output_directory = Path(".")
 
-    db = create_db(db_url, False)
+    db = create_db(db_url, False, silent)
     try:
         db.export_db(output_directory)
     except NotImplementedError:

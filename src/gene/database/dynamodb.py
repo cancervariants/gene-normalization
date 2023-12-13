@@ -43,6 +43,7 @@ class DynamoDbDatabase(AbstractDatabase):
         :param str db_url: URL endpoint for DynamoDB source
         :Keyword Arguments:
             * region_name: AWS region (defaults to "us-east-2")
+            * silent: if True, suppress console output
         :raise DatabaseInitializationException: if initial setup fails
         """
         self.gene_table = environ.get("GENE_DYNAMO_TABLE", "gene_normalizer")
@@ -79,7 +80,10 @@ class DynamoDbDatabase(AbstractDatabase):
                 endpoint_url = environ["GENE_NORM_DB_URL"]
             else:
                 endpoint_url = "http://localhost:8000"
-            click.echo(f"***Using Gene Database Endpoint: {endpoint_url}***")
+            if db_args.get("silent") != True:  # noqa: E712
+                click.echo(
+                    f"***Using Gene-Normalizer DynamoDB endpoint: {endpoint_url}***"
+                )
             boto_params = {"region_name": region_name, "endpoint_url": endpoint_url}
 
         self.dynamodb = boto3.resource("dynamodb", **boto_params)

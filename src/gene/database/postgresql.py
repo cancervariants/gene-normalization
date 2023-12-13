@@ -9,6 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Generator, List, Optional, Set, Tuple
 
+import click
 import psycopg
 import requests
 from psycopg.errors import (
@@ -51,6 +52,7 @@ class PostgresDatabase(AbstractDatabase):
             * user: Postgres username
             * password: Postgres password (optional or blank if unneeded)
             * db_name: name of database to connect to
+            * silent: if True, suppress console output
 
         :raise DatabaseInitializationException: if initial setup fails
         """
@@ -66,6 +68,9 @@ class PostgresDatabase(AbstractDatabase):
                 conninfo = f"dbname={db_name} user={user} password={password}"
             else:
                 conninfo = f"dbname={db_name} user={user}"
+
+        if db_args.get("silent") != True:  # noqa: E712
+            click.echo(f"***Using Gene-Normalizer PostgreSQL connection: {conninfo}***")
 
         self.conn = psycopg.connect(conninfo)
         self.initialize_db()
