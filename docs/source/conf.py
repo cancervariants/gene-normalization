@@ -115,12 +115,16 @@ def _add_formatting_to_string(line: str) -> str:
 def process_description(app: Sphinx, ctx: Context, lines: List[str]):
     """Add custom formatting to sphinx-click autodoc descriptions.
 
+    * remove :param: :return: etc
     * add fixed-width (code) font to certain words
     * add code block formatting to example shell commands
 
     Because we have to modify the lines list in place, we have to make multiple passes
     through it to format everything correctly.
     """
+    if not lines:
+        return
+
     # chop off params
     param_boundary = None
     for i, line in enumerate(lines):
@@ -152,6 +156,8 @@ def process_description(app: Sphinx, ctx: Context, lines: List[str]):
             if i == 0 or not lines[i - 1].startswith("    "):
                 lines.insert(i, "")
                 lines.insert(i, ".. code-block:: console")
+
+    lines.append(".. rubric:: Command")
 
 
 def process_option(app: Sphinx, ctx: Context, lines: List[str]):
