@@ -88,23 +88,32 @@ pygements_dark_style = "monokai"
 # -- sphinx-click ------------------------------------------------------------
 from typing import List
 import re
+
 CMD_PATTERN = r"--[^ ]+"
 STR_PATTERN = r"\"[^ ]+\""
 SNAKE_PATTERN = r"[A-Z]+_[A-Z_]*[A-Z]"
+
 
 def _add_formatting_to_string(line: str) -> str:
     """Add fixed-width code formatting to span sections in lines:
 
     * shell options, eg `--update_all`
-    * strings, eg `"HGNC"`
-    * env vars, eg `GENE_NORM_REMOTE_DB_URL`
+    * double-quoted strings, eg `"HGNC"`
+    * all caps SNAKE_CASE env vars, eg `GENE_NORM_REMOTE_DB_URL`
     """
     for pattern in (CMD_PATTERN, STR_PATTERN, SNAKE_PATTERN):
         line = re.sub(pattern, lambda x: f"``{x.group()}``", line)
     return line
 
+
 def process_description(app, ctx, lines: List[str]):
-    """Add custom formatting to sphinx-click autodocs"""
+    """Add custom formatting to sphinx-click autodocs. This lets us write Click
+    docstrings in ways that look presentable in the CLI, but adds extra formatting when
+    generating Sphinx docs.
+
+    * add fixed-width (code) font to certain words
+    * add code block formatting to example shell commands
+    """
     # chop off params
     param_boundary = None
     for i, line in enumerate(lines):
@@ -118,7 +127,7 @@ def process_description(app, ctx, lines: List[str]):
     # add code formatting to strings, commands, and env vars
     lines_to_fmt = []
     for i, line in enumerate(lines):
-        if line.startswith("% "):
+        if line.startswith("   ") or line.startswith(">>> "):
             continue  # skip example code blocks
         if any([
             re.findall(CMD_PATTERN, line),
@@ -129,13 +138,13 @@ def process_description(app, ctx, lines: List[str]):
     for line_num in lines_to_fmt:
         lines[line_num] = _add_formatting_to_string(lines[line_num])
 
-    # add code block formatting to example commands
+    # add code block formatting to example console commands
     for i in range(len(lines) - 1, -1, -1):
-        if lines[i].startswith('% '):
-            lines[i] = "   " + lines[i]
-            lines.insert(i, "")
-            lines.insert(i, ".. code-block:: sh")
+        if lines[i].startswith('    '):
             lines.insert(i + 2, "")
+            if i == 0 or not lines[i - 1].startswith("    "):
+                lines.insert(i, "")
+                lines.insert(i, ".. code-block:: console")
 
 
 def setup(app):

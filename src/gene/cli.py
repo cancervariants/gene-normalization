@@ -47,12 +47,18 @@ def update(
 
     For example, the following command will update NCBI and HGNC source records:
 
-    % gene-normalizer update HGNC NCBI
+        $ gene-normalizer update HGNC NCBI
 
     To completely reload all source records and construct normalized concepts, use the
     --all and --normalize options:
 
-    % gene-normalizer update --all --normalize
+        $ gene-normalizer update --all --normalize
+
+    The Gene Normalizer will fetch the latest available data from all sources if local
+    data is out-of-date. To suppress this and force usage of local files only, use the
+    –use_existing flag:
+
+        $ gene-normalizer update --all --use_existing
 
     \f
     :param sources: tuple of raw names of sources to update
@@ -136,6 +142,10 @@ def update_from_remote(data_url: Optional[str], db_url: str) -> None:
 def check_db(db_url: str, verbose: bool = False) -> None:
     """Perform basic checks on DB health and population. Exits with status code 1
     if DB schema is uninitialized or if critical tables appear to be empty.
+
+        $ gene-normalizer check-db
+        $ echo $?
+        1  # indicates failure
 
     This command is equivalent to the combination of the database classes'
     ``check_schema_initialized()`` and ``check_tables_populated()`` methods:

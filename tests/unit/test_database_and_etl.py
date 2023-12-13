@@ -94,7 +94,7 @@ def test_tables_created(db_fixture):
 def test_ensembl_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     """Test that ensembl etl methods work correctly."""
     test_get_seqrepo.return_value = None
-    e = Ensembl(db_fixture.db, src_data_dir=etl_data_path)
+    e = Ensembl(db_fixture.db, data_path=etl_data_path)
     e._get_seq_id_aliases = _get_aliases  # type: ignore
     ensembl_ids = e.perform_etl(use_existing=True)
     processed_ids += ensembl_ids
@@ -105,7 +105,7 @@ def test_ensembl_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path)
 def test_hgnc_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     """Test that hgnc etl methods work correctly."""
     test_get_seqrepo.return_value = None
-    h = HGNC(db_fixture.db, src_data_dir=etl_data_path)
+    h = HGNC(db_fixture.db, data_path=etl_data_path)
     hgnc_ids = h.perform_etl(use_existing=True)
     processed_ids += hgnc_ids
 
@@ -115,7 +115,7 @@ def test_hgnc_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
 def test_ncbi_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     """Test that ncbi etl methods work correctly."""
     test_get_seqrepo.return_value = None
-    n = NCBI(db_fixture.db, src_data_dir=etl_data_path)
+    n = NCBI(db_fixture.db, data_path=etl_data_path)
     n._get_seq_id_aliases = _get_aliases  # type: ignore
     ncbi_ids = n.perform_etl(use_existing=True)
     processed_ids += ncbi_ids
