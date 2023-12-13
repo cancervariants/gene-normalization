@@ -35,7 +35,7 @@ def delete_source(
     delete_time = end_delete - start_delete
     msg = f"Deleted {source.value} in {delete_time:.5f} seconds."
     if not silent:
-        click.echo(f"{msg}\n")
+        click.echo(f"{msg}")
     _logger.info(msg)
     return delete_time
 
@@ -207,7 +207,7 @@ def update_all_and_normalize(
     >>> from gene.database import create_db
     >>> from gene.etl.update import update_all_and_normalize
     >>> db = create_db()
-    >>> update_all_and_normalize(db)
+    >>> update_all_and_normalize(db, False)
 
     :param db: database instance
     :param use_existing: if True, use latest local copy of data
