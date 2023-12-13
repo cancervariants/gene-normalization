@@ -102,7 +102,6 @@ def update(
             click.echo(f"Valid source options are {list(SourceName)}")
             click.get_current_context().exit(1)
 
-        parsed_sources = set(parsed_sources)
         working_processed_ids = set()
         for source_name in parsed_sources:
             working_processed_ids |= update_source(
