@@ -12,8 +12,7 @@ from gene.etl.exceptions import (
 )
 from gene.schemas import NamespacePrefix, SourceMeta, SourceName, Strand
 
-logger = logging.getLogger("gene")
-logger.setLevel(logging.DEBUG)
+_logger = logging.getLogger(__name__)
 
 
 class Ensembl(Base):
@@ -27,16 +26,18 @@ class Ensembl(Base):
 
         :param use_existing: if True, don't try to fetch latest source data
         """
+        _logger.info("Gathering Ensembl data...")
         self._data_file, raw_version = self._data_source.get_latest(
             from_local=use_existing
         )
         match = re.match(r"(GRCh\d+)_(\d+)", raw_version)
         self._assembly = match.groups()[0]
         self._version = match.groups()[1]
+        _logger.info(f"Acquired data for Ensembl: {self._data_file}")
 
     def _transform_data(self) -> None:
         """Transform the Ensembl source."""
-        logger.info("Transforming Ensembl...")
+        _logger.info("Transforming Ensembl data...")
         db = gffutils.create_db(
             str(self._data_file),
             dbfn=":memory:",
@@ -59,7 +60,7 @@ class Ensembl(Base):
                     gene = self._add_gene(f, accession_numbers)
                     if gene:
                         self._load_gene(gene)
-        logger.info("Successfully transformed Ensembl.")
+        _logger.info("Ensembl data transform complete.")
 
     def _add_gene(self, f: Feature, accession_numbers: Dict) -> Dict:
         """Create a transformed gene record.

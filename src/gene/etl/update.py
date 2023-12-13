@@ -84,7 +84,7 @@ def load_source(
         click.get_current_context().exit()
     end_load = timer()
     load_time = end_load - start_load
-    msg = f"Loaded {source.value} in {load_time:.5f} seconds."
+    msg = f"Loaded {len(processed_ids)} records from {source.value} in {load_time:.5f} seconds."
     if not silent:
         click.echo(msg)
     _logger.info(msg)

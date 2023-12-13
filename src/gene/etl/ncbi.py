@@ -24,8 +24,7 @@ from gene.schemas import (
     SymbolStatus,
 )
 
-logger = logging.getLogger("gene")
-logger.setLevel(logging.DEBUG)
+_logger = logging.getLogger(__name__)
 
 
 class NCBI(Base):
@@ -53,6 +52,7 @@ class NCBI(Base):
 
         :param use_existing: if True, use latest available local file
         """
+        _logger.info(f"Gathering {self._src_name} data...")
         self._gff_src, self._assembly = self._genome_data_handler.get_latest(
             from_local=use_existing
         )
@@ -65,6 +65,9 @@ class NCBI(Base):
         self._gene_url = "ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz"
         self._history_url = "ftp.ncbi.nlm.nih.gov/gene/DATA/gene_history.gz"
         self._assembly_url = "ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/"
+        _logger.info(
+            f"Acquired data for {self._src_name}: {self._gff_src}, {self._info_src}, {self._history_src}"
+        )
 
     def _get_prev_symbols(self) -> Dict[str, str]:
         """Store a gene's symbol history.
@@ -128,7 +131,7 @@ class NCBI(Base):
                 if prefix:
                     params["associated_with"].append(f"{prefix}:{src_id}")
                 else:
-                    logger.info(f"{src_name} is not in NameSpacePrefix.")
+                    _logger.info(f"{src_name} is not in NameSpacePrefix.")
         if not params["xrefs"]:
             del params["xrefs"]
         if not params["associated_with"]:
@@ -322,7 +325,7 @@ class NCBI(Base):
 
             if len(chromosomes) >= 2:
                 if chromosomes and "X" not in chromosomes and "Y" not in chromosomes:
-                    logger.info(
+                    _logger.info(
                         f"{row[2]} contains multiple distinct "
                         f"chromosomes: {chromosomes}."
                     )
@@ -348,7 +351,7 @@ class NCBI(Base):
             # Exclude genes where there are multiple distinct locations
             # i.e. OMS: '10q26.3', '19q13.42-q13.43', '3p25.3'
             if len(locations) > 2:
-                logger.info(
+                _logger.info(
                     f"{row[2]} contains multiple distinct " f"locations: {locations}."
                 )
                 locations = None
@@ -359,7 +362,7 @@ class NCBI(Base):
                 for i in range(len(locations)):
                     loc = locations[i].strip()
                     if not re.match("^([1-9][0-9]?|X[pq]?|Y[pq]?)", loc):
-                        logger.info(
+                        _logger.info(
                             f"{row[2]} contains invalid map location:" f"{loc}."
                         )
                         params["location_annotations"].append(loc)
@@ -447,7 +450,7 @@ class NCBI(Base):
 
     def _transform_data(self) -> None:
         """Modify data and pass to loading functions."""
-        logger.info("Transforming NCBI...")
+        _logger.info("Transforming NCBI data...")
         prev_symbols = self._get_prev_symbols()
         info_genes = self._get_gene_info(prev_symbols)
 
@@ -464,7 +467,7 @@ class NCBI(Base):
 
         for gene in info_genes.keys():
             self._load_gene(info_genes[gene])
-        logger.info("Successfully transformed NCBI.")
+        _logger.info("NCBI data transform complete.")
 
     def _add_meta(self) -> None:
         """Add Ensembl metadata.
