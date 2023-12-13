@@ -1,7 +1,7 @@
 """Provide functions to perform Gene Normalizer updates."""
 import logging
 from timeit import default_timer as timer
-from typing import Optional, Set, Tuple
+from typing import List, Optional, Set, Tuple
 
 import click
 
@@ -130,10 +130,10 @@ def update_all_sources(
     :param silent: if True, suppress console output
     :return: IDs processed from all sources
     """
-    processed_ids = []
+    processed_ids: List[str] = []
     for source in SourceName:
         source_ids = update_source(source, db, use_existing, silent)
-        processed_ids.append(list(source_ids))
+        processed_ids += list(source_ids)
     return set(processed_ids)
 
 
