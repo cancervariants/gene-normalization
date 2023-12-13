@@ -33,7 +33,7 @@ def cli() -> None:
     "--use_existing",
     is_flag=True,
     default=False,
-    help="Use most recent local source data instead of fetching latest version",
+    help="Use most recent locally-available source data instead of fetching latest version",
 )
 @click.option(
     "--silent", "-s", is_flag=True, default=False, help="Suppress console output."
