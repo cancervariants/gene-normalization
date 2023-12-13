@@ -78,7 +78,9 @@ def linkcode_resolve(domain, info):
     if not info["module"]:
         return None
     filename = info["module"].replace(".", "/")
-    return f"https://github.com/cancervariants/gene-normalization/blob/main/{filename}.py"  # noqa: E501
+    return (
+        f"https://github.com/cancervariants/gene-normalization/blob/main/{filename}.py"  # noqa: E501
+    )
 
 
 # -- code block style --------------------------------------------------------
@@ -142,10 +144,12 @@ def process_description(app: Sphinx, ctx: Context, lines: List[str]):
     for i, line in enumerate(lines):
         if line.startswith("   ") or line.startswith(">>> "):
             continue  # skip example code blocks
-        if any([
-            re.findall(CMD_PATTERN, line),
-            re.findall(STR_PATTERN, line),
-            re.findall(SNAKE_PATTERN, line)]
+        if any(
+            [
+                re.findall(CMD_PATTERN, line),
+                re.findall(STR_PATTERN, line),
+                re.findall(SNAKE_PATTERN, line),
+            ]
         ):
             lines_to_fmt.append(i)
     for line_num in lines_to_fmt:
@@ -153,7 +157,7 @@ def process_description(app: Sphinx, ctx: Context, lines: List[str]):
 
     # add code block formatting to example console commands
     for i in range(len(lines) - 1, -1, -1):
-        if lines[i].startswith('    '):
+        if lines[i].startswith("    "):
             lines.insert(i + 2, "")
             if i == 0 or not lines[i - 1].startswith("    "):
                 lines.insert(i, "")
