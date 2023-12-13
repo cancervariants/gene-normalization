@@ -86,8 +86,14 @@ pygments_style = "default"
 pygements_dark_style = "monokai"
 
 # -- sphinx-click ------------------------------------------------------------
+# These functions let us write descriptions/docstrings in a way that doesn't look
+# weird in the Click CLI, but get additional formatting in the sphinx-click autodocs for
+# better readability.
 from typing import List
 import re
+
+from click.core import Context
+from sphinx.application import Sphinx
 
 CMD_PATTERN = r"--[^ ]+"
 STR_PATTERN = r"\"[^ ]+\""
@@ -106,13 +112,14 @@ def _add_formatting_to_string(line: str) -> str:
     return line
 
 
-def process_description(app, ctx, lines: List[str]):
-    """Add custom formatting to sphinx-click autodocs. This lets us write Click
-    docstrings in ways that look presentable in the CLI, but adds extra formatting when
-    generating Sphinx docs.
+def process_description(app: Sphinx, ctx: Context, lines: List[str]):
+    """Add custom formatting to sphinx-click autodoc descriptions.
 
     * add fixed-width (code) font to certain words
     * add code block formatting to example shell commands
+
+    Because we have to modify the lines list in place, we have to make multiple passes
+    through it to format everything correctly.
     """
     # chop off params
     param_boundary = None
@@ -147,5 +154,13 @@ def process_description(app, ctx, lines: List[str]):
                 lines.insert(i, ".. code-block:: console")
 
 
+def process_option(app: Sphinx, ctx: Context, lines: List[str]):
+    """Add fixed-width formatting to strings in sphinx-click autodoc options."""
+    for i, line in enumerate(lines):
+        if re.findall(STR_PATTERN, line):
+            lines[i] = re.sub(STR_PATTERN, lambda x: f"``{x.group()}``", line)
+
+
 def setup(app):
     app.connect("sphinx-click-process-description", process_description)
+    app.connect("sphinx-click-process-options", process_option)

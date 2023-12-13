@@ -15,6 +15,9 @@ logger = logging.getLogger("gene")
 logger.setLevel(logging.DEBUG)
 
 
+url_description = 'URL endpoint for the application database. Can either be a URL to a local DynamoDB server (e.g. "http://localhost:8001") or a libpq-compliant PostgreSQL connection description (e.g. "postgresql://postgres:password@localhost:5432/gene_normalizer").'
+
+
 @click.group()
 def cli() -> None:
     """Manage Gene Normalizer data."""
@@ -24,7 +27,7 @@ def cli() -> None:
 @click.argument("sources", nargs=-1)
 @click.option("--all", is_flag=True, help="Update records for all sources.")
 @click.option("--normalize", is_flag=True, help="Update normalized concepts.")
-@click.option("--db_url", help="URL endpoint for the application database.")
+@click.option("--db_url", help=url_description)
 @click.option("--aws_instance", is_flag=True, help="Use cloud DynamodDB instance.")
 @click.option(
     "--use_existing",
@@ -109,7 +112,7 @@ def update(
 
 @cli.command()
 @click.option("--data_url", help="URL to data dump")
-@click.option("--db_url", help="URL endpoint for the application database.")
+@click.option("--db_url", help=url_description)
 def update_from_remote(data_url: Optional[str], db_url: str) -> None:
     """Update data from remotely-hosted DB dump. By default, fetches from latest
     available dump on VICC S3 bucket; specific URLs can be provided instead by
@@ -137,7 +140,7 @@ def update_from_remote(data_url: Optional[str], db_url: str) -> None:
 
 
 @cli.command()
-@click.option("--db_url", help="URL endpoint for the application database.")
+@click.option("--db_url", help=url_description)
 @click.option("--verbose", "-v", is_flag=True, help="Print result to console if set.")
 def check_db(db_url: str, verbose: bool = False) -> None:
     """Perform basic checks on DB health and population. Exits with status code 1
@@ -181,7 +184,7 @@ def check_db(db_url: str, verbose: bool = False) -> None:
     help="Output location to write to",
     type=click.Path(exists=True, path_type=Path),
 )
-@click.option("--db_url", help="URL endpoint for the application database.")
+@click.option("--db_url", help=url_description)
 def dump_database(output_directory: Path, db_url: str) -> None:
     """Dump data from database into file.
 
