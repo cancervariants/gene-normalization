@@ -26,7 +26,7 @@ def cli() -> None:
 @cli.command()
 @click.argument("sources", nargs=-1)
 @click.option("--all", is_flag=True, help="Update records for all sources.")
-@click.option("--normalize", is_flag=True, help="Update normalized concepts.")
+@click.option("--normalize", is_flag=True, help="Create normalized records.")
 @click.option("--db_url", help=url_description)
 @click.option("--aws_instance", is_flag=True, help="Use cloud DynamodDB instance.")
 @click.option(
