@@ -35,6 +35,9 @@ def cli() -> None:
     default=False,
     help="Use most recent local source data instead of fetching latest version",
 )
+@click.option(
+    "--silent", "-s", is_flag=True, default=False, help="Suppress console output."
+)
 def update(
     sources: Tuple[str],
     aws_instance: bool,
@@ -42,6 +45,7 @@ def update(
     all: bool,
     normalize: bool,
     use_existing: bool,
+    silent: bool,
 ) -> None:
     """Update provided normalizer SOURCES in the gene database.
 
@@ -83,7 +87,7 @@ def update(
 
     processed_ids = None
     if all:
-        processed_ids = update_all_sources(db, use_existing, silent=False)
+        processed_ids = update_all_sources(db, use_existing, silent=silent)
     elif sources:
         parsed_sources = []
         failed_source_names = []
@@ -101,13 +105,13 @@ def update(
         working_processed_ids = set()
         for source_name in parsed_sources:
             working_processed_ids |= update_source(
-                source_name, db, use_existing=use_existing, silent=False
+                source_name, db, use_existing=use_existing, silent=silent
             )
         if len(sources) == len(SourceName):
             processed_ids = working_processed_ids
 
     if normalize:
-        update_normalized(db, processed_ids, silent=False)
+        update_normalized(db, processed_ids, silent=silent)
 
 
 @cli.command()
