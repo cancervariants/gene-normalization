@@ -94,6 +94,7 @@ import re
 
 from click.core import Context
 from sphinx.application import Sphinx
+from sphinx_click.ext import _get_usage, _format_usage, _indent
 
 CMD_PATTERN = r"--[^ ]+"
 STR_PATTERN = r"\"[^ ]+\""
@@ -118,6 +119,7 @@ def process_description(app: Sphinx, ctx: Context, lines: List[str]):
     * remove :param: :return: etc
     * add fixed-width (code) font to certain words
     * add code block formatting to example shell commands
+    * move primary usage example to the top of the description
 
     Because we have to modify the lines list in place, we have to make multiple passes
     through it to format everything correctly.
@@ -157,7 +159,12 @@ def process_description(app: Sphinx, ctx: Context, lines: List[str]):
                 lines.insert(i, "")
                 lines.insert(i, ".. code-block:: console")
 
-    lines.append(".. rubric:: Command")
+    # put usage at the top of the description
+    lines.insert(0, "")
+    for usage_line in _get_usage(ctx).splitlines()[::-1]:
+        lines.insert(0, _indent(usage_line))
+    lines.insert(0, "")
+    lines.insert(0, ".. code-block:: shell")
 
 
 def process_option(app: Sphinx, ctx: Context, lines: List[str]):
@@ -168,5 +175,11 @@ def process_option(app: Sphinx, ctx: Context, lines: List[str]):
 
 
 def setup(app):
+    """Used to hook format customization into sphinx-click build.
+
+    In particular, since we move usage to the top of the command description, we need
+    an extra hook here to silence the built-in usage section.
+    """
     app.connect("sphinx-click-process-description", process_description)
     app.connect("sphinx-click-process-options", process_option)
+    app.connect("sphinx-click-process-usage", lambda app, ctx, lines: lines.clear())
