@@ -90,11 +90,11 @@ def update(
     if all:
         processed_ids = update_all_sources(db, use_existing, silent=silent)
     elif sources:
-        parsed_sources = []
+        parsed_sources = set()
         failed_source_names = []
         for source in sources:
             try:
-                parsed_sources.append(SourceName[source.upper()])
+                parsed_sources.add(SourceName[source.upper()])
             except KeyError:
                 failed_source_names.append(source)
         if len(failed_source_names) != 0:
@@ -102,7 +102,7 @@ def update(
             click.echo(f"Valid source options are {list(SourceName)}")
             click.get_current_context().exit(1)
 
-        parsed_sources = list(set(parsed_sources))
+        parsed_sources = set(parsed_sources)
         working_processed_ids = set()
         for source_name in parsed_sources:
             working_processed_ids |= update_source(

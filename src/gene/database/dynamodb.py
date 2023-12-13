@@ -54,18 +54,17 @@ class DynamoDbDatabase(AbstractDatabase):
                 raise DatabaseInitializationException(
                     f"Cannot have both GENE_TEST and {AWS_ENV_VAR_NAME} set."
                 )  # noqa: E501
-
-            aws_env = environ[AWS_ENV_VAR_NAME]
-            if aws_env not in VALID_AWS_ENV_NAMES:
+            try:
+                aws_env = AwsEnvName(environ[AWS_ENV_VAR_NAME])
+            except ValueError:
                 raise DatabaseInitializationException(
-                    f"{AWS_ENV_VAR_NAME} must be one of {VALID_AWS_ENV_NAMES}"
-                )  # noqa: E501
-
+                    f"{AWS_ENV_VAR_NAME} must be one of {VALID_AWS_ENV_NAMES}: found {environ[AWS_ENV_VAR_NAME]} instead."
+                )
             skip_confirmation = environ.get(SKIP_AWS_DB_ENV_NAME)
             if (not skip_confirmation) or (
                 skip_confirmation and skip_confirmation != "true"
             ):  # noqa: E501
-                confirm_aws_db_use(environ[AWS_ENV_VAR_NAME])
+                confirm_aws_db_use(aws_env)
 
             boto_params = {"region_name": region_name}
 

@@ -260,11 +260,10 @@ class AwsEnvName(str, Enum):
 VALID_AWS_ENV_NAMES = {v.value for v in AwsEnvName.__members__.values()}
 
 
-def confirm_aws_db_use(env_name: str) -> None:
+def confirm_aws_db_use(env_name: AwsEnvName) -> None:
     """Check to ensure that AWS instance should actually be used.
 
-    :param env_name: name of database environment. Must be `"Prod"`, `"Dev"`, or
-        `"Staging"`.
+    :param env_name: name of database environment.
     """
     if click.confirm(
         f"Are you sure you want to use the AWS {env_name} database?", default=False
