@@ -11,19 +11,19 @@ import click
 from gene.schemas import RecordType, RefType, SourceMeta, SourceName
 
 
-class DatabaseException(Exception):  # noqa: N818
+class DatabaseError(Exception):
     """Create custom class for handling database exceptions"""
 
 
-class DatabaseInitializationException(DatabaseException):
+class DatabaseInitializationError(DatabaseError):
     """Create custom exception for errors during DB connection initialization."""
 
 
-class DatabaseReadException(DatabaseException):
+class DatabaseReadError(DatabaseError):
     """Create custom exception for lookup/read errors"""
 
 
-class DatabaseWriteException(DatabaseException):
+class DatabaseWriteError(DatabaseError):
     """Create custom exception for write errors"""
 
 
@@ -43,7 +43,7 @@ class AbstractDatabase(abc.ABC):
 
         :param db_url: address/connection description for database
         :param db_args: any DB implementation-specific parameters
-        :raise DatabaseInitializationException: if initial setup fails
+        :raise DatabaseInitializationError: if initial setup fails
         """
 
     @abc.abstractmethod
@@ -58,12 +58,12 @@ class AbstractDatabase(abc.ABC):
         """Check that environmental conditions permit DB deletion, and require
         confirmation.
 
-        :raise DatabaseWriteException: if skip confirmation variable is set -- manual
+        :raise DatabaseWriteError: if skip confirmation variable is set -- manual
         approval is required.
         """
         if environ.get(AWS_ENV_VAR_NAME, "") == AwsEnvName.PRODUCTION:
             if environ.get(SKIP_AWS_DB_ENV_NAME, "") == "true":
-                raise DatabaseWriteException(
+                raise DatabaseWriteError(
                     f"Must unset {SKIP_AWS_DB_ENV_NAME} env variable to enable drop_db()"  # noqa: E501
                 )
             return click.confirm("Are you sure you want to delete existing data?")
@@ -75,8 +75,8 @@ class AbstractDatabase(abc.ABC):
         """Initiate total teardown of DB. Useful for quickly resetting the entirety of
         the data. Requires manual confirmation.
 
-        :raise DatabaseWriteException: if called in a protected setting with
-            confirmation silenced.
+        :raise DatabaseWriteError: if called in a protected setting with confirmation
+            silenced.
         """
 
     @abc.abstractmethod
@@ -103,7 +103,7 @@ class AbstractDatabase(abc.ABC):
         existing content -- ie, this method is also responsible for checking whether
         the DB is already set up.
 
-        :raise DatabaseInitializationException: if initialization fails
+        :raise DatabaseInitializationError: if initialization fails
         """
 
     @abc.abstractmethod
@@ -168,7 +168,7 @@ class AbstractDatabase(abc.ABC):
 
         :param src_name: name of source
         :param data: known source attributes
-        :raise DatabaseWriteException: if write fails
+        :raise DatabaseWriteError: if write fails
         """
 
     @abc.abstractmethod
@@ -192,7 +192,7 @@ class AbstractDatabase(abc.ABC):
 
         :param concept_id: record to update
         :param merge_ref: new ref value
-        :raise DatabaseWriteException: if attempting to update non-existent record
+        :raise DatabaseWriteError: if attempting to update non-existent record
         """
 
     @abc.abstractmethod
@@ -200,9 +200,9 @@ class AbstractDatabase(abc.ABC):
         """Remove merged records from the database. Use when performing a new update
         of normalized data.
 
-        :raise DatabaseReadException: if DB client requires separate read calls and
+        :raise DatabaseReadError: if DB client requires separate read calls and
             encounters a failure in the process
-        :raise DatabaseWriteException: if deletion call fails
+        :raise DatabaseWriteError: if deletion call fails
         """
 
     @abc.abstractmethod
@@ -210,9 +210,9 @@ class AbstractDatabase(abc.ABC):
         """Delete all data for a source. Use when updating source data.
 
         :param src_name: name of source to delete
-        :raise DatabaseReadException: if DB client requires separate read calls and
+        :raise DatabaseReadError: if DB client requires separate read calls and
             encounters a failure in the process
-        :raise DatabaseWriteException: if deletion call fails
+        :raise DatabaseWriteError: if deletion call fails
         """
 
     @abc.abstractmethod

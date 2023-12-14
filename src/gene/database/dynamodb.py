@@ -17,9 +17,9 @@ from gene.database.database import (
     VALID_AWS_ENV_NAMES,
     AbstractDatabase,
     AwsEnvName,
-    DatabaseInitializationException,
-    DatabaseReadException,
-    DatabaseWriteException,
+    DatabaseInitializationError,
+    DatabaseReadError,
+    DatabaseWriteError,
     confirm_aws_db_use,
 )
 from gene.schemas import (
@@ -44,20 +44,20 @@ class DynamoDbDatabase(AbstractDatabase):
         :Keyword Arguments:
             * region_name: AWS region (defaults to "us-east-2")
             * silent: if True, suppress console output
-        :raise DatabaseInitializationException: if initial setup fails
+        :raise DatabaseInitializationError: if initial setup fails
         """
         self.gene_table = environ.get("GENE_DYNAMO_TABLE", "gene_normalizer")
         region_name = db_args.get("region_name", "us-east-2")
 
         if AWS_ENV_VAR_NAME in environ:
             if "GENE_TEST" in environ:
-                raise DatabaseInitializationException(
+                raise DatabaseInitializationError(
                     f"Cannot have both GENE_TEST and {AWS_ENV_VAR_NAME} set."
                 )  # noqa: E501
             try:
                 aws_env = AwsEnvName(environ[AWS_ENV_VAR_NAME])
             except ValueError:
-                raise DatabaseInitializationException(
+                raise DatabaseInitializationError(
                     f"{AWS_ENV_VAR_NAME} must be one of {VALID_AWS_ENV_NAMES}: found {environ[AWS_ENV_VAR_NAME]} instead."
                 )
             skip_confirmation = environ.get(SKIP_AWS_DB_ENV_NAME)
@@ -108,13 +108,13 @@ class DynamoDbDatabase(AbstractDatabase):
     def drop_db(self) -> None:
         """Delete all tables from database. Requires manual confirmation.
 
-        :raise DatabaseWriteException: if called in a protected setting with
-            confirmation silenced.
+        :raise DatabaseWriteError: if called in a protected setting with confirmation
+            silenced.
         """
         try:
             if not self._check_delete_okay():
                 return
-        except DatabaseWriteException as e:
+        except DatabaseWriteError as e:
             raise e
 
         if self.gene_table in self.list_tables():
@@ -226,7 +226,7 @@ class DynamoDbDatabase(AbstractDatabase):
                 Key={"label_and_type": pk, "concept_id": concept_id}
             ).get("Item")
             if not metadata:
-                raise DatabaseReadException(
+                raise DatabaseReadError(
                     f"Unable to retrieve data for source {src_name}"
                 )
             self._cached_sources[src_name] = metadata
@@ -362,7 +362,7 @@ class DynamoDbDatabase(AbstractDatabase):
 
         :param src_name: name of source
         :param data: known source attributes
-        :raise DatabaseWriteException: if write fails
+        :raise DatabaseWriteError: if write fails
         """
         src_name_value = src_name.value
         metadata_item = metadata.model_dump()
@@ -373,7 +373,7 @@ class DynamoDbDatabase(AbstractDatabase):
         try:
             self.genes.put_item(Item=metadata_item)
         except ClientError as e:
-            raise DatabaseWriteException(e)
+            raise DatabaseWriteError(e)
 
     def add_record(self, record: Dict, src_name: SourceName) -> None:
         """Add new record to database.
@@ -458,7 +458,7 @@ class DynamoDbDatabase(AbstractDatabase):
 
         :param concept_id: record to update
         :param merge_ref: new ref value
-        :raise DatabaseWriteException: if attempting to update non-existent record
+        :raise DatabaseWriteError: if attempting to update non-existent record
         """
         label_and_type = f"{concept_id.lower()}##identity"
         key = {"label_and_type": label_and_type, "concept_id": concept_id}
@@ -475,7 +475,7 @@ class DynamoDbDatabase(AbstractDatabase):
         except ClientError as e:
             code = e.response.get("Error", {}).get("Code")
             if code == "ConditionalCheckFailedException":
-                raise DatabaseWriteException(
+                raise DatabaseWriteError(
                     f"No such record exists for keys {label_and_type}, {concept_id}"
                 )
             else:
@@ -488,9 +488,9 @@ class DynamoDbDatabase(AbstractDatabase):
         """Remove merged records from the database. Use when performing a new update
         of normalized data.
 
-        :raise DatabaseReadException: if DB client requires separate read calls and
+        :raise DatabaseReadError: if DB client requires separate read calls and
             encounters a failure in the process
-        :raise DatabaseWriteException: if deletion call fails
+        :raise DatabaseWriteError: if deletion call fails
         """
         while True:
             with self.genes.batch_writer(
@@ -504,7 +504,7 @@ class DynamoDbDatabase(AbstractDatabase):
                         ),
                     )
                 except ClientError as e:
-                    raise DatabaseReadException(e)
+                    raise DatabaseReadError(e)
                 records = response["Items"]
                 if not records:
                     break
@@ -520,9 +520,9 @@ class DynamoDbDatabase(AbstractDatabase):
         """Delete all data for a source. Use when updating source data.
 
         :param src_name: name of source to delete
-        :raise DatabaseReadException: if DB client requires separate read calls and
+        :raise DatabaseReadError: if DB client requires separate read calls and
             encounters a failure in the process
-        :raise DatabaseWriteException: if deletion call fails
+        :raise DatabaseWriteError: if deletion call fails
         """
         while True:
             try:
@@ -531,7 +531,7 @@ class DynamoDbDatabase(AbstractDatabase):
                     KeyConditionExpression=Key("src_name").eq(src_name.value),
                 )
             except ClientError as e:
-                raise DatabaseReadException(e)
+                raise DatabaseReadError(e)
             records = response["Items"]
             if not records:
                 break
@@ -547,7 +547,7 @@ class DynamoDbDatabase(AbstractDatabase):
                             }
                         )
                     except ClientError as e:
-                        raise DatabaseWriteException(e)
+                        raise DatabaseWriteError(e)
 
     def complete_write_transaction(self) -> None:
         """Conclude transaction or batch writing if relevant."""

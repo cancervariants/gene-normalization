@@ -4,10 +4,7 @@ import logging
 import re
 from typing import Dict
 
-from gene.etl.base import Base
-from gene.etl.exceptions import (
-    GeneNormalizerEtlError,
-)
+from gene.etl.base import Base, GeneNormalizerEtlError
 from gene.schemas import (
     PREFIX_LOOKUP,
     Annotation,

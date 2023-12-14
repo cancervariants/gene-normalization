@@ -6,10 +6,7 @@ from typing import Dict
 import gffutils
 from gffutils.feature import Feature
 
-from gene.etl.base import Base
-from gene.etl.exceptions import (
-    GeneNormalizerEtlError,
-)
+from gene.etl.base import Base, GeneNormalizerEtlError
 from gene.schemas import NamespacePrefix, SourceMeta, SourceName, Strand
 
 logger = logging.getLogger("gene")

@@ -9,13 +9,6 @@ Update methods
 .. automodule:: gene.etl.update
    :members:
 
-Exceptions
-----------
-
-.. automodule:: gene.etl.exceptions
-    :members:
-    :show-inheritance:
-
 NCBI
 ----
 

@@ -7,8 +7,8 @@ import click
 
 from gene.database.database import (
     AbstractDatabase,
-    DatabaseReadException,
-    DatabaseWriteException,
+    DatabaseReadError,
+    DatabaseWriteError,
 )
 from gene.schemas import SourceName
 
@@ -62,8 +62,7 @@ def load_source(
 
     # used to get source class name from string
     try:
-        from gene.etl import HGNC, NCBI, Ensembl  # noqa: F401
-        from gene.etl.exceptions import GeneNormalizerEtlError
+        from gene.etl import HGNC, NCBI, Ensembl, GeneNormalizerEtlError  # noqa: F401
     except ModuleNotFoundError as e:
         click.echo(
             f"Encountered ModuleNotFoundError attempting to import {e.name}. {_etl_dependency_help}"
@@ -150,7 +149,7 @@ def delete_normalized(database: AbstractDatabase, silent: bool = True) -> None:
     start_delete = timer()
     try:
         database.delete_normalized_concepts()
-    except (DatabaseReadException, DatabaseWriteException) as e:
+    except (DatabaseReadError, DatabaseWriteError) as e:
         click.echo(f"Encountered exception during normalized data deletion: {e}")
         raise e
     end_delete = timer()

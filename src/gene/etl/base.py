@@ -19,6 +19,10 @@ logger = logging.getLogger("gene")
 logger.setLevel(logging.DEBUG)
 
 
+class GeneNormalizerEtlError(Exception):
+    """Basic ETL exception."""
+
+
 APP_ROOT = Path(__file__).resolve().parent
 SEQREPO_ROOT_DIR = Path(
     environ.get("SEQREPO_ROOT_DIR", "/usr/local/share/seqrepo/latest")
