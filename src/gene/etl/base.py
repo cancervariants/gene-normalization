@@ -6,7 +6,6 @@ from os import environ
 from pathlib import Path
 from typing import Dict, List, Optional, Union
 
-import click
 import pydantic
 from biocommons.seqrepo import SeqRepo
 from gffutils.feature import Feature
@@ -15,8 +14,7 @@ from wags_tails import EnsemblData, HgncData, NcbiGeneData
 from gene.database import AbstractDatabase
 from gene.schemas import ITEM_TYPES, Gene, GeneSequenceLocation, MatchType, SourceName
 
-logger = logging.getLogger("gene")
-logger.setLevel(logging.DEBUG)
+_logger = logging.getLogger(__name__)
 
 
 APP_ROOT = Path(__file__).resolve().parent
@@ -76,11 +74,11 @@ class Base(ABC):
             uploaded.
         """
         self._extract_data(use_existing)
-        if not self._silent:
-            click.echo("Transforming and loading data to DB...")
+        _logger.info(f"Transforming and loading {self._src_name} data to DB...")
         self._add_meta()
         self._transform_data()
         self._database.complete_write_transaction()
+        _logger.info(f"Data load complete for {self._src_name}.")
         return self._processed_ids
 
     def _extract_data(self, use_existing: bool) -> None:
@@ -91,9 +89,11 @@ class Base(ABC):
 
         :param bool use_existing: if True, don't try to fetch latest source data
         """
+        _logger.info(f"Gathering {self._src_name} data...")
         self._data_file, self._version = self._data_source.get_latest(
             from_local=use_existing
         )
+        _logger.info(f"Acquired data for {self._src_name}: {self._data_file}")
 
     @abstractmethod
     def _transform_data(self) -> None:
@@ -116,7 +116,7 @@ class Base(ABC):
         try:
             assert Gene(match_type=MatchType.NO_MATCH, **gene)
         except pydantic.ValidationError as e:
-            logger.warning(f"Unable to load {gene} due to validation error: " f"{e}")
+            _logger.warning(f"Unable to load {gene} due to validation error: " f"{e}")
         else:
             concept_id = gene["concept_id"]
             gene["label_and_type"] = f"{concept_id.lower()}##identity"
@@ -217,7 +217,7 @@ class Base(ABC):
         try:
             aliases = self.seqrepo.translate_alias(seq_id, target_namespaces="ga4gh")
         except KeyError as e:
-            logger.warning(f"SeqRepo raised KeyError: {e}")
+            _logger.warning(f"SeqRepo raised KeyError: {e}")
         return aliases
 
     def _get_sequence_location(self, seq_id: str, gene: Feature, params: Dict) -> Dict:
@@ -244,7 +244,7 @@ class Base(ABC):
                     sequence_id=sequence,
                 ).model_dump()  # type: ignore
             else:
-                logger.warning(
+                _logger.warning(
                     f"{params['concept_id']} has invalid interval:"
                     f"start={gene.start - 1} end={gene.end}"
                 )  # type: ignore
