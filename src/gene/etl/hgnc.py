@@ -15,8 +15,7 @@ from gene.schemas import (
     SymbolStatus,
 )
 
-logger = logging.getLogger("gene")
-logger.setLevel(logging.DEBUG)
+_logger = logging.getLogger(__name__)
 
 
 class HGNC(Base):
@@ -24,7 +23,7 @@ class HGNC(Base):
 
     def _transform_data(self) -> None:
         """Transform the HGNC source."""
-        logger.info("Transforming HGNC...")
+        _logger.info("Transforming HGNC data...")
         with open(self._data_file, "r") as f:  # type: ignore
             data = json.load(f)
 
@@ -55,7 +54,7 @@ class HGNC(Base):
             if "locus_type" in r:
                 gene["gene_type"] = r["locus_type"]
                 self._load_gene(gene)
-        logger.info("Successfully transformed HGNC.")
+        _logger.info("HGNC data transform complete.")
 
     def _get_aliases(self, r: Dict, gene: Dict) -> None:
         """Store aliases in a gene record.
@@ -136,7 +135,7 @@ class HGNC(Base):
                     else:
                         self._get_xref_associated_with(key, src, r, associated_with)
                 else:
-                    logger.warning(f"{key} not in schemas.py")
+                    _logger.warning(f"{key} not in schemas.py")
 
         if xrefs:
             gene["xrefs"] = xrefs

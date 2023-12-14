@@ -7,8 +7,7 @@ from gene.database import AbstractDatabase
 from gene.database.database import DatabaseWriteError
 from gene.schemas import GeneTypeFieldName, RecordType, SourcePriority
 
-logger = logging.getLogger("gene")
-logger.setLevel(logging.DEBUG)
+_logger = logging.getLogger(__name__)
 
 
 class Merge:
@@ -28,7 +27,7 @@ class Merge:
         :param record_ids: concept identifiers from which groups should be generated.
             Should *not* include any records from excluded sources.
         """
-        logger.info("Generating record ID sets...")
+        _logger.info("Generating record ID sets...")
         start = timer()
         for record_id in record_ids:
             new_group = self._create_record_id_set(record_id)
@@ -36,11 +35,11 @@ class Merge:
                 for concept_id in new_group:
                     self._groups[concept_id] = new_group
         end = timer()
-        logger.debug(f"Built record ID sets in {end - start} seconds")
+        _logger.debug(f"Built record ID sets in {end - start} seconds")
 
         self._groups = {k: v for k, v in self._groups.items() if len(v) > 1}
 
-        logger.info("Creating merged records and updating database...")
+        _logger.info("Creating merged records and updating database...")
         uploaded_ids = set()
         start = timer()
         for record_id, group in self._groups.items():
@@ -58,17 +57,17 @@ class Merge:
                     self._database.update_merge_ref(concept_id, merge_ref)
                 except DatabaseWriteError as dw:
                     if str(dw).startswith("No such record exists"):
-                        logger.error(
+                        _logger.error(
                             f"Updating nonexistent record: {concept_id} "
                             f"for merge ref to {merge_ref}"
                         )
                     else:
-                        logger.error(str(dw))
+                        _logger.error(str(dw))
             uploaded_ids |= group
         self._database.complete_write_transaction()
-        logger.info("Merged concept generation successful.")
+        _logger.info("Merged concept generation successful.")
         end = timer()
-        logger.debug(f"Generated and added concepts in {end - start} seconds")
+        _logger.debug(f"Generated and added concepts in {end - start} seconds")
 
     def _create_record_id_set(
         self, record_id: str, observed_id_set: Optional[Set] = None
@@ -88,7 +87,7 @@ class Merge:
         else:
             db_record = self._database.get_record_by_id(record_id)
             if not db_record:
-                logger.warning(
+                _logger.warning(
                     f"Record ID set creator could not resolve "
                     f"lookup for {record_id} in ID set: "
                     f"{observed_id_set}"
@@ -124,7 +123,7 @@ class Merge:
             if record:
                 records.append(record)
             else:
-                logger.error(
+                _logger.error(
                     f"Merge record generator could not retrieve "
                     f"record for {record_id} in {record_id_set}"
                 )
