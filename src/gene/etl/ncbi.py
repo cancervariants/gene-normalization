@@ -10,10 +10,7 @@ from wags_tails import NcbiGenomeData
 from wags_tails.ncbi import NcbiGenePaths
 
 from gene.database import AbstractDatabase
-from gene.etl.base import SEQREPO_ROOT_DIR, Base
-from gene.etl.exceptions import (
-    GeneNormalizerEtlError,
-)
+from gene.etl.base import SEQREPO_ROOT_DIR, Base, GeneNormalizerEtlError
 from gene.schemas import (
     PREFIX_LOOKUP,
     Annotation,

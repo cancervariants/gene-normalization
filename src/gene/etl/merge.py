@@ -4,7 +4,7 @@ from timeit import default_timer as timer
 from typing import Dict, Optional, Set, Tuple
 
 from gene.database import AbstractDatabase
-from gene.database.database import DatabaseWriteException
+from gene.database.database import DatabaseWriteError
 from gene.schemas import GeneTypeFieldName, RecordType, SourcePriority
 
 _logger = logging.getLogger(__name__)
@@ -55,7 +55,7 @@ class Merge:
                 merge_ref = merged_record["concept_id"]
                 try:
                     self._database.update_merge_ref(concept_id, merge_ref)
-                except DatabaseWriteException as dw:
+                except DatabaseWriteError as dw:
                     if str(dw).startswith("No such record exists"):
                         _logger.error(
                             f"Updating nonexistent record: {concept_id} "
@@ -134,7 +134,7 @@ class Merge:
             if src in SourcePriority.__members__:
                 source_rank = SourcePriority[src].value
             else:
-                raise Exception(
+                raise ValueError(
                     f"Prohibited source: {src} in concept_id " f"{record['concept_id']}"
                 )
             return source_rank, record["concept_id"]

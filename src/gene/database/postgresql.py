@@ -21,9 +21,9 @@ from psycopg.errors import (
 
 from gene.database import (
     AbstractDatabase,
-    DatabaseException,
-    DatabaseReadException,
-    DatabaseWriteException,
+    DatabaseError,
+    DatabaseReadError,
+    DatabaseWriteError,
 )
 from gene.schemas import RecordType, RefType, SourceMeta, SourceName
 
@@ -54,7 +54,7 @@ class PostgresDatabase(AbstractDatabase):
             * db_name: name of database to connect to
             * silent: if True, suppress console output
 
-        :raise DatabaseInitializationException: if initial setup fails
+        :raise DatabaseInitializationError: if initial setup fails
         """
         if db_url:
             conninfo = db_url
@@ -112,13 +112,13 @@ class PostgresDatabase(AbstractDatabase):
         reconstructing after apparent schema error. If in a protected environment,
         require confirmation.
 
-        :raise DatabaseWriteException: if called in a protected setting with
-            confirmation silenced.
+        :raise DatabaseWriteError: if called in a protected setting with confirmation
+            silenced.
         """
         try:
             if not self._check_delete_okay():
                 return
-        except DatabaseWriteException as e:
+        except DatabaseWriteError as e:
             raise e
 
         with self.conn.cursor() as cur:
@@ -288,7 +288,7 @@ class PostgresDatabase(AbstractDatabase):
             cur.execute(metadata_query, [src_name])
             metadata_result = cur.fetchone()
             if not metadata_result:
-                raise DatabaseReadException(f"{src_name} metadata lookup failed")
+                raise DatabaseReadError(f"{src_name} metadata lookup failed")
             metadata = {
                 "data_license": metadata_result[1],
                 "data_license_url": metadata_result[2],
@@ -523,7 +523,7 @@ class PostgresDatabase(AbstractDatabase):
 
         :param src_name: name of source
         :param meta: known source attributes
-        :raise DatabaseWriteException: if write fails
+        :raise DatabaseWriteError: if write fails
         """
         with self.conn.cursor() as cur:
             cur.execute(
@@ -661,7 +661,7 @@ class PostgresDatabase(AbstractDatabase):
 
         :param concept_id: record to update
         :param merge_ref: new ref value
-        :raise DatabaseWriteException: if attempting to update non-existent record
+        :raise DatabaseWriteError: if attempting to update non-existent record
         """
         with self.conn.cursor() as cur:
             cur.execute(
@@ -673,7 +673,7 @@ class PostgresDatabase(AbstractDatabase):
 
         # UPDATE will fail silently unless we check the # of affected rows
         if row_count < 1:
-            raise DatabaseWriteException(
+            raise DatabaseWriteError(
                 f"No such record exists for primary key {concept_id}"
             )
 
@@ -687,9 +687,9 @@ class PostgresDatabase(AbstractDatabase):
         accessing it, or PgAdmin, etc...). Instead, we'll take down each part of the
         merge_ref
 
-        :raise DatabaseReadException: if DB client requires separate read calls and
+        :raise DatabaseReadError: if DB client requires separate read calls and
             encounters a failure in the process
-        :raise DatabaseWriteException: if deletion call fails
+        :raise DatabaseWriteError: if deletion call fails
         """
         with self.conn.cursor() as cur:
             cur.execute((SCRIPTS_DIR / "delete_normalized_concepts.sql").read_bytes())
@@ -746,7 +746,7 @@ class PostgresDatabase(AbstractDatabase):
         but it's probably necessary just in case that doesn't happen.
 
         :param src_name: name of source to delete
-        :raise DatabaseWriteException: if deletion call fails
+        :raise DatabaseWriteError: if deletion call fails
         """
         with self.conn.cursor() as cur:
             cur.execute(self._drop_aliases_query, [src_name.value])
@@ -785,8 +785,8 @@ class PostgresDatabase(AbstractDatabase):
         passed as an argument, will try to grab latest release from VICC S3 bucket.
 
         :param url: location of .tar.gz file created from output of pg_dump
-        :raise DatabaseException: if unable to retrieve file from URL or if psql
-            command fails
+        :raise DatabaseError: if unable to retrieve file from URL or if psql command
+            fails
         """
         if not url:
             url = "https://vicc-normalizers.s3.us-east-2.amazonaws.com/gene_normalization/postgresql/gene_norm_latest.sql.tar.gz"  # noqa: E501
@@ -797,7 +797,7 @@ class PostgresDatabase(AbstractDatabase):
                 try:
                     r.raise_for_status()
                 except requests.HTTPError:
-                    raise DatabaseException(
+                    raise DatabaseError(
                         f"Unable to retrieve PostgreSQL dump file from {url}"
                     )
                 with open(temp_tarfile, "wb") as h:
@@ -820,9 +820,7 @@ class PostgresDatabase(AbstractDatabase):
             system_call = f"psql -d {self.conn.info.dbname} -U {self.conn.info.user} {pw_param} -f {dump_file.absolute()}"  # noqa: E501
             result = os.system(system_call)
         if result != 0:
-            raise DatabaseException(
-                f"System call '{result}' returned failing exit code."
-            )
+            raise DatabaseError(f"System call '{result}' returned failing exit code.")
 
     def export_db(self, output_directory: Path) -> None:
         """Dump DB to specified location.
@@ -831,7 +829,7 @@ class PostgresDatabase(AbstractDatabase):
         :return: Nothing, but saves results of pg_dump to file named
             `gene_norm_<date and time>.sql`
         :raise ValueError: if output directory isn't a directory or doesn't exist
-        :raise DatabaseException: if psql call fails
+        :raise DatabaseError: if psql call fails
         """
         if not output_directory.is_dir() or not output_directory.exists():
             raise ValueError(
@@ -851,6 +849,6 @@ class PostgresDatabase(AbstractDatabase):
         system_call = f"pg_dump -E UTF8 -f {output_location} -U {user} {pw_param} -h {host} -p {port} {database_name}"  # noqa: E501
         result = os.system(system_call)
         if result != 0:
-            raise DatabaseException(
+            raise DatabaseError(
                 f"System call '{system_call}' returned failing exit code."
             )

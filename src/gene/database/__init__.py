@@ -2,9 +2,9 @@
 from .database import (
     AWS_ENV_VAR_NAME,
     AbstractDatabase,
-    DatabaseException,
-    DatabaseInitializationException,
-    DatabaseReadException,
-    DatabaseWriteException,
+    DatabaseError,
+    DatabaseInitializationError,
+    DatabaseReadError,
+    DatabaseWriteError,
     create_db,
 )

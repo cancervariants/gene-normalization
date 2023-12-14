@@ -7,7 +7,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, TypeVar
 from ga4gh.core import core_models, ga4gh_identify
 from ga4gh.vrs import models
 
-from gene.database import AbstractDatabase, DatabaseReadException
+from gene.database import AbstractDatabase, DatabaseReadError
 from gene.schemas import (
     ITEM_TYPES,
     NAMESPACE_LOOKUP,
@@ -33,10 +33,6 @@ from gene.version import __version__
 
 _logger = logging.getLogger(__name__)
 NormService = TypeVar("NormService", bound=BaseNormalizationService)
-
-
-class InvalidParameterException(Exception):  # noqa: N818
-    """Exception for invalid parameter args provided by the user."""
 
 
 class QueryHandler:
@@ -191,10 +187,8 @@ class QueryHandler:
         """
         try:
             match = self.db.get_record_by_id(concept_id, case_sensitive=False)
-        except DatabaseReadException as e:
-            _logger.error(
-                f"Encountered DatabaseReadException looking up {concept_id}: {e}"
-            )
+        except DatabaseReadError as e:
+            _logger.error(f"Encountered DatabaseReadError looking up {concept_id}: {e}")
         else:
             if match:
                 self._add_record(response, match, match_type)
@@ -266,9 +260,9 @@ class QueryHandler:
                             self._fetch_record(resp, ref, MatchType[item_type.upper()])
                             matched_concept_ids.append(ref)
 
-            except DatabaseReadException as e:
+            except DatabaseReadError as e:
                 _logger.error(
-                    f"Encountered DatabaseReadException looking up {item_type}"
+                    f"Encountered DatabaseReadError looking up {item_type}"
                     f" {term}: {e}"
                 )
                 continue
@@ -301,8 +295,6 @@ class QueryHandler:
         :param query_str: query, a string, to search for
         :param sources: If given, only return records from these sources
         :return: SearchService class containing all matches found in sources.
-        :raise InvalidParameterException: if both `incl` and `excl` args are provided,
-            or if invalid source names are given
         """
         if not sources:
             sources = list(SourceName.__members__.values())

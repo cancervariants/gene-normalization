@@ -6,7 +6,7 @@ from typing import Optional, Tuple
 import click
 
 from gene.database import create_db
-from gene.database.database import DatabaseException
+from gene.database.database import DatabaseError
 from gene.etl.update import update_all_sources, update_normalized, update_source
 from gene.schemas import SourceName
 
@@ -137,7 +137,7 @@ def update_from_remote(data_url: Optional[str], db_url: str, silent: bool) -> No
             f"Error: Fetching remote data dump not supported for {db.__class__.__name__}"
         )  # noqa: E501
         click.get_current_context().exit(1)
-    except DatabaseException as e:
+    except DatabaseError as e:
         click.echo(f"Encountered exception during update: {str(e)}")
         click.get_current_context().exit(1)
 
@@ -220,7 +220,7 @@ def dump_database(output_directory: Path, db_url: str, silent: bool) -> None:
             f"Error: Dumping data to file not supported for {db.__class__.__name__}"
         )  # noqa: E501
         click.get_current_context().exit(1)
-    except DatabaseException as e:
+    except DatabaseError as e:
         click.echo(f"Encountered exception during update: {str(e)}")
         click.get_current_context().exit(1)
 

@@ -17,6 +17,10 @@ from gene.schemas import ITEM_TYPES, Gene, GeneSequenceLocation, MatchType, Sour
 _logger = logging.getLogger(__name__)
 
 
+class GeneNormalizerEtlError(Exception):
+    """Basic ETL exception."""
+
+
 APP_ROOT = Path(__file__).resolve().parent
 SEQREPO_ROOT_DIR = Path(
     environ.get("SEQREPO_ROOT_DIR", "/usr/local/share/seqrepo/latest")
