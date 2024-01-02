@@ -58,6 +58,7 @@ class MatchType(IntEnum):
     PREV_SYMBOL = 80
     ALIAS = 60
     XREF = 60
+    ASSOCIATED_WITH = 60
     FUZZY_MATCH = 20
     NO_MATCH = 0
 
@@ -100,6 +101,7 @@ class BaseGene(BaseModel):
     aliases: List[StrictStr] = []
     previous_symbols: List[StrictStr] = []
     xrefs: List[CURIE] = []
+    associated_with: List[CURIE] = []
     gene_type: Optional[StrictStr] = None
 
 
@@ -239,6 +241,7 @@ class RefType(str, Enum):
     PREVIOUS_SYMBOLS = "prev_symbol"
     ALIASES = "alias"
     XREFS = "xref"
+    ASSOCIATED_WITH = "associated_with"
 
 
 # collective name to singular name, e.g. {"previous_symbols": "prev_symbol"}
@@ -557,9 +560,8 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 ],
                                 "aliases": ["3.1.1.7"],
                                 "previous_symbols": ["YT"],
-                                "xrefs": [
-                                    "ncbigene:43",
-                                    "ensembl:ENSG00000087085",
+                                "xrefs": ["ncbigene:43", "ensembl:ENSG00000087085"],
+                                "associated_with": [
                                     "ucsc:uc003uxi.4",
                                     "vega:OTTHUMG00000157033",
                                     "merops:S09.979",
@@ -668,6 +670,8 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "xrefs": [
                                     "hgnc:108",
                                     "ensembl:ENSG00000087085",
+                                ],
+                                "associated_with": [
                                     "omim:100740",
                                 ],
                                 "gene_type": "protein-coding",
