@@ -84,7 +84,7 @@ class HGNC(Base):
     def _get_xrefs_associated_with(self, record: Dict, gene: Dict) -> None:
         """Store xrefs and/or associated_with refs in a gene record.
 
-        :param r: A gene record in the HGNC data file
+        :param record: A gene record in the HGNC data file
         :param gene: A transformed gene record
         """
         xrefs = list()
