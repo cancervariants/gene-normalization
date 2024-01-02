@@ -92,7 +92,7 @@ class BaseGene(BaseModel):
     symbol_status: Optional[SymbolStatus] = None
     label: Optional[StrictStr] = None
     strand: Optional[Strand] = None
-    location_annotations: List[Union[Annotation, Chromosome, str]] = []
+    location_annotations: List[Union[Annotation, Chromosome, StrictStr]] = []
     locations: Union[
         List[models.SequenceLocation],
         List[StoredSequenceLocation],
