@@ -10,6 +10,7 @@ import boto3
 import click
 from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
+from pydantic import BaseModel
 
 from gene.database.database import (
     AWS_ENV_VAR_NAME,
@@ -382,6 +383,12 @@ class DynamoDbDatabase(AbstractDatabase):
         label_and_type = f"{concept_id.lower()}##identity"
         record["label_and_type"] = label_and_type
         record["item_type"] = "identity"
+        for i, location in enumerate(record.get("locations", [])):
+            if isinstance(location, BaseModel):
+                record["locations"][i] = location.model_dump(
+                    mode="json", exclude_none=True
+                )
+
         try:
             self.batch.put_item(Item=record)
         except ClientError as e:
