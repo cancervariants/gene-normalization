@@ -535,9 +535,9 @@ class PostgresDatabase(AbstractDatabase):
                     meta.version,
                     json.dumps(meta.data_url),
                     meta.rdp_url,
-                    meta.data_license_attributes["non_commercial"],
-                    meta.data_license_attributes["attribution"],
-                    meta.data_license_attributes["share_alike"],
+                    meta.data_license_attributes.non_commercial,
+                    meta.data_license_attributes.attribution,
+                    meta.data_license_attributes.share_alike,
                     meta.genome_assemblies,
                 ],
             )
@@ -566,10 +566,10 @@ class PostgresDatabase(AbstractDatabase):
         """Add new record to database.
 
         :param record: record to upload
-        :param src_name: name of source for record. Not used by PostgreSQL instance.
+        :param src_name: name of source for record.
         """
         concept_id = record["concept_id"]
-        locations = [json.dumps(loc) for loc in record.get("locations", [])]
+        locations = [loc.model_dump_json() for loc in record.get("locations", [])]
         if not locations:
             locations = None
         with self.conn.cursor() as cur:
@@ -578,7 +578,7 @@ class PostgresDatabase(AbstractDatabase):
                     self._add_record_query,
                     [
                         concept_id,
-                        record["src_name"],
+                        src_name.value,
                         record.get("symbol_status"),
                         record.get("label"),
                         record.get("strand"),

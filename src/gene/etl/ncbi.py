@@ -15,9 +15,11 @@ from gene.schemas import (
     PREFIX_LOOKUP,
     Annotation,
     Chromosome,
+    DataLicenseAttributes,
     NamespacePrefix,
     SourceMeta,
     SourceName,
+    StoredSequenceLocation,
     SymbolStatus,
 )
 
@@ -77,22 +79,22 @@ class NCBI(Base):
         next(history)
         prev_symbols = {}
         for row in history:
-            # Only interested in rows that have homo sapiens tax id
-            if row[0] == "9606":
-                if row[1] != "-":
-                    gene_id = row[1]
-                    if gene_id in prev_symbols.keys():
-                        prev_symbols[gene_id].append(row[3])
-                    else:
-                        prev_symbols[gene_id] = [row[3]]
+            if row[0] != "9606":
+                continue  # humans only
+            if row[1] != "-":
+                gene_id = row[1]
+                if gene_id in prev_symbols.keys():
+                    prev_symbols[gene_id].append(row[3])
                 else:
-                    # Load discontinued genes
-                    params = {
-                        "concept_id": f"{NamespacePrefix.NCBI.value}:{row[2]}",
-                        "symbol": row[3],
-                        "symbol_status": SymbolStatus.DISCONTINUED.value,
-                    }
-                    self._load_gene(params)
+                    prev_symbols[gene_id] = [row[3]]
+            else:
+                # Load discontinued genes
+                params = {
+                    "concept_id": f"{NamespacePrefix.NCBI.value}:{row[2]}",
+                    "symbol": row[3],
+                    "symbol_status": SymbolStatus.DISCONTINUED.value,
+                }
+                self._load_gene(params)
         history_file.close()
         return prev_symbols
 
@@ -138,7 +140,7 @@ class NCBI(Base):
         """Store genes from NCBI info file.
 
         :param prev_symbols: A dictionary of a gene's previous symbols
-        :return: A dictionary of gene's from the NCBI info file.
+        :return: A dictionary of genes from the NCBI info file.
         """
         # open info file, skip headers
         info_file = open(self._info_src, "r")
@@ -191,11 +193,10 @@ class NCBI(Base):
                 if f_id.startswith("gene"):
                     symbol = f.attributes["Name"][0]
                     if symbol in info_genes:
-                        # Just need to add SequenceLocation
-                        params = info_genes.get(symbol)
+                        params: Dict = info_genes.get(symbol)  # type: ignore
                         vrs_sq_location = self._get_vrs_sq_location(db, params, f_id)
                         if vrs_sq_location:
-                            params["locations"].append(vrs_sq_location)  # type: ignore
+                            params["locations"].append(vrs_sq_location)
                     else:
                         # Need to add entire gene
                         gene = self._add_gff_gene(db, f, f_id)
@@ -212,7 +213,6 @@ class NCBI(Base):
         :return: A gene dictionary if the ID attribute exists. Else return None.
         """
         params = dict()
-        params["src_name"] = SourceName.NCBI.value
         self._add_attributes(f, params)
         sq_loc = self._get_vrs_sq_location(db, params, f_id)
         if sq_loc:
@@ -245,18 +245,18 @@ class NCBI(Base):
 
     def _get_vrs_sq_location(
         self, db: gffutils.FeatureDB, params: Dict, f_id: str
-    ) -> Dict:
+    ) -> Optional[StoredSequenceLocation]:
         """Store GA4GH VRS SequenceLocation in a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
 
         :param db: GFF database
         :param params: A transformed gene record
         :param f_id: The feature's ID
-        :return: A GA4GH VRS SequenceLocation
+        :return: A storable set of SequenceLocation params
         """
         gene = db[f_id]
         params["strand"] = gene.strand
-        return self._get_sequence_location(gene.seqid, gene, params)
+        return self._build_sequence_location(gene.seqid, gene, params["concept_id"])
 
     def _get_xref_associated_with(self, src_name: str, src_id: str) -> Dict:
         """Get xref or associated_with ref.
@@ -493,11 +493,11 @@ class NCBI(Base):
                 "assembly_file": self._assembly_url,
             },
             rdp_url="https://reusabledata.org/ncbi-gene.html",
-            data_license_attributes={
-                "non_commercial": False,
-                "share_alike": False,
-                "attribution": False,
-            },
+            data_license_attributes=DataLicenseAttributes(
+                non_commercial=False,
+                share_alike=False,
+                attribution=False,
+            ),
             genome_assemblies=[self._assembly],
         )
 

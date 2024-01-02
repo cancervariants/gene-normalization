@@ -860,9 +860,9 @@ def test_no_match(ncbi, source_urls):
     assert datetime.strptime(response.source_meta_.version, "%Y%m%d")
     assert response.source_meta_.data_url == source_urls
     assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
-    assert not response.source_meta_.data_license_attributes["non_commercial"]
-    assert not response.source_meta_.data_license_attributes["share_alike"]
-    assert not response.source_meta_.data_license_attributes["attribution"]
+    assert response.source_meta_.data_license_attributes.non_commercial is False
+    assert response.source_meta_.data_license_attributes.share_alike is False
+    assert response.source_meta_.data_license_attributes.attribution is False
 
     # check blank
     response = ncbi.search("")
@@ -907,8 +907,6 @@ def test_meta(ncbi, source_urls):
     assert response.source_meta_.data_url == source_urls
     assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
     assert response.source_meta_.genome_assemblies == ["GRCh38.p14"]
-    assert response.source_meta_.data_license_attributes == {
-        "non_commercial": False,
-        "share_alike": False,
-        "attribution": False,
-    }
+    assert response.source_meta_.data_license_attributes.non_commercial is False
+    assert response.source_meta_.data_license_attributes.share_alike is False
+    assert response.source_meta_.data_license_attributes.attribution is False

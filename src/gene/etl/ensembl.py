@@ -7,7 +7,12 @@ import gffutils
 from gffutils.feature import Feature
 
 from gene.etl.base import Base, GeneNormalizerEtlError
-from gene.schemas import NamespacePrefix, SourceMeta, SourceName, Strand
+from gene.schemas import (
+    DataLicenseAttributes,
+    NamespacePrefix,
+    SourceMeta,
+    Strand,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -66,22 +71,23 @@ class Ensembl(Base):
         :param accession_numbers: Accession numbers for each chromosome and scaffold
         :return: A gene dictionary containing data if the ID attribute exists.
         """
-        gene = dict()
+        gene_params = dict()
         if f.strand == "-":
-            gene["strand"] = Strand.REVERSE.value
+            gene_params["strand"] = Strand.REVERSE.value
         elif f.strand == "+":
-            gene["strand"] = Strand.FORWARD.value
-        gene["src_name"] = SourceName.ENSEMBL.value
+            gene_params["strand"] = Strand.FORWARD.value
 
-        self._add_attributes(f, gene)
-        location = self._add_location(f, gene, accession_numbers)
+        self._add_attributes(f, gene_params)
+        location = self._build_sequence_location(
+            accession_numbers[f.seqid], f, gene_params["concept_id"]
+        )
         if location:
-            gene["locations"] = [location]
+            gene_params["locations"] = [location]
 
-        gene["label_and_type"] = f"{gene['concept_id'].lower()}##identity"
-        gene["item_type"] = "identity"
+        gene_params["label_and_type"] = f"{gene_params['concept_id'].lower()}##identity"
+        gene_params["item_type"] = "identity"
 
-        return gene
+        return gene_params
 
     def _add_attributes(self, f: Feature, gene: Dict) -> None:
         """Add concept_id, symbol, xrefs, and associated_with to a gene record.
@@ -132,17 +138,6 @@ class Ensembl(Base):
 
                 gene[attributes[key]] = val
 
-    def _add_location(self, f: Feature, gene: Dict, accession_numbers: Dict) -> Dict:
-        """Add GA4GH SequenceLocation to a gene record.
-        https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
-
-        :param f: A gene from the data
-        :param gene: A transformed gene record
-        :param accession_numbers: Accession numbers for each chromosome and scaffold
-        :return: gene record dictionary with location added
-        """
-        return self._get_sequence_location(accession_numbers[f.seqid], f, gene)
-
     def _get_xref_associated_with(self, src_name: str, src_id: str) -> Dict:
         """Get xref or associated_with concept.
 
@@ -181,11 +176,11 @@ class Ensembl(Base):
                 "genome_annotations": f"ftp://ftp.ensembl.org/pub/release-{self._version}/gff3/homo_sapiens/Homo_sapiens.{self._assembly}.{self._version}.gff3.gz"
             },
             rdp_url=None,
-            data_license_attributes={
-                "non_commercial": False,
-                "share_alike": False,
-                "attribution": False,
-            },
+            data_license_attributes=DataLicenseAttributes(
+                non_commercial=False,
+                share_alike=False,
+                attribution=False,
+            ),
             genome_assemblies=[self._assembly],
         )
 

@@ -2,13 +2,14 @@
 import json
 import logging
 import re
-from typing import Dict
+from typing import Dict, List
 
 from gene.etl.base import Base, GeneNormalizerEtlError
 from gene.schemas import (
     PREFIX_LOOKUP,
     Annotation,
     Chromosome,
+    DataLicenseAttributes,
     NamespacePrefix,
     SourceMeta,
     SourceName,
@@ -30,19 +31,16 @@ class HGNC(Base):
         records = data["response"]["docs"]
 
         for r in records:
-            gene = dict()
-            gene["concept_id"] = r["hgnc_id"].lower()
-            gene["label_and_type"] = f"{gene['concept_id']}##identity"
-            gene["item_type"] = "identity"
-            gene["symbol"] = r["symbol"]
-            gene["label"] = r["name"]
-            gene["src_name"] = SourceName.HGNC.value
+            gene = {
+                "concept_id": r["hgnc_id"].lower(),
+                "symbol": r["symbol"],
+                "label": r["name"],
+            }
             if r["status"]:
                 if r["status"] == "Approved":
                     gene["symbol_status"] = SymbolStatus.APPROVED.value
                 elif r["status"] == "Entry Withdrawn":
                     gene["symbol_status"] = SymbolStatus.WITHDRAWN.value
-            gene["src_name"] = SourceName.HGNC.value
 
             # store alias, xref, associated_with, prev_symbols, location
             self._get_aliases(r, gene)
@@ -83,10 +81,10 @@ class HGNC(Base):
         if prev_symbols:
             gene["previous_symbols"] = list(set(prev_symbols))
 
-    def _get_xrefs_associated_with(self, r: Dict, gene: Dict) -> None:
+    def _get_xrefs_associated_with(self, record: Dict, gene: Dict) -> None:
         """Store xrefs and/or associated_with refs in a gene record.
 
-        :param r: A gene record in the HGNC data file
+        :param record: A gene record in the HGNC data file
         :param gene: A transformed gene record
         """
         xrefs = list()
@@ -119,7 +117,7 @@ class HGNC(Base):
         ]
 
         for src in sources:
-            if src in r:
+            if src in record:
                 if "-" in src:
                     key = src.split("-")[0]
                 elif "." in src:
@@ -131,9 +129,11 @@ class HGNC(Base):
 
                 if key.upper() in NamespacePrefix.__members__:
                     if NamespacePrefix[key.upper()].value in PREFIX_LOOKUP.keys():
-                        self._get_xref_associated_with(key, src, r, xrefs)
+                        self._get_xref_associated_with(key, src, record, xrefs)
                     else:
-                        self._get_xref_associated_with(key, src, r, associated_with)
+                        self._get_xref_associated_with(
+                            key, src, record, associated_with
+                        )
                 else:
                     _logger.warning(f"{key} not in schemas.py")
 
@@ -143,7 +143,7 @@ class HGNC(Base):
             gene["associated_with"] = associated_with
 
     def _get_xref_associated_with(
-        self, key: str, src: str, r: Dict, src_type: Dict
+        self, key: str, src: str, r: Dict, src_type: List[str]
     ) -> None:
         """Add an xref or associated_with ref to a gene record.
 
@@ -194,6 +194,8 @@ class HGNC(Base):
         if not gene["location_annotations"]:
             del gene["location_annotations"]
 
+    _annotation_types = {v.value for v in Annotation.__members__.values()}
+
     def _set_annotation(self, loc: str, gene: Dict) -> None:
         """Set the annotations attribute if one is provided.
         Return `True` if a location is provided, `False` otherwise.
@@ -202,9 +204,7 @@ class HGNC(Base):
         :param gene: in-progress gene record
         :return: A bool whether or not a gene map location is provided
         """
-        annotations = {v.value for v in Annotation.__members__.values()}
-
-        for annotation in annotations:
+        for annotation in self._annotation_types:
             if annotation in loc:
                 gene["location_annotations"].append(annotation)
                 # Check if location is also included
@@ -256,11 +256,11 @@ class HGNC(Base):
                 "complete_set_archive": "ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
             },
             rdp_url=None,
-            data_license_attributes={
-                "non_commercial": False,
-                "share_alike": False,
-                "attribution": False,
-            },
+            data_license_attributes=DataLicenseAttributes(
+                non_commercial=False,
+                share_alike=False,
+                attribution=False,
+            ),
             genome_assemblies=[],
         )
         self._database.add_source_metadata(SourceName.HGNC, metadata)

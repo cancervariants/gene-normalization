@@ -63,8 +63,8 @@ class MatchType(IntEnum):
     NO_MATCH = 0
 
 
-class GeneSequenceLocation(BaseModel):
-    """Sequence Location model when storing in DynamoDB."""
+class StoredSequenceLocation(BaseModel):
+    """Sequence Location model when storing in database."""
 
     type: Literal["SequenceLocation"] = "SequenceLocation"
     start: StrictInt
@@ -73,7 +73,7 @@ class GeneSequenceLocation(BaseModel):
 
 
 # class GeneChromosomeLocation(BaseModel):
-#     """Chromosome Location model when storing in DynamDB."""
+#     """Chromosome Location model when storing in database."""
 
 #     type: Literal["ChromosomeLocation"] = "ChromosomeLocation"
 #     species_id: Literal["taxonomy:9606"] = "taxonomy:9606"
@@ -92,9 +92,10 @@ class BaseGene(BaseModel):
     symbol_status: Optional[SymbolStatus] = None
     label: Optional[StrictStr] = None
     strand: Optional[Strand] = None
-    location_annotations: List[StrictStr] = []
+    location_annotations: List[Union[Annotation, Chromosome, StrictStr]] = []
     locations: Union[
-        List[models.SequenceLocation], List[GeneSequenceLocation]
+        List[models.SequenceLocation],
+        List[StoredSequenceLocation],
         # List[Union[SequenceLocation, ChromosomeLocation]],
         # List[Union[GeneSequenceLocation, GeneChromosomeLocation]]  # dynamodb
     ] = []
@@ -123,7 +124,6 @@ class Gene(BaseGene):
                 "strand": "-",
                 "locations": [],
                 "location_annotations": [],
-                "associated_with": [],
                 "gene_type": None,
                 "match_type": 100,
             }
@@ -257,7 +257,7 @@ class SourceMeta(BaseModel):
     version: StrictStr
     data_url: Dict[StrictStr, StrictStr]  # TODO strictness necessary?
     rdp_url: Optional[StrictStr] = None
-    data_license_attributes: Dict[StrictStr, StrictBool]
+    data_license_attributes: DataLicenseAttributes
     genome_assemblies: List[StrictStr] = []
 
     model_config = ConfigDict(
@@ -618,7 +618,6 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "aliases": [],
                                 "previous_symbols": [],
                                 "xrefs": ["hgnc:108"],
-                                "associated_with": [],
                                 "gene_type": "protein_coding",
                             }
                         ],
@@ -669,8 +668,13 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 ],
                                 "aliases": ["YT", "ARACHE", "ACEE", "N-ACHE"],
                                 "previous_symbols": ["ACEE"],
-                                "xrefs": ["hgnc:108", "ensembl:ENSG00000087085"],
-                                "associated_with": ["omim:100740"],
+                                "xrefs": [
+                                    "hgnc:108",
+                                    "ensembl:ENSG00000087085",
+                                ],
+                                "associated_with": [
+                                    "omim:100740",
+                                ],
                                 "gene_type": "protein-coding",
                             }
                         ],
