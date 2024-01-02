@@ -299,9 +299,7 @@ class NCBI(Base):
                 if chromosome == "MT":
                     params["location_annotations"].append(Chromosome.MITOCHONDRIA.value)
                 else:
-                    params["location_annotations"].append(
-                        Chromosome(chromosome.strip())
-                    )
+                    params["location_annotations"].append(chromosome.strip())
         elif locations:
             self._add_chromosome_location(locations, location_list, params)
         if not params["location_annotations"]:
