@@ -12,7 +12,7 @@ from gffutils.feature import Feature
 from wags_tails import EnsemblData, HgncData, NcbiGeneData
 
 from gene.database import AbstractDatabase
-from gene.schemas import ITEM_TYPES, Gene, GeneSequenceLocation, MatchType, SourceName
+from gene.schemas import ITEM_TYPES, Gene, MatchType, SourceName, StoredSequenceLocation
 
 _logger = logging.getLogger(__name__)
 
@@ -122,11 +122,6 @@ class Base(ABC):
         except pydantic.ValidationError as e:
             _logger.warning(f"Unable to load {gene} due to validation error: " f"{e}")
         else:
-            concept_id = gene["concept_id"]
-            gene["label_and_type"] = f"{concept_id.lower()}##identity"
-            gene["src_name"] = self._src_name.value
-            gene["item_type"] = "identity"
-
             for attr_type in ITEM_TYPES:
                 if attr_type in gene:
                     value = gene[attr_type]
@@ -137,7 +132,7 @@ class Base(ABC):
                     gene[attr_type] = list(set(value))
 
             self._database.add_record(gene, self._src_name)
-            self._processed_ids.append(concept_id)
+            self._processed_ids.append(gene["concept_id"])
 
     def get_seqrepo(self, seqrepo_dir: Path) -> SeqRepo:
         """Return SeqRepo instance if seqrepo_dir exists.
@@ -224,32 +219,31 @@ class Base(ABC):
             _logger.warning(f"SeqRepo raised KeyError: {e}")
         return aliases
 
-    def _get_sequence_location(self, seq_id: str, gene: Feature, params: Dict) -> Dict:
-        """Get a gene's GeneSequenceLocation.
+    def _build_sequence_location(
+        self, seq_id: str, gene: Feature, concept_id: str
+    ) -> Optional[StoredSequenceLocation]:
+        """Construct a sequence location for storing in a DB.
 
         :param seq_id: The sequence ID.
         :param gene: A gene from the source file.
-        :param params: The transformed gene record.
-        :return: A dictionary of a GA4GH VRS SequenceLocation, if seq_id alias found.
-            Else, empty dictionary
+        :param concept_id: record ID from source
+        :return: A storable SequenceLocation containing relevant params for returning a
+        VRS SequenceLocation, or None if unable to retrieve valid parameters
         """
-        location = {}
         aliases = self._get_seq_id_aliases(seq_id)
-        if not aliases:
-            return location
+        if not aliases or gene.start is None or gene.end is None:
+            return None
 
         sequence = aliases[0]
 
         if gene.start != "." and gene.end != "." and sequence:
-            if 0 <= gene.start <= gene.end:  # type: ignore
-                location = GeneSequenceLocation(
-                    start=gene.start - 1,  # type: ignore
-                    end=gene.end,  # type: ignore
+            if 0 <= gene.start <= gene.end:
+                return StoredSequenceLocation(
+                    start=gene.start - 1,
+                    end=gene.end,
                     sequence_id=sequence,
-                ).model_dump()  # type: ignore
+                )
             else:
                 _logger.warning(
-                    f"{params['concept_id']} has invalid interval:"
-                    f"start={gene.start - 1} end={gene.end}"
-                )  # type: ignore
-        return location
+                    f"{concept_id} has invalid interval: start={gene.start - 1} end={gene.end}"
+                )

@@ -569,7 +569,7 @@ class PostgresDatabase(AbstractDatabase):
         :param src_name: name of source for record. Not used by PostgreSQL instance.
         """
         concept_id = record["concept_id"]
-        locations = [json.dumps(loc) for loc in record.get("locations", [])]
+        locations = [loc.model_dump_json() for loc in record.get("locations", [])]
         if not locations:
             locations = None
         with self.conn.cursor() as cur:

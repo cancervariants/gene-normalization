@@ -30,19 +30,16 @@ class HGNC(Base):
         records = data["response"]["docs"]
 
         for r in records:
-            gene = dict()
-            gene["concept_id"] = r["hgnc_id"].lower()
-            gene["label_and_type"] = f"{gene['concept_id']}##identity"
-            gene["item_type"] = "identity"
-            gene["symbol"] = r["symbol"]
-            gene["label"] = r["name"]
-            gene["src_name"] = SourceName.HGNC.value
+            gene = {
+                "concept_id": r["hgnc_id"].lower(),
+                "symbol": r["symbol"],
+                "label": r["name"],
+            }
             if r["status"]:
                 if r["status"] == "Approved":
                     gene["symbol_status"] = SymbolStatus.APPROVED.value
                 elif r["status"] == "Entry Withdrawn":
                     gene["symbol_status"] = SymbolStatus.WITHDRAWN.value
-            gene["src_name"] = SourceName.HGNC.value
 
             # store alias, xref, associated_with, prev_symbols, location
             self._get_aliases(r, gene)
@@ -83,7 +80,7 @@ class HGNC(Base):
         if prev_symbols:
             gene["previous_symbols"] = list(set(prev_symbols))
 
-    def _get_xrefs_associated_with(self, r: Dict, gene: Dict) -> None:
+    def _get_xrefs_associated_with(self, record: Dict, gene: Dict) -> None:
         """Store xrefs and/or associated_with refs in a gene record.
 
         :param r: A gene record in the HGNC data file
@@ -119,7 +116,7 @@ class HGNC(Base):
         ]
 
         for src in sources:
-            if src in r:
+            if src in record:
                 if "-" in src:
                     key = src.split("-")[0]
                 elif "." in src:
@@ -131,9 +128,11 @@ class HGNC(Base):
 
                 if key.upper() in NamespacePrefix.__members__:
                     if NamespacePrefix[key.upper()].value in PREFIX_LOOKUP.keys():
-                        self._get_xref_associated_with(key, src, r, xrefs)
+                        self._get_xref_associated_with(key, src, record, xrefs)
                     else:
-                        self._get_xref_associated_with(key, src, r, associated_with)
+                        self._get_xref_associated_with(
+                            key, src, record, associated_with
+                        )
                 else:
                     _logger.warning(f"{key} not in schemas.py")
 
@@ -202,6 +201,7 @@ class HGNC(Base):
         :param gene: in-progress gene record
         :return: A bool whether or not a gene map location is provided
         """
+        breakpoint()
         annotations = {v.value for v in Annotation.__members__.values()}
 
         for annotation in annotations:
