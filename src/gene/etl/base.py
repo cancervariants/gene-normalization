@@ -6,6 +6,7 @@ from os import environ
 from pathlib import Path
 from typing import Dict, List, Optional, Union
 
+import click
 import pydantic
 from biocommons.seqrepo import SeqRepo
 from gffutils.feature import Feature
@@ -25,6 +26,13 @@ APP_ROOT = Path(__file__).resolve().parent
 SEQREPO_ROOT_DIR = Path(
     environ.get("SEQREPO_ROOT_DIR", "/usr/local/share/seqrepo/latest")
 )
+
+
+DATA_DISPATCH = {
+    SourceName.HGNC: HgncData,
+    SourceName.ENSEMBL: EnsemblData,
+    SourceName.NCBI: NcbiGeneData,
+}
 
 
 DATA_DISPATCH = {
@@ -79,6 +87,8 @@ class Base(ABC):
         """
         self._extract_data(use_existing)
         _logger.info(f"Transforming and loading {self._src_name} data to DB...")
+        if not self._silent:
+            click.echo("Transforming and loading data to DB...")
         self._add_meta()
         self._transform_data()
         self._database.complete_write_transaction()
@@ -93,11 +103,9 @@ class Base(ABC):
 
         :param bool use_existing: if True, don't try to fetch latest source data
         """
-        _logger.info(f"Gathering {self._src_name} data...")
         self._data_file, self._version = self._data_source.get_latest(
             from_local=use_existing
         )
-        _logger.info(f"Acquired data for {self._src_name}: {self._data_file}")
 
     @abstractmethod
     def _transform_data(self) -> None:

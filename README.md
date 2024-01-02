@@ -5,9 +5,9 @@ Gene Normalizer
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gene-normalizer?color=gr) [![tests](https://github.com/cancervariants/gene-normalization/actions/workflows/github-actions.yml/badge.svg)](https://github.com/cancervariants/gene-normalization/actions/workflows/github-actions.yml) [![DOI](https://zenodo.org/badge/309797998.svg)](https://zenodo.org/badge/latestdoi/309797998)
 
 ## Overview
-
+<!-- description -->
 The Gene Normalizer provides tools for resolving ambiguous human gene references to consistently-structured, normalized terms. For gene concepts extracted from [NCBI Gene](https://www.ncbi.nlm.nih.gov/gene/), [Ensembl](https://useast.ensembl.org/index.html), and [HGNC](https://www.genenames.org/), it designates a [CURIE](https://en.wikipedia.org/wiki/CURIE), and provides additional metadata like current and previously-used symbols, aliases, database cross-references and associations, and coordinates.
-
+<!-- /description -->
 ---
 
 **[Live service](https://normalize.cancervariants.org/gene)**
