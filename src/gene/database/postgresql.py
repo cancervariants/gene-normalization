@@ -7,7 +7,7 @@ import tarfile
 import tempfile
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Generator, List, Optional, Set, Tuple
+from typing import Any, Dict, Generator, List, Optional, Set, Tuple, Union
 
 import click
 import psycopg
@@ -25,7 +25,15 @@ from gene.database import (
     DatabaseReadError,
     DatabaseWriteError,
 )
-from gene.schemas import RecordType, RefType, SourceMeta, SourceName
+from gene.database.schemas import StoredGene
+from gene.schemas import (
+    DataLicenseAttributes,
+    Gene,
+    RecordType,
+    RefType,
+    SourceMeta,
+    SourceName,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -97,7 +105,6 @@ class PostgresDatabase(AbstractDatabase):
     _drop_db_query = b"""
     DROP MATERIALIZED VIEW IF EXISTS record_lookup_view;
     DROP TABLE IF EXISTS
-        gene_associations,
         gene_symbols,
         gene_previous_symbols,
         gene_aliases,
@@ -272,7 +279,7 @@ class PostgresDatabase(AbstractDatabase):
             cur.execute(tables_query)
             self.conn.commit()
 
-    def get_source_metadata(self, src_name: SourceName) -> Dict:
+    def get_source_metadata(self, src_name: Union[str, SourceName]) -> SourceMeta:
         """Get license, versioning, data lookup, etc information for a source.
 
         :param src_name: name of the source to get data for
@@ -289,19 +296,19 @@ class PostgresDatabase(AbstractDatabase):
             metadata_result = cur.fetchone()
             if not metadata_result:
                 raise DatabaseReadError(f"{src_name} metadata lookup failed")
-            metadata = {
-                "data_license": metadata_result[1],
-                "data_license_url": metadata_result[2],
-                "version": metadata_result[3],
-                "data_url": metadata_result[4],
-                "rdp_url": metadata_result[5],
-                "data_license_attributes": {
-                    "non_commercial": metadata_result[6],
-                    "attribution": metadata_result[7],
-                    "share_alike": metadata_result[8],
-                },
-                "genome_assemblies": metadata_result[9],
-            }
+            metadata = SourceMeta(
+                data_license=metadata_result[1],
+                data_license_url=metadata_result[2],
+                version=metadata_result[3],
+                data_url=metadata_result[4],
+                rdp_url=metadata_result[5],
+                data_license_attributes=DataLicenseAttributes(
+                    non_commercial=metadata_result[6],
+                    attribution=metadata_result[7],
+                    share_alike=metadata_result[8],
+                ),
+                genome_assemblies=metadata_result[9],
+            )
             self._cached_sources[src_name] = metadata
             return metadata
 
@@ -309,48 +316,33 @@ class PostgresDatabase(AbstractDatabase):
         b"SELECT * FROM record_lookup_view WHERE lower(concept_id) = %s;"  # noqa: E501
     )
 
-    def _format_source_record(self, source_row: Tuple) -> Dict:
+    def _format_source_record(self, source_row: Tuple) -> Gene:
         """Restructure row from gene_concepts table as source record result object.
 
         :param source_row: result tuple from psycopg
         :return: reformatted dictionary keying gene properties to row values
         """
-        gene_record = {
-            "concept_id": source_row[0],
-            "symbol_status": source_row[1],
-            "label": source_row[2],
-            "strand": source_row[3],
-            "location_annotations": source_row[4],
-            "locations": source_row[5],
-            "gene_type": source_row[6],
-            "aliases": source_row[7],
-            "associated_with": source_row[8],
-            "previous_symbols": source_row[9],
-            "symbol": source_row[10],
-            "xrefs": source_row[11],
-            "src_name": source_row[12],
-            "merge_ref": source_row[13],
-            "item_type": RecordType.IDENTITY.value,
-        }
-        return {k: v for k, v in gene_record.items() if v}
-
-    def _get_record(self, concept_id: str, case_sensitive: bool) -> Optional[Dict]:
-        """Retrieve non-merged record. The query is pretty different, so this method
-        is broken out for PostgreSQL.
-
-        :param concept_id: ID of concept to get
-        :param case_sensitive: record lookups are performed using a case-insensitive
-            index, so this parameter isn't used by Postgres
-        :return: complete record object if successful
-        """
-        concept_id_param = concept_id.lower()
-
-        with self.conn.cursor() as cur:
-            cur.execute(self._get_record_query, [concept_id_param])
-            result = cur.fetchone()
-        if not result:
-            return None
-        return self._format_source_record(result)
+        # return Gene(
+        #     id=source_row[0],
+        #     # SymbolStatusExtension
+        # )
+        # gene_record = {
+        #     "concept_id": source_row[0],
+        #     "symbol_status": source_row[1],
+        #     "label": source_row[2],
+        #     "strand": source_row[3],
+        #     "location_annotations": source_row[4],
+        #     "locations": source_row[5],
+        #     "gene_type": source_row[6],
+        #     "aliases": source_row[7],
+        #     "previous_symbols": source_row[9],  # TODO
+        #     "symbol": source_row[10],
+        #     "xrefs": source_row[11],
+        #     "src_name": source_row[12],
+        #     "merge_ref": source_row[13],
+        #     "item_type": RecordType.IDENTITY.value,
+        # }
+        # return {k: v for k, v in gene_record.items() if v}
 
     def _format_merged_record(self, merged_row: Tuple) -> Dict:
         """Restructure row from gene_merged table as normalized result object.
@@ -373,8 +365,7 @@ class PostgresDatabase(AbstractDatabase):
             "hgnc_locus_type": merged_row[11],
             "ncbi_gene_type": merged_row[12],
             "aliases": merged_row[13],
-            "associated_with": merged_row[14],
-            "xrefs": merged_row[15],
+            "xrefs": merged_row[15],  # TODO
             "item_type": RecordType.MERGER.value,
         }
         return {k: v for k, v in merged_record.items() if v}
@@ -402,29 +393,30 @@ class PostgresDatabase(AbstractDatabase):
         return self._format_merged_record(result)
 
     def get_record_by_id(
-        self, concept_id: str, case_sensitive: bool = True, merge: bool = False
-    ) -> Optional[Dict]:
+        self, concept_id: str, case_sensitive: bool = True
+    ) -> Optional[Gene]:
         """Fetch record corresponding to provided concept ID
-        :param str concept_id: concept ID for gene record
-        :param bool case_sensitive:
-        :param bool merge: if true, look for merged record; look for identity record
-        otherwise.
+
+        :param concept_id: concept ID for gene record
+        :param case_sensitive: not used by postgres implementation
         :return: complete gene record, if match is found; None otherwise
         """
-        if merge:
-            return self._get_merged_record(concept_id, case_sensitive)
-        else:
-            return self._get_record(concept_id, case_sensitive)
+        concept_id_param = concept_id.lower()
+        with self.conn.cursor() as cur:
+            cur.execute(self._get_record_query, [concept_id_param])
+            result = cur.fetchone()
+        if not result:
+            return None
+        return self._format_source_record(result)
 
     _ref_types_query = {
         RefType.SYMBOL: b"SELECT concept_id FROM gene_symbols WHERE lower(symbol) = %s;",  # noqa: E501
         RefType.PREVIOUS_SYMBOLS: b"SELECT concept_id FROM gene_previous_symbols WHERE lower(prev_symbol) = %s;",  # noqa: E501
         RefType.ALIASES: b"SELECT concept_id FROM gene_aliases WHERE lower(alias) = %s;",  # noqa: E501
         RefType.XREFS: b"SELECT concept_id FROM gene_xrefs WHERE lower(xref) = %s;",
-        RefType.ASSOCIATED_WITH: b"SELECT concept_id FROM gene_associations WHERE lower(associated_with) = %s;",  # noqa: E501
     }
 
-    def get_refs_by_type(self, search_term: str, ref_type: RefType) -> List[str]:
+    def get_ids_by_ref(self, search_term: str, ref_type: RefType) -> List[str]:
         """Retrieve concept IDs for records matching the user's query. Other methods
         are responsible for actually retrieving full records.
 
@@ -518,11 +510,11 @@ class PostgresDatabase(AbstractDatabase):
         VALUES ( %s, %s, %s, %s, %s, %s, %s, %s, %s, %s );
     """
 
-    def add_source_metadata(self, src_name: SourceName, meta: SourceMeta) -> None:
+    def add_source_metadata(self, src_name: SourceName, metadata: SourceMeta) -> None:
         """Add new source metadata entry.
 
         :param src_name: name of source
-        :param meta: known source attributes
+        :param metadata: known source attributes
         :raise DatabaseWriteError: if write fails
         """
         with self.conn.cursor() as cur:
@@ -530,15 +522,15 @@ class PostgresDatabase(AbstractDatabase):
                 self._add_source_metadata_query,
                 [
                     src_name.value,
-                    meta.data_license,
-                    meta.data_license_url,
-                    meta.version,
-                    json.dumps(meta.data_url),
-                    meta.rdp_url,
-                    meta.data_license_attributes["non_commercial"],
-                    meta.data_license_attributes["attribution"],
-                    meta.data_license_attributes["share_alike"],
-                    meta.genome_assemblies,
+                    metadata.data_license,
+                    metadata.data_license_url,
+                    metadata.version,
+                    json.dumps(metadata.data_url),
+                    metadata.rdp_url,
+                    metadata.data_license_attributes.non_commercial,
+                    metadata.data_license_attributes.attribution,
+                    metadata.data_license_attributes.share_alike,
+                    metadata.genome_assemblies,
                 ],
             )
         self.conn.commit()
@@ -558,19 +550,17 @@ class PostgresDatabase(AbstractDatabase):
     )
     _ins_alias_query = b"INSERT INTO gene_aliases (alias, concept_id) VALUES (%s, %s);"
     _ins_xref_query = b"INSERT INTO gene_xrefs (xref, concept_id) VALUES (%s, %s);"
-    _ins_assoc_query = (
-        b"INSERT INTO gene_associations (associated_with, concept_id) VALUES (%s, %s);"
-    )
 
-    def add_record(self, record: Dict, src_name: SourceName) -> None:
+    def add_record(self, gene: StoredGene, src_name: SourceName) -> None:
         """Add new record to database.
 
-        :param record: record to upload
-        :param src_name: name of source for record. Not used by PostgreSQL instance.
+        :param record: source gene record to upload
+        :param src_name: name of source for record.
         """
-        concept_id = record["concept_id"]
-        locations = [json.dumps(loc) for loc in record.get("locations", [])]
-        if not locations:
+        concept_id = gene.concept_id
+        if gene.locations:
+            locations = [json.dumps(loc) for loc in gene.locations]
+        else:
             locations = None
         with self.conn.cursor() as cur:
             try:
@@ -578,25 +568,23 @@ class PostgresDatabase(AbstractDatabase):
                     self._add_record_query,
                     [
                         concept_id,
-                        record["src_name"],
-                        record.get("symbol_status"),
-                        record.get("label"),
-                        record.get("strand"),
-                        record.get("location_annotations"),
+                        src_name.value,
+                        gene.symbol_status,
+                        gene.label,
+                        gene.strand,
+                        gene.location_annotations,
                         locations,
-                        record.get("gene_type"),
+                        gene.gene_types,  # TODO now its plural
                     ],
                 )
-                for a in record.get("aliases", []):
+                for a in gene.get("aliases", []):
                     cur.execute(self._ins_alias_query, [a, concept_id])
-                for x in record.get("xrefs", []):
+                for x in gene.get("xrefs", []):
                     cur.execute(self._ins_xref_query, [x, concept_id])
-                for a in record.get("associated_with", []):
-                    cur.execute(self._ins_assoc_query, [a, concept_id])
-                for p in record.get("previous_symbols", []):
+                for p in gene.get("previous_symbols", []):
                     cur.execute(self._ins_prev_symbol_query, [p, concept_id])
-                if record.get("symbol"):
-                    cur.execute(self._ins_symbol_query, [record["symbol"], concept_id])
+                if gene.get("symbol"):
+                    cur.execute(self._ins_symbol_query, [gene["symbol"], concept_id])
                 self.conn.commit()
             except UniqueViolation:
                 _logger.error(f"Record with ID {concept_id} already exists")
@@ -612,43 +600,42 @@ class PostgresDatabase(AbstractDatabase):
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
 
-    def add_merged_record(self, record: Dict) -> None:
+    def add_merged_record(self, merged_gene: StoredGene) -> None:
         """Add merged record to database.
 
-        :param record: merged record to add
+        :param merged_gene: merged gene record to add
         """
-        ensembl_locations = record.get("ensembl_locations")
-        if ensembl_locations:
-            ensembl_locations = [json.dumps(i) for i in ensembl_locations]
-        ncbi_locations = record.get("ncbi_locations")
-        if ncbi_locations:
-            ncbi_locations = [json.dumps(i) for i in ncbi_locations]
-        hgnc_locations = record.get("hgnc_locations")
-        if hgnc_locations:
-            hgnc_locations = [json.dumps(i) for i in hgnc_locations]
-        with self.conn.cursor() as cur:
-            cur.execute(
-                self._add_merged_record_query,
-                [
-                    record["concept_id"],
-                    record.get("symbol"),
-                    record.get("symbol_status"),
-                    record.get("previous_symbols"),
-                    record.get("label"),
-                    record.get("strand"),
-                    record.get("location_annotations"),
-                    ensembl_locations,
-                    hgnc_locations,
-                    ncbi_locations,
-                    record.get("hgnc_locus_type"),
-                    record.get("ensembl_biotype"),
-                    record.get("ncbi_gene_type"),
-                    record.get("aliases"),
-                    record.get("associated_with"),
-                    record.get("xrefs"),
-                ],
-            )
-            self.conn.commit()
+        # ensembl_locations = record.get("ensembl_locations")
+        # if ensembl_locations:
+        #     ensembl_locations = [json.dumps(i) for i in ensembl_locations]
+        # ncbi_locations = record.get("ncbi_locations")
+        # if ncbi_locations:
+        #     ncbi_locations = [json.dumps(i) for i in ncbi_locations]
+        # hgnc_locations = record.get("hgnc_locations")
+        # if hgnc_locations:
+        #     hgnc_locations = [json.dumps(i) for i in hgnc_locations]
+        # with self.conn.cursor() as cur:
+        #     cur.execute(
+        #         self._add_merged_record_query,
+        #         [
+        #             record["concept_id"],
+        #             record.get("symbol"),
+        #             record.get("symbol_status"),
+        #             record.get("previous_symbols"),
+        #             record.get("label"),
+        #             record.get("strand"),
+        #             record.get("location_annotations"),
+        #             ensembl_locations,
+        #             hgnc_locations,
+        #             ncbi_locations,
+        #             record.get("hgnc_locus_type"),
+        #             record.get("ensembl_biotype"),
+        #             record.get("ncbi_gene_type"),
+        #             record.get("aliases"),
+        #             record.get("xrefs"),
+        #         ],
+        #     )
+        #     self.conn.commit()
 
     _update_merge_ref_query = b"""
     UPDATE gene_concepts
@@ -780,7 +767,7 @@ class PostgresDatabase(AbstractDatabase):
             self.conn.commit()
             self.conn.close()
 
-    def load_from_remote(self, url: Optional[str]) -> None:
+    def load_from_remote(self, url: Optional[str] = None) -> None:
         """Load DB from remote dump. Warning: Deletes all existing data. If not
         passed as an argument, will try to grab latest release from VICC S3 bucket.
 
@@ -822,7 +809,7 @@ class PostgresDatabase(AbstractDatabase):
         if result != 0:
             raise DatabaseError(f"System call '{result}' returned failing exit code.")
 
-    def export_db(self, output_directory: Path) -> None:
+    def export_db(self, export_location: Path) -> None:
         """Dump DB to specified location.
 
         :param export_location: path to directory to save DB dump in
@@ -831,12 +818,12 @@ class PostgresDatabase(AbstractDatabase):
         :raise ValueError: if output directory isn't a directory or doesn't exist
         :raise DatabaseError: if psql call fails
         """
-        if not output_directory.is_dir() or not output_directory.exists():
+        if not export_location.is_dir() or not export_location.exists():
             raise ValueError(
-                f"Output location {output_directory} isn't a directory or doesn't exist"
+                f"Output location {export_location} isn't a directory or doesn't exist"
             )  # noqa: E501
         now = datetime.now().strftime("%Y%m%d%H%M%S")
-        output_location = output_directory / f"gene_norm_{now}.sql"
+        output_location = export_location / f"gene_norm_{now}.sql"
         user = self.conn.info.user
         host = self.conn.info.host
         port = self.conn.info.port

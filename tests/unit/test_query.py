@@ -15,7 +15,7 @@ def query_handler(database):
             self.query_handler = QueryHandler(database)
 
         def search(self, query_str, sources=None):
-            return self.query_handler.search(query_str=query_str, sources=sources)
+            return self.query_handler.search(query=query_str, sources=sources)
 
         def normalize(self, query_str):
             return self.query_handler.normalize(query_str)

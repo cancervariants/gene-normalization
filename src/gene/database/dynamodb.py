@@ -22,9 +22,10 @@ from gene.database.database import (
     DatabaseWriteError,
     confirm_aws_db_use,
 )
+from gene.database.schemas import StoredGene, convert_to_gene
 from gene.schemas import (
     ITEM_TYPES,
-    PREFIX_LOOKUP,
+    Gene,
     RecordType,
     RefType,
     SourceMeta,
@@ -95,7 +96,7 @@ class DynamoDbDatabase(AbstractDatabase):
 
         self.genes = self.dynamodb.Table(self.gene_table)
         self.batch = self.genes.batch_writer()
-        self._cached_sources = {}
+        self._cached_sources: Dict[str, SourceMeta] = {}
         atexit.register(self.close_connection)
 
     def list_tables(self) -> List[str]:
@@ -210,10 +211,12 @@ class DynamoDbDatabase(AbstractDatabase):
         if not self.check_schema_initialized():
             self._create_genes_table()
 
-    def get_source_metadata(self, src_name: Union[str, SourceName]) -> Dict:
+    def get_source_metadata(self, src_name: Union[str, SourceName]) -> SourceMeta:
         """Get license, versioning, data lookup, etc information for a source.
 
         :param src_name: name of the source to get data for
+        :return: structured metadata object
+        :raise DatabaseReadError: if unable to find metadata for source
         """
         if isinstance(src_name, SourceName):
             src_name = src_name.value
@@ -225,51 +228,53 @@ class DynamoDbDatabase(AbstractDatabase):
             metadata = self.genes.get_item(
                 Key={"label_and_type": pk, "concept_id": concept_id}
             ).get("Item")
+            structured_metadata = SourceMeta(**metadata)
             if not metadata:
                 raise DatabaseReadError(
                     f"Unable to retrieve data for source {src_name}"
                 )
-            self._cached_sources[src_name] = metadata
-            return metadata
+            self._cached_sources[src_name] = structured_metadata
+            return structured_metadata
+
+    @staticmethod
+    def _get_gene_from_record(record: Dict) -> Gene:
+        """TODO"""
 
     def get_record_by_id(
-        self, concept_id: str, case_sensitive: bool = True, merge: bool = False
-    ) -> Optional[Dict]:
+        self, concept_id: str, case_sensitive: bool = True
+    ) -> Optional[Gene]:
         """Fetch record corresponding to provided concept ID
 
-        :param str concept_id: concept ID for gene record
-        :param bool case_sensitive: if true, performs exact lookup, which is more
+        :param concept_id: concept ID for gene record
+        :param case_sensitive: if true, performs exact lookup, which is more
             efficient. Otherwise, performs filter operation, which doesn't require
             correct casing.
-        :param bool merge: if true, look for merged record; look for identity record
-            otherwise.
         :return: complete gene record, if match is found; None otherwise
         """
+        pk = f"{concept_id.lower()}##{RecordType.IDENTITY.value}"
         try:
-            if merge:
-                pk = f"{concept_id.lower()}##{RecordType.MERGER.value}"
-            else:
-                pk = f"{concept_id.lower()}##{RecordType.IDENTITY.value}"
             if case_sensitive:
                 match = self.genes.get_item(
                     Key={"label_and_type": pk, "concept_id": concept_id}
                 )
-                return match["Item"]
+                result = match["Item"]
             else:
                 exp = Key("label_and_type").eq(pk)
                 response = self.genes.query(KeyConditionExpression=exp)
-                record = response["Items"][0]
-                del record["label_and_type"]
-                return record
+                result = response["Items"][0]
+        except (KeyError, IndexError):  # record doesn't exist
+            return None
         except ClientError as e:
             _logger.error(
                 f"boto3 client error on get_records_by_id for search term {concept_id}: {e.response['Error']['Message']}"
             )
             return None
-        except (KeyError, IndexError):  # record doesn't exist
-            return None
 
-    def get_refs_by_type(self, search_term: str, ref_type: RefType) -> List[str]:
+        result_parsed = StoredGene(**result)
+        result_formatted = convert_to_gene(result_parsed)
+        return result_formatted
+
+    def get_ids_by_ref(self, search_term: str, ref_type: RefType) -> List[str]:
         """Retrieve concept IDs for records matching the user's query. Other methods
         are responsible for actually retrieving full records.
 
@@ -287,6 +292,31 @@ class DynamoDbDatabase(AbstractDatabase):
                 f"boto3 client error on get_refs_by_type for search term {search_term}: {e.response['Error']['Message']}"
             )
             return []
+
+    def get_normalized_record(self, concept_id: str) -> Optional[Gene]:
+        """TODO"""
+        result = self.genes.get_item(
+            Key={
+                "label_and_type": f"{concept_id.lower()}##{RecordType.IDENTITY.value}",
+                "concept_id": concept_id,
+            }
+        )
+        if "Item" not in result:
+            return None
+        record = result["Item"]
+        if "normalized_id" in record:
+            normalized_id = record["normalized_id"]
+            result = self.genes.get_item(
+                Key={
+                    "label_and_type": f"normalize.gene.{normalized_id.lower()}##{RecordType.MERGER.value}",
+                    "concept_id": normalized_id,
+                }
+            )
+            if "Item" not in result:
+                _logger.error("Broken merge ref to % in %.", normalized_id, concept_id)
+                return None
+            record = result["Item"]
+        return record
 
     def get_all_concept_ids(self) -> Set[str]:
         """Retrieve concept IDs for use in generating normalized records.
@@ -313,7 +343,8 @@ class DynamoDbDatabase(AbstractDatabase):
                 break
         return set(concept_ids)
 
-    def get_all_records(self, record_type: RecordType) -> Generator[Dict, None, None]:
+    # TODO not done
+    def get_all_records(self, record_type: RecordType) -> Generator[Gene, None, None]:
         """Retrieve all source or normalized records. Either return all source records,
         or all records that qualify as "normalized" (i.e., merged groups + source
         records that are otherwise ungrouped).
@@ -361,7 +392,7 @@ class DynamoDbDatabase(AbstractDatabase):
         :raise DatabaseWriteError: if write fails
         """
         src_name_value = src_name.value
-        metadata_item = metadata.model_dump()
+        metadata_item = metadata.model_dump(mode="json", exclude_none=True)
         metadata_item["src_name"] = src_name_value
         metadata_item["label_and_type"] = f"{str(src_name_value).lower()}##source"
         metadata_item["concept_id"] = f"source:{str(src_name_value).lower()}"
@@ -371,72 +402,68 @@ class DynamoDbDatabase(AbstractDatabase):
         except ClientError as e:
             raise DatabaseWriteError(e)
 
-    def add_record(self, record: Dict, src_name: SourceName) -> None:
+    def add_record(self, gene: StoredGene, src_name: SourceName) -> None:
         """Add new record to database.
 
-        :param Dict record: record to upload
-        :param SourceName src_name: name of source for record
+        :param record: source gene record to upload
+        :param src_name: name of source for record.
         """
-        concept_id = record["concept_id"]
-        record["src_name"] = src_name.value
-        label_and_type = f"{concept_id.lower()}##identity"
-        record["label_and_type"] = label_and_type
-        record["item_type"] = "identity"
+        db_record = gene.model_dump(mode="json", exclude_none=True)
+        concept_id = gene.concept_id
+        db_record["src_name"] = src_name.value
+        db_record["label_and_type"] = f"{concept_id.lower()}##identity"
+        db_record["item_type"] = RecordType.IDENTITY
         try:
-            self.batch.put_item(Item=record)
+            self.batch.put_item(Item=db_record)
         except ClientError as e:
             _logger.error(
                 f"boto3 client error on add_record for {concept_id}: {e.response['Error']['Message']}"
             )
-        for attr_type, item_type in ITEM_TYPES.items():
-            if attr_type in record:
-                value = record.get(attr_type)
+        for attr_type in ITEM_TYPES.keys():
+            if attr_type in db_record:
+                value = db_record[attr_type]
                 if not value:
                     continue
+                ref_type = RefType[attr_type.upper()]
                 if isinstance(value, str):
-                    items = [value.lower()]
+                    self._add_ref_record(value, concept_id, ref_type, src_name)
                 else:
-                    items = {item.lower() for item in value}
-                for item in items:
-                    self._add_ref_record(
-                        item, record["concept_id"], item_type, src_name
-                    )
+                    for item in {v.lower() for v in value}:
+                        self._add_ref_record(item, concept_id, ref_type, src_name)
 
-    def add_merged_record(self, record: Dict) -> None:
+    def add_merged_record(self, merged_gene: StoredGene) -> None:
         """Add merged record to database.
 
-        :param record: merged record to add
+        :param merged_gene: merged gene record to add
         """
-        concept_id = record["concept_id"]
-        id_prefix = concept_id.split(":")[0].lower()
-        record["src_name"] = PREFIX_LOOKUP[id_prefix]
-        label_and_type = f"{concept_id.lower()}##{RecordType.MERGER.value}"
-        record["label_and_type"] = label_and_type
-        record["item_type"] = RecordType.MERGER.value
+        db_record = merged_gene.model_dump(mode="json", exclude_none=True)
+        concept_id = db_record["concept_id"]
+        db_record["label_and_type"] = f"{concept_id.lower()}##{RecordType.MERGER.value}"
+        db_record["item_type"] = RecordType.MERGER.value
+
         try:
-            self.batch.put_item(Item=record)
+            self.batch.put_item(Item=db_record)
         except ClientError as e:
             _logger.error(
                 f"boto3 client error on add_record for {concept_id}: {e.response['Error']['Message']}"
             )
 
     def _add_ref_record(
-        self, term: str, concept_id: str, ref_type: str, src_name: SourceName
+        self, term: str, concept_id: str, ref_type: RefType, src_name: SourceName
     ) -> None:
         """Add auxiliary/reference record to database.
 
-        :param str term: referent term
-        :param str concept_id: concept ID to refer to
-        :param str ref_type: one of {'alias', 'label', 'xref',
-            'associated_with'}
+        :param term: referent term
+        :param concept_id: concept ID to refer to
+        :param ref_type: type of reference
         :param src_name: name of source for record
         """
-        label_and_type = f"{term.lower()}##{ref_type}"
+        label_and_type = f"{term.lower()}##{ref_type.value}"
         record = {
             "label_and_type": label_and_type,
             "concept_id": concept_id.lower(),
             "src_name": src_name.value,
-            "item_type": ref_type,
+            "item_type": ref_type.value,
         }
         try:
             self.batch.put_item(Item=record)

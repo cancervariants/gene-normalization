@@ -4,11 +4,12 @@ import sys
 from enum import Enum
 from os import environ
 from pathlib import Path
-from typing import Any, Dict, Generator, List, Optional, Set, Union
+from typing import Any, Generator, List, Optional, Set, Union
 
 import click
 
-from gene.schemas import RecordType, RefType, SourceMeta, SourceName
+from gene.database.schemas import StoredGene
+from gene.schemas import Gene, RecordType, RefType, SourceMeta, SourceName
 
 
 class DatabaseError(Exception):
@@ -107,28 +108,28 @@ class AbstractDatabase(abc.ABC):
         """
 
     @abc.abstractmethod
-    def get_source_metadata(self, src_name: Union[str, SourceName]) -> Dict:
+    def get_source_metadata(self, src_name: Union[str, SourceName]) -> SourceMeta:
         """Get license, versioning, data lookup, etc information for a source.
 
         :param src_name: name of the source to get data for
+        :return: structured metadata object
+        :raise DatabaseReadError: if unable to find metadata for source
         """
 
     @abc.abstractmethod
     def get_record_by_id(
-        self, concept_id: str, case_sensitive: bool = True, merge: bool = False
-    ) -> Optional[Dict]:
+        self, concept_id: str, case_sensitive: bool = True
+    ) -> Optional[Gene]:
         """Fetch record corresponding to provided concept ID
 
         :param concept_id: concept ID for gene record
         :param case_sensitive: if true, performs exact lookup, which may be quicker.
             Otherwise, performs filter operation, which doesn't require correct casing.
-        :param merge: if true, look for merged record; look for identity
-            record otherwise.
         :return: complete gene record, if match is found; None otherwise
         """
 
     @abc.abstractmethod
-    def get_refs_by_type(self, search_term: str, ref_type: RefType) -> List[str]:
+    def get_ids_by_ref(self, search_term: str, ref_type: RefType) -> List[str]:
         """Retrieve concept IDs for records matching the user's query. Other methods
         are responsible for actually retrieving full records.
 
@@ -138,6 +139,10 @@ class AbstractDatabase(abc.ABC):
         """
 
     @abc.abstractmethod
+    def get_normalized_record(self, concept_id: str) -> Optional[Gene]:
+        """TODO"""
+
+    @abc.abstractmethod
     def get_all_concept_ids(self) -> Set[str]:
         """Retrieve all available concept IDs for use in generating normalized records.
 
@@ -145,7 +150,7 @@ class AbstractDatabase(abc.ABC):
         """
 
     @abc.abstractmethod
-    def get_all_records(self, record_type: RecordType) -> Generator[Dict, None, None]:
+    def get_all_records(self, record_type: RecordType) -> Generator[Gene, None, None]:
         """Retrieve all source or normalized records. Either return all source records,
         or all records that qualify as "normalized" (i.e., merged groups + source
         records that are otherwise ungrouped).
@@ -163,27 +168,27 @@ class AbstractDatabase(abc.ABC):
         """
 
     @abc.abstractmethod
-    def add_source_metadata(self, src_name: SourceName, data: SourceMeta) -> None:
+    def add_source_metadata(self, src_name: SourceName, metadata: SourceMeta) -> None:
         """Add new source metadata entry.
 
         :param src_name: name of source
-        :param data: known source attributes
+        :param metadata: known source attributes
         :raise DatabaseWriteError: if write fails
         """
 
     @abc.abstractmethod
-    def add_record(self, record: Dict, src_name: SourceName) -> None:
+    def add_record(self, gene: StoredGene, src_name: SourceName) -> None:
         """Add new record to database.
 
-        :param record: record to upload
+        :param record: source gene record to upload
         :param src_name: name of source for record.
         """
 
     @abc.abstractmethod
-    def add_merged_record(self, record: Dict) -> None:
+    def add_merged_record(self, merged_gene: StoredGene) -> None:
         """Add merged record to database.
 
-        :param record: merged record to add
+        :param merged_gene: merged gene record to add
         """
 
     @abc.abstractmethod

@@ -2,13 +2,15 @@
 import json
 import logging
 import re
-from typing import Dict
+from typing import Dict, List
 
+from gene.database.schemas import StoredGeneType
 from gene.etl.base import Base, GeneNormalizerEtlError
 from gene.schemas import (
-    PREFIX_LOOKUP,
     Annotation,
     Chromosome,
+    DataLicenseAttributes,
+    GeneTypeExtensionName,
     NamespacePrefix,
     SourceMeta,
     SourceName,
@@ -32,17 +34,13 @@ class HGNC(Base):
         for r in records:
             gene = dict()
             gene["concept_id"] = r["hgnc_id"].lower()
-            gene["label_and_type"] = f"{gene['concept_id']}##identity"
-            gene["item_type"] = "identity"
-            gene["symbol"] = r["symbol"]
-            gene["label"] = r["name"]
-            gene["src_name"] = SourceName.HGNC.value
+            gene["label"] = r["symbol"]
+            gene["approved_name"] = r["name"]
             if r["status"]:
                 if r["status"] == "Approved":
                     gene["symbol_status"] = SymbolStatus.APPROVED.value
                 elif r["status"] == "Entry Withdrawn":
                     gene["symbol_status"] = SymbolStatus.WITHDRAWN.value
-            gene["src_name"] = SourceName.HGNC.value
 
             # store alias, xref, associated_with, prev_symbols, location
             self._get_aliases(r, gene)
@@ -52,8 +50,12 @@ class HGNC(Base):
             if "location" in r:
                 self._get_location(r, gene)
             if "locus_type" in r:
-                gene["gene_type"] = r["locus_type"]
-                self._load_gene(gene)
+                gene["gene_types"] = [
+                    StoredGeneType(
+                        name=GeneTypeExtensionName.HGNC, value=r["locus_type"]
+                    )
+                ]
+            self._load_gene(gene)
         _logger.info("HGNC data transform complete.")
 
     def _get_aliases(self, r: Dict, gene: Dict) -> None:
@@ -82,15 +84,16 @@ class HGNC(Base):
         prev_symbols = r["prev_symbol"]
         if prev_symbols:
             gene["previous_symbols"] = list(set(prev_symbols))
+        else:  # TODO
+            breakpoint()
 
-    def _get_xrefs_associated_with(self, r: Dict, gene: Dict) -> None:
+    def _get_xrefs_associated_with(self, hgnc_record: Dict, gene: Dict) -> None:
         """Store xrefs and/or associated_with refs in a gene record.
 
-        :param r: A gene record in the HGNC data file
+        :param record: A gene record  the HGNC data file
         :param gene: A transformed gene record
         """
-        xrefs = list()
-        associated_with = list()
+        xrefs = []
         sources = [
             "entrez_id",
             "ensembl_gene_id",
@@ -119,7 +122,7 @@ class HGNC(Base):
         ]
 
         for src in sources:
-            if src in r:
+            if src in hgnc_record:
                 if "-" in src:
                     key = src.split("-")[0]
                 elif "." in src:
@@ -130,35 +133,28 @@ class HGNC(Base):
                     key = src
 
                 if key.upper() in NamespacePrefix.__members__:
-                    if NamespacePrefix[key.upper()].value in PREFIX_LOOKUP.keys():
-                        self._get_xref_associated_with(key, src, r, xrefs)
-                    else:
-                        self._get_xref_associated_with(key, src, r, associated_with)
+                    self._get_xref(key, src, hgnc_record, xrefs)
                 else:
                     _logger.warning(f"{key} not in schemas.py")
 
         if xrefs:
             gene["xrefs"] = xrefs
-        if associated_with:
-            gene["associated_with"] = associated_with
 
-    def _get_xref_associated_with(
-        self, key: str, src: str, r: Dict, src_type: Dict
-    ) -> None:
+    def _get_xref(self, key: str, src: str, hgnc_record: Dict, xrefs: List) -> None:
         """Add an xref or associated_with ref to a gene record.
 
         :param key: The source's name
         :param src: HGNC's source field
-        :param r: A gene record in the HGNC data file
-        :param src_type: Either xrefs or associated_with list
+        :param hgnc_record: A gene record in the HGNC data file
+        :param xrefs: in-progress list of xrefs from the HGNC record
         """
-        if isinstance(r[src], list):
-            for xref in r[src]:
-                src_type.append(f"{NamespacePrefix[key.upper()].value}:{xref}")
+        if isinstance(hgnc_record[src], list):
+            for xref in hgnc_record[src]:
+                xrefs.append(f"{NamespacePrefix[key.upper()].value}:{xref}")
         else:
-            if isinstance(r[src], str) and ":" in r[src]:
-                r[src] = r[src].split(":")[-1].strip()
-            src_type.append(f"{NamespacePrefix[key.upper()].value}" f":{r[src]}")
+            if isinstance(hgnc_record[src], str) and ":" in hgnc_record[src]:
+                hgnc_record[src] = hgnc_record[src].split(":")[-1].strip()
+            xrefs.append(f"{NamespacePrefix[key.upper()].value}" f":{hgnc_record[src]}")
 
     def _get_location(self, r: Dict, gene: Dict) -> None:
         """Store GA4GH VRS ChromosomeLocation in a gene record.
@@ -211,7 +207,7 @@ class HGNC(Base):
                 loc = loc.split(annotation)[0].strip()
                 if not loc:
                     return None
-        return loc
+        return loc  # TODO ?
 
     def _set_location(self, loc: str, location: Dict, gene: Dict) -> None:
         """Set a gene's location.
@@ -256,11 +252,11 @@ class HGNC(Base):
                 "complete_set_archive": "ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
             },
             rdp_url=None,
-            data_license_attributes={
-                "non_commercial": False,
-                "share_alike": False,
-                "attribution": False,
-            },
+            data_license_attributes=DataLicenseAttributes(
+                non_commercial=False,
+                share_alike=False,
+                attribution=False,
+            ),
             genome_assemblies=[],
         )
         self._database.add_source_metadata(SourceName.HGNC, metadata)

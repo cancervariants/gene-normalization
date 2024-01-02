@@ -1,5 +1,6 @@
 """Main application for FastAPI"""
 import html
+from datetime import datetime
 from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Query
@@ -10,13 +11,23 @@ from gene.query import QueryHandler
 from gene.schemas import (
     SOURCES,
     NormalizeService,
+    NormalizeUnmergedService,
     SearchService,
+    ServiceMeta,
     SourceName,
-    UnmergedNormalizationService,
 )
 
 db = create_db()
 query_handler = QueryHandler(db)
+
+
+def _get_service_meta() -> ServiceMeta:
+    """Create service metadata object
+
+    :return: complete service metadata description
+    """
+    return ServiceMeta(version=__version__, response_datetime=str(datetime.now()))
+
 
 description = """
 The Gene Normalizer provides tools for resolving ambiguous gene references to
@@ -90,8 +101,13 @@ def search(
                     detail=f"Unable to parse source name: {candidate_source}",
                 )
             parsed_sources.append(parsed_source)
-    resp = query_handler.search(html.unescape(q), sources=parsed_sources)
-    return resp
+    search_result = query_handler.search(html.unescape(q), sources=parsed_sources)
+    service_response = SearchService(
+        query=q,
+        results=search_result,
+        service_meta_=_get_service_meta(),
+    )
+    return service_response
 
 
 normalize_summary = "Given query, provide merged normalized record."
@@ -115,8 +131,11 @@ def normalize(q: str = Query(..., description=normalize_q_descr)) -> NormalizeSe
     :param str q: gene search term
     :return: JSON response with normalized gene concept
     """
-    resp = query_handler.normalize(html.unescape(q))
-    return resp
+    normalize_result = query_handler.normalize(html.unescape(q))
+    normalize_response = NormalizeService(
+        query=q, result=normalize_result, service_meta_=_get_service_meta()
+    )
+    return normalize_response
 
 
 unmerged_matches_summary = (
@@ -137,17 +156,20 @@ unmerged_normalize_description = (
     summary=unmerged_matches_summary,
     operation_id="getUnmergedRecords",
     response_description=unmerged_response_descr,
-    response_model=UnmergedNormalizationService,
+    response_model=NormalizeUnmergedService,
     description=unmerged_normalize_description,
     tags=["Query"],
 )
 def normalize_unmerged(
     q: str = Query(..., description=normalize_q_descr),
-) -> UnmergedNormalizationService:
+) -> NormalizeUnmergedService:
     """Return all individual records associated with a normalized concept.
 
     :param q: Gene search term
     :returns: JSON response with matching normalized record and source metadata
     """
-    response = query_handler.normalize_unmerged(html.unescape(q))
+    result = query_handler.normalize_unmerged(html.unescape(q))
+    response = NormalizeUnmergedService(
+        query=q, service_meta_=_get_service_meta(), match=result
+    )
     return response

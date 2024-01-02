@@ -1,38 +1,31 @@
 """Provides methods for handling queries."""
 import logging
 import re
-from datetime import datetime
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, TypeVar
+from typing import List, Optional, Tuple
 
-from ga4gh.core import core_models, ga4gh_identify
-from ga4gh.vrs import models
-
-from gene.database import AbstractDatabase, DatabaseReadError
+from gene.database import AbstractDatabase
 from gene.schemas import (
     ITEM_TYPES,
     NAMESPACE_LOOKUP,
     PREFIX_LOOKUP,
-    BaseGene,
-    BaseNormalizationService,
+    REF_TO_MATCH_MAP,
     Gene,
-    GeneTypeFieldName,
-    MatchesNormalized,
+    GeneMatch,
     MatchType,
-    NamespacePrefix,
-    NormalizeService,
+    NormalizeResult,
+    NormalizeUnmergedMatches,
+    NormalizeUnmergedResult,
+    QueryWarning,
     RecordType,
     RefType,
-    SearchService,
-    ServiceMeta,
-    SourceMeta,
+    ResultSourceMeta,
+    SearchResult,
     SourceName,
     SourcePriority,
-    UnmergedNormalizationService,
+    WarningType,
 )
-from gene.version import __version__
 
 _logger = logging.getLogger(__name__)
-NormService = TypeVar("NormService", bound=BaseNormalizationService)
 
 
 class QueryHandler:
@@ -58,463 +51,169 @@ class QueryHandler:
         self.db = database
 
     @staticmethod
-    def _emit_warnings(query_str: str) -> List:
-        """Emit warnings if query contains non breaking space characters.
+    def _parse_query_input(raw_query: str) -> Tuple[str, List[QueryWarning]]:
+        """Preprocess user query:
+        * Strip white space
+        * Check for non-breaking spaces.
 
-        :param query_str: query string
-        :return: List of warnings
+        Return any necessary warnings.
+
+        :param raw_str: raw query string
+        :return: updated query and list of warnings
         """
-        warnings = []
-        nbsp = re.search("\xa0|&nbsp;", query_str)
-        if nbsp:
-            warnings = [
-                {
-                    "non_breaking_space_characters": "Query contains non-breaking space characters"
-                }
-            ]
-            _logger.warning(
-                f"Query ({query_str}) contains non-breaking space characters."
-            )
-        return warnings
-
-    @staticmethod
-    def _transform_sequence_location(loc: Dict) -> models.SequenceLocation:
-        """Transform a sequence location to VRS sequence location
-
-        :param loc: GeneSequenceLocation represented as a dict
-        :return: VRS sequence location
-        """
-        refget_ac = loc["sequence_id"].split("ga4gh:")[-1]
-
-        return models.SequenceLocation(
-            sequenceReference=models.SequenceReference(refgetAccession=refget_ac),
-            start=int(loc["start"]),
-            end=int(loc["end"]),
-        )
-
-    # @staticmethod
-    # def _transform_chromosome_location(loc: Dict) -> ChromosomeLocation:
-    #     """Transform a chromosome location to VRS chromosome location
-
-    #     :param loc: Chromosome location
-    #     :return: VRS chromosome location
-    #     """
-    #     return ChromosomeLocation(
-    #         species_id=loc["species_id"],
-    #         chr=loc["chr"],
-    #         start=loc["start"],
-    #         end=loc["end"]
-    #     )
-
-    def _transform_location(self, loc: Dict) -> Dict:
-        """Transform a sequence/chromosome location to VRS sequence/chromosome location
-
-        :param loc: Sequence or Chromosome location
-        :return: VRS sequence or chromosome location represented as a dictionary
-        """
-        # if loc["type"] == "SequenceLocation":
-        #     transformed_loc = self._transform_sequence_location(loc)
-        # else:
-        #     transformed_loc = self._transform_chromosome_location(loc)
-        # Only support sequence locations atm
-        transformed_loc = self._transform_sequence_location(loc)
-        transformed_loc.id = ga4gh_identify(transformed_loc)
-        return transformed_loc.model_dump(exclude_none=True)
-
-    def _transform_locations(self, record: Dict) -> Dict:
-        """Transform gene locations to VRS Chromosome/Sequence Locations
-
-        :param record: original record
-        :return: record with transformed locations attributes, if applicable
-        """
-        record_locations = list()
-        if "locations" in record:
-            for loc in record["locations"]:
-                if loc["type"] == "SequenceLocation":
-                    record_locations.append(self._transform_location(loc))
-        record["locations"] = record_locations
-        return record
-
-    def _get_src_name(self, concept_id: str) -> SourceName:
-        """Get source name enum from ID.
-
-        :param concept_id: candidate concept ID string to check
-        :return: SourceName option
-        :raise: ValueError if unrecognized ID provided
-        """
-        if concept_id.startswith(NamespacePrefix.ENSEMBL.value):
-            return SourceName.ENSEMBL
-        elif concept_id.startswith(NamespacePrefix.NCBI.value):
-            return SourceName.NCBI
-        elif concept_id.startswith(NamespacePrefix.HGNC.value):
-            return SourceName.HGNC
-        else:
-            raise ValueError("Invalid or unrecognized concept ID provided")
-
-    def _add_record(
-        self, response: Dict[str, Dict], item: Dict, match_type: MatchType
-    ) -> None:
-        """Add individual record (i.e. Item in DynamoDB) to response object
-
-        :param response: in-progress response object to return to client
-        :param item: Item retrieved from DynamoDB
-        :param match_type: match type for query
-        """
-        item = self._transform_locations(item)
-        item["match_type"] = match_type
-        gene = Gene(**item)
-        src_name = item["src_name"]
-
-        matches = response["source_matches"]
-        if src_name not in matches.keys():
-            pass
-        elif matches[src_name] is None:
-            matches[src_name] = {
-                "records": [gene],
-                "source_meta_": self.db.get_source_metadata(src_name),
-            }
-        else:
-            matches[src_name]["records"].append(gene)
-
-    def _fetch_record(
-        self, response: Dict[str, Dict], concept_id: str, match_type: MatchType
-    ) -> None:
-        """Add fetched record to response
-
-        :param response: in-progress response object to return to client.
-        :param concept_id: Concept id to fetch record for. Should be all lower-case.
-        :param match_type: match type for record
-        """
-        try:
-            match = self.db.get_record_by_id(concept_id, case_sensitive=False)
-        except DatabaseReadError as e:
-            _logger.error(f"Encountered DatabaseReadError looking up {concept_id}: {e}")
-        else:
-            if match:
-                self._add_record(response, match, match_type)
-            else:
-                _logger.error(
-                    f"Unable to find expected record for {concept_id} matching as {match_type}"
-                )  # noqa: E501
-
-    def _post_process_resp(self, resp: Dict) -> Dict:
-        """Fill all empty source_matches slots with NO_MATCH results and
-        sort source records by descending `match_type`.
-
-        :param resp: incoming response object
-        :return: response object with empty source slots filled with NO_MATCH results
-            and corresponding source metadata
-        """
-        for src_name in resp["source_matches"].keys():
-            if resp["source_matches"][src_name] is None:
-                resp["source_matches"][src_name] = {
-                    "match_type": MatchType.NO_MATCH,
-                    "records": [],
-                    "source_meta_": self.db.get_source_metadata(src_name),
-                }
-            else:
-                records = resp["source_matches"][src_name]["records"]
-                if len(records) > 1:
-                    records = sorted(records, key=lambda k: k.match_type, reverse=True)
-        return resp
-
-    def _get_search_response(self, query: str, sources: Iterable[SourceName]) -> Dict:
-        """Return response as dict where key is source name and value is a list of
-        records.
-
-        :param query: string to match against
-        :param sources: sources to match from
-        :return: completed response object to return to client
-        """
-        resp = {
-            "query": query,
-            "warnings": self._emit_warnings(query),
-            "source_matches": {source.value: None for source in sources},
-        }
-        if query == "":
-            return self._post_process_resp(resp)
-        query_l = query.lower()
-
-        queries = list()
-        if [p for p in PREFIX_LOOKUP.keys() if query_l.startswith(p)]:
-            queries.append((query_l, RecordType.IDENTITY.value))
-
-        for prefix in [p for p in NAMESPACE_LOOKUP.keys() if query_l.startswith(p)]:
-            term = f"{NAMESPACE_LOOKUP[prefix].lower()}:{query_l}"
-            queries.append((term, RecordType.IDENTITY.value))
-
-        for match in ITEM_TYPES.values():
-            queries.append((query_l, match))
-
-        matched_concept_ids = list()
-        for term, item_type in queries:
-            try:
-                if item_type == RecordType.IDENTITY.value:
-                    record = self.db.get_record_by_id(term, False)
-                    if record and record["concept_id"] not in matched_concept_ids:
-                        self._add_record(resp, record, MatchType.CONCEPT_ID)
-                else:
-                    refs = self.db.get_refs_by_type(term, RefType(item_type))
-                    for ref in refs:
-                        if ref not in matched_concept_ids:
-                            self._fetch_record(resp, ref, MatchType[item_type.upper()])
-                            matched_concept_ids.append(ref)
-
-            except DatabaseReadError as e:
-                _logger.error(
-                    f"Encountered DatabaseReadError looking up {item_type}"
-                    f" {term}: {e}"
+        warning_list = []
+        parsed_query = raw_query.strip()
+        if raw_query != parsed_query:
+            warning_list.append(
+                QueryWarning(
+                    type=WarningType.STRIPPED_QUERY,
+                    description=f'Stripped query "{raw_query}" to "{parsed_query}"',
                 )
-                continue
+            )
+        nbsp = re.search("\xa0|&nbsp;", parsed_query)
+        if nbsp:
+            warning_list.append(
+                QueryWarning(
+                    type=WarningType.NBSP,
+                    description="Query contains non-breaking space characters",
+                )
+            )
+            _logger.warning(
+                f"Query ({parsed_query}) contains non-breaking space characters."
+            )
+        return (parsed_query.lower(), warning_list)
 
-        # remaining sources get no match
-        return self._post_process_resp(resp)
+    def _get_sources_meta(self, sources: List[SourceName]) -> ResultSourceMeta:
+        """Fetch result source meta object.
+
+        :param sources: List of requested sources
+        :return: structured source metadata for requested sources
+        """
+        params = {}
+        for name in sources:
+            meta = self.db.get_source_metadata(name)
+            params[name.value.lower()] = meta
+        return ResultSourceMeta(**params)
 
     @staticmethod
-    def _get_service_meta() -> ServiceMeta:
-        """Return metadata about gene-normalizer service.
+    def _get_search_queries(query: str) -> List[Tuple[str, MatchType]]:
+        """Construct list of individual queries and corresponding match types to
+        perform.
+        * Check if query is a CURIE from a stored source
+        * Check if a namespace can be inferred  # TODO update warning somehow
+        * Check if the query is a name/reference for any other known item type
 
-        :return: Service Meta
+        :param query: formatted query from user
+        :return: List of queries to perform (search string and corresponding match type)
         """
-        return ServiceMeta(version=__version__, response_datetime=str(datetime.now()))
+        queries = []
+        if query == "":
+            return queries
+        if [p for p in PREFIX_LOOKUP.keys() if query.startswith(str(p))]:
+            queries.append((query, RecordType.IDENTITY.value))
+        for prefix in [p for p in NAMESPACE_LOOKUP.keys() if query.startswith(p)]:
+            term = f"{NAMESPACE_LOOKUP[prefix]}:{query}"
+            queries.append((term, RecordType.IDENTITY.value))
+        for match in ITEM_TYPES.values():
+            queries.append((query, match))
+        return queries
+
+    def _perform_search_queries(
+        self, search_queries: List[Tuple[str, MatchType]]
+    ) -> List[Gene]:
+        """Run all prepared queries.
+
+        :param search_queries: list of queries (strings + match types) to perform
+        :return: list of all matching Genes. Should be non-redundant and ordered by
+        match type.
+        """
+        matched_concept_ids = []
+        matched_genes = []
+        for term, item_type in search_queries:
+            if item_type == RecordType.IDENTITY.value:
+                record = self.db.get_record_by_id(term, False)
+                if record and record.id not in matched_concept_ids:
+                    matched_concept_ids.append(record.id)
+                    matched_genes.append(record)
+            else:
+                refs = self.db.get_ids_by_ref(term, RefType(item_type))
+                for ref in refs:
+                    if ref not in matched_concept_ids:
+                        record = self.db.get_record_by_id(term, False)
+                        if record and record.id not in matched_concept_ids:
+                            matched_concept_ids.append(record.id)
+                            matched_genes.append(record)
+        return matched_genes
 
     def search(
-        self,
-        query_str: str,
-        sources: Optional[List[SourceName]] = None,
-    ) -> SearchService:
-        """Return highest match for each source.
+        self, query: str, sources: Optional[List[SourceName]] = None
+    ) -> SearchResult:
+        """Return all matches for each source.
 
         >>> from gene.query import QueryHandler
         >>> from gene.database import create_db
         >>> q = QueryHandler(create_db())
         >>> result = q.search("BRAF")
-        >>> result.source_matches[0].records[0].concept_id
+        >>> result.source_matches[0].records[0].concept_id  # TODO update
         'ncbigene:673'
 
         :param query_str: query, a string, to search for
         :param sources: If given, only return records from these sources
-        :return: SearchService class containing all matches found in sources.
+        :return: search response class containing all matches found in sources.
         """
         if not sources:
             sources = list(SourceName.__members__.values())
+        parsed_query, warnings = self._parse_query_input(query)
+        response = SearchResult(
+            warnings=warnings, source_meta=self._get_sources_meta(sources)
+        )
+        search_queries = self._get_search_queries(parsed_query)
+        matched_genes = self._perform_search_queries(search_queries)
 
-        query_str = query_str.strip()
-        resp = self._get_search_response(query_str, sources)
-
-        resp["service_meta_"] = self._get_service_meta()
-        return SearchService(**resp)
-
-    def _add_merged_meta(self, response: NormalizeService) -> NormalizeService:
-        """Add source metadata to response object.
-
-        :param response: in-progress response object
-        :return: completed response object.
-        """
-        sources_meta = {}
-        gene = response.gene
-        sources = [response.normalized_id.split(":")[0]]
-        if gene.mappings:
-            sources += [m.coding.system for m in gene.mappings]
-
-        for src in sources:
-            try:
-                src_name = PREFIX_LOOKUP[src]
-            except KeyError:
-                # not an imported source
-                continue
+        for gene in matched_genes:
+            field_name = f"{gene.id.split(':')[0]}_matches"  # type: ignore
+            existing_matches = getattr(response, field_name)
+            if not existing_matches:
+                setattr(response, field_name, [gene])
             else:
-                if src_name not in sources_meta:
-                    _source_meta = self.db.get_source_metadata(src_name)
-                    sources_meta[SourceName(src_name)] = SourceMeta(**_source_meta)
-        response.source_meta_ = sources_meta
+                existing_matches.append(gene)
+
         return response
 
-    def _add_alt_matches(
-        self, response: NormService, record: Dict, possible_concepts: List[str]
-    ) -> NormService:
-        """Add alternate matches warning to response object
+    def _get_normalized_record(
+        self, query: str
+    ) -> Optional[Tuple[Gene, MatchType, List[str]]]:
+        """Get highest-priority available normalized record.
 
-        :param response: in-progress response object
-        :param record: normalized record
-        :param possible_concepts: other possible matches
-        :return: updated response object
+        :param query: user query
+        :return: Tuple containing the normalized gene, the match type that produced it,
+            and a list of alternate normalized objects
         """
-        norm_concepts = set()
-        for concept_id in possible_concepts:
-            r = self.db.get_record_by_id(concept_id, True)
-            if r:
-                merge_ref = r.get("merge_ref")
-                if merge_ref:
-                    norm_concepts.add(merge_ref)
-        norm_concepts = norm_concepts - {record["concept_id"]}
-        if norm_concepts:
-            response.warnings.append(
-                {"multiple_normalized_concepts_found": list(norm_concepts)}
+        # check concept ID match
+        record = self.db.get_normalized_record(query)
+        if record:
+            return (record, MatchType.CONCEPT_ID, [])
+
+        # check each kind of match type
+        for match_type in RefType:
+            matching_concepts = self.db.get_ids_by_ref(query, match_type)
+            matching_concepts.sort(
+                key=lambda c: (SourcePriority[PREFIX_LOOKUP[c.split(":")[0]]], c)
             )
-        return response
+            while matching_concepts:
+                record = self.db.get_normalized_record(matching_concepts[0])
+                if record:
+                    return (record, REF_TO_MATCH_MAP[match_type], matching_concepts[1:])
+                matching_concepts = matching_concepts[1:]
 
-    def _add_gene(
-        self,
-        response: NormalizeService,
-        record: Dict,
-        match_type: MatchType,
-        possible_concepts: Optional[List[str]] = None,
-    ) -> NormalizeService:
-        """Add core Gene object to response.
+        return None
 
-        :param response: Response object
-        :param record: Gene record
-        :param match_type: query's match type
-        :param possible_concepts: List of other normalized concepts found
-        :return: Response with core Gene
-        """
-        gene_obj = core_models.Gene(
-            id=f"normalize.gene.{record['concept_id']}",
-            label=record["symbol"],
-        )
-
-        # mappings
-        source_ids = record.get("xrefs", []) + record.get("associated_with", [])
-        mappings = []
-        for source_id in source_ids:
-            system, code = source_id.split(":")
-            mappings.append(
-                core_models.Mapping(
-                    coding=core_models.Coding(
-                        code=core_models.Code(code), system=system.lower()
-                    ),
-                    relation=core_models.Relation.RELATED_MATCH,
-                )
-            )
-        if mappings:
-            gene_obj.mappings = mappings
-
-        # aliases
-        aliases = set()
-        for key in ["previous_symbols", "aliases"]:
-            if key in record and record[key]:
-                val = record[key]
-                if isinstance(val, str):
-                    val = [val]
-                aliases.update(val)
-        if aliases:
-            gene_obj.aliases = list(aliases)
-
-        # extensions
-        extensions = []
-        extension_and_record_labels = [
-            ("symbol_status", "symbol_status"),
-            ("approved_name", "label"),
-            ("previous_symbols", "previous_symbols"),
-            ("location_annotations", "location_annotations"),
-            ("strand", "strand"),
-        ]
-        for ext_label, record_label in extension_and_record_labels:
-            if record_label in record and record[record_label]:
-                extensions.append(
-                    core_models.Extension(name=ext_label, value=record[record_label])
-                )
-
-        record_locations = {}
-        if record["item_type"] == RecordType.IDENTITY:
-            locs = record.get("locations")
-            if locs:
-                record_locations[f"{record['src_name'].lower()}_locations"] = locs
-        elif record["item_type"] == RecordType.MERGER:
-            for k, v in record.items():
-                if k.endswith("locations") and v:
-                    record_locations[k] = v
-
-        for loc_name, locations in record_locations.items():
-            transformed_locs = []
-            for loc in locations:
-                if loc["type"] == "SequenceLocation":
-                    transformed_locs.append(self._transform_location(loc))
-
-            if transformed_locs:
-                extensions.append(
-                    core_models.Extension(name=loc_name, value=transformed_locs)
-                )
-
-        # handle gene types separately because they're wonky
-        if record["item_type"] == RecordType.IDENTITY:
-            gene_type = record.get("gene_type")
-            if gene_type:
-                extensions.append(
-                    core_models.Extension(
-                        name=GeneTypeFieldName[record["src_name"].upper()].value,
-                        value=gene_type,
-                    )
-                )
-        else:
-            for f in GeneTypeFieldName:
-                field_name = f.value
-                values = record.get(field_name, [])
-                for value in values:
-                    extensions.append(
-                        core_models.Extension(name=field_name, value=value)
-                    )
-        if extensions:
-            gene_obj.extensions = extensions
-
-        # add warnings
-        if possible_concepts:
-            response = self._add_alt_matches(response, record, possible_concepts)
-
-        response.normalized_id = record["concept_id"]
-        response.gene = gene_obj
-        response = self._add_merged_meta(response)
-        response.match_type = match_type
-        return response
-
-    @staticmethod
-    def _record_order(record: Dict) -> Tuple[int, str]:
-        """Construct priority order for matching. Only called by sort().
-
-        :param record: individual record item in iterable to sort
-        :return: tuple with rank value and concept ID
-        """
-        src = record["src_name"].upper()
-        source_rank = SourcePriority[src]
-        return source_rank, record["concept_id"]
-
-    @staticmethod
-    def _handle_failed_merge_ref(record: Dict, response: Dict, query: str) -> Dict:
-        """Log + fill out response for a failed merge reference lookup.
-
-        :param record: record containing failed merge_ref
-        :param response: in-progress response object
-        :param query: original query value
-        :return: response with no match
-        """
-        _logger.error(
-            f"Merge ref lookup failed for ref {record['merge_ref']} "
-            f"in record {record['concept_id']} from query {query}"
-        )
-        response["match_type"] = MatchType.NO_MATCH
-        return response
-
-    def _prepare_normalized_response(self, query: str) -> Dict[str, Any]:
-        """Provide base response object for normalize endpoints.
-
-        :param query: user-provided query
-        :return: basic normalization response boilerplate
-        """
-        return {
-            "query": query,
-            "match_type": MatchType.NO_MATCH,
-            "warnings": self._emit_warnings(query),
-            "service_meta_": ServiceMeta(
-                version=__version__, response_datetime=str(datetime.now())
-            ),
-        }
-
-    def normalize(self, query: str) -> NormalizeService:
+    def normalize(self, query: str) -> NormalizeResult:
         """Return normalized concept for query.
 
         Use to retrieve normalized gene concept records:
 
+        # TODO update this
         >>> from gene.query import QueryHandler
         >>> from gene.database import create_db
         >>> q = QueryHandler(create_db())
@@ -527,150 +226,64 @@ class QueryHandler:
         :param query: String to find normalized concept for
         :return: Normalized gene concept
         """
-        response = NormalizeService(**self._prepare_normalized_response(query))
-        return self._perform_normalized_lookup(response, query, self._add_gene)
-
-    def _resolve_merge(
-        self,
-        response: NormService,
-        record: Dict,
-        match_type: MatchType,
-        callback: Callable,
-        possible_concepts: Optional[List[str]] = None,
-    ) -> NormService:
-        """Given a record, return the corresponding normalized record
-
-        :param response: in-progress response object
-        :param record: record to retrieve normalized concept for
-        :param match_type: type of match that returned these records
-        :param callback: response constructor method
-        :param possible_concepts: alternate possible matches
-        :return: Normalized response object
-        """
-        merge_ref = record.get("merge_ref")
-        if merge_ref:
-            # follow merge_ref
-            merge = self.db.get_record_by_id(merge_ref, False, True)
-            if merge is None:
-                query = response.query
-                _logger.error(
-                    f"Merge ref lookup failed for ref {record['merge_ref']} "
-                    f"in record {record['concept_id']} from query `{query}`"
+        parsed_query, warnings = self._parse_query_input(query)
+        result = NormalizeResult(
+            source_meta=ResultSourceMeta(),
+            warnings=warnings,
+        )
+        normalized_gene = None
+        normalized_match = self._get_normalized_record(parsed_query)
+        if normalized_match:
+            normalized_gene, match_type, alt_matches = normalized_match
+            result.match = GeneMatch(gene=normalized_gene, match_type=match_type)
+            result.normalized_id = normalized_gene.id[15:]  # type: ignore
+            if alt_matches:
+                result.warnings.append(  # type: ignore
+                    QueryWarning(
+                        type=WarningType.MULTIPLE_NORMALIZED_CONCEPTS,
+                        description=f"Alternative possible normalized matches: {alt_matches}",
+                    )
                 )
-                return response
-            else:
-                return callback(response, merge, match_type, possible_concepts)
-        else:
-            # record is sole member of concept group
-            return callback(response, record, match_type, possible_concepts)
-
-    def _perform_normalized_lookup(
-        self, response: NormService, query: str, response_builder: Callable
-    ) -> NormService:
-        """Retrieve normalized concept, for use in normalization endpoints
-
-        :param response: in-progress response object
-        :param query: user-provided query
-        :param response_builder: response constructor callback method
-        :return: completed service response object
-        """
-        if query == "":
-            return response
-        query_str = query.lower().strip()
-
-        # check merged concept ID match
-        record = self.db.get_record_by_id(query_str, case_sensitive=False, merge=True)
-        if record:
-            return response_builder(response, record, MatchType.CONCEPT_ID)
-
-        # check concept ID match
-        record = self.db.get_record_by_id(query_str, case_sensitive=False)
-        if record:
-            return self._resolve_merge(
-                response, record, MatchType.CONCEPT_ID, response_builder
-            )
-
-        for match_type in RefType:
-            # get matches list for match tier
-            matching_refs = self.db.get_refs_by_type(query_str, match_type)
-            matching_records = [
-                self.db.get_record_by_id(ref, False) for ref in matching_refs
-            ]
-            matching_records.sort(key=self._record_order)  # type: ignore
-
-            if len(matching_refs) > 1:
-                possible_concepts = [ref for ref in matching_refs]
-            else:
-                possible_concepts = None
-
-            # attempt merge ref resolution until successful
-            for match in matching_records:
-                assert match is not None
-                record = self.db.get_record_by_id(match["concept_id"], False)
-                if record:
-                    match_type_value = MatchType[match_type.value.upper()]
-                    return self._resolve_merge(
-                        response,
-                        record,
-                        match_type_value,
-                        response_builder,
-                        possible_concepts,
-                    )
-        return response
-
-    def _add_normalized_records(
-        self,
-        response: UnmergedNormalizationService,
-        normalized_record: Dict,
-        match_type: MatchType,
-        possible_concepts: Optional[List[str]] = None,
-    ) -> UnmergedNormalizationService:
-        """Add individual records to unmerged normalize response.
-
-        :param response: in-progress response
-        :param normalized_record: record associated with normalized concept, either
-        merged or single identity
-        :param match_type: type of match achieved
-        :param possible_concepts: other possible results
-        :return: Completed response object
-        """
-        response.match_type = match_type
-        response.normalized_concept_id = normalized_record["concept_id"]
-        if normalized_record["item_type"] == RecordType.IDENTITY:
-            record_source = SourceName[normalized_record["src_name"].upper()]
-            meta = self.db.get_source_metadata(record_source.value)
-            response.source_matches[record_source] = MatchesNormalized(
-                records=[BaseGene(**self._transform_locations(normalized_record))],
-                source_meta_=meta,  # type: ignore
-            )
-        else:
-            concept_ids = [normalized_record["concept_id"]] + normalized_record.get(
-                "xrefs", []
-            )
+            concept_ids: List[str] = [result.match.id]  # type: ignore
+            if result.match.gene.mappings:
+                for mapping in result.match.gene.mappings:
+                    concept_ids.append(f"{mapping.coding.system}:{mapping.coding.code}")
+            sources = set()
             for concept_id in concept_ids:
-                record = self.db.get_record_by_id(concept_id, case_sensitive=False)
-                if not record:
-                    continue
-                record_source = SourceName[record["src_name"].upper()]
-                gene = BaseGene(**self._transform_locations(record))
-                if record_source in response.source_matches:
-                    response.source_matches[record_source].records.append(gene)
-                else:
-                    meta = self.db.get_source_metadata(record_source.value)
-                    response.source_matches[record_source] = MatchesNormalized(
-                        records=[gene],
-                        source_meta_=meta,  # type: ignore
-                    )
-        if possible_concepts:
-            response = self._add_alt_matches(
-                response, normalized_record, possible_concepts
-            )
-        return response
+                prefix = concept_id.split(":", 1)[0]
+                sources.add(SourceName(PREFIX_LOOKUP[prefix]))
+            result.source_meta = self._get_sources_meta(list(sources))
+        return result
 
-    def normalize_unmerged(self, query: str) -> UnmergedNormalizationService:
+    def _get_unmerged_matches(
+        self, normalized_record: Gene
+    ) -> NormalizeUnmergedMatches:
+        """Acquire source records that make up provided normalized record.
+
+        :param normalized_record: given normalized record
+        :return: unmerged matches object with gene records grouped by source
+        """
+        grouped_genes = {}
+        concept_ids: List[str] = [normalized_record.id]  # type: ignore
+        if normalized_record.mappings:
+            for mapping in normalized_record.mappings:
+                concept_ids.append(f"{mapping.coding.system}:{mapping.coding.code}")
+        for concept_id in concept_ids:
+            record = self.db.get_record_by_id(concept_id)
+            if record:
+                prefix = record.id.split(":", 1)[0]  # type: ignore
+                key = f"{PREFIX_LOOKUP[prefix].lower()}_matches"
+                if key in grouped_genes:
+                    grouped_genes[key].append(record)
+                else:
+                    grouped_genes[key] = [record]
+        return NormalizeUnmergedMatches(**grouped_genes)
+
+    def normalize_unmerged(self, query: str) -> NormalizeUnmergedResult:
         """Return all source records under the normalized concept for the
         provided query string.
 
+        # TODO update this
         >>> from gene.query import QueryHandler
         >>> from gene.database import create_db
         >>> from gene.schemas import SourceName
@@ -684,9 +297,27 @@ class QueryHandler:
         :param query: string to search against
         :return: Normalized response object
         """
-        response = UnmergedNormalizationService(
-            source_matches={}, **self._prepare_normalized_response(query)
+        parsed_query, warnings = self._parse_query_input(query)
+        result = NormalizeUnmergedResult(
+            source_meta=ResultSourceMeta(),
+            warnings=warnings,
+            source_genes=NormalizeUnmergedMatches(),
         )
-        return self._perform_normalized_lookup(
-            response, query, self._add_normalized_records
-        )
+        normalized_gene = None
+        normalized_match = self._get_normalized_record(parsed_query)
+        if normalized_match:
+            normalized_gene, match_type, alt_matches = normalized_match
+            base_match = GeneMatch(gene=normalized_gene, match_type=match_type)
+            result.normalized_id = normalized_gene.id[15:]  # type: ignore
+            if alt_matches:
+                result.warnings.append(  # type: ignore
+                    QueryWarning(
+                        type=WarningType.MULTIPLE_NORMALIZED_CONCEPTS,
+                        description=f"Alternative possible normalized matches: {alt_matches}",
+                    )
+                )
+            result.source_genes = self._get_unmerged_matches(base_match.gene)
+            sources = list(result.source_genes.get_matches_by_source().keys())
+            result.source_meta = self._get_sources_meta(sources)
+
+        return result

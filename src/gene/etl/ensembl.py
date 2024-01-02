@@ -6,8 +6,15 @@ from typing import Dict
 import gffutils
 from gffutils.feature import Feature
 
+from gene.database.schemas import StoredGeneType
 from gene.etl.base import Base, GeneNormalizerEtlError
-from gene.schemas import NamespacePrefix, SourceMeta, SourceName, Strand
+from gene.schemas import (
+    DataLicenseAttributes,
+    GeneTypeExtensionName,
+    NamespacePrefix,
+    SourceMeta,
+    Strand,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -66,22 +73,20 @@ class Ensembl(Base):
         :param accession_numbers: Accession numbers for each chromosome and scaffold
         :return: A gene dictionary containing data if the ID attribute exists.
         """
-        gene = dict()
-        if f.strand == "-":
-            gene["strand"] = Strand.REVERSE.value
-        elif f.strand == "+":
-            gene["strand"] = Strand.FORWARD.value
-        gene["src_name"] = SourceName.ENSEMBL.value
+        gene_params = {}
+        try:
+            gene_params["strand"] = Strand(f.strand)
+        except ValueError:
+            pass
 
-        self._add_attributes(f, gene)
-        location = self._add_location(f, gene, accession_numbers)
+        self._add_attributes(f, gene_params)
+        location = self._get_sequence_location(
+            accession_numbers[f.seqid], f, gene_params["concept_id"]
+        )
         if location:
-            gene["locations"] = [location]
+            gene_params["locations"] = [location]
 
-        gene["label_and_type"] = f"{gene['concept_id'].lower()}##identity"
-        gene["item_type"] = "identity"
-
-        return gene
+        return gene_params
 
     def _add_attributes(self, f: Feature, gene: Dict) -> None:
         """Add concept_id, symbol, xrefs, and associated_with to a gene record.
@@ -89,79 +94,41 @@ class Ensembl(Base):
         :param f: A gene from the data
         :param gene: A transformed gene record
         """
-        attributes = {
-            "ID": "concept_id",
-            "Name": "symbol",
-            "description": "xrefs",
-            "biotype": "gene_type",
-        }
+        for key, value in f.attributes.items():
+            if key == "ID" and len(value) == 1 and value[0].startswith("gene:"):
+                gene["concept_id"] = f"{NamespacePrefix.ENSEMBL.value}:{value[0][5:]}"
+            elif key == "biotype":
+                gene["gene_types"] = [
+                    StoredGeneType(name=GeneTypeExtensionName.ENSEMBL, value=value[0])
+                ]
+            elif key == "Name":
+                gene["label"] = value[0]
+            elif key == "description":
+                description = value[0]
+                gene["approved_name"] = description.split("[")[0].strip()
+                ref_pattern = r".*\[Source:(.*);Acc:(.*)\]"
+                match = re.findall(ref_pattern, description)
+                if match:
+                    gene["xrefs"] = [self._process_xref(match[0][0], match[0][1])]
 
-        for attribute in f.attributes.items():
-            key = attribute[0]
-
-            if key in attributes.keys():
-                val = attribute[1]
-
-                if len(val) == 1:
-                    val = val[0]
-                    if key == "ID":
-                        if val.startswith("gene"):
-                            val = (
-                                f"{NamespacePrefix.ENSEMBL.value}:"
-                                f"{val.split(':')[1]}"
-                            )
-
-                if key == "description":
-                    gene["label"] = val.split("[")[0].strip()
-                    if "Source:" in val:
-                        src_name = (
-                            val.split("[")[-1]
-                            .split("Source:")[-1]
-                            .split("Acc")[0]
-                            .split(";")[0]
-                        )
-                        src_id = val.split("Acc:")[-1].split("]")[0]
-                        if ":" in src_id:
-                            src_id = src_id.split(":")[-1]
-                        source = self._get_xref_associated_with(src_name, src_id)
-                        if "xrefs" in source:
-                            gene["xrefs"] = source["xrefs"]
-                        elif "associated_with" in source:
-                            gene["associated_with"] = source["associated_with"]
-                    continue
-
-                gene[attributes[key]] = val
-
-    def _add_location(self, f: Feature, gene: Dict, accession_numbers: Dict) -> Dict:
-        """Add GA4GH SequenceLocation to a gene record.
-        https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
-
-        :param f: A gene from the data
-        :param gene: A transformed gene record
-        :param accession_numbers: Accession numbers for each chromosome and scaffold
-        :return: gene record dictionary with location added
-        """
-        return self._get_sequence_location(accession_numbers[f.seqid], f, gene)
-
-    def _get_xref_associated_with(self, src_name: str, src_id: str) -> Dict:
+    def _process_xref(self, src_name: str, src_id: str) -> str:
         """Get xref or associated_with concept.
 
         :param src_name: Source name
         :param src_id: The source's accession number
-        :return: A dict containing an other identifier or xref
+        :return: Formatted xref
+        :raise ValueError: if `src_name` isn't a recognized source name
         """
-        source = dict()
-        if src_name.startswith("HGNC"):
-            source["xrefs"] = [f"{NamespacePrefix.HGNC.value}:{src_id}"]
-        elif src_name.startswith("NCBI"):
-            source["xrefs"] = [f"{NamespacePrefix.NCBI.value}:{src_id}"]
-        elif src_name.startswith("UniProt"):
-            source["associated_with"] = [f"{NamespacePrefix.UNIPROT.value}:{src_id}"]
-        elif src_name.startswith("miRBase"):
-            source["associated_with"] = [f"{NamespacePrefix.MIRBASE.value}:{src_id}"]
-        elif src_name.startswith("RFAM"):
-            source["associated_with"] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]
-        return source
+        for pattern, prefix in (
+            ("HGNC", NamespacePrefix.HGNC),
+            ("NCBI", NamespacePrefix.NCBI),
+            ("UniProt", NamespacePrefix.UNIPROT),
+            ("miRBase", NamespacePrefix.MIRBASE),
+            ("RFAM", NamespacePrefix.RFAM),
+        ):
+            if src_name.startswith(pattern):
+                return f"{prefix.value}:{src_id}"
+        raise ValueError(f"Unrecognized source name: {src_name}")
 
     def _add_meta(self) -> None:
         """Add Ensembl metadata.
@@ -181,11 +148,11 @@ class Ensembl(Base):
                 "genome_annotations": f"ftp://ftp.ensembl.org/pub/release-{self._version}/gff3/homo_sapiens/Homo_sapiens.{self._assembly}.{self._version}.gff3.gz"
             },
             rdp_url=None,
-            data_license_attributes={
-                "non_commercial": False,
-                "share_alike": False,
-                "attribution": False,
-            },
+            data_license_attributes=DataLicenseAttributes(
+                non_commercial=False,
+                share_alike=False,
+                attribution=False,
+            ),
             genome_assemblies=[self._assembly],
         )
 

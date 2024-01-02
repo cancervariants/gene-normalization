@@ -3,18 +3,21 @@ import csv
 import logging
 import re
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 
 import gffutils
 from wags_tails import NcbiGenomeData
 from wags_tails.ncbi import NcbiGenePaths
 
 from gene.database import AbstractDatabase
+from gene.database.schemas import StoredGeneType
 from gene.etl.base import SEQREPO_ROOT_DIR, Base, GeneNormalizerEtlError
 from gene.schemas import (
     PREFIX_LOOKUP,
     Annotation,
     Chromosome,
+    DataLicenseAttributes,
+    GeneTypeExtensionName,
     NamespacePrefix,
     SourceMeta,
     SourceName,
@@ -78,42 +81,42 @@ class NCBI(Base):
         prev_symbols = {}
         for row in history:
             # Only interested in rows that have homo sapiens tax id
-            if row[0] == "9606":
-                if row[1] != "-":
-                    gene_id = row[1]
-                    if gene_id in prev_symbols.keys():
-                        prev_symbols[gene_id].append(row[3])
-                    else:
-                        prev_symbols[gene_id] = [row[3]]
+            if row[0] != "9606":
+                continue
+            if row[1] != "-":
+                gene_id = row[1]
+                if gene_id in prev_symbols.keys():
+                    prev_symbols[gene_id].append(row[3])
                 else:
-                    # Load discontinued genes
-                    params = {
-                        "concept_id": f"{NamespacePrefix.NCBI.value}:{row[2]}",
-                        "symbol": row[3],
-                        "symbol_status": SymbolStatus.DISCONTINUED.value,
-                    }
-                    self._load_gene(params)
+                    prev_symbols[gene_id] = [row[3]]
+            else:
+                # Load discontinued genes
+                params = {
+                    "concept_id": f"{NamespacePrefix.NCBI.value}:{row[2]}",
+                    "label": row[3],
+                    "symbol_status": SymbolStatus.DISCONTINUED,
+                }
+                self._load_gene(params)
         history_file.close()
         return prev_symbols
 
-    def _add_xrefs_associated_with(self, val: List[str], params: Dict) -> None:
+    def _add_xrefs(self, source_value: List[str], gene_params: Dict) -> None:
         """Add xrefs and associated_with refs to a transformed gene.
 
-        :param val: A list of source ids for a given gene
-        :param params: A transformed gene record
+        :param source_value: A list of source ids for a given gene
+        :param gene_params: A transformed gene record
         """
-        params["xrefs"] = []
-        params["associated_with"] = []
-        for src in val:
+        gene_params["xrefs"] = []
+        for src in source_value:
             src_name = src.split(":")[0].upper()
             src_id = src.split(":")[-1]
             if src_name == "GENEID":
-                params["concept_id"] = f"{NamespacePrefix.NCBI.value}:{src_id}"
+                gene_params["concept_id"] = f"{NamespacePrefix.NCBI.value}:{src_id}"
             elif (
                 src_name in NamespacePrefix.__members__
                 and NamespacePrefix[src_name].value in PREFIX_LOOKUP
             ):
-                params["xrefs"].append(
+                gene_params["xrefs"].append(
                     f"{NamespacePrefix[src_name].value}" f":{src_id}"
                 )
             else:
@@ -124,21 +127,15 @@ class NCBI(Base):
                 elif src_name.startswith("MIRBASE"):
                     prefix = NamespacePrefix.MIRBASE.value
                 else:
-                    prefix = None
-                if prefix:
-                    params["associated_with"].append(f"{prefix}:{src_id}")
-                else:
                     _logger.info(f"{src_name} is not in NameSpacePrefix.")
-        if not params["xrefs"]:
-            del params["xrefs"]
-        if not params["associated_with"]:
-            del params["associated_with"]
+                    continue
+                gene_params["xrefs"].append(f"{prefix}:{src_id}")
 
-    def _get_gene_info(self, prev_symbols: Dict[str, str]) -> Dict[str, str]:
+    def _get_gene_info(self, prev_symbols: Dict[str, str]) -> Dict[str, Dict]:
         """Store genes from NCBI info file.
 
         :param prev_symbols: A dictionary of a gene's previous symbols
-        :return: A dictionary of gene's from the NCBI info file.
+        :return: A dictionary of genes from the NCBI info file.
         """
         # open info file, skip headers
         info_file = open(self._info_src, "r")
@@ -147,36 +144,35 @@ class NCBI(Base):
 
         info_genes = dict()
         for row in info:
-            params = dict()
-            params["concept_id"] = f"{NamespacePrefix.NCBI.value}:{row[1]}"
-            # get symbol
-            params["symbol"] = row[2]
-            # get aliases
+            params: Dict[str, Union[List, str]] = {
+                "concept_id": f"{NamespacePrefix.NCBI.value}:{row[1]}",
+                "label": row[2],
+            }
             if row[4] != "-":
                 params["aliases"] = row[4].split("|")
-            else:
-                params["aliases"] = []
-            # get associated_with
+            # get xrefs
             if row[5] != "-":
-                associated_with = row[5].split("|")
-                self._add_xrefs_associated_with(associated_with, params)
+                xrefs = row[5].split("|")
+                self._add_xrefs(xrefs, params)
             # get chromosome location
             vrs_chr_location = self._get_vrs_chr_location(row, params)
             if "exclude" in vrs_chr_location:
                 # Exclude genes with multiple distinct locations (e.g. OMS)
                 continue
-            if not vrs_chr_location:
-                vrs_chr_location = []
-            params["locations"] = vrs_chr_location
+            if vrs_chr_location:
+                params["locations"] = vrs_chr_location
             # get label
             if row[8] != "-":
-                params["label"] = row[8]
+                params["approved_name"] = row[8]
             # add prev symbols
             if row[1] in prev_symbols.keys():
                 params["previous_symbols"] = prev_symbols[row[1]]
-            info_genes[params["symbol"]] = params
             # get type
-            params["gene_type"] = row[9]
+            params["gene_types"] = [
+                StoredGeneType(name=GeneTypeExtensionName.NCBI, value=row[9])
+            ]
+
+            info_genes[params["label"]] = params
         return info_genes
 
     def _get_gene_gff(self, db: gffutils.FeatureDB, info_genes: Dict) -> None:
@@ -239,7 +235,7 @@ class NCBI(Base):
                     val = val[0]
 
                 if key == "Dbxref":
-                    self._add_xrefs_associated_with(val, gene)
+                    self._add_xrefs(val, gene)
                 elif key == "Name":
                     gene["symbol"] = val
 
@@ -256,7 +252,9 @@ class NCBI(Base):
         """
         gene = db[f_id]
         params["strand"] = gene.strand
-        return self._get_sequence_location(gene.seqid, gene, params)
+        return self._get_sequence_location(
+            gene.seqid, gene, params["concept_id"]
+        )  # TODO type?
 
     def _get_xref_associated_with(self, src_name: str, src_id: str) -> Dict:
         """Get xref or associated_with ref.
@@ -493,11 +491,11 @@ class NCBI(Base):
                 "assembly_file": self._assembly_url,
             },
             rdp_url="https://reusabledata.org/ncbi-gene.html",
-            data_license_attributes={
-                "non_commercial": False,
-                "share_alike": False,
-                "attribution": False,
-            },
+            data_license_attributes=DataLicenseAttributes(
+                non_commercial=False,
+                share_alike=False,
+                attribution=False,
+            ),
             genome_assemblies=[self._assembly],
         )
 

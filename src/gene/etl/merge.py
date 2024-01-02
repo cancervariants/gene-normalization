@@ -1,11 +1,18 @@
 """Create concept groups and merged records."""
 import logging
 from timeit import default_timer as timer
-from typing import Dict, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
+
+from ga4gh.core._internal.models import Gene
 
 from gene.database import AbstractDatabase
 from gene.database.database import DatabaseWriteError
-from gene.schemas import GeneTypeFieldName, RecordType, SourcePriority
+from gene.schemas import (
+    PREFIX_LOOKUP,
+    GeneTypeExtensionName,
+    RecordType,
+    SourcePriority,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -117,7 +124,7 @@ class Merge:
         :param record_id_set: group of concept IDs
         :return: completed merged drug object to be stored in DB
         """
-        records = []
+        records: List[Gene] = []
         for record_id in record_id_set:
             record = self._database.get_record_by_id(record_id)
             if record:
@@ -128,32 +135,49 @@ class Merge:
                     f"record for {record_id} in {record_id_set}"
                 )
 
-        def record_order(record: Dict) -> Tuple:
+        def _record_order(record: Gene) -> Tuple[SourcePriority, str]:
             """Provide priority values of concepts for sort function."""
-            src = record["src_name"].upper()
-            if src in SourcePriority.__members__:
-                source_rank = SourcePriority[src].value
-            else:
-                raise ValueError(
-                    f"Prohibited source: {src} in concept_id " f"{record['concept_id']}"
-                )
-            return source_rank, record["concept_id"]
+            concept_id: str = record.id  # type: ignore
+            src_name = PREFIX_LOOKUP[concept_id.split(":")[0]]
+            priority = SourcePriority[src_name]
+            return (priority, concept_id)
 
-        records.sort(key=record_order)
+        records.sort(key=_record_order)
 
         # initialize merged record
         merged_attrs = {
-            "concept_id": records[0]["concept_id"],
-            "aliases": set(),
-            "associated_with": set(),
-            "previous_symbols": set(),
-            "hgnc_locus_type": set(),
-            "ncbi_gene_type": set(),
-            "ensembl_biotype": set(),
-            "strand": set(),
+            "concept_id": records[0].id,
+            "label": None,
+            "aliases": [],
+            "xrefs": [r.id for r in records[1:]],
+            "symbol_status": None,  # TODO is this a weird way to represent this?
+            "approved_name": None,
+            "previous_symbols": [],
+            "strand": None,
+            "location_annotations": None,
+            "locations": [],
+            "gene_types": [],
         }
-        if len(records) > 1:
-            merged_attrs["xrefs"] = list({r["concept_id"] for r in records[1:]})
+
+        for record in records:
+            for field in (
+                "aliases",
+                "xrefs",
+                "previous_symbols",
+                "gene_types",
+                "locations",
+            ):
+                attribute = record.__getattribute__(field)
+                if attribute:
+                    merged_attrs[field] |= attribute
+            for field in (
+                "label",
+                "symbol_status",
+                "approved_name",
+                "strand",
+                "location_annotations",
+            ):
+                pass  # TODO
 
         # merge from constituent records
         set_fields = ["aliases", "associated_with", "previous_symbols", "strand"]
@@ -172,7 +196,7 @@ class Merge:
 
             gene_type = record.get("gene_type")
             if gene_type:
-                merged_field = GeneTypeFieldName[record["src_name"].upper()]
+                merged_field = GeneTypeExtensionName[record["src_name"].upper()]
                 merged_attrs[merged_field] |= {gene_type}
 
         for field in set_fields + [

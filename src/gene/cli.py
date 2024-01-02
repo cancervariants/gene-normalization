@@ -1,4 +1,5 @@
 """Provides a CLI util to make updates to normalizer database."""
+import logging
 import os
 from pathlib import Path
 from typing import Optional, Tuple
@@ -9,6 +10,12 @@ from gene.database import create_db
 from gene.database.database import DatabaseError
 from gene.etl.update import update_all_sources, update_normalized, update_source
 from gene.schemas import SourceName
+
+# TODO testing this out
+logging.basicConfig()
+_logger = logging.getLogger(__name__)
+_logger.setLevel(logging.INFO)
+
 
 url_description = 'URL endpoint for the application database. Can either be a URL to a local DynamoDB server (e.g. "http://localhost:8001") or a libpq-compliant PostgreSQL connection description (e.g. "postgresql://postgres:password@localhost:5432/gene_normalizer").'
 
