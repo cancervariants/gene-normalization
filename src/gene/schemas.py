@@ -47,6 +47,30 @@ class Annotation(str, Enum):
 class Chromosome(str, Enum):
     """Define string constraints for chromosomes."""
 
+    CHR1 = "1"
+    CHR2 = "2"
+    CHR3 = "3"
+    CHR4 = "4"
+    CHR5 = "5"
+    CHR6 = "6"
+    CHR7 = "7"
+    CHR8 = "8"
+    CHR9 = "9"
+    CHR10 = "10"
+    CHR11 = "11"
+    CHR12 = "12"
+    CHR13 = "13"
+    CHR14 = "14"
+    CHR15 = "15"
+    CHR16 = "16"
+    CHR17 = "17"
+    CHR18 = "18"
+    CHR19 = "19"
+    CHR20 = "20"
+    CHR21 = "21"
+    CHR22 = "22"
+    CHRX = "X"
+    CHRY = "Y"
     MITOCHONDRIA = "MT"
 
 
@@ -92,9 +116,10 @@ class BaseGene(BaseModel):
     symbol_status: Optional[SymbolStatus] = None
     label: Optional[StrictStr] = None
     strand: Optional[Strand] = None
-    location_annotations: List[StrictStr] = []
+    location_annotations: List[Union[Annotation, Chromosome, str]] = []
     locations: Union[
-        List[models.SequenceLocation], List[StoredSequenceLocation]
+        List[models.SequenceLocation],
+        List[StoredSequenceLocation],
         # List[Union[SequenceLocation, ChromosomeLocation]],
         # List[Union[GeneSequenceLocation, GeneChromosomeLocation]]  # dynamodb
     ] = []

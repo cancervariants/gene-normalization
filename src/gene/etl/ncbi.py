@@ -15,6 +15,7 @@ from gene.schemas import (
     PREFIX_LOOKUP,
     Annotation,
     Chromosome,
+    DataLicenseAttributes,
     NamespacePrefix,
     SourceMeta,
     SourceName,
@@ -78,22 +79,22 @@ class NCBI(Base):
         next(history)
         prev_symbols = {}
         for row in history:
-            # Only interested in rows that have homo sapiens tax id
-            if row[0] == "9606":
-                if row[1] != "-":
-                    gene_id = row[1]
-                    if gene_id in prev_symbols.keys():
-                        prev_symbols[gene_id].append(row[3])
-                    else:
-                        prev_symbols[gene_id] = [row[3]]
+            if row[0] != "9606":
+                continue  # humans only
+            if row[1] != "-":
+                gene_id = row[1]
+                if gene_id in prev_symbols.keys():
+                    prev_symbols[gene_id].append(row[3])
                 else:
-                    # Load discontinued genes
-                    params = {
-                        "concept_id": f"{NamespacePrefix.NCBI.value}:{row[2]}",
-                        "symbol": row[3],
-                        "symbol_status": SymbolStatus.DISCONTINUED.value,
-                    }
-                    self._load_gene(params)
+                    prev_symbols[gene_id] = [row[3]]
+            else:
+                # Load discontinued genes
+                params = {
+                    "concept_id": f"{NamespacePrefix.NCBI.value}:{row[2]}",
+                    "symbol": row[3],
+                    "symbol_status": SymbolStatus.DISCONTINUED.value,
+                }
+                self._load_gene(params)
         history_file.close()
         return prev_symbols
 
@@ -139,7 +140,7 @@ class NCBI(Base):
         """Store genes from NCBI info file.
 
         :param prev_symbols: A dictionary of a gene's previous symbols
-        :return: A dictionary of gene's from the NCBI info file.
+        :return: A dictionary of genes from the NCBI info file.
         """
         # open info file, skip headers
         info_file = open(self._info_src, "r")
@@ -298,7 +299,9 @@ class NCBI(Base):
                 if chromosome == "MT":
                     params["location_annotations"].append(Chromosome.MITOCHONDRIA.value)
                 else:
-                    params["location_annotations"].append(chromosome.strip())
+                    params["location_annotations"].append(
+                        Chromosome(chromosome.strip())
+                    )
         elif locations:
             self._add_chromosome_location(locations, location_list, params)
         if not params["location_annotations"]:
@@ -492,11 +495,11 @@ class NCBI(Base):
                 "assembly_file": self._assembly_url,
             },
             rdp_url="https://reusabledata.org/ncbi-gene.html",
-            data_license_attributes={
-                "non_commercial": False,
-                "share_alike": False,
-                "attribution": False,
-            },
+            data_license_attributes=DataLicenseAttributes(
+                non_commercial=False,
+                share_alike=False,
+                attribution=False,
+            ),
             genome_assemblies=[self._assembly],
         )
 

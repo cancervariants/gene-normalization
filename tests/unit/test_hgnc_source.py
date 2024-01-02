@@ -822,8 +822,6 @@ def test_meta_info(hgnc):
     }
     assert resp.source_meta_.rdp_url is None
     assert resp.source_meta_.genome_assemblies == []
-    assert resp.source_meta_.data_license_attributes == {
-        "non_commercial": False,
-        "share_alike": False,
-        "attribution": False,
-    }
+    assert resp.source_meta_.data_license_attributes.non_commercial is False
+    assert resp.source_meta_.data_license_attributes.share_alike is False
+    assert resp.source_meta_.data_license_attributes.attribution is False

@@ -2,13 +2,14 @@
 import json
 import logging
 import re
-from typing import Dict
+from typing import Dict, List
 
 from gene.etl.base import Base, GeneNormalizerEtlError
 from gene.schemas import (
     PREFIX_LOOKUP,
     Annotation,
     Chromosome,
+    DataLicenseAttributes,
     NamespacePrefix,
     SourceMeta,
     SourceName,
@@ -142,7 +143,7 @@ class HGNC(Base):
             gene["associated_with"] = associated_with
 
     def _get_xref_associated_with(
-        self, key: str, src: str, r: Dict, src_type: Dict
+        self, key: str, src: str, r: Dict, src_type: List[str]
     ) -> None:
         """Add an xref or associated_with ref to a gene record.
 
@@ -193,6 +194,8 @@ class HGNC(Base):
         if not gene["location_annotations"]:
             del gene["location_annotations"]
 
+    _annotation_types = {v.value for v in Annotation.__members__.values()}
+
     def _set_annotation(self, loc: str, gene: Dict) -> None:
         """Set the annotations attribute if one is provided.
         Return `True` if a location is provided, `False` otherwise.
@@ -201,10 +204,7 @@ class HGNC(Base):
         :param gene: in-progress gene record
         :return: A bool whether or not a gene map location is provided
         """
-        breakpoint()
-        annotations = {v.value for v in Annotation.__members__.values()}
-
-        for annotation in annotations:
+        for annotation in self._annotation_types:
             if annotation in loc:
                 gene["location_annotations"].append(annotation)
                 # Check if location is also included
@@ -256,11 +256,11 @@ class HGNC(Base):
                 "complete_set_archive": "ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
             },
             rdp_url=None,
-            data_license_attributes={
-                "non_commercial": False,
-                "share_alike": False,
-                "attribution": False,
-            },
+            data_license_attributes=DataLicenseAttributes(
+                non_commercial=False,
+                share_alike=False,
+                attribution=False,
+            ),
             genome_assemblies=[],
         )
         self._database.add_source_metadata(SourceName.HGNC, metadata)
