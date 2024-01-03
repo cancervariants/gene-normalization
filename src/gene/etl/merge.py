@@ -158,12 +158,16 @@ class Merge:
             "ensembl_biotype": set(),
             "strand": set(),
         }
-        if len(records) > 1:
-            merged_attrs["xrefs"] = list({r["concept_id"] for r in records[1:]})
 
         # merge from constituent records
         set_fields = ["aliases", "previous_symbols", "strand"]
-        scalar_fields = ["symbol", "symbol_status", "label", "location_annotations"]
+        scalar_fields = [
+            "symbol",
+            "symbol_status",
+            "label",
+            "location_annotations",
+            "xrefs",
+        ]
         for record in records:
             for field in set_fields:
                 merged_attrs[field] |= set(record.get(field, set()))
