@@ -74,7 +74,7 @@ def load_source(
         SourceName.NCBI: NCBI,
     }
 
-    source_class = sources_table[source](database=db)
+    source_class = sources_table[source](database=db, silent=silent)
     try:
         processed_ids = source_class.perform_etl(use_existing)
     except GeneNormalizerEtlError as e:

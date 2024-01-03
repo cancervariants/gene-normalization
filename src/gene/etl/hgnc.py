@@ -4,6 +4,9 @@ import logging
 import re
 from typing import Dict, List
 
+import click
+from tqdm import tqdm
+
 from gene.etl.base import Base, GeneNormalizerEtlError
 from gene.schemas import (
     Annotation,
@@ -29,7 +32,9 @@ class HGNC(Base):
 
         records = data["response"]["docs"]
 
-        for r in records:
+        if not self._silent:
+            click.echo(f"Loading rows from {self._data_file}:")
+        for r in tqdm(records, total=len(records), disable=self._silent, ncols=80):
             gene = {
                 "concept_id": r["hgnc_id"].lower(),
                 "symbol": r["symbol"],
