@@ -60,8 +60,7 @@ class Ensembl(Base):
                 f_id = f.attributes.get("ID")[0].split(":")[0]
                 if f_id == "gene":
                     gene = self._add_gene(f, accession_numbers)
-                    if gene:
-                        self._load_gene(gene)
+                    self._load_gene(gene)
         _logger.info("Ensembl data transform complete.")
 
     def _add_gene(self, f: Feature, accession_numbers: Dict) -> Dict:
@@ -95,59 +94,22 @@ class Ensembl(Base):
         :param f: A gene from the data
         :param gene: A transformed gene record
         """
-        attributes_map = {
-            "ID": "concept_id",
-            "Name": "symbol",
-            "description": "xrefs",
-            "biotype": "gene_type",
-        }
-
         for key, value in f.attributes.items():
-            if key not in attributes_map:
-                continue
-
             if key == "ID" and value[0].startswith("gene"):
                 gene[
                     "concept_id"
                 ] = f"{NamespacePrefix.ENSEMBL.value}:{value[0].split(':')[1]}"
             elif key == "description":
-                pattern = "^(.*) \\[Source:.*;Acc:(.*):(.*)\\]$"
+                pattern = "^(.*) \\[Source:([^\\s]*)?( .*)?;Acc:(.*:)?(.*)?\\]$"
                 matches = re.findall(pattern, value[0])
                 if matches:
                     gene["label"] = matches[0][0]
-                    gene["xrefs"] = [self._get_xref(matches[0][1], matches[0][2])]
-            else:
-                gene[attributes_map[key]] = value
-            # key = attribute[0]
-            #
-            # if key in attributes_map.keys():
-            #     val = attribute[1]
-            #
-            #     if len(val) == 1:
-            #         val = val[0]
-            #         if key == "ID":
-            #             if val.startswith("gene"):
-            #                 val = (
-            #                     f"{NamespacePrefix.ENSEMBL.value}:"
-            #                     f"{val.split(':')[1]}"
-            #                 )
-            #
-            #     if key == "description":
-            #         gene["label"] = val.split("[")[0].strip()
-            #         if "Source:" in val:
-            #             src_name = (
-            #                 val.split("[")[-1]
-            #                 .split("Source:")[-1]
-            #                 .split("Acc")[0]
-            #                 .split(";")[0]
-            #             )
-            #             src_id = val.split("Acc:")[-1].split("]")[0]
-            #             if ":" in src_id:
-            #                 src_id = src_id.split(":")[-1]
-            #             gene["xrefs"] = self._get_xref(src_name, src_id)
-            #         continue
-            #
-            #     gene[attributes_map[key]] = val
+                    if matches[0][1] and matches[0][4]:
+                        gene["xrefs"] = [self._get_xref(matches[0][1], matches[0][4])]
+            elif key == "Name":
+                gene["symbol"] = value[0]
+            elif key == "biotype":
+                gene["gene_type"] = value[0]
 
     def _get_xref(self, src_name: str, src_id: str) -> Optional[str]:
         """Get xref.
