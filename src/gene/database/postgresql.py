@@ -97,7 +97,6 @@ class PostgresDatabase(AbstractDatabase):
     _drop_db_query = b"""
     DROP MATERIALIZED VIEW IF EXISTS record_lookup_view;
     DROP TABLE IF EXISTS
-        gene_associations,
         gene_symbols,
         gene_previous_symbols,
         gene_aliases,
@@ -324,12 +323,11 @@ class PostgresDatabase(AbstractDatabase):
             "locations": source_row[5],
             "gene_type": source_row[6],
             "aliases": source_row[7],
-            "associated_with": source_row[8],
-            "previous_symbols": source_row[9],
-            "symbol": source_row[10],
-            "xrefs": source_row[11],
-            "src_name": source_row[12],
-            "merge_ref": source_row[13],
+            "previous_symbols": source_row[8],
+            "symbol": source_row[9],
+            "xrefs": source_row[10],
+            "src_name": source_row[11],
+            "merge_ref": source_row[12],
             "item_type": RecordType.IDENTITY.value,
         }
         return {k: v for k, v in gene_record.items() if v}
@@ -373,8 +371,7 @@ class PostgresDatabase(AbstractDatabase):
             "hgnc_locus_type": merged_row[11],
             "ncbi_gene_type": merged_row[12],
             "aliases": merged_row[13],
-            "associated_with": merged_row[14],
-            "xrefs": merged_row[15],
+            "xrefs": merged_row[14],
             "item_type": RecordType.MERGER.value,
         }
         return {k: v for k, v in merged_record.items() if v}
@@ -421,7 +418,6 @@ class PostgresDatabase(AbstractDatabase):
         RefType.PREVIOUS_SYMBOLS: b"SELECT concept_id FROM gene_previous_symbols WHERE lower(prev_symbol) = %s;",  # noqa: E501
         RefType.ALIASES: b"SELECT concept_id FROM gene_aliases WHERE lower(alias) = %s;",  # noqa: E501
         RefType.XREFS: b"SELECT concept_id FROM gene_xrefs WHERE lower(xref) = %s;",
-        RefType.ASSOCIATED_WITH: b"SELECT concept_id FROM gene_associations WHERE lower(associated_with) = %s;",  # noqa: E501
     }
 
     def get_refs_by_type(self, search_term: str, ref_type: RefType) -> List[str]:
@@ -558,9 +554,6 @@ class PostgresDatabase(AbstractDatabase):
     )
     _ins_alias_query = b"INSERT INTO gene_aliases (alias, concept_id) VALUES (%s, %s);"
     _ins_xref_query = b"INSERT INTO gene_xrefs (xref, concept_id) VALUES (%s, %s);"
-    _ins_assoc_query = (
-        b"INSERT INTO gene_associations (associated_with, concept_id) VALUES (%s, %s);"
-    )
 
     def add_record(self, record: Dict, src_name: SourceName) -> None:
         """Add new record to database.
@@ -591,8 +584,6 @@ class PostgresDatabase(AbstractDatabase):
                     cur.execute(self._ins_alias_query, [a, concept_id])
                 for x in record.get("xrefs", []):
                     cur.execute(self._ins_xref_query, [x, concept_id])
-                for a in record.get("associated_with", []):
-                    cur.execute(self._ins_assoc_query, [a, concept_id])
                 for p in record.get("previous_symbols", []):
                     cur.execute(self._ins_prev_symbol_query, [p, concept_id])
                 if record.get("symbol"):
@@ -606,10 +597,9 @@ class PostgresDatabase(AbstractDatabase):
     INSERT INTO gene_merged (
         concept_id, symbol, symbol_status, previous_symbols, label, strand,
         location_annotations, ensembl_locations, hgnc_locations, ncbi_locations,
-        hgnc_locus_type, ensembl_biotype, ncbi_gene_type, aliases, associated_with,
-        xrefs
+        hgnc_locus_type, ensembl_biotype, ncbi_gene_type, aliases, xrefs
     )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
 
     def add_merged_record(self, record: Dict) -> None:
@@ -644,7 +634,6 @@ class PostgresDatabase(AbstractDatabase):
                     record.get("ensembl_biotype"),
                     record.get("ncbi_gene_type"),
                     record.get("aliases"),
-                    record.get("associated_with"),
                     record.get("xrefs"),
                 ],
             )
@@ -702,13 +691,6 @@ class PostgresDatabase(AbstractDatabase):
         WHERE gc.source = %s
     );
     """
-    _drop_associations_query = b"""
-    DELETE FROM gene_associations WHERE id IN (
-        SELECT ga.id FROM gene_associations ga LEFT JOIN gene_concepts gc
-            ON gc.concept_id = ga.concept_id
-        WHERE gc.source = %s
-    );
-    """
     _drop_prev_symbols_query = b"""
     DELETE FROM gene_previous_symbols WHERE id IN (
         SELECT gps.id FROM gene_previous_symbols gps LEFT JOIN gene_concepts gc
@@ -750,7 +732,6 @@ class PostgresDatabase(AbstractDatabase):
         """
         with self.conn.cursor() as cur:
             cur.execute(self._drop_aliases_query, [src_name.value])
-            cur.execute(self._drop_associations_query, [src_name.value])
             cur.execute(self._drop_prev_symbols_query, [src_name.value])
             cur.execute(self._drop_symbols_query, [src_name.value])
             cur.execute(self._drop_xrefs_query, [src_name.value])

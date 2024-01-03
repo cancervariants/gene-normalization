@@ -702,7 +702,6 @@ def normalize_unmerged_loc_653303():
                         "aliases": [],
                         "previous_symbols": ["LOC196266", "LOC731196", "LOC654080"],
                         "xrefs": [],
-                        "associated_with": [],
                         "gene_type": "pseudo",
                     }
                 ]
@@ -745,8 +744,9 @@ def normalize_unmerged_chaf1a():
                             "CAF-1",
                         ],
                         "previous_symbols": [],
-                        "xrefs": ["ensembl:ENSG00000167670", "ncbigene:10036"],
-                        "associated_with": [
+                        "xrefs": [
+                            "ensembl:ENSG00000167670",
+                            "ncbigene:10036",
                             "vega:OTTHUMG00000181922",
                             "ccds:CCDS32875",
                             "ucsc:uc002mal.4",
@@ -784,7 +784,6 @@ def normalize_unmerged_chaf1a():
                         "aliases": [],
                         "previous_symbols": [],
                         "xrefs": ["hgnc:1910"],
-                        "associated_with": [],
                         "gene_type": "protein_coding",
                     }
                 ],
@@ -820,8 +819,11 @@ def normalize_unmerged_chaf1a():
                         ],
                         "aliases": ["CAF1P150", "P150", "CAF1", "CAF1B", "CAF-1"],
                         "previous_symbols": ["LOC107985297"],
-                        "xrefs": ["ensembl:ENSG00000167670", "hgnc:1910"],
-                        "associated_with": ["omim:601246"],
+                        "xrefs": [
+                            "ensembl:ENSG00000167670",
+                            "hgnc:1910",
+                            "omim:601246",
+                        ],
                         "gene_type": "protein-coding",
                     }
                 ]
@@ -867,8 +869,7 @@ def normalize_unmerged_ache():
                         ],
                         "aliases": ["YT", "ARACHE", "ACEE", "N-ACHE"],
                         "previous_symbols": ["ACEE"],
-                        "xrefs": ["hgnc:108", "ensembl:ENSG00000087085"],
-                        "associated_with": ["omim:100740"],
+                        "xrefs": ["hgnc:108", "ensembl:ENSG00000087085", "omim:100740"],
                         "gene_type": "protein-coding",
                     }
                 ],
@@ -897,7 +898,6 @@ def normalize_unmerged_ache():
                         "aliases": [],
                         "previous_symbols": [],
                         "xrefs": ["hgnc:108"],
-                        "associated_with": [],
                         "gene_type": "protein_coding",
                     }
                 ]
@@ -923,8 +923,9 @@ def normalize_unmerged_ache():
                         ],
                         "aliases": ["3.1.1.7"],
                         "previous_symbols": ["YT"],
-                        "xrefs": ["ncbigene:43", "ensembl:ENSG00000087085"],
-                        "associated_with": [
+                        "xrefs": [
+                            "ncbigene:43",
+                            "ensembl:ENSG00000087085",
                             "ucsc:uc003uxi.4",
                             "vega:OTTHUMG00000157033",
                             "merops:S09.979",
@@ -1050,7 +1051,6 @@ def compare_unmerged_record(gene, test_gene):
     assert set(gene.xrefs) == set(test_gene.xrefs)
     assert gene.symbol_status == test_gene.symbol_status
     assert set(gene.previous_symbols) == set(test_gene.previous_symbols)
-    assert set(gene.associated_with) == set(test_gene.associated_with)
     assert gene.symbol == test_gene.symbol
     assert len(gene.locations) == len(test_gene.locations)
     for loc in gene.locations:
@@ -1259,7 +1259,7 @@ def test_ache_query(query_handler, num_sources, normalized_ache, source_meta):
     compare_normalize_resp(
         resp,
         q,
-        MatchType.ASSOCIATED_WITH,
+        MatchType.XREF,
         normalized_ache,
         expected_source_meta=source_meta,
     )
@@ -1337,7 +1337,7 @@ def test_braf_query(query_handler, num_sources, normalized_braf, source_meta):
     compare_normalize_resp(
         resp,
         q,
-        MatchType.ASSOCIATED_WITH,
+        MatchType.XREF,
         normalized_braf,
         expected_source_meta=source_meta,
     )
@@ -1439,7 +1439,7 @@ def test_abl1_query(query_handler, num_sources, normalized_abl1, source_meta):
     compare_normalize_resp(
         resp,
         q,
-        MatchType.ASSOCIATED_WITH,
+        MatchType.XREF,
         normalized_abl1,
         expected_source_meta=source_meta,
     )
@@ -1572,18 +1572,14 @@ def test_normalize_unmerged(
     resp = query_handler.normalize_unmerged(q)
     compare_unmerged_response(resp, q, [], MatchType.ALIAS, normalize_unmerged_chaf1a)
 
-    # assoc with
+    # xref
     q = "omim:100740"
     resp = query_handler.normalize_unmerged(q)
-    compare_unmerged_response(
-        resp, q, [], MatchType.ASSOCIATED_WITH, normalize_unmerged_ache
-    )
+    compare_unmerged_response(resp, q, [], MatchType.XREF, normalize_unmerged_ache)
 
     q = "uniprot:Q13111"
     resp = query_handler.normalize_unmerged(q)
-    compare_unmerged_response(
-        resp, q, [], MatchType.ASSOCIATED_WITH, normalize_unmerged_chaf1a
-    )
+    compare_unmerged_response(resp, q, [], MatchType.XREF, normalize_unmerged_chaf1a)
 
 
 def test_invalid_queries(query_handler):

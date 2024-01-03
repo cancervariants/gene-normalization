@@ -19,7 +19,6 @@ CREATE TABLE gene_merged (
     hgnc_locus_type TEXT [],
     ncbi_gene_type TEXT [],
     aliases TEXT [],
-    associated_with TEXT [],
     xrefs TEXT []
 );
 ALTER TABLE gene_concepts ADD CONSTRAINT gene_concepts_merge_ref_fkey

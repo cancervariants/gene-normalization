@@ -375,9 +375,8 @@ class QueryHandler:
         )
 
         # mappings
-        source_ids = record.get("xrefs", []) + record.get("associated_with", [])
         mappings = []
-        for source_id in source_ids:
+        for source_id in record.get("xrefs", []):
             system, code = source_id.split(":")
             mappings.append(
                 core_models.Mapping(

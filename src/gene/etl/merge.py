@@ -5,7 +5,7 @@ from typing import Dict, Optional, Set, Tuple
 
 from gene.database import AbstractDatabase
 from gene.database.database import DatabaseWriteError
-from gene.schemas import GeneTypeFieldName, RecordType, SourcePriority
+from gene.schemas import GeneTypeFieldName, NamespacePrefix, RecordType, SourcePriority
 
 _logger = logging.getLogger(__name__)
 
@@ -98,7 +98,14 @@ class Merge:
             if not record_xrefs:
                 return observed_id_set | {db_record["concept_id"]}
             else:
-                local_id_set = set(record_xrefs)
+                local_id_set = set()
+                for xref in record_xrefs:
+                    if (
+                        xref.startswith(NamespacePrefix.NCBI.value)
+                        or xref.startswith(NamespacePrefix.ENSEMBL.value)
+                        or xref.startswith(NamespacePrefix.HGNC.value)
+                    ):
+                        local_id_set.add(xref)
             merged_id_set = {record_id} | observed_id_set
             for local_record_id in local_id_set - observed_id_set:
                 merged_id_set |= self._create_record_id_set(
@@ -145,7 +152,6 @@ class Merge:
         merged_attrs = {
             "concept_id": records[0]["concept_id"],
             "aliases": set(),
-            "associated_with": set(),
             "previous_symbols": set(),
             "hgnc_locus_type": set(),
             "ncbi_gene_type": set(),
@@ -156,7 +162,7 @@ class Merge:
             merged_attrs["xrefs"] = list({r["concept_id"] for r in records[1:]})
 
         # merge from constituent records
-        set_fields = ["aliases", "associated_with", "previous_symbols", "strand"]
+        set_fields = ["aliases", "previous_symbols", "strand"]
         scalar_fields = ["symbol", "symbol_status", "label", "location_annotations"]
         for record in records:
             for field in set_fields:

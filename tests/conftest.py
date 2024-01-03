@@ -41,7 +41,6 @@ def _compare_records(normalized_gene, test_gene, match_type):
     assert set(normalized_gene.xrefs) == set(test_gene.xrefs)
     assert normalized_gene.symbol_status == test_gene.symbol_status
     assert set(normalized_gene.previous_symbols) == set(test_gene.previous_symbols)
-    assert set(normalized_gene.associated_with) == set(test_gene.associated_with)
     assert normalized_gene.symbol == test_gene.symbol
     assert len(normalized_gene.locations) == len(test_gene.locations)
     for loc in normalized_gene.locations:

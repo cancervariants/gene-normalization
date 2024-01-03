@@ -1,7 +1,7 @@
 """Defines the Ensembl ETL methods."""
 import logging
 import re
-from typing import Dict
+from typing import Dict, Optional
 
 import gffutils
 from gffutils.feature import Feature
@@ -90,73 +90,83 @@ class Ensembl(Base):
         return gene_params
 
     def _add_attributes(self, f: Feature, gene: Dict) -> None:
-        """Add concept_id, symbol, xrefs, and associated_with to a gene record.
+        """Add concept_id, symbol, and xrefs to a gene record.
 
         :param f: A gene from the data
         :param gene: A transformed gene record
         """
-        attributes = {
+        attributes_map = {
             "ID": "concept_id",
             "Name": "symbol",
             "description": "xrefs",
             "biotype": "gene_type",
         }
 
-        for attribute in f.attributes.items():
-            key = attribute[0]
+        for key, value in f.attributes.items():
+            if key not in attributes_map:
+                continue
 
-            if key in attributes.keys():
-                val = attribute[1]
+            if key == "ID" and value[0].startswith("gene"):
+                gene[
+                    "concept_id"
+                ] = f"{NamespacePrefix.ENSEMBL.value}:{value[0].split(':')[1]}"
+            elif key == "description":
+                pattern = "^(.*) \\[Source:.*;Acc:(.*):(.*)\\]$"
+                matches = re.findall(pattern, value[0])
+                if matches:
+                    gene["label"] = matches[0][0]
+                    gene["xrefs"] = [self._get_xref(matches[0][1], matches[0][2])]
+            else:
+                gene[attributes_map[key]] = value
+            # key = attribute[0]
+            #
+            # if key in attributes_map.keys():
+            #     val = attribute[1]
+            #
+            #     if len(val) == 1:
+            #         val = val[0]
+            #         if key == "ID":
+            #             if val.startswith("gene"):
+            #                 val = (
+            #                     f"{NamespacePrefix.ENSEMBL.value}:"
+            #                     f"{val.split(':')[1]}"
+            #                 )
+            #
+            #     if key == "description":
+            #         gene["label"] = val.split("[")[0].strip()
+            #         if "Source:" in val:
+            #             src_name = (
+            #                 val.split("[")[-1]
+            #                 .split("Source:")[-1]
+            #                 .split("Acc")[0]
+            #                 .split(";")[0]
+            #             )
+            #             src_id = val.split("Acc:")[-1].split("]")[0]
+            #             if ":" in src_id:
+            #                 src_id = src_id.split(":")[-1]
+            #             gene["xrefs"] = self._get_xref(src_name, src_id)
+            #         continue
+            #
+            #     gene[attributes_map[key]] = val
 
-                if len(val) == 1:
-                    val = val[0]
-                    if key == "ID":
-                        if val.startswith("gene"):
-                            val = (
-                                f"{NamespacePrefix.ENSEMBL.value}:"
-                                f"{val.split(':')[1]}"
-                            )
-
-                if key == "description":
-                    gene["label"] = val.split("[")[0].strip()
-                    if "Source:" in val:
-                        src_name = (
-                            val.split("[")[-1]
-                            .split("Source:")[-1]
-                            .split("Acc")[0]
-                            .split(";")[0]
-                        )
-                        src_id = val.split("Acc:")[-1].split("]")[0]
-                        if ":" in src_id:
-                            src_id = src_id.split(":")[-1]
-                        source = self._get_xref_associated_with(src_name, src_id)
-                        if "xrefs" in source:
-                            gene["xrefs"] = source["xrefs"]
-                        elif "associated_with" in source:
-                            gene["associated_with"] = source["associated_with"]
-                    continue
-
-                gene[attributes[key]] = val
-
-    def _get_xref_associated_with(self, src_name: str, src_id: str) -> Dict:
-        """Get xref or associated_with concept.
+    def _get_xref(self, src_name: str, src_id: str) -> Optional[str]:
+        """Get xref.
 
         :param src_name: Source name
         :param src_id: The source's accession number
-        :return: A dict containing an other identifier or xref
+        :return: xref, if successfully parsed
         """
-        source = dict()
-        if src_name.startswith("HGNC"):
-            source["xrefs"] = [f"{NamespacePrefix.HGNC.value}:{src_id}"]
-        elif src_name.startswith("NCBI"):
-            source["xrefs"] = [f"{NamespacePrefix.NCBI.value}:{src_id}"]
-        elif src_name.startswith("UniProt"):
-            source["associated_with"] = [f"{NamespacePrefix.UNIPROT.value}:{src_id}"]
-        elif src_name.startswith("miRBase"):
-            source["associated_with"] = [f"{NamespacePrefix.MIRBASE.value}:{src_id}"]
-        elif src_name.startswith("RFAM"):
-            source["associated_with"] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]
-        return source
+        for prefix, constrained_prefix in (
+            ("HGNC", NamespacePrefix.HGNC),
+            ("NCBI", NamespacePrefix.NCBI),
+            ("UniProt", NamespacePrefix.UNIPROT),
+            ("miRBase", NamespacePrefix.MIRBASE),
+            ("RFAM", NamespacePrefix.RFAM),
+        ):
+            if src_name.startswith(prefix):
+                return f"{constrained_prefix.value}:{src_id}"
+        _logger.warning("Unrecognized source name: %:%", src_name, src_id)
+        return None
 
     def _add_meta(self) -> None:
         """Add Ensembl metadata.

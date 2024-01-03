@@ -47,7 +47,6 @@ def ddx11l1():
             }
         ],
         "strand": "+",
-        "associated_with": [],
         "gene_type": "transcribed_unprocessed_pseudogene",
     }
     return Gene(**params)
@@ -79,7 +78,6 @@ def tp53():
             }
         ],
         "strand": "-",
-        "associated_with": [],
         "gene_type": "protein_coding",
     }
     return Gene(**params)
@@ -111,7 +109,6 @@ def ATP6AP1_DT():  # noqa: N802
             }
         ],
         "strand": "-",
-        "associated_with": [],
         "gene_type": "lncRNA",
     }
     return Gene(**params)
@@ -127,7 +124,6 @@ def hsa_mir_1253():
         "label": "hsa-mir-1253",
         "previous_symbols": [],
         "aliases": [],
-        "xrefs": [],
         "symbol_status": None,
         "location_annotations": [],
         "locations": [
@@ -143,7 +139,7 @@ def hsa_mir_1253():
             }
         ],
         "strand": "+",
-        "associated_with": ["mirbase:MI0006387"],
+        "xrefs": ["mirbase:MI0006387"],
         "gene_type": "lncRNA",
     }
     return Gene(**params)
@@ -175,7 +171,6 @@ def spry3():
             }
         ],
         "strand": "+",
-        "associated_with": [],
         "gene_type": "protein_coding",
     }
     return Gene(**params)
@@ -254,9 +249,9 @@ def test_hsa_mir_1253(check_resp_single_record, ensembl, hsa_mir_1253):
     resp = ensembl.search("hsa-mir-1253")
     check_resp_single_record(resp, hsa_mir_1253, MatchType.SYMBOL)
 
-    # associated_with
+    # xref
     resp = ensembl.search("mirbase:MI0006387")
-    check_resp_single_record(resp, hsa_mir_1253, MatchType.ASSOCIATED_WITH)
+    check_resp_single_record(resp, hsa_mir_1253, MatchType.XREF)
 
 
 def test_spry3(check_resp_single_record, ensembl, spry3):

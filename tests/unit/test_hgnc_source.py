@@ -49,7 +49,9 @@ def a1bg_as1():
         "previous_symbols": ["NCRNA00181", "A1BGAS", "A1BG-AS"],
         "aliases": ["FLJ23569"],
         "symbol_status": "approved",
-        "associated_with": [
+        "xrefs": [
+            "ensembl:ENSG00000268895",
+            "ncbigene:503538",
             "vega:OTTHUMG00000183508",
             "ucsc:uc002qse.3",
             "refseq:NR_015380",
@@ -57,7 +59,6 @@ def a1bg_as1():
             "refseq:NR_015380",
             "ena.embl:BC040926",
         ],
-        "xrefs": ["ensembl:ENSG00000268895", "ncbigene:503538"],
         "gene_type": "RNA, long non-coding",
     }
     return Gene(**params)
@@ -86,7 +87,7 @@ def tp53():
         "previous_symbols": [],
         "aliases": ["p53", "LFS1"],
         "symbol_status": "approved",
-        "associated_with": [
+        "xrefs": [
             "vega:OTTHUMG00000162125",
             "refseq:NM_000546",
             "cosmic:TP53",
@@ -110,8 +111,9 @@ def tp53():
             "pubmed:6396087",
             "pubmed:3456488",
             "pubmed:2047879",
+            "ensembl:ENSG00000141510",
+            "ncbigene:7157",
         ],
-        "xrefs": ["ensembl:ENSG00000141510", "ncbigene:7157"],
         "gene_type": "gene with protein product",
     }
     return Gene(**params)
@@ -140,8 +142,9 @@ def a3galt2():
         "previous_symbols": ["A3GALT2P"],
         "aliases": ["IGBS3S", "IGB3S"],
         "symbol_status": "approved",
-        "xrefs": ["ensembl:ENSG00000184389", "ncbigene:127550"],
-        "associated_with": [
+        "xrefs": [
+            "ensembl:ENSG00000184389",
+            "ncbigene:127550",
             "vega:OTTHUMG00000004125",
             "vega:OTTHUMG00000004125",
             "ucsc:uc031plq.1",
@@ -180,8 +183,9 @@ def wdhd1():
         "previous_symbols": [],
         "aliases": ["AND-1", "CTF4", "CHTF4"],
         "symbol_status": "approved",
-        "xrefs": ["ensembl:ENSG00000198554", "ncbigene:11169"],
-        "associated_with": [
+        "xrefs": [
+            "ensembl:ENSG00000198554",
+            "ncbigene:11169",
             "vega:OTTHUMG00000140304",
             "refseq:NM_007086",
             "omim:608126",
@@ -212,8 +216,12 @@ def g6pr():
         "previous_symbols": [],
         "aliases": ["GSD1aSP"],
         "symbol_status": "approved",
-        "xrefs": ["ncbigene:2541"],
-        "associated_with": ["pubmed:2172641", "pubmed:7814621", "pubmed:2996501"],
+        "xrefs": [
+            "ncbigene:2541",
+            "pubmed:2172641",
+            "pubmed:7814621",
+            "pubmed:2996501",
+        ],
         "gene_type": "unknown",
     }
     return Gene(**params)
@@ -233,8 +241,7 @@ def pirc24():
         "previous_symbols": [],
         "aliases": [],
         "symbol_status": "approved",
-        "xrefs": ["ncbigene:100313810"],
-        "associated_with": ["pubmed:17881367"],
+        "xrefs": ["ncbigene:100313810", "pubmed:17881367"],
         "gene_type": "RNA, cluster",
     }
     return Gene(**params)
@@ -263,8 +270,8 @@ def gage4():
         "previous_symbols": [],
         "aliases": ["CT4.4"],
         "symbol_status": "approved",
-        "xrefs": ["ncbigene:2576"],
-        "associated_with": [
+        "xrefs": [
+            "ncbigene:2576",
             "refseq:NM_001474",
             "omim:300597",
             "uniprot:P0DSO3",
@@ -290,8 +297,9 @@ def mafip():
         "previous_symbols": [],
         "aliases": ["FLJ35473", "FLJ00219", "FLJ39633", "MIP", "pp5644", "TEKT4P4"],
         "symbol_status": "approved",
-        "xrefs": ["ensembl:ENSG00000274847", "ncbigene:727764"],
-        "associated_with": [
+        "xrefs": [
+            "ensembl:ENSG00000274847",
+            "ncbigene:727764",
             "vega:OTTHUMG00000188065",
             "refseq:NR_046439",
             "uniprot:Q8WZ33",
@@ -319,8 +327,7 @@ def mt_7sdna():
         "previous_symbols": ["MT7SDNA"],
         "aliases": [],
         "symbol_status": "approved",
-        "xrefs": [],
-        "associated_with": ["pubmed:24709344", "pubmed:273237"],
+        "xrefs": ["pubmed:24709344", "pubmed:273237"],
         "gene_type": "region",
     }
     return Gene(**params)
@@ -350,7 +357,6 @@ def cecr():
         "aliases": [],
         "symbol_status": "approved",
         "xrefs": ["ncbigene:1055"],
-        "associated_with": [],
         "gene_type": "region",
     }
     return Gene(**params)
@@ -387,8 +393,9 @@ def csf2ra():
         "previous_symbols": ["CSF2R"],
         "aliases": ["CD116", "alphaGMR"],
         "symbol_status": "approved",
-        "xrefs": ["ensembl:ENSG00000198223", "ncbigene:1438"],
-        "associated_with": [
+        "xrefs": [
+            "ensembl:ENSG00000198223",
+            "ncbigene:1438",
             "vega:OTTHUMG00000012533",
             "refseq:NM_001161529",
             "orphanet:209477",
@@ -435,8 +442,7 @@ def rps24p5():
         "previous_symbols": [],
         "aliases": [],
         "symbol_status": "approved",
-        "xrefs": ["ncbigene:100271094"],
-        "associated_with": ["refseq:NG_011274", "pubmed:19123937"],
+        "xrefs": ["ncbigene:100271094", "refseq:NG_011274", "pubmed:19123937"],
         "gene_type": "pseudogene",
     }
     return Gene(**params)
@@ -465,8 +471,7 @@ def trl_cag2_1():
         "previous_symbols": ["TRNAL13"],
         "aliases": ["tRNA-Leu-CAG-2-1"],
         "symbol_status": "approved",
-        "xrefs": ["ncbigene:100189130"],
-        "associated_with": ["ena.embl:HG983896"],
+        "xrefs": ["ncbigene:100189130", "ena.embl:HG983896"],
         "gene_type": "RNA, transfer",
     }
     return Gene(**params)
@@ -495,8 +500,9 @@ def myo5b():
         "previous_symbols": [],
         "aliases": ["KIAA1119"],
         "symbol_status": "approved",
-        "xrefs": ["ensembl:ENSG00000167306", "ncbigene:4645"],
-        "associated_with": [
+        "xrefs": [
+            "ensembl:ENSG00000167306",
+            "ncbigene:4645",
             "vega:OTTHUMG00000179843",
             "refseq:NM_001080467",
             "omim:606540",
@@ -539,7 +545,7 @@ def gstt1():
         "previous_symbols": [],
         "aliases": ["2.5.1.18"],
         "symbol_status": "approved",
-        "associated_with": [
+        "xrefs": [
             "refseq:NM_000853",
             "omim:600436",
             "ucsc:uc002zze.4",
@@ -547,8 +553,9 @@ def gstt1():
             "orphanet:470418",
             "ena.embl:KI270879",
             "pubmed:8617495",
+            "ensembl:ENSG00000277656",
+            "ncbigene:2952",
         ],
-        "xrefs": ["ensembl:ENSG00000277656", "ncbigene:2952"],
         "gene_type": "gene with protein product",
     }
     return Gene(**params)
@@ -772,9 +779,9 @@ def test_myo5b(check_resp_single_record, myo5b, hgnc):
     resp = hgnc.search("MYO5B")
     check_resp_single_record(resp, myo5b, MatchType.SYMBOL)
 
-    # associated_with
+    # xref
     resp = hgnc.search("refseq:NM_001080467")
-    check_resp_single_record(resp, myo5b, MatchType.ASSOCIATED_WITH)
+    check_resp_single_record(resp, myo5b, MatchType.XREF)
 
 
 def test_gstt1(check_resp_single_record, gstt1, hgnc):
@@ -787,9 +794,9 @@ def test_gstt1(check_resp_single_record, gstt1, hgnc):
     resp = hgnc.search("GSTT1")
     check_resp_single_record(resp, gstt1, MatchType.SYMBOL)
 
-    # associated_with
+    # xref
     resp = hgnc.search("omim:600436")
-    check_resp_single_record(resp, gstt1, MatchType.ASSOCIATED_WITH)
+    check_resp_single_record(resp, gstt1, MatchType.XREF)
 
 
 def test_no_match(hgnc):
