@@ -7,7 +7,6 @@ SELECT gc.concept_id,
        gc.locations,
        gc.gene_type,
        ga.aliases,
-       gas.associated_with,
        gps.previous_symbols,
        gs.symbol,
        gx.xrefs,
@@ -20,11 +19,6 @@ FULL JOIN (
     FROM gene_aliases ga_1
     GROUP BY ga_1.concept_id
 ) ga ON gc.concept_id::text = ga.concept_id::text
-FULL JOIN (
-    SELECT gas_1.concept_id, array_agg(gas_1.associated_with) AS associated_with
-    FROM gene_associations gas_1
-    GROUP BY gas_1.concept_id
-) gas ON gc.concept_id::text = gas.concept_id::text
 FULL JOIN (
     SELECT gps_1.concept_id, array_agg(gps_1.prev_symbol) AS previous_symbols
     FROM gene_previous_symbols gps_1

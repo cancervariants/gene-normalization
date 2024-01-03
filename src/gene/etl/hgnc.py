@@ -6,7 +6,6 @@ from typing import Dict, List
 
 from gene.etl.base import Base, GeneNormalizerEtlError
 from gene.schemas import (
-    PREFIX_LOOKUP,
     Annotation,
     Chromosome,
     DataLicenseAttributes,
@@ -42,9 +41,9 @@ class HGNC(Base):
                 elif r["status"] == "Entry Withdrawn":
                     gene["symbol_status"] = SymbolStatus.WITHDRAWN.value
 
-            # store alias, xref, associated_with, prev_symbols, location
+            # store alias, xref, prev_symbols, location
             self._get_aliases(r, gene)
-            self._get_xrefs_associated_with(r, gene)
+            self._get_xrefs(r, gene)
             if "prev_symbol" in r:
                 self._get_previous_symbols(r, gene)
             if "location" in r:
@@ -81,14 +80,13 @@ class HGNC(Base):
         if prev_symbols:
             gene["previous_symbols"] = list(set(prev_symbols))
 
-    def _get_xrefs_associated_with(self, record: Dict, gene: Dict) -> None:
-        """Store xrefs and/or associated_with refs in a gene record.
+    def _get_xrefs(self, record: Dict, gene: Dict) -> None:
+        """Store xrefs in a gene record.
 
         :param record: A gene record in the HGNC data file
         :param gene: A transformed gene record
         """
         xrefs = list()
-        associated_with = list()
         sources = [
             "entrez_id",
             "ensembl_gene_id",
@@ -128,37 +126,28 @@ class HGNC(Base):
                     key = src
 
                 if key.upper() in NamespacePrefix.__members__:
-                    if NamespacePrefix[key.upper()].value in PREFIX_LOOKUP.keys():
-                        self._get_xref_associated_with(key, src, record, xrefs)
-                    else:
-                        self._get_xref_associated_with(
-                            key, src, record, associated_with
-                        )
+                    self._get_xref(key, src, record, xrefs)
                 else:
                     _logger.warning(f"{key} not in schemas.py")
 
         if xrefs:
             gene["xrefs"] = xrefs
-        if associated_with:
-            gene["associated_with"] = associated_with
 
-    def _get_xref_associated_with(
-        self, key: str, src: str, r: Dict, src_type: List[str]
-    ) -> None:
-        """Add an xref or associated_with ref to a gene record.
+    def _get_xref(self, key: str, src: str, r: Dict, xrefs: List[str]) -> None:
+        """Add an xref to a gene record.
 
         :param key: The source's name
         :param src: HGNC's source field
         :param r: A gene record in the HGNC data file
-        :param src_type: Either xrefs or associated_with list
+        :param xrefs: xrefs list
         """
         if isinstance(r[src], list):
             for xref in r[src]:
-                src_type.append(f"{NamespacePrefix[key.upper()].value}:{xref}")
+                xrefs.append(f"{NamespacePrefix[key.upper()].value}:{xref}")
         else:
             if isinstance(r[src], str) and ":" in r[src]:
                 r[src] = r[src].split(":")[-1].strip()
-            src_type.append(f"{NamespacePrefix[key.upper()].value}" f":{r[src]}")
+            xrefs.append(f"{NamespacePrefix[key.upper()].value}" f":{r[src]}")
 
     def _get_location(self, r: Dict, gene: Dict) -> None:
         """Store GA4GH VRS ChromosomeLocation in a gene record.

@@ -111,7 +111,7 @@ def gen_norm_figure() -> None:
     )
     fig.export_html(
         (
-            APP_ROOT.parents[0]
+            APP_ROOT.parents[2]
             / "docs"
             / "source"
             / "_static"

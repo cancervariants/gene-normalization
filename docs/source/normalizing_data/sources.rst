@@ -33,9 +33,7 @@ HGNC
      "previous_symbols": [],
      "xrefs": [
        "ensembl:ENSG00000157764",
-       "ncbigene:673"
-     ],
-     "associated_with": [
+       "ncbigene:673",
        "uniprot:P15056",
        "pubmed:2284096",
        "omim:164757",
@@ -99,7 +97,6 @@ Ensembl
      "xrefs": [
        "hgnc:1097"
      ],
-     "associated_with": [],
      "gene_type": "protein_coding",
      "match_type": 100
    }
@@ -143,9 +140,7 @@ The `NCBI Gene Database <https://www.ncbi.nlm.nih.gov/gene/>`_ is a service prov
       "previous_symbols": [],
       "xrefs": [
         "ensembl:ENSG00000157764",
-        "hgnc:1097"
-      ],
-      "associated_with": [
+        "hgnc:1097",
         "omim:164757"
       ],
       "gene_type": "protein-coding",

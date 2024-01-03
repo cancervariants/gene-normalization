@@ -22,7 +22,6 @@ def check_ncbi_discontinued_gene(normalizer_response, concept_id, symbol, match_
     assert resp.aliases == []
     assert resp.previous_symbols == []
     assert resp.xrefs == []
-    assert resp.associated_with == []
 
 
 @pytest.fixture(scope="module")
@@ -50,9 +49,8 @@ def dpf1():
         "concept_id": "ncbigene:8193",
         "symbol": "DPF1",
         "aliases": ["BAF45b", "NEUD4", "neuro-d4", "SMARCG1"],
-        "xrefs": ["hgnc:20225", "ensembl:ENSG00000011332"],
         "previous_symbols": [],
-        "associated_with": ["omim:601670"],
+        "xrefs": ["hgnc:20225", "ensembl:ENSG00000011332", "omim:601670"],
         "symbol_status": None,
         "location_annotations": [],
         "strand": "-",
@@ -90,9 +88,8 @@ def pdp1_symbol():
         "concept_id": "ncbigene:54704",
         "symbol": "PDP1",
         "aliases": ["PDH", "PDP", "PDPC", "PPM2A", "PPM2C"],
-        "xrefs": ["hgnc:9279", "ensembl:ENSG00000164951"],
+        "xrefs": ["hgnc:9279", "ensembl:ENSG00000164951", "omim:605993"],
         "previous_symbols": ["LOC157663", "PPM2C"],
-        "associated_with": ["omim:605993"],
         "symbol_status": None,
         "location_annotations": [],
         "strand": "+",
@@ -130,9 +127,8 @@ def pdp1_alias():
         "concept_id": "ncbigene:403313",
         "symbol": "PLPP6",
         "aliases": ["PDP1", "PSDP", "PPAPDC2", "bA6J24.6", "LPRP-B", "PA-PSP"],
-        "xrefs": ["hgnc:23682", "ensembl:ENSG00000205808"],
+        "xrefs": ["hgnc:23682", "ensembl:ENSG00000205808", "omim:611666"],
         "previous_symbols": [],
-        "associated_with": ["omim:611666"],
         "symbol_status": None,
         "location_annotations": [],
         "strand": "+",
@@ -171,9 +167,8 @@ def spry3():
         "concept_id": "ncbigene:10251",
         "symbol": "SPRY3",
         "aliases": ["spry-3"],
-        "xrefs": ["hgnc:11271", "ensembl:ENSG00000168939"],
+        "xrefs": ["hgnc:11271", "ensembl:ENSG00000168939", "omim:300531"],
         "previous_symbols": ["LOC170187", "LOC253479"],
-        "associated_with": ["omim:300531"],
         "symbol_status": None,
         "location_annotations": [],
         "strand": "+",
@@ -232,7 +227,6 @@ def adcp1():
         "aliases": [],
         "xrefs": ["hgnc:229"],
         "previous_symbols": [],
-        "associated_with": [],
         "symbol_status": None,
         "strand": None,
         "location_annotations": ["6"],
@@ -252,9 +246,8 @@ def afa():
         "concept_id": "ncbigene:170",
         "symbol": "AFA",
         "aliases": [],
-        "xrefs": [],
         "previous_symbols": [],
-        "associated_with": ["omim:106250"],
+        "xrefs": ["omim:106250"],
         "symbol_status": None,
         "strand": None,
         "location_annotations": [],
@@ -274,9 +267,8 @@ def znf84():
         "concept_id": "ncbigene:7637",
         "symbol": "ZNF84",
         "aliases": ["HPF2"],
-        "xrefs": ["hgnc:13159", "ensembl:ENSG00000198040"],
+        "xrefs": ["hgnc:13159", "ensembl:ENSG00000198040", "omim:618554"],
         "previous_symbols": ["LOC100287429"],
-        "associated_with": ["omim:618554"],
         "symbol_status": None,
         "location_annotations": ["map from Rosati ref via FISH [AFS]"],
         "strand": "+",
@@ -315,9 +307,14 @@ def slc25a6():
         "concept_id": "ncbigene:293",
         "symbol": "SLC25A6",
         "aliases": ["AAC3", "ANT", "ANT 2", "ANT 3", "ANT3", "ANT3Y"],
-        "xrefs": ["hgnc:10992", "ensembl:ENSG00000169100", "ensembl:ENSG00000292334"],
+        "xrefs": [
+            "hgnc:10992",
+            "ensembl:ENSG00000169100",
+            "ensembl:ENSG00000292334",
+            "omim:300151",
+            "omim:403000",
+        ],
         "previous_symbols": ["ANT3Y"],
-        "associated_with": ["omim:300151", "omim:403000"],
         "symbol_status": None,
         "location_annotations": [],
         "strand": "-",
@@ -376,7 +373,6 @@ def loc106783576():
         "aliases": [],
         "xrefs": [],
         "previous_symbols": [],
-        "associated_with": [],
         "symbol_status": None,
         "location_annotations": [],
         "strand": None,
@@ -405,9 +401,8 @@ def glc1b():
         "concept_id": "ncbigene:2722",
         "symbol": "GLC1B",
         "aliases": [],
-        "xrefs": [],
         "previous_symbols": [],
-        "associated_with": ["omim:606689"],
+        "xrefs": ["omim:606689"],
         "symbol_status": None,
         "location_annotations": [],
         "strand": None,
@@ -436,9 +431,8 @@ def hdpa():
         "concept_id": "ncbigene:50829",
         "symbol": "HDPA",
         "aliases": [],
-        "xrefs": [],
         "previous_symbols": [],
-        "associated_with": ["omim:300221"],
+        "xrefs": ["omim:300221"],
         "symbol_status": None,
         "location_annotations": [],
         "strand": None,
@@ -470,7 +464,6 @@ def prkrap1():
         "aliases": [],
         "xrefs": ["hgnc:33447"],
         "previous_symbols": ["LOC100289695"],
-        "associated_with": [],
         "symbol_status": None,
         "location_annotations": ["alternate reference locus"],
         "strand": "+",
@@ -519,9 +512,8 @@ def mhb():
         "concept_id": "ncbigene:619511",
         "symbol": "MHB",
         "aliases": [],
-        "xrefs": [],
         "previous_symbols": [],
-        "associated_with": ["omim:255160"],
+        "xrefs": ["omim:255160"],
         "symbol_status": None,
         "location_annotations": [],
         "strand": None,
@@ -550,9 +542,8 @@ def spg37():
         "concept_id": "ncbigene:100049159",
         "symbol": "SPG37",
         "aliases": [],
-        "xrefs": [],
         "previous_symbols": [],
-        "associated_with": ["omim:611945"],
+        "xrefs": ["omim:611945"],
         "symbol_status": None,
         "location_annotations": [],
         "strand": None,
@@ -607,9 +598,9 @@ def test_dpf1(check_resp_single_record, ncbi, dpf1):
     resp = ncbi.search("neuro-d4")
     check_resp_single_record(resp, dpf1, MatchType.ALIAS)
 
-    # associated_with
+    # xref
     resp = ncbi.search("omim:601670")
-    check_resp_single_record(resp, dpf1, MatchType.ASSOCIATED_WITH)
+    check_resp_single_record(resp, dpf1, MatchType.XREF)
 
     # No Match
     resp = ncbi.search("DPF 1")
@@ -751,9 +742,9 @@ def test_glc1b(check_resp_single_record, ncbi, glc1b):
     resp = ncbi.search("GLC1B")
     check_resp_single_record(resp, glc1b, MatchType.SYMBOL)
 
-    # associated_with
+    # xref
     resp = ncbi.search("omim:606689")
-    check_resp_single_record(resp, glc1b, MatchType.ASSOCIATED_WITH)
+    check_resp_single_record(resp, glc1b, MatchType.XREF)
 
 
 def test_hdpa(check_resp_single_record, ncbi, hdpa):
@@ -792,9 +783,9 @@ def test_mhb(check_resp_single_record, ncbi, mhb):
     resp = ncbi.search("MHB")
     check_resp_single_record(resp, mhb, MatchType.SYMBOL)
 
-    # associated_with
+    # xref
     resp = ncbi.search("OMIM:255160")
-    check_resp_single_record(resp, mhb, MatchType.ASSOCIATED_WITH)
+    check_resp_single_record(resp, mhb, MatchType.XREF)
 
 
 def test_spg37(check_resp_single_record, ncbi, spg37):
@@ -807,9 +798,9 @@ def test_spg37(check_resp_single_record, ncbi, spg37):
     resp = ncbi.search("SPG37")
     check_resp_single_record(resp, spg37, MatchType.SYMBOL)
 
-    # associated_with
+    # xref
     resp = ncbi.search("omim:611945")
-    check_resp_single_record(resp, spg37, MatchType.ASSOCIATED_WITH)
+    check_resp_single_record(resp, spg37, MatchType.XREF)
 
 
 def test_discontinued_genes(ncbi):

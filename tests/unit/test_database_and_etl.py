@@ -76,7 +76,6 @@ def test_tables_created(db_fixture):
     existing_tables = db_fixture.db.list_tables()
     if db_fixture.db_name == "PostgresDatabase":
         assert set(existing_tables) == {
-            "gene_associations",
             "gene_symbols",
             "gene_previous_symbols",
             "gene_aliases",
@@ -149,11 +148,6 @@ def test_item_type(db_fixture):
     item = db_fixture.db.genes.query(KeyConditionExpression=filter_exp)["Items"][0]
     assert "item_type" in item
     assert item["item_type"] == "alias"
-
-    filter_exp = Key("label_and_type").eq("omim:606689##associated_with")
-    item = db_fixture.db.genes.query(KeyConditionExpression=filter_exp)["Items"][0]
-    assert "item_type" in item
-    assert item["item_type"] == "associated_with"
 
     filter_exp = Key("label_and_type").eq("ensembl:ensg00000268895##xref")
     item = db_fixture.db.genes.query(KeyConditionExpression=filter_exp)["Items"][0]

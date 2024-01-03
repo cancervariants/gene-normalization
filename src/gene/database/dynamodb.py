@@ -434,8 +434,7 @@ class DynamoDbDatabase(AbstractDatabase):
 
         :param str term: referent term
         :param str concept_id: concept ID to refer to
-        :param str ref_type: one of {'alias', 'label', 'xref',
-            'associated_with'}
+        :param str ref_type: one of {'alias', 'label', 'xref'}
         :param src_name: name of source for record
         """
         label_and_type = f"{term.lower()}##{ref_type}"

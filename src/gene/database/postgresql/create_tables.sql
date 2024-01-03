@@ -26,7 +26,6 @@ CREATE TABLE gene_merged (
     hgnc_locus_type TEXT [],
     ncbi_gene_type TEXT [],
     aliases TEXT [],
-    associated_with TEXT [],
     xrefs TEXT []
 );
 CREATE TABLE gene_concepts (
@@ -59,9 +58,4 @@ CREATE TABLE gene_xrefs (
     id SERIAL PRIMARY KEY,
     xref TEXT NOT NULL,
     concept_id VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
-);
-CREATE TABLE gene_associations (
-    id SERIAL PRIMARY KEY,
-    associated_with TEXT NOT NULL,
-    concept_ID VARCHAR(127) NOT NULL REFERENCES gene_concepts (concept_id)
 );

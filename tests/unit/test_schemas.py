@@ -78,15 +78,6 @@ def test_gene(gene, sequence_location):
             xrefs=["hgnc", "hgnc:1"],
         )
 
-    # associated_with not a valid curie
-    with pytest.raises(pydantic.ValidationError):
-        Gene(
-            match_type=100,
-            concept_id="hgnc:1096",
-            symbol="BRAF",
-            associated_with=["hgnc", "hgnc:1"],
-        )
-
     # symbol status invalid
     with pytest.raises(pydantic.ValidationError):
         Gene(

@@ -98,14 +98,13 @@ class NCBI(Base):
         history_file.close()
         return prev_symbols
 
-    def _add_xrefs_associated_with(self, val: List[str], params: Dict) -> None:
-        """Add xrefs and associated_with refs to a transformed gene.
+    def _add_xrefs(self, val: List[str], params: Dict) -> None:
+        """Add xrefs to a transformed gene.
 
         :param val: A list of source ids for a given gene
         :param params: A transformed gene record
         """
         params["xrefs"] = []
-        params["associated_with"] = []
         for src in val:
             src_name = src.split(":")[0].upper()
             src_id = src.split(":")[-1]
@@ -126,15 +125,11 @@ class NCBI(Base):
                 elif src_name.startswith("MIRBASE"):
                     prefix = NamespacePrefix.MIRBASE.value
                 else:
-                    prefix = None
-                if prefix:
-                    params["associated_with"].append(f"{prefix}:{src_id}")
-                else:
                     _logger.info(f"{src_name} is not in NameSpacePrefix.")
+                    continue
+                params["xrefs"].append(f"{prefix}:{src_id}")
         if not params["xrefs"]:
             del params["xrefs"]
-        if not params["associated_with"]:
-            del params["associated_with"]
 
     def _get_gene_info(self, prev_symbols: Dict[str, str]) -> Dict[str, str]:
         """Store genes from NCBI info file.
@@ -158,10 +153,10 @@ class NCBI(Base):
                 params["aliases"] = row[4].split("|")
             else:
                 params["aliases"] = []
-            # get associated_with
+            # get xrefs
             if row[5] != "-":
-                associated_with = row[5].split("|")
-                self._add_xrefs_associated_with(associated_with, params)
+                xrefs = row[5].split("|")
+                self._add_xrefs(xrefs, params)
             # get chromosome location
             vrs_chr_location = self._get_vrs_chr_location(row, params)
             if "exclude" in vrs_chr_location:
@@ -223,7 +218,7 @@ class NCBI(Base):
         return params
 
     def _add_attributes(self, f: gffutils.feature.Feature, gene: Dict) -> None:
-        """Add concept_id, symbol, and xrefs/associated_with to a gene record.
+        """Add concept_id, symbol, and xrefs to a gene record.
 
         :param gffutils.feature.Feature f: A gene from the data
         :param gene: A transformed gene record
@@ -239,7 +234,7 @@ class NCBI(Base):
                     val = val[0]
 
                 if key == "Dbxref":
-                    self._add_xrefs_associated_with(val, gene)
+                    self._add_xrefs(val, gene)
                 elif key == "Name":
                     gene["symbol"] = val
 
@@ -258,25 +253,24 @@ class NCBI(Base):
         params["strand"] = gene.strand
         return self._build_sequence_location(gene.seqid, gene, params["concept_id"])
 
-    def _get_xref_associated_with(self, src_name: str, src_id: str) -> Dict:
-        """Get xref or associated_with ref.
+    def _get_xref(self, src_name: str, src_id: str) -> Dict:
+        """Get xref.
 
         :param src_name: Source name
         :param src_id: The source's accession number
-        :return: A dict containing an xref or associated_with ref
+        :return: A dict containing an xref
         """
-        source = dict()
-        if src_name.startswith("HGNC"):
-            source["xrefs"] = [f"{NamespacePrefix.HGNC.value}:{src_id}"]
-        elif src_name.startswith("NCBI"):
-            source["xrefs"] = [f"{NamespacePrefix.NCBI.value}:{src_id}"]
-        elif src_name.startswith("UniProt"):
-            source["associated_with"] = [f"{NamespacePrefix.UNIPROT.value}:{src_id}"]
-        elif src_name.startswith("miRBase"):
-            source["associated_with"] = [f"{NamespacePrefix.MIRBASE.value}:{src_id}"]
-        elif src_name.startswith("RFAM"):
-            source["associated_with"] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]
-        return source
+        for prefix, constrained_prefix in (
+            ("HGNC", NamespacePrefix.HGNC),
+            ("NCBI", NamespacePrefix.NCBI),  # ?
+            ("UniProt", NamespacePrefix.UNIPROT),
+            ("miRBase", NamespacePrefix.MIRBASE),
+            ("RFAM", NamespacePrefix.RFAM),
+        ):
+            if src_name.startswith(prefix):
+                return {"xrefs": [f"{constrained_prefix.value}:{src_id}"]}
+        _logger.warning("Unrecognized source name: %:%", src_name, src_id)
+        return {}
 
     def _get_vrs_chr_location(self, row: List[str], params: Dict) -> List:
         """Store GA4GH VRS ChromosomeLocation in a gene record.
