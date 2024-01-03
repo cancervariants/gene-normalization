@@ -89,6 +89,7 @@ class Ensembl(Base):
 
         return gene_params
 
+    # TODO reincorporate with NCBI
     def _build_sequence_location(
         self, seq_id: str, row: pd.Series, concept_id: str
     ) -> Optional[StoredSequenceLocation]:
@@ -152,7 +153,7 @@ class Ensembl(Base):
         ):
             if src_name.startswith(prefix):
                 return f"{constrained_prefix.value}:{src_id}"
-        _logger.warning("Unrecognized source name: %:%", src_name, src_id)
+        _logger.warning("Unrecognized source name: %s:%s", src_name, src_id)
         return None
 
     def _add_meta(self) -> None:

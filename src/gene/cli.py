@@ -1,4 +1,5 @@
 """Provides a CLI util to make updates to normalizer database."""
+import logging
 import os
 from pathlib import Path
 from typing import Optional, Tuple
@@ -16,6 +17,7 @@ url_description = 'URL endpoint for the application database. Can either be a UR
 @click.group()
 def cli() -> None:
     """Manage Gene Normalizer data."""
+    logging.basicConfig(filename="gene-normalizer.log", level=logging.INFO, force=True)
 
 
 @cli.command()

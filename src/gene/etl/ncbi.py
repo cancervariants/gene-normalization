@@ -3,9 +3,13 @@ import csv
 import logging
 import re
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
+from urllib.parse import unquote
 
-import gffutils
+import click
+import gffpandas.gffpandas as gffpd
+import pandas as pd
+from tqdm import tqdm
 from wags_tails import NcbiGenomeData
 from wags_tails.ncbi import NcbiGenePaths
 
@@ -74,35 +78,37 @@ class NCBI(Base):
         :return: A dictionary of a gene's previous symbols
         """
         # get symbol history
-        history_file = open(self._history_src, "r")
-        history = csv.reader(history_file, delimiter="\t")
-        next(history)
-        prev_symbols = {}
-        for row in history:
-            if row[0] != "9606":
-                continue  # humans only
-            if row[1] != "-":
-                gene_id = row[1]
-                if gene_id in prev_symbols.keys():
-                    prev_symbols[gene_id].append(row[3])
+        length = sum(1 for _ in csv.reader(open(self._history_src, "r")))
+        with open(self._history_src, "r") as history_file:
+            history = csv.reader(history_file, delimiter="\t")
+            next(history)
+            prev_symbols = {}
+            if not self._silent:
+                click.echo(f"Gathering previous symbols from {self._history_src}")
+            for row in tqdm(history, total=length, ncols=80, disable=self._silent):
+                if row[0] != "9606":
+                    continue  # humans only
+                if row[1] != "-":
+                    gene_id = row[1]
+                    if gene_id in prev_symbols.keys():
+                        prev_symbols[gene_id].append(row[3])
+                    else:
+                        prev_symbols[gene_id] = [row[3]]
                 else:
-                    prev_symbols[gene_id] = [row[3]]
-            else:
-                # Load discontinued genes
-                params = {
-                    "concept_id": f"{NamespacePrefix.NCBI.value}:{row[2]}",
-                    "symbol": row[3],
-                    "symbol_status": SymbolStatus.DISCONTINUED.value,
-                }
-                self._load_gene(params)
-        history_file.close()
+                    # Load discontinued genes
+                    params = {
+                        "concept_id": f"{NamespacePrefix.NCBI.value}:{row[2]}",
+                        "symbol": row[3],
+                        "symbol_status": SymbolStatus.DISCONTINUED.value,
+                    }
+                    self._load_gene(params)
         return prev_symbols
 
     def _add_xrefs(self, val: List[str], params: Dict) -> None:
         """Add xrefs to a transformed gene.
 
         :param val: A list of source ids for a given gene
-        :param params: A transformed gene record
+        :param params: A transformed gene record (modified in place)
         """
         params["xrefs"] = []
         for src in val:
@@ -131,146 +137,165 @@ class NCBI(Base):
         if not params["xrefs"]:
             del params["xrefs"]
 
-    def _get_gene_info(self, prev_symbols: Dict[str, str]) -> Dict[str, str]:
+    def _get_gene_info(self, prev_symbols: Dict[str, str]) -> Dict[str, Dict]:
         """Store genes from NCBI info file.
 
         :param prev_symbols: A dictionary of a gene's previous symbols
         :return: A dictionary of genes from the NCBI info file.
         """
-        # open info file, skip headers
-        info_file = open(self._info_src, "r")
-        info = csv.reader(info_file, delimiter="\t")
-        next(info)
+        length = sum(1 for _ in csv.reader(open(self._info_src, "r")))
 
-        info_genes = dict()
-        for row in info:
-            params = dict()
-            params["concept_id"] = f"{NamespacePrefix.NCBI.value}:{row[1]}"
-            # get symbol
-            params["symbol"] = row[2]
-            # get aliases
-            if row[4] != "-":
-                params["aliases"] = row[4].split("|")
-            else:
-                params["aliases"] = []
-            # get xrefs
-            if row[5] != "-":
-                xrefs = row[5].split("|")
-                self._add_xrefs(xrefs, params)
-            # get chromosome location
-            vrs_chr_location = self._get_vrs_chr_location(row, params)
-            if "exclude" in vrs_chr_location:
-                # Exclude genes with multiple distinct locations (e.g. OMS)
-                continue
-            if not vrs_chr_location:
-                vrs_chr_location = []
-            params["locations"] = vrs_chr_location
-            # get label
-            if row[8] != "-":
-                params["label"] = row[8]
-            # add prev symbols
-            if row[1] in prev_symbols.keys():
-                params["previous_symbols"] = prev_symbols[row[1]]
-            info_genes[params["symbol"]] = params
-            # get type
-            params["gene_type"] = row[9]
+        info_genes = {}
+        with open(self._info_src, "r") as info_file:
+            info = csv.reader(info_file, delimiter="\t")
+            next(info)
+
+            if not self._silent:
+                click.echo(f"Extracting genes from {self._info_src}")
+            for row in tqdm(info, total=length, ncols=80, disable=self._silent):
+                params: Dict[str, Any] = {
+                    "concept_id": f"{NamespacePrefix.NCBI.value}:{row[1]}",
+                    "symbol": row[2],
+                }
+
+                # get aliases
+                if row[4] != "-":
+                    params["aliases"] = row[4].split("|")
+                else:
+                    params["aliases"] = []
+                # get xrefs
+                if row[5] != "-":
+                    xrefs = row[5].split("|")
+                    self._add_xrefs(xrefs, params)
+                # get chromosome location
+                try:
+                    vrs_chr_location = self._get_vrs_chr_location(row, params)
+                except ValueError:
+                    # Exclude genes with multiple distinct locations (e.g. OMS)
+                    pass
+                else:
+                    if vrs_chr_location:
+                        params["locations"] = vrs_chr_location
+                # get label
+                if row[8] != "-":
+                    params["label"] = row[8]
+                # add prev symbols
+                if row[1] in prev_symbols.keys():
+                    params["previous_symbols"] = prev_symbols[row[1]]
+                # get type
+                params["gene_type"] = row[9]
+
+                info_genes[params["symbol"]] = params
         return info_genes
 
-    def _get_gene_gff(self, db: gffutils.FeatureDB, info_genes: Dict) -> None:
+    def _build_sequence_location(
+        self, seq_id: str, row: pd.Series, concept_id: str
+    ) -> Optional[StoredSequenceLocation]:
+        """Construct a sequence location for storing in a DB.
+
+        :param seq_id: The sequence ID.
+        :param row: A gene from the source file.
+        :param concept_id: record ID from source
+        :return: A storable SequenceLocation containing relevant params for returning a
+        VRS SequenceLocation, or None if unable to retrieve valid parameters
+        """
+        aliases = self._get_seq_id_aliases(seq_id)
+        if not aliases or row.start is None or row.end is None:
+            return None
+
+        sequence = aliases[0]
+
+        if row.start != "." and row.end != "." and sequence:
+            if 0 <= row.start <= row.end:
+                return StoredSequenceLocation(
+                    start=row.start - 1,
+                    end=row.end,
+                    sequence_id=sequence,
+                )
+            else:
+                _logger.warning(
+                    f"{concept_id} has invalid interval: start={row.start - 1} end={row.end}"
+                )
+
+    def _get_gene_gff(self, df: pd.DataFrame, info_genes: Dict) -> None:
         """Store genes from NCBI gff file.
 
         :param db: GFF database
         :param info_genes: A dictionary of gene's from the NCBI info file.
         """
-        for f in db.all_features():
-            if f.attributes.get("ID"):
-                f_id = f.attributes.get("ID")[0]
-                if f_id.startswith("gene"):
-                    symbol = f.attributes["Name"][0]
-                    if symbol in info_genes:
-                        params: Dict = info_genes.get(symbol)  # type: ignore
-                        vrs_sq_location = self._get_vrs_sq_location(db, params, f_id)
-                        if vrs_sq_location:
-                            params["locations"].append(vrs_sq_location)
-                    else:
-                        # Need to add entire gene
-                        gene = self._add_gff_gene(db, f, f_id)
-                        info_genes[gene["symbol"]] = gene
+        genes_df = df[df["ID"].str.startswith("gene", na=False)]
+        if not self._silent:
+            click.echo(f"Extracting genes from {self._info_src}")
+        for _, row in tqdm(
+            genes_df.iterrows(), total=genes_df.shape[0], ncols=80, disable=self._silent
+        ):
+            symbol = row.Name
+            if symbol in info_genes:
+                params = info_genes[symbol]
+                vrs_sq_location = self._build_sequence_location(
+                    row.seq_id, row, params["concept_id"]
+                )
+                if vrs_sq_location:
+                    params["locations"].append(vrs_sq_location)
+            else:
+                gene = self._add_gff_gene(row)
+                if gene:
+                    info_genes[gene["symbol"]] = gene
 
-    def _add_gff_gene(
-        self, db: gffutils.FeatureDB, f: gffutils.Feature, f_id: str
-    ) -> Optional[Dict]:
+    def _add_gff_gene(self, row: pd.Series) -> Optional[Dict]:
         """Create a transformed gene recor from NCBI gff file.
 
-        :param db: GFF database
-        :param f: A gene from the gff data file
-        :param f_id: The feature's ID
+        :param row: A gene from the gff data file
         :return: A gene dictionary if the ID attribute exists. Else return None.
         """
         params = dict()
-        self._add_attributes(f, params)
-        sq_loc = self._get_vrs_sq_location(db, params, f_id)
+        self._add_attributes(row, params)
+        sq_loc = self._build_sequence_location(row.seq_id, row, params["concept_id"])
         if sq_loc:
             params["locations"] = [sq_loc]
         else:
             params["locations"] = list()
-        params["label_and_type"] = f"{params['concept_id'].lower()}##identity"
         return params
 
-    def _add_attributes(self, f: gffutils.feature.Feature, gene: Dict) -> None:
+    def _add_attributes(self, row: pd.Series, gene: Dict) -> None:
         """Add concept_id, symbol, and xrefs to a gene record.
 
-        :param gffutils.feature.Feature f: A gene from the data
-        :param gene: A transformed gene record
+        :param row: gene record from GFF file
+        :param gene: in-progress gene object
         """
-        attributes = ["ID", "Name", "description", "Dbxref"]
+        gene["symbol"] = row.ID[5:]
+        if row.Dbxref:
+            xrefs = []
+            for split_ref in row.Dbxref.split(","):
+                if split_ref.startswith("GeneID"):
+                    gene[
+                        "concept_id"
+                    ] = f"{NamespacePrefix.NCBI.value}:{split_ref.split(':')[1]}"
+                else:
+                    xref = self._get_xref(split_ref)
+                    if xref:
+                        xrefs.append(xref)
+            gene["xrefs"] = xrefs
+        if row.description:
+            gene["label"] = unquote(row.description)
 
-        for attribute in f.attributes.items():
-            key = attribute[0]
-            if key in attributes:
-                val = attribute[1]
-
-                if len(val) == 1 and key != "Dbxref":
-                    val = val[0]
-
-                if key == "Dbxref":
-                    self._add_xrefs(val, gene)
-                elif key == "Name":
-                    gene["symbol"] = val
-
-    def _get_vrs_sq_location(
-        self, db: gffutils.FeatureDB, params: Dict, f_id: str
-    ) -> Optional[StoredSequenceLocation]:
-        """Store GA4GH VRS SequenceLocation in a gene record.
-        https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
-
-        :param db: GFF database
-        :param params: A transformed gene record
-        :param f_id: The feature's ID
-        :return: A storable set of SequenceLocation params
-        """
-        gene = db[f_id]
-        params["strand"] = gene.strand
-        return self._build_sequence_location(gene.seqid, gene, params["concept_id"])
-
-    def _get_xref(self, src_name: str, src_id: str) -> Dict:
+    def _get_xref(self, raw_xref: str) -> Optional[str]:
         """Get xref.
 
-        :param src_name: Source name
-        :param src_id: The source's accession number
-        :return: A dict containing an xref
+        :param raw_xref:
+        :return: an xref
         """
         for prefix, constrained_prefix in (
             ("HGNC", NamespacePrefix.HGNC),
-            ("NCBI", NamespacePrefix.NCBI),  # ?
             ("UniProt", NamespacePrefix.UNIPROT),
             ("miRBase", NamespacePrefix.MIRBASE),
             ("RFAM", NamespacePrefix.RFAM),
         ):
-            if src_name.startswith(prefix):
-                return {"xrefs": [f"{constrained_prefix.value}:{src_id}"]}
-        _logger.warning("Unrecognized source name: %:%", src_name, src_id)
-        return {}
+            if raw_xref.startswith(prefix):
+                src_id = raw_xref.split(":")[-1]
+                return f"{constrained_prefix.value}:{src_id}"
+        _logger.warning("Unrecognized source name: %s", raw_xref)
+        return None
 
     def _get_vrs_chr_location(self, row: List[str], params: Dict) -> List:
         """Store GA4GH VRS ChromosomeLocation in a gene record.
@@ -284,8 +309,6 @@ class NCBI(Base):
         chromosomes_locations = self._set_chromsomes_locations(row, params)
         locations = chromosomes_locations["locations"]
         chromosomes = chromosomes_locations["chromosomes"]
-        if chromosomes_locations["exclude"]:
-            return ["exclude"]
 
         location_list = list()
         if chromosomes and not locations:
@@ -306,6 +329,7 @@ class NCBI(Base):
         :param row: A gene row in the NCBI data file
         :param params: A transformed gene record
         :return: A dictionary containing a gene's chromosomes and locations
+        :raise ValueError: if gene contains multiple distinct locations
         """
         chromosomes = None
         if row[6] != "-":
@@ -323,7 +347,6 @@ class NCBI(Base):
                     chromosomes = None
 
         locations = None
-        exclude = False
         if row[7] != "-":
             if "|" in row[7]:
                 locations = row[7].split("|")
@@ -343,22 +366,20 @@ class NCBI(Base):
             # i.e. OMS: '10q26.3', '19q13.42-q13.43', '3p25.3'
             if len(locations) > 2:
                 _logger.info(
-                    f"{row[2]} contains multiple distinct " f"locations: {locations}."
+                    f"{row[2]} contains multiple distinct locations: {locations}."
                 )
                 locations = None
-                exclude = True
+                raise ValueError
 
             # NCBI sometimes contains invalid map locations
             if locations:
                 for i in range(len(locations)):
                     loc = locations[i].strip()
                     if not re.match("^([1-9][0-9]?|X[pq]?|Y[pq]?)", loc):
-                        _logger.info(
-                            f"{row[2]} contains invalid map location:" f"{loc}."
-                        )
+                        _logger.info(f"{row[2]} contains invalid map location: {loc}.")
                         params["location_annotations"].append(loc)
                         del locations[i]
-        return {"locations": locations, "chromosomes": chromosomes, "exclude": exclude}
+        return {"locations": locations, "chromosomes": chromosomes}
 
     def _add_chromosome_location(
         self, locations: List, location_list: List, params: Dict
@@ -445,19 +466,15 @@ class NCBI(Base):
         prev_symbols = self._get_prev_symbols()
         info_genes = self._get_gene_info(prev_symbols)
 
-        # create db for gff file
-        db = gffutils.create_db(
-            str(self._gff_src),
-            dbfn=":memory:",
-            force=True,
-            merge_strategy="create_unique",
-            keep_order=True,
-        )
+        df = gffpd.read_gff3(self._gff_src).attributes_to_columns()
+        self._get_gene_gff(df, info_genes)
 
-        self._get_gene_gff(db, info_genes)
-
-        for gene in info_genes.keys():
-            self._load_gene(info_genes[gene])
+        if not self._silent:
+            click.echo("Loading completed gene objects...")
+        for gene in tqdm(
+            info_genes.values(), total=len(info_genes), disable=self._silent, ncols=80
+        ):
+            self._load_gene(gene)
         _logger.info("NCBI data transform complete.")
 
     def _add_meta(self) -> None:

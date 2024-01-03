@@ -9,11 +9,10 @@ from typing import Dict, List, Optional, Union
 import click
 import pydantic
 from biocommons.seqrepo import SeqRepo
-from gffutils.feature import Feature
 from wags_tails import EnsemblData, HgncData, NcbiGeneData
 
 from gene.database import AbstractDatabase
-from gene.schemas import ITEM_TYPES, Gene, MatchType, SourceName, StoredSequenceLocation
+from gene.schemas import ITEM_TYPES, Gene, MatchType, SourceName
 
 _logger = logging.getLogger(__name__)
 
@@ -26,13 +25,6 @@ APP_ROOT = Path(__file__).resolve().parent
 SEQREPO_ROOT_DIR = Path(
     environ.get("SEQREPO_ROOT_DIR", "/usr/local/share/seqrepo/latest")
 )
-
-
-DATA_DISPATCH = {
-    SourceName.HGNC: HgncData,
-    SourceName.ENSEMBL: EnsemblData,
-    SourceName.NCBI: NcbiGeneData,
-}
 
 
 DATA_DISPATCH = {
@@ -226,32 +218,3 @@ class Base(ABC):
         except KeyError as e:
             _logger.warning(f"SeqRepo raised KeyError: {e}")
         return aliases
-
-    def _build_sequence_location(
-        self, seq_id: str, gene: Feature, concept_id: str
-    ) -> Optional[StoredSequenceLocation]:
-        """Construct a sequence location for storing in a DB.
-
-        :param seq_id: The sequence ID.
-        :param gene: A gene from the source file.
-        :param concept_id: record ID from source
-        :return: A storable SequenceLocation containing relevant params for returning a
-        VRS SequenceLocation, or None if unable to retrieve valid parameters
-        """
-        aliases = self._get_seq_id_aliases(seq_id)
-        if not aliases or gene.start is None or gene.end is None:
-            return None
-
-        sequence = aliases[0]
-
-        if gene.start != "." and gene.end != "." and sequence:
-            if 0 <= gene.start <= gene.end:
-                return StoredSequenceLocation(
-                    start=gene.start - 1,
-                    end=gene.end,
-                    sequence_id=sequence,
-                )
-            else:
-                _logger.warning(
-                    f"{concept_id} has invalid interval: start={gene.start - 1} end={gene.end}"
-                )
