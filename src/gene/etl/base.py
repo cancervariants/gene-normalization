@@ -7,12 +7,13 @@ from pathlib import Path
 from typing import Dict, List, Optional, Union
 
 import click
+import pandas as pd
 import pydantic
 from biocommons.seqrepo import SeqRepo
 from wags_tails import EnsemblData, HgncData, NcbiGeneData
 
 from gene.database import AbstractDatabase
-from gene.schemas import ITEM_TYPES, Gene, MatchType, SourceName
+from gene.schemas import ITEM_TYPES, Gene, MatchType, SourceName, StoredSequenceLocation
 
 _logger = logging.getLogger(__name__)
 
@@ -205,6 +206,35 @@ class Base(ABC):
     #         else:
     #             return chr_location
     #     return None
+
+    def _build_sequence_location(
+        self, seq_id: str, row: pd.Series, concept_id: str
+    ) -> Optional[StoredSequenceLocation]:
+        """Construct a sequence location for storing in a DB.
+
+        :param seq_id: The sequence ID.
+        :param row: A gene from the source file.
+        :param concept_id: record ID from source
+        :return: A storable SequenceLocation containing relevant params for returning a
+        VRS SequenceLocation, or None if unable to retrieve valid parameters
+        """
+        aliases = self._get_seq_id_aliases(seq_id)
+        if not aliases or row.start is None or row.end is None:
+            return None
+
+        sequence = aliases[0]
+
+        if row.start != "." and row.end != "." and sequence:
+            if 0 <= row.start <= row.end:
+                return StoredSequenceLocation(
+                    start=row.start - 1,
+                    end=row.end,
+                    sequence_id=sequence,
+                )
+            else:
+                _logger.warning(
+                    f"{concept_id} has invalid interval: start={row.start - 1} end={row.end}"
+                )
 
     def _get_seq_id_aliases(self, seq_id: str) -> List[str]:
         """Get GA4GH aliases for a sequence id

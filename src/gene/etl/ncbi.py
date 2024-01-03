@@ -23,7 +23,6 @@ from gene.schemas import (
     NamespacePrefix,
     SourceMeta,
     SourceName,
-    StoredSequenceLocation,
     SymbolStatus,
 )
 
@@ -187,35 +186,6 @@ class NCBI(Base):
 
                 info_genes[params["symbol"]] = params
         return info_genes
-
-    def _build_sequence_location(
-        self, seq_id: str, row: pd.Series, concept_id: str
-    ) -> Optional[StoredSequenceLocation]:
-        """Construct a sequence location for storing in a DB.
-
-        :param seq_id: The sequence ID.
-        :param row: A gene from the source file.
-        :param concept_id: record ID from source
-        :return: A storable SequenceLocation containing relevant params for returning a
-        VRS SequenceLocation, or None if unable to retrieve valid parameters
-        """
-        aliases = self._get_seq_id_aliases(seq_id)
-        if not aliases or row.start is None or row.end is None:
-            return None
-
-        sequence = aliases[0]
-
-        if row.start != "." and row.end != "." and sequence:
-            if 0 <= row.start <= row.end:
-                return StoredSequenceLocation(
-                    start=row.start - 1,
-                    end=row.end,
-                    sequence_id=sequence,
-                )
-            else:
-                _logger.warning(
-                    f"{concept_id} has invalid interval: start={row.start - 1} end={row.end}"
-                )
 
     def _get_gene_gff(self, df: pd.DataFrame, info_genes: Dict) -> None:
         """Store genes from NCBI gff file.
