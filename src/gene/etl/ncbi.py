@@ -23,6 +23,7 @@ from gene.schemas import (
     NamespacePrefix,
     SourceMeta,
     SourceName,
+    Strand,
     SymbolStatus,
 )
 
@@ -155,6 +156,7 @@ class NCBI(Base):
                 params: Dict[str, Any] = {
                     "concept_id": f"{NamespacePrefix.NCBI.value}:{row[1]}",
                     "symbol": row[2],
+                    "locations": [],
                 }
 
                 # get aliases
@@ -202,6 +204,7 @@ class NCBI(Base):
             symbol = row.Name
             if symbol in info_genes:
                 params = info_genes[symbol]
+                params["strand"] = Strand(row.strand)
                 vrs_sq_location = self._build_sequence_location(
                     row.seq_id, row, params["concept_id"]
                 )
@@ -218,13 +221,11 @@ class NCBI(Base):
         :param row: A gene from the gff data file
         :return: A gene dictionary if the ID attribute exists. Else return None.
         """
-        params = dict()
+        params = {}
         self._add_attributes(row, params)
         sq_loc = self._build_sequence_location(row.seq_id, row, params["concept_id"])
         if sq_loc:
             params["locations"] = [sq_loc]
-        else:
-            params["locations"] = list()
         return params
 
     def _add_attributes(self, row: pd.Series, gene: Dict) -> None:
@@ -234,6 +235,7 @@ class NCBI(Base):
         :param gene: in-progress gene object
         """
         gene["symbol"] = row.ID[5:]
+        gene["strand"] = Strand(row.strand)
         if row.Dbxref:
             xrefs = []
             for split_ref in row.Dbxref.split(","):
