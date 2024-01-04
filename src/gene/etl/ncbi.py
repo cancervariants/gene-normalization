@@ -278,7 +278,7 @@ class NCBI(Base):
         :return: A list of GA4GH VRS ChromosomeLocations
         """
         params["location_annotations"] = list()
-        chromosomes_locations = self._set_chromsomes_locations(row, params)
+        chromosomes_locations = self._set_chromosomes_locations(row, params)
         locations = chromosomes_locations["locations"]
         chromosomes = chromosomes_locations["chromosomes"]
 
@@ -295,7 +295,7 @@ class NCBI(Base):
             del params["location_annotations"]
         return location_list
 
-    def _set_chromsomes_locations(self, row: List[str], params: Dict) -> Dict:
+    def _set_chromosomes_locations(self, row: List[str], params: Dict) -> Dict:
         """Set chromosomes and locations for a given gene record.
 
         :param row: A gene row in the NCBI data file
