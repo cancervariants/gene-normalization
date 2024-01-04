@@ -164,11 +164,11 @@ def test_get_all_records(db_fixture):
     is getting sent twice.
     """
     source_records = list(db_fixture.db.get_all_records(RecordType.IDENTITY))
-    assert len(source_records) == 64
+    assert len(source_records) == 63
     source_ids = {r["concept_id"] for r in source_records}
-    assert len(source_ids) == 64
+    assert len(source_ids) == 63
 
     normalized_records = list(db_fixture.db.get_all_records(RecordType.MERGER))
-    assert len(normalized_records) == 47
+    assert len(normalized_records) == 46
     normalized_ids = {r["concept_id"] for r in normalized_records}
-    assert len(normalized_ids) == 47
+    assert len(normalized_ids) == 46

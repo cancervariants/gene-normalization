@@ -173,7 +173,7 @@ class NCBI(Base):
                     vrs_chr_location = self._get_vrs_chr_location(row, params)
                 except ValueError:
                     # Exclude genes with multiple distinct locations (e.g. OMS)
-                    pass
+                    continue
                 else:
                     if vrs_chr_location:
                         params["locations"] = vrs_chr_location
@@ -340,7 +340,6 @@ class NCBI(Base):
                 _logger.info(
                     f"{row[2]} contains multiple distinct locations: {locations}."
                 )
-                locations = None
                 raise ValueError
 
             # NCBI sometimes contains invalid map locations
