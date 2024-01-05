@@ -4,7 +4,6 @@ import re
 from typing import Dict, Optional
 from urllib.parse import unquote
 
-import click
 import gffpandas.gffpandas as gffpd
 import pandas as pd
 from tqdm import tqdm
@@ -54,8 +53,7 @@ class Ensembl(Base):
 
         gene_df = df[df["ID"].str.startswith("gene", na=False)]
 
-        if not self._silent:
-            click.echo(f"Loading rows from {self._data_file}:")
+        self._print_info(f"Loading rows from {self._data_file}:")
         for _, row in tqdm(
             gene_df.iterrows(), total=gene_df.shape[0], disable=self._silent, ncols=80
         ):

@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 from urllib.parse import unquote
 
-import click
 import gffpandas.gffpandas as gffpd
 import pandas as pd
 from tqdm import tqdm
@@ -83,8 +82,7 @@ class NCBI(Base):
             history = csv.reader(history_file, delimiter="\t")
             next(history)
             prev_symbols = {}
-            if not self._silent:
-                click.echo(f"Gathering previous symbols from {self._history_src}")
+            self._print_info(f"Gathering previous symbols from {self._history_src}")
             for row in tqdm(history, total=length, ncols=80, disable=self._silent):
                 if row[0] != "9606":
                     continue  # humans only
@@ -150,8 +148,7 @@ class NCBI(Base):
             info = csv.reader(info_file, delimiter="\t")
             next(info)
 
-            if not self._silent:
-                click.echo(f"Extracting genes from {self._info_src}")
+            self._print_info(f"Extracting genes from {self._info_src}")
             for row in tqdm(info, total=length, ncols=80, disable=self._silent):
                 params: Dict[str, Any] = {
                     "concept_id": f"{NamespacePrefix.NCBI.value}:{row[1]}",
@@ -196,8 +193,7 @@ class NCBI(Base):
         :param info_genes: A dictionary of gene's from the NCBI info file.
         """
         genes_df = df[df["ID"].str.startswith("gene", na=False)]
-        if not self._silent:
-            click.echo(f"Extracting genes from {self._info_src}")
+        self._print_info(f"Extracting genes from {self._info_src}")
         for _, row in tqdm(
             genes_df.iterrows(), total=genes_df.shape[0], ncols=80, disable=self._silent
         ):
@@ -440,8 +436,7 @@ class NCBI(Base):
         df = gffpd.read_gff3(self._gff_src).attributes_to_columns()
         self._get_gene_gff(df, info_genes)
 
-        if not self._silent:
-            click.echo("Loading completed gene objects...")
+        self._print_info("Loading completed gene objects...")
         for gene in tqdm(
             info_genes.values(), total=len(info_genes), disable=self._silent, ncols=80
         ):

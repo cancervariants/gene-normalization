@@ -79,13 +79,13 @@ class Base(ABC):
             uploaded.
         """
         self._extract_data(use_existing)
-        _logger.info(f"Transforming and loading {self._src_name} data to DB...")
-        if not self._silent:
-            click.echo("Transforming and loading data to DB...")
+        self._print_info(
+            f"Transforming and loading {self._src_name.value} data to DB..."
+        )
         self._add_meta()
         self._transform_data()
         self._database.complete_write_transaction()
-        _logger.info(f"Data load complete for {self._src_name}.")
+        self._print_info(f"Data load complete for {self._src_name.value}.")
         return self._processed_ids
 
     def _extract_data(self, use_existing: bool) -> None:
@@ -248,3 +248,12 @@ class Base(ABC):
         except KeyError as e:
             _logger.warning(f"SeqRepo raised KeyError: {e}")
         return aliases
+
+    def _print_info(self, msg: str) -> None:
+        """Log information and print to console if not on silent mode.
+
+        :param msg: message to print
+        """
+        if not self._silent:
+            click.echo(msg)
+        _logger.info(msg)
