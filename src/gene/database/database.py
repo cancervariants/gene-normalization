@@ -152,9 +152,9 @@ class AbstractDatabase(abc.ABC):
 
         For example,
 
-        >>> from gene.database import create_db
+        >>> from gene.database import get_db
         >>> from gene.schemas import RecordType
-        >>> db = create_db()
+        >>> db = get_db()
         >>> for record in db.get_all_records(RecordType.MERGER):
         >>>     pass  # do something
 
@@ -274,7 +274,7 @@ def confirm_aws_db_use(env_name: AwsEnvName) -> None:
         sys.exit()
 
 
-def create_db(
+def get_db(
     db_url: Optional[str] = None, aws_instance: bool = False, silent: bool = False
 ) -> AbstractDatabase:
     """Database factory method. Checks environment variables and provided parameters
@@ -286,18 +286,18 @@ def create_db(
 
     Some examples:
 
-    >>> from gene.database import create_db
-    >>> default_db = create_db()  # by default, creates DynamoDB connection on port 8000
+    >>> from gene.database import get_db
+    >>> default_db = get_db()  # by default, creates DynamoDB connection on port 8000
     >>>
     >>> postgres_url = "postgresql://postgres@localhost:5432/gene_normalizer"
-    >>> pg_db = create_db(postgres_url)  # creates Postgres connection at port 5432
+    >>> pg_db = get_db(postgres_url)  # creates Postgres connection at port 5432
     >>>
     >>> import os
     >>> os.environ["GENE_NORM_DB_URL"] = "http://localhost:8001"
-    >>> local_db = create_db()  # creates DynamoDB connection on port 8001
+    >>> local_db = get_db()  # creates DynamoDB connection on port 8001
     >>>
     >>> os.environ["GENE_NORM_ENV"] = "Prod"
-    >>> prod_db = create_db()  # creates connection to AWS cloud DynamoDB instance,
+    >>> prod_db = get_db()  # creates connection to AWS cloud DynamoDB instance,
     >>>                        # overruling `GENE_NORM_DB_URL` variable setting
 
     Precedence is handled for connection settings like so:

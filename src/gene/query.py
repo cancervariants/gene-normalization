@@ -42,15 +42,15 @@ class QueryHandler:
 
     def __init__(self, database: AbstractDatabase) -> None:
         """Initialize QueryHandler instance. Requires a created database object to
-        initialize. The most straightforward way to do this is via the ``create_db``
+        initialize. The most straightforward way to do this is via the ``get_db``
         method in the ``gene.database`` module:
 
         >>> from gene.query import QueryHandler
-        >>> from gene.database import create_db
-        >>> q = QueryHandler(create_db())
+        >>> from gene.database import get_db
+        >>> q = QueryHandler(get_db())
 
-        We'll generally call ``create_db`` without any arguments in code examples, for
-        the sake of brevity. See the `usage` page in the docs and the ``create_db`` API
+        We'll generally call ``get_db`` without any arguments in code examples, for
+        the sake of brevity. See the `usage` page in the docs and the ``get_db`` API
         description for more details.
 
         :param database: storage backend to search against
@@ -286,8 +286,8 @@ class QueryHandler:
         """Return highest match for each source.
 
         >>> from gene.query import QueryHandler
-        >>> from gene.database import create_db
-        >>> q = QueryHandler(create_db())
+        >>> from gene.database import get_db
+        >>> q = QueryHandler(get_db())
         >>> result = q.search("BRAF")
         >>> result.source_matches[0].records[0].concept_id
         'ncbigene:673'
@@ -515,8 +515,8 @@ class QueryHandler:
         Use to retrieve normalized gene concept records:
 
         >>> from gene.query import QueryHandler
-        >>> from gene.database import create_db
-        >>> q = QueryHandler(create_db())
+        >>> from gene.database import get_db
+        >>> q = QueryHandler(get_db())
         >>> result = q.normalize("BRAF")
         >>> result.normalized_id
         'hgnc:1097'
@@ -671,9 +671,9 @@ class QueryHandler:
         provided query string.
 
         >>> from gene.query import QueryHandler
-        >>> from gene.database import create_db
+        >>> from gene.database import get_db
         >>> from gene.schemas import SourceName
-        >>> q = QueryHandler(create_db())
+        >>> q = QueryHandler(get_db())
         >>> response = q.normalize_unmerged("BRAF")
         >>> response.match_type
         <MatchType.CONCEPT_ID: 100>

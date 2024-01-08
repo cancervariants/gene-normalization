@@ -5,7 +5,7 @@ from typing import Optional, Tuple
 
 import click
 
-from gene.database import create_db
+from gene.database import get_db
 from gene.database.database import DatabaseError
 from gene.etl.update import update_all_sources, update_normalized, update_source
 from gene.schemas import SourceName
@@ -79,7 +79,7 @@ def update(
         click.echo(ctx.get_help())
         ctx.exit(1)
 
-    db = create_db(db_url, aws_instance, silent)
+    db = get_db(db_url, aws_instance, silent)
 
     processed_ids = None
     if all:
@@ -129,7 +129,7 @@ def update_from_remote(data_url: Optional[str], db_url: str, silent: bool) -> No
         click.get_current_context().exit()
     if not data_url:
         data_url = os.environ.get("GENE_NORM_REMOTE_DB_URL")
-    db = create_db(db_url, False, silent)
+    db = get_db(db_url, False, silent)
     try:
         db.load_from_remote(data_url)
     except NotImplementedError:
@@ -165,8 +165,8 @@ def check_db(db_url: str, verbose: bool, silent: bool) -> None:
     This command is equivalent to the combination of the database classes'
     ``check_schema_initialized()`` and ``check_tables_populated()`` methods:
 
-    >>> from gene.database import create_db
-    >>> db = create_db()
+    >>> from gene.database import get_db
+    >>> db = get_db()
     >>> db.check_schema_initialized() and db.check_tables_populated()
     True  # DB passes checks
 
@@ -175,7 +175,7 @@ def check_db(db_url: str, verbose: bool, silent: bool) -> None:
     :param verbose: if true, print result to console
     :param silent: if True, suppress console output
     """  # noqa: D301
-    db = create_db(db_url, False, silent)
+    db = get_db(db_url, False, silent)
     if not db.check_schema_initialized():
         if verbose:
             click.echo("Health check failed: DB schema uninitialized.")
@@ -212,7 +212,7 @@ def dump_database(output_directory: Path, db_url: str, silent: bool) -> None:
     if not output_directory:
         output_directory = Path(".")
 
-    db = create_db(db_url, False, silent)
+    db = get_db(db_url, False, silent)
     try:
         db.export_db(output_directory)
     except NotImplementedError:

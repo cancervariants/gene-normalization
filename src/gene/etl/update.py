@@ -99,9 +99,9 @@ def update_source(
     For example, to completely refresh HGNC data:
 
     >>> from gene.schemas import SourceName
-    >>> from gene.database import create_db
+    >>> from gene.database import get_db
     >>> from gene.etl.update import update_source
-    >>> db = create_db()
+    >>> db = get_db()
     >>> processed_ids = update_source(SourceName.HGNC, db)
 
     :param source: name of source to update
@@ -203,9 +203,9 @@ def update_all_and_normalize(
 
     For example, to completely refresh all Gene Normalizer data:
 
-    >>> from gene.database import create_db
+    >>> from gene.database import get_db
     >>> from gene.etl.update import update_all_and_normalize
-    >>> db = create_db()
+    >>> db = get_db()
     >>> update_all_and_normalize(db, False)
 
     :param db: database instance

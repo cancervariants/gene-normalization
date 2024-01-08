@@ -1,5 +1,5 @@
 """Test the emit_warnings function."""
-from gene.database import create_db
+from gene.database import get_db
 from gene.query import QueryHandler
 
 
@@ -10,7 +10,7 @@ def test_emit_warnings():
             "non_breaking_space_characters": "Query contains non-breaking space characters"
         }
     ]
-    db = create_db()
+    db = get_db()
     query_handler = QueryHandler(db)
 
     # Test emit no warnings

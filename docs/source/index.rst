@@ -30,8 +30,8 @@ The Gene Normalizer can also be installed locally as a Python package for fast a
 .. code-block:: pycon
 
     >>> from gene.query import QueryHandler
-    >>> from gene.database import create_db
-    >>> q = QueryHandler(create_db())
+    >>> from gene.database import get_db
+    >>> q = QueryHandler(get_db())
     >>> result = q.normalize("BRAF")
     >>> result.normalized_id
     'hgnc:1097'

@@ -3,13 +3,13 @@ import logging
 
 import pytest
 
-from gene.database import AbstractDatabase, create_db
+from gene.database import AbstractDatabase, get_db
 
 
 @pytest.fixture(scope="session")
 def database() -> AbstractDatabase:
     """Create database instance."""
-    return create_db()
+    return get_db()
 
 
 def pytest_addoption(parser):

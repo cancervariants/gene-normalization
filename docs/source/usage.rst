@@ -28,9 +28,9 @@ Each search mode can be accessed directly within Python using the :ref:`query AP
 
 .. code-block:: pycon
 
-    >>> from gene.database import create_db
+    >>> from gene.database import get_db
     >>> from gene.query import QueryHandler
-    >>> q = QueryHandler(create_db())
+    >>> q = QueryHandler(get_db())
     >>> normalized_response = q.normalize('HER2')
     >>> normalized_response
     >>> normalized_response.match_type
@@ -38,7 +38,7 @@ Each search mode can be accessed directly within Python using the :ref:`query AP
     >>> normalized_response.gene.label
     'ERBB2'
 
-Critically, the ``QueryHandler`` class must receive a database interface instance as its first argument. The most straightforward way to construct a database instance, as demonstrated above, is with the :py:meth:`create_db() <gene.database.database.create_db>` method. This method tries to build a database connection based on a number of conditions, which are resolved in the following order:
+Critically, the ``QueryHandler`` class must receive a database interface instance as its first argument. The most straightforward way to construct a database instance, as demonstrated above, is with the :py:meth:`get_db() <gene.database.database.get_db>` method. This method tries to build a database connection based on a number of conditions, which are resolved in the following order:
 
 1) if environment variable ``GENE_NORM_ENV`` is set to a value, or if the ``aws_instance`` method argument is True, try to create a cloud DynamoDB connection
 2) if the ``db_url`` method argument is given a non-None value, try to create a DB connection to that address (if it looks like a PostgreSQL URL, create a PostgreSQL connection, but otherwise try DynamoDB)

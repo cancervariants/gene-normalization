@@ -321,9 +321,9 @@ class DynamoDbDatabase(AbstractDatabase):
 
         For example,
 
-        >>> from gene.database import create_db
+        >>> from gene.database import get_db
         >>> from gene.schemas import RecordType
-        >>> db = create_db()
+        >>> db = get_db()
         >>> for record in db.get_all_records(RecordType.MERGER):
         >>>     pass  # do something
 

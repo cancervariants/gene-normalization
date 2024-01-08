@@ -57,9 +57,9 @@ $ curl 'https://normalize.cancervariants.org/gene/normalize?q=BRAF' | python -m 
 Or utilize the [Python API](https://gene-normalizer.readthedocs.io/en/latest/api/query_api.html) for fast access:
 
 ```python
->>> from gene.database import create_db
+>>> from gene.database import get_db
 >>> from gene.query import QueryHandler
->>> q = QueryHandler(create_db())
+>>> q = QueryHandler(get_db())
 >>> result = q.normalize("KRAS")
 >>> result.normalized_id
 'hgnc:6407'

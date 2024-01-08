@@ -12,7 +12,7 @@ from typing import Dict
 
 import gravis as gv
 
-from gene.database import create_db
+from gene.database import get_db
 from gene.etl.base import APP_ROOT
 from gene.query import QueryHandler
 from gene.schemas import UnmergedNormalizationService
@@ -80,7 +80,7 @@ def create_gjgf(result: UnmergedNormalizationService) -> Dict:
 
 def gen_norm_figure() -> None:
     """Generate normalized graph figure for docs."""
-    q = QueryHandler(create_db())
+    q = QueryHandler(get_db())
 
     otx2p1 = "OTX2P1"
     otx2p2 = "OTX2P2"

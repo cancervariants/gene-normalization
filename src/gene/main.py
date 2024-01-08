@@ -5,7 +5,7 @@ from typing import Optional
 from fastapi import FastAPI, HTTPException, Query
 
 from gene import __version__
-from gene.database import create_db
+from gene.database import get_db
 from gene.query import QueryHandler
 from gene.schemas import (
     SOURCES,
@@ -15,7 +15,7 @@ from gene.schemas import (
     UnmergedNormalizationService,
 )
 
-db = create_db()
+db = get_db()
 query_handler = QueryHandler(db)
 
 description = """
