@@ -17,7 +17,12 @@ url_description = 'URL endpoint for the application database. Can either be a UR
 @click.group()
 def cli() -> None:
     """Manage Gene Normalizer data."""
-    logging.basicConfig(filename="gene-normalizer.log", level=logging.INFO, force=True)
+    logging.basicConfig(
+        filename="gene-normalizer.log",
+        format="%(asctime)s %(levelname)s:%(message)s",
+        level=logging.INFO,
+        force=True,
+    )
 
 
 @cli.command()
