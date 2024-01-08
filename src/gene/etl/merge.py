@@ -3,6 +3,9 @@ import logging
 from timeit import default_timer as timer
 from typing import Dict, Optional, Set, Tuple
 
+import click
+from tqdm import tqdm
+
 from gene.database import AbstractDatabase
 from gene.database.database import DatabaseWriteError
 from gene.schemas import GeneTypeFieldName, NamespacePrefix, RecordType, SourcePriority
@@ -13,13 +16,15 @@ _logger = logging.getLogger(__name__)
 class Merge:
     """Handles record merging."""
 
-    def __init__(self, database: AbstractDatabase) -> None:
+    def __init__(self, database: AbstractDatabase, silent: bool = True) -> None:
         """Initialize Merge instance.
 
         :param database: db instance to use for record retrieval and creation.
+        :param silent: if True, don't print ETL result to console
         """
         self._database = database
         self._groups = {}  # dict keying concept IDs to group Sets
+        self._silent = silent
 
     def create_merged_concepts(self, record_ids: Set[str]) -> None:
         """Create concept groups, generate merged concept records, and update database.
@@ -27,22 +32,39 @@ class Merge:
         :param record_ids: concept identifiers from which groups should be generated.
             Should *not* include any records from excluded sources.
         """
-        _logger.info("Generating record ID sets...")
         start = timer()
-        for record_id in record_ids:
+        msg = "Generating record ID sets..."
+        if not self._silent:
+            click.echo(msg)
+        _logger.info(msg)
+
+        for record_id in tqdm(
+            record_ids, total=len(record_ids), ncols=80, disable=self._silent
+        ):
             new_group = self._create_record_id_set(record_id)
             if new_group:
                 for concept_id in new_group:
                     self._groups[concept_id] = new_group
         end = timer()
-        _logger.debug(f"Built record ID sets in {end - start} seconds")
+        msg = f"Built record ID sets in {end - start} seconds"
+        if not self._silent:
+            click.echo(msg)
+        _logger.info(msg)
 
         self._groups = {k: v for k, v in self._groups.items() if len(v) > 1}
 
-        _logger.info("Creating merged records and updating database...")
+        msg = "Creating merged records and updating database..."
+        if not self._silent:
+            click.echo(msg)
+        _logger.info(msg)
         uploaded_ids = set()
         start = timer()
-        for record_id, group in self._groups.items():
+        for record_id, group in tqdm(
+            self._groups.items(),
+            total=len(self._groups),
+            ncols=80,
+            disable=self._silent,
+        ):
             if record_id in uploaded_ids:
                 continue
             merged_record = self._generate_merged_record(group)
@@ -65,9 +87,15 @@ class Merge:
                         _logger.error(str(dw))
             uploaded_ids |= group
         self._database.complete_write_transaction()
-        _logger.info("Merged concept generation successful.")
+        msg = "Merged concept generation successful."
+        if not self._silent:
+            click.echo(msg)
+        _logger.info(msg)
         end = timer()
-        _logger.debug(f"Generated and added concepts in {end - start} seconds")
+        msg = f"Generated and added concepts in {end - start} seconds"
+        if not self._silent:
+            click.echo(msg)
+        _logger.debug(msg)
 
     def _create_record_id_set(
         self, record_id: str, observed_id_set: Optional[Set] = None
