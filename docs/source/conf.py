@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "Gene Normalizer"
-copyright = "2023, VICC"
+copyright = "2023-2024, VICC"
 author = "VICC"
 html_title = "Gene Normalizer"
 
@@ -19,6 +19,8 @@ extensions = [
     "sphinx_autodoc_typehints",
     "sphinx.ext.linkcode",
     "sphinx_copybutton",
+    "sphinx.ext.autosummary",
+    "sphinx_github_changelog",
 ]
 
 templates_path = ["_templates"]

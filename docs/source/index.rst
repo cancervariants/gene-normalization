@@ -3,6 +3,14 @@ Gene Normalizer |version|
 
 .. image:: https://img.shields.io/pypi/pyversions/gene-normalizer?color=gr
    :alt: PyPI - Python Version
+   :target: https://pypi.python.org/pypi/gene-normalizer
+
+.. image:: https://img.shields.io/pypi/l/gene-normalizer.svg
+   :alt: License
+   :target: https://github.com/cancervariants/gene-normalization/blob/main/LICENSE
+
+.. image:: https://img.shields.io/pypi/pyversions/gene-normalizer?color=gr
+   :alt: PyPI - supported Python versions
 
 .. image:: https://github.com/cancervariants/gene-normalization/actions/workflows/github-actions.yml/badge.svg
      :alt: tests status
@@ -48,6 +56,7 @@ The Gene Normalizer was created to support the `Knowledgebase Integration Projec
     Usage<usage>
     Normalizing data<normalizing_data/index>
     Managing data<managing_data/index>
-    API<api/api>
+    API Reference<api/index>
+    Changelog<changelog>
     Contributing<contributing>
     License<license>
