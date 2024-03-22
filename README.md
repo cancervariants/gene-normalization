@@ -2,7 +2,7 @@
 Gene Normalizer
 </h1>
 
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gene-normalizer?color=gr) [![image](https://img.shields.io/pypi/l/gene-normalizer.svg)](https://pypi.python.org/pypi/gene-normalizer) [![image](https://img.shields.io/pypi/pyversions/gene-normalizer.svg)](https://pypi.python.org/pypi/gene-normalizer) [![Actions status](https://github.com/cancervariants/gene-normalization/actions/workflows/github-actions.yml/badge.svg)](https://github.com/cancervariants/gene-normalization/actions/workflows/github-actions.yml) [![DOI](https://zenodo.org/badge/309797998.svg)](https://zenodo.org/badge/latestdoi/309797998)
+[![image](https://img.shields.io/pypi/v/gene-normalizer.svg)](https://pypi.python.org/pypi/gene-normalizer) [![image](https://img.shields.io/pypi/l/gene-normalizer.svg)](https://pypi.python.org/pypi/gene-normalizer) [![image](https://img.shields.io/pypi/pyversions/gene-normalizer.svg)](https://pypi.python.org/pypi/gene-normalizer) [![Actions status](https://github.com/cancervariants/gene-normalization/actions/workflows/checks.yaml/badge.svg)](https://github.com/cancervariants/gene-normalization/actions/checks.yaml) [![DOI](https://zenodo.org/badge/309797998.svg)](https://zenodo.org/badge/latestdoi/309797998)
 
 ## Overview
 <!-- description -->
