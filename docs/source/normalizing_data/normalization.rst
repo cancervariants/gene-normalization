@@ -22,6 +22,7 @@ The ``gene.etl`` package contains classes for extracting relevant data for each 
    :members:
    :undoc-members:
    :show-inheritance:
+   :noindex:
    :exclude-members:  model_config, model_fields
 
 .. _build_normalization:
@@ -52,6 +53,7 @@ After grouping is complete, a concept ID for each normalized concept is selected
     :members:
     :undoc-members:
     :show-inheritance:
+    :noindex:
 
 Normalized gene records are constructed by merging known data from all associated gene records. For array-like fields (e.g. aliases, cross-references to entries in other data sources), data from all sources are simply combined. For scalar-like fields (e.g. the gene's symbol), the value is selected from an individual source record according to the priority assigned to the source.
 
