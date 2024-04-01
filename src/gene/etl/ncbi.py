@@ -59,7 +59,7 @@ class NCBI(Base):
         gene_paths: NcbiGenePaths
         gene_paths, self._version = self._data_source.get_latest(
             from_local=use_existing
-        )  # type: ignore
+        )
         self._info_src = gene_paths.gene_info
         self._history_src = gene_paths.gene_history
         self._gene_url = (
@@ -74,7 +74,7 @@ class NCBI(Base):
         :return: A dictionary of a gene's previous symbols
         """
         # get symbol history
-        history_file = open(self._history_src, "r")
+        history_file = self._history_src.open()
         history = csv.reader(history_file, delimiter="\t")
         next(history)
         prev_symbols = {}
@@ -83,7 +83,7 @@ class NCBI(Base):
             if row[0] == "9606":
                 if row[1] != "-":
                     gene_id = row[1]
-                    if gene_id in prev_symbols.keys():
+                    if gene_id in prev_symbols:
                         prev_symbols[gene_id].append(row[3])
                     else:
                         prev_symbols[gene_id] = [row[3]]
@@ -130,7 +130,7 @@ class NCBI(Base):
                 if prefix:
                     params["associated_with"].append(f"{prefix}:{src_id}")
                 else:
-                    logger.info(f"{src_name} is not in NameSpacePrefix.")
+                    logger.info("%s is not in NameSpacePrefix.", src_name)
         if not params["xrefs"]:
             del params["xrefs"]
         if not params["associated_with"]:
@@ -142,43 +142,44 @@ class NCBI(Base):
         :param prev_symbols: A dictionary of a gene's previous symbols
         :return: A dictionary of gene's from the NCBI info file.
         """
-        # open info file, skip headers
-        info_file = open(self._info_src, "r")
-        info = csv.reader(info_file, delimiter="\t")
-        next(info)
+        info_genes = {}
 
-        info_genes = dict()
-        for row in info:
-            params = dict()
-            params["concept_id"] = f"{NamespacePrefix.NCBI.value}:{row[1]}"
-            # get symbol
-            params["symbol"] = row[2]
-            # get aliases
-            if row[4] != "-":
-                params["aliases"] = row[4].split("|")
-            else:
-                params["aliases"] = []
-            # get associated_with
-            if row[5] != "-":
-                associated_with = row[5].split("|")
-                self._add_xrefs_associated_with(associated_with, params)
-            # get chromosome location
-            vrs_chr_location = self._get_vrs_chr_location(row, params)
-            if "exclude" in vrs_chr_location:
-                # Exclude genes with multiple distinct locations (e.g. OMS)
-                continue
-            if not vrs_chr_location:
-                vrs_chr_location = []
-            params["locations"] = vrs_chr_location
-            # get label
-            if row[8] != "-":
-                params["label"] = row[8]
-            # add prev symbols
-            if row[1] in prev_symbols.keys():
-                params["previous_symbols"] = prev_symbols[row[1]]
-            info_genes[params["symbol"]] = params
-            # get type
-            params["gene_type"] = row[9]
+        # open info file, skip headers
+        with self._info_src.open() as info_file:
+            info = csv.reader(info_file, delimiter="\t")
+            next(info)
+
+            for row in info:
+                params = {}
+                params["concept_id"] = f"{NamespacePrefix.NCBI.value}:{row[1]}"
+                # get symbol
+                params["symbol"] = row[2]
+                # get aliases
+                if row[4] != "-":
+                    params["aliases"] = row[4].split("|")
+                else:
+                    params["aliases"] = []
+                # get associated_with
+                if row[5] != "-":
+                    associated_with = row[5].split("|")
+                    self._add_xrefs_associated_with(associated_with, params)
+                # get chromosome location
+                vrs_chr_location = self._get_vrs_chr_location(row, params)
+                if "exclude" in vrs_chr_location:
+                    # Exclude genes with multiple distinct locations (e.g. OMS)
+                    continue
+                if not vrs_chr_location:
+                    vrs_chr_location = []
+                params["locations"] = vrs_chr_location
+                # get label
+                if row[8] != "-":
+                    params["label"] = row[8]
+                # add prev symbols
+                if row[1] in prev_symbols:
+                    params["previous_symbols"] = prev_symbols[row[1]]
+                info_genes[params["symbol"]] = params
+                # get type
+                params["gene_type"] = row[9]
         return info_genes
 
     def _get_gene_gff(self, db: gffutils.FeatureDB, info_genes: Dict) -> None:
@@ -197,7 +198,7 @@ class NCBI(Base):
                         params = info_genes.get(symbol)
                         vrs_sq_location = self._get_vrs_sq_location(db, params, f_id)
                         if vrs_sq_location:
-                            params["locations"].append(vrs_sq_location)  # type: ignore
+                            params["locations"].append(vrs_sq_location)
                     else:
                         # Need to add entire gene
                         gene = self._add_gff_gene(db, f, f_id)
@@ -213,14 +214,14 @@ class NCBI(Base):
         :param f_id: The feature's ID
         :return: A gene dictionary if the ID attribute exists. Else return None.
         """
-        params = dict()
+        params = {}
         params["src_name"] = SourceName.NCBI.value
         self._add_attributes(f, params)
         sq_loc = self._get_vrs_sq_location(db, params, f_id)
         if sq_loc:
             params["locations"] = [sq_loc]
         else:
-            params["locations"] = list()
+            params["locations"] = []
         params["label_and_type"] = f"{params['concept_id'].lower()}##identity"
         return params
 
@@ -267,7 +268,7 @@ class NCBI(Base):
         :param src_id: The source's accession number
         :return: A dict containing an xref or associated_with ref
         """
-        source = dict()
+        source = {}
         if src_name.startswith("HGNC"):
             source["xrefs"] = [f"{NamespacePrefix.HGNC.value}:{src_id}"]
         elif src_name.startswith("NCBI"):
@@ -288,14 +289,14 @@ class NCBI(Base):
         :param params: A transformed gene record
         :return: A list of GA4GH VRS ChromosomeLocations
         """
-        params["location_annotations"] = list()
+        params["location_annotations"] = []
         chromosomes_locations = self._set_chromsomes_locations(row, params)
         locations = chromosomes_locations["locations"]
         chromosomes = chromosomes_locations["chromosomes"]
         if chromosomes_locations["exclude"]:
             return ["exclude"]
 
-        location_list = list()
+        location_list = []
         if chromosomes and not locations:
             for chromosome in chromosomes:
                 if chromosome == "MT":
@@ -317,18 +318,18 @@ class NCBI(Base):
         """
         chromosomes = None
         if row[6] != "-":
-            if "|" in row[6]:
-                chromosomes = row[6].split("|")
-            else:
-                chromosomes = [row[6]]
+            chromosomes = row[6].split("|") if "|" in row[6] else [row[6]]
 
-            if len(chromosomes) >= 2:
-                if chromosomes and "X" not in chromosomes and "Y" not in chromosomes:
-                    logger.info(
-                        f"{row[2]} contains multiple distinct "
-                        f"chromosomes: {chromosomes}."
-                    )
-                    chromosomes = None
+            if (
+                len(chromosomes) >= 2
+                and chromosomes
+                and "X" not in chromosomes
+                and "Y" not in chromosomes
+            ):
+                logger.info(
+                    "%s contains multiple distinct chromosomes: %s", row[2], chromosomes
+                )
+                chromosomes = None
 
         locations = None
         exclude = False
@@ -343,15 +344,14 @@ class NCBI(Base):
                 locations = [row[7]]
 
             # Sometimes locations will store the same location twice
-            if len(locations) == 2:
-                if locations[0] == locations[1]:
-                    locations = [locations[0]]
+            if len(locations) == 2 and locations[0] == locations[1]:
+                locations = [locations[0]]
 
             # Exclude genes where there are multiple distinct locations
             # i.e. OMS: '10q26.3', '19q13.42-q13.43', '3p25.3'
             if len(locations) > 2:
                 logger.info(
-                    f"{row[2]} contains multiple distinct " f"locations: {locations}."
+                    "%s contains multiple distinct locations: %s", row[2], locations
                 )
                 locations = None
                 exclude = True
@@ -361,9 +361,7 @@ class NCBI(Base):
                 for i in range(len(locations)):
                     loc = locations[i].strip()
                     if not re.match("^([1-9][0-9]?|X[pq]?|Y[pq]?)", loc):
-                        logger.info(
-                            f"{row[2]} contains invalid map location:" f"{loc}."
-                        )
+                        logger.info("%s contains invalid map location: %s", row[2], loc)
                         params["location_annotations"].append(loc)
                         del locations[i]
         return {"locations": locations, "chromosomes": chromosomes, "exclude": exclude}
@@ -379,7 +377,7 @@ class NCBI(Base):
         """
         for i in range(len(locations)):
             loc = locations[i].strip()
-            location = dict()
+            location = {}
 
             if Annotation.ALT_LOC.value in loc:
                 loc = loc.split(f"{Annotation.ALT_LOC.value}")[0].strip()
@@ -429,16 +427,16 @@ class NCBI(Base):
         :param loc: A gene location
         :param location: GA4GH location
         """
-        centromere_ix = re.search("cen", loc).start()  # type: ignore
+        centromere_ix = re.search("cen", loc).start()
         if "-" in loc:
             # Location gives both start and end
-            range_ix = re.search("-", loc).start()  # type: ignore
+            range_ix = re.search("-", loc).start()
             if "q" in loc:
                 location["chr"] = loc[:centromere_ix].strip()
                 location["start"] = "cen"
                 location["end"] = loc[range_ix + 1 :]
             elif "p" in loc:
-                p_ix = re.search("p", loc).start()  # type: ignore
+                p_ix = re.search("p", loc).start()
                 location["chr"] = loc[:p_ix].strip()
                 location["end"] = "cen"
                 location["start"] = loc[:range_ix]
@@ -464,7 +462,7 @@ class NCBI(Base):
 
         self._get_gene_gff(db, info_genes)
 
-        for gene in info_genes.keys():
+        for gene in info_genes:
             self._load_gene(info_genes[gene])
         logger.info("Successfully transformed NCBI.")
 
@@ -482,9 +480,8 @@ class NCBI(Base):
                 self._assembly,
             ]
         ):
-            raise GeneNormalizerEtlError(
-                "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
-            )
+            err_msg = "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
+            raise GeneNormalizerEtlError(err_msg)
         metadata = SourceMeta(
             data_license="custom",
             data_license_url="https://www.ncbi.nlm.nih.gov/home/about/policies/",
