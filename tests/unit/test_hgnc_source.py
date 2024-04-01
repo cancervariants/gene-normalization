@@ -1,5 +1,5 @@
 """Test that the gene normalizer works as intended for the HGNC source."""
-from datetime import datetime
+import datetime
 
 import pytest
 
@@ -19,8 +19,7 @@ def hgnc(database):
             resp = self.query_handler.search(query_str, incl=incl)
             return resp.source_matches[SourceName.HGNC]
 
-    h = QueryGetter()
-    return h
+    return QueryGetter()
 
 
 # Test Non Alt Loci Set
@@ -816,7 +815,9 @@ def test_meta_info(hgnc):
     assert (
         resp.source_meta_.data_license_url == "https://www.genenames.org/about/license/"
     )
-    assert datetime.strptime(resp.source_meta_.version, "%Y%m%d")
+    assert datetime.datetime.now(tz=datetime.timezone.utc).strptime(
+        resp.source_meta_.version, "%Y%m%d"
+    )
     assert resp.source_meta_.data_url == {
         "complete_set_archive": "ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
     }

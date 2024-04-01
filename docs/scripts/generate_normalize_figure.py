@@ -43,13 +43,13 @@ def create_gjgf(result: UnmergedNormalizationService) -> Dict:
         }
     }
 
-    for i, (source, matches) in enumerate(result.source_matches.items()):
+    for i, (_, matches) in enumerate(result.source_matches.items()):
         for match in matches.records:
             graph["graph"]["nodes"][match.concept_id] = {
                 "metadata": {
                     "color": COLORS[i],
-                    "hover": f"{match.concept_id}\n{match.symbol}\n<i>{match.label}</i>",  # noqa: E501
-                    "click": f"<p color='black'>{json.dumps(match.model_dump(), indent=2)}</p>",  # noqa: E501
+                    "hover": f"{match.concept_id}\n{match.symbol}\n<i>{match.label}</i>",
+                    "click": f"<p color='black'>{json.dumps(match.model_dump(), indent=2)}</p>",
                 }
             }
             for xref in match.xrefs:

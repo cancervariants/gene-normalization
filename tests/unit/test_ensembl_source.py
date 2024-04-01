@@ -17,8 +17,7 @@ def ensembl(database):
             resp = self.query_handler.search(query_str, incl=incl)
             return resp.source_matches[SourceName.ENSEMBL]
 
-    e = QueryGetter()
-    return e
+    return QueryGetter()
 
 
 @pytest.fixture(scope="module")

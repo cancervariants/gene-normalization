@@ -46,7 +46,7 @@ class Ensembl(Base):
         )
 
         # Get accession numbers
-        accession_numbers = dict()
+        accession_numbers = {}
         for item in db.features_of_type("scaffold"):
             accession_numbers[item[0]] = item[8]["Alias"][-1]
         for item in db.features_of_type("chromosome"):
@@ -68,7 +68,7 @@ class Ensembl(Base):
         :param accession_numbers: Accession numbers for each chromosome and scaffold
         :return: A gene dictionary containing data if the ID attribute exists.
         """
-        gene = dict()
+        gene = {}
         if f.strand == "-":
             gene["strand"] = Strand.REVERSE.value
         elif f.strand == "+":
@@ -101,17 +101,13 @@ class Ensembl(Base):
         for attribute in f.attributes.items():
             key = attribute[0]
 
-            if key in attributes.keys():
+            if key in attributes:
                 val = attribute[1]
 
                 if len(val) == 1:
                     val = val[0]
-                    if key == "ID":
-                        if val.startswith("gene"):
-                            val = (
-                                f"{NamespacePrefix.ENSEMBL.value}:"
-                                f"{val.split(':')[1]}"
-                            )
+                    if key == "ID" and val.startswith("gene"):
+                        val = f"{NamespacePrefix.ENSEMBL.value}:" f"{val.split(':')[1]}"
 
                 if key == "description":
                     gene["label"] = val.split("[")[0].strip()
@@ -152,7 +148,7 @@ class Ensembl(Base):
         :param src_id: The source's accession number
         :return: A dict containing an other identifier or xref
         """
-        source = dict()
+        source = {}
         if src_name.startswith("HGNC"):
             source["xrefs"] = [f"{NamespacePrefix.HGNC.value}:{src_id}"]
         elif src_name.startswith("NCBI"):
@@ -171,9 +167,8 @@ class Ensembl(Base):
         :raise GeneNormalizerEtlError: if requisite metadata is unset
         """
         if not self._version or not self._assembly:
-            raise GeneNormalizerEtlError(
-                "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
-            )
+            err_msg = "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
+            raise GeneNormalizerEtlError(err_msg)
         metadata = SourceMeta(
             data_license="custom",
             data_license_url="https://useast.ensembl.org/info/about"

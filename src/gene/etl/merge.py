@@ -36,7 +36,7 @@ class Merge:
                 for concept_id in new_group:
                     self._groups[concept_id] = new_group
         end = timer()
-        logger.debug(f"Built record ID sets in {end - start} seconds")
+        logger.debug("Built record ID sets in %f seconds", end - start)
 
         self._groups = {k: v for k, v in self._groups.items() if len(v) > 1}
 
@@ -59,8 +59,9 @@ class Merge:
                 except DatabaseWriteException as dw:
                     if str(dw).startswith("No such record exists"):
                         logger.error(
-                            f"Updating nonexistent record: {concept_id} "
-                            f"for merge ref to {merge_ref}"
+                            "Updating nonexistent record: %s for merge ref to %s",
+                            concept_id,
+                            merge_ref,
                         )
                     else:
                         logger.error(str(dw))
@@ -68,7 +69,7 @@ class Merge:
         self._database.complete_write_transaction()
         logger.info("Merged concept generation successful.")
         end = timer()
-        logger.debug(f"Generated and added concepts in {end - start} seconds")
+        logger.debug("Generated and added concepts in %f seconds", end - start)
 
     def _create_record_id_set(
         self, record_id: str, observed_id_set: Optional[Set] = None
@@ -85,27 +86,25 @@ class Merge:
 
         if record_id in self._groups:
             return self._groups[record_id]
-        else:
-            db_record = self._database.get_record_by_id(record_id)
-            if not db_record:
-                logger.warning(
-                    f"Record ID set creator could not resolve "
-                    f"lookup for {record_id} in ID set: "
-                    f"{observed_id_set}"
-                )
-                return observed_id_set - {record_id}
 
-            record_xrefs = db_record.get("xrefs")
-            if not record_xrefs:
-                return observed_id_set | {db_record["concept_id"]}
-            else:
-                local_id_set = set(record_xrefs)
-            merged_id_set = {record_id} | observed_id_set
-            for local_record_id in local_id_set - observed_id_set:
-                merged_id_set |= self._create_record_id_set(
-                    local_record_id, merged_id_set
-                )
-            return merged_id_set
+        db_record = self._database.get_record_by_id(record_id)
+        if not db_record:
+            logger.warning(
+                "Record ID set creator could not resolve lookup for %s in ID set: %s",
+                record_id,
+                observed_id_set,
+            )
+            return observed_id_set - {record_id}
+
+        record_xrefs = db_record.get("xrefs")
+        if not record_xrefs:
+            return observed_id_set | {db_record["concept_id"]}
+
+        local_id_set = set(record_xrefs)
+        merged_id_set = {record_id} | observed_id_set
+        for local_record_id in local_id_set - observed_id_set:
+            merged_id_set |= self._create_record_id_set(local_record_id, merged_id_set)
+        return merged_id_set
 
     def _generate_merged_record(self, record_id_set: Set[str]) -> Dict:
         """Generate merged record from provided concept ID group.
@@ -125,8 +124,9 @@ class Merge:
                 records.append(record)
             else:
                 logger.error(
-                    f"Merge record generator could not retrieve "
-                    f"record for {record_id} in {record_id_set}"
+                    "Merge record generator could not retrieve record for %s in %s",
+                    record_id,
+                    record_id_set,
                 )
 
         def record_order(record: Dict) -> Tuple:
@@ -135,9 +135,10 @@ class Merge:
             if src in SourcePriority.__members__:
                 source_rank = SourcePriority[src].value
             else:
-                raise Exception(
+                err_msg = (
                     f"Prohibited source: {src} in concept_id " f"{record['concept_id']}"
                 )
+                raise Exception(err_msg)
             return source_rank, record["concept_id"]
 
         records.sort(key=record_order)
@@ -176,7 +177,8 @@ class Merge:
                 merged_field = GeneTypeFieldName[record["src_name"].upper()]
                 merged_attrs[merged_field] |= {gene_type}
 
-        for field in set_fields + [
+        for field in [
+            *set_fields,
             "hgnc_locus_type",
             "ncbi_gene_type",
             "ensembl_biotype",
@@ -193,7 +195,7 @@ class Merge:
         if num_unique_strand_values > 1:
             del merged_attrs["strand"]
         elif num_unique_strand_values == 1:
-            merged_attrs["strand"] = list(unique_strand_values)[0]
+            merged_attrs["strand"] = next(iter(unique_strand_values))
 
         merged_attrs["item_type"] = RecordType.MERGER.value
         return merged_attrs
