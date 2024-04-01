@@ -412,7 +412,7 @@ class PostgresDatabase(AbstractDatabase):
 
         return self._get_record(concept_id, case_sensitive)
 
-    _ref_types_query: ClassVar[dict[str, bytes]] = {
+    _ref_types_query: ClassVar[dict] = {
         RefType.SYMBOL: b"SELECT concept_id FROM gene_symbols WHERE lower(symbol) = %s;",
         RefType.PREVIOUS_SYMBOLS: b"SELECT concept_id FROM gene_previous_symbols WHERE lower(prev_symbol) = %s;",
         RefType.ALIASES: b"SELECT concept_id FROM gene_aliases WHERE lower(alias) = %s;",
