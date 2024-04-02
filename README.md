@@ -12,7 +12,7 @@ The Gene Normalizer provides tools for resolving ambiguous human gene references
 
 **[Live service](https://normalize.cancervariants.org/gene)**
 
-**[Documentation](https://gene-normalizer.readthedocs.io/latest/)** · [Installation](https://gene-normalizer.readthedocs.io/latest/install.html) · [Usage](https://gene-normalizer.readthedocs.io/latest/usage.html) · [API reference](https://gene-normalizer.readthedocs.io/latest/api/api.html)
+**[Documentation](https://gene-normalizer.readthedocs.io/latest/)** · [Installation](https://gene-normalizer.readthedocs.io/latest/install.html) · [Usage](https://gene-normalizer.readthedocs.io/latest/usage.html) · [API reference](https://gene-normalizer.readthedocs.io/latest/api/index.html)
 
 ---
 
