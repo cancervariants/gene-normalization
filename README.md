@@ -2,7 +2,7 @@
 Gene Normalizer
 </h1>
 
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/gene-normalizer?color=gr) [![tests](https://github.com/cancervariants/gene-normalization/actions/workflows/github-actions.yml/badge.svg)](https://github.com/cancervariants/gene-normalization/actions/workflows/github-actions.yml) [![DOI](https://zenodo.org/badge/309797998.svg)](https://zenodo.org/badge/latestdoi/309797998)
+[![image](https://img.shields.io/pypi/v/gene-normalizer.svg)](https://pypi.python.org/pypi/gene-normalizer) [![image](https://img.shields.io/pypi/l/gene-normalizer.svg)](https://pypi.python.org/pypi/gene-normalizer) [![image](https://img.shields.io/pypi/pyversions/gene-normalizer.svg)](https://pypi.python.org/pypi/gene-normalizer) [![Actions status](https://github.com/cancervariants/gene-normalization/actions/workflows/checks.yaml/badge.svg)](https://github.com/cancervariants/gene-normalization/actions/workflows/checks.yaml) [![DOI](https://zenodo.org/badge/309797998.svg)](https://zenodo.org/badge/latestdoi/309797998)
 
 ## Overview
 <!-- description -->
@@ -12,7 +12,7 @@ The Gene Normalizer provides tools for resolving ambiguous human gene references
 
 **[Live service](https://normalize.cancervariants.org/gene)**
 
-**[Documentation](https://gene-normalizer.readthedocs.io/en/latest/)** · [Installation](https://gene-normalizer.readthedocs.io/en/latest/install.html) · [Usage](https://gene-normalizer.readthedocs.io/en/latest/usage.html) · [API reference](https://gene-normalizer.readthedocs.io/en/latest/api/api.html)
+**[Documentation](https://gene-normalizer.readthedocs.io/latest/)** · [Installation](https://gene-normalizer.readthedocs.io/latest/install.html) · [Usage](https://gene-normalizer.readthedocs.io/latest/usage.html) · [API reference](https://gene-normalizer.readthedocs.io/latest/api/index.html)
 
 ---
 
@@ -24,7 +24,7 @@ The Gene Normalizer is available on [PyPI](https://pypi.org/project/gene-normali
 python3 -m pip install gene-normalizer
 ```
 
-See [installation instruction](https://gene-normalizer.readthedocs.io/en/latest/install.html) in the documentation for a description of installation options and data setup requirements.
+See [installation instruction](https://gene-normalizer.readthedocs.io/latest/install.html) in the documentation for a description of installation options and data setup requirements.
 
 ## Examples
 
@@ -54,7 +54,7 @@ $ curl 'https://normalize.cancervariants.org/gene/normalize?q=BRAF' | python -m 
 }
 ```
 
-Or utilize the [Python API](https://gene-normalizer.readthedocs.io/en/latest/api/query_api.html) for fast access:
+Or utilize the [Python API](https://gene-normalizer.readthedocs.io/latest/api/query_api.html) for fast access:
 
 ```python
 >>> from gene.database import create_db
@@ -65,8 +65,8 @@ Or utilize the [Python API](https://gene-normalizer.readthedocs.io/en/latest/api
 'hgnc:6407'
 ```
 
-See the [usage](https://gene-normalizer.readthedocs.io/en/latest/usage.html) and [normalization](https://gene-normalizer.readthedocs.io/en/latest/normalizing_data/normalization.html) entries in the documentation for more.
+See the [usage](https://gene-normalizer.readthedocs.io/latest/usage.html) and [normalization](https://gene-normalizer.readthedocs.io/latest/normalizing_data/normalization.html) entries in the documentation for more.
 
 ## Feedback and contributing
 
-We welcome bug reports, feature requests, and code contributions from users and interested collaborators. The [documentation](https://gene-normalizer.readthedocs.io/en/latest/contributing.html) contains guidance for submitting feedback and contributing new code.
+We welcome bug reports, feature requests, and code contributions from users and interested collaborators. The [documentation](https://gene-normalizer.readthedocs.io/latest/contributing.html) contains guidance for submitting feedback and contributing new code.
