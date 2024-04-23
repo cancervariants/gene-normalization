@@ -803,7 +803,7 @@ class PostgresDatabase(AbstractDatabase):
             dump_file = tempdir_path / tar_dump_file.name
 
             self.drop_db()
-            system_call = f"psql {self.conninfo} -f {dump_file.absolute()}"  # noqa: E501
+            system_call = f"psql {self.conninfo} -f {dump_file.absolute()}"
             result = os.system(system_call)
         if result != 0:
             raise DatabaseException(
@@ -825,11 +825,7 @@ class PostgresDatabase(AbstractDatabase):
             )  # noqa: E501
         now = datetime.now().strftime("%Y%m%d%H%M%S")
         output_location = output_directory / f"gene_norm_{now}.sql"
-        user = self.conn.info.user
-        host = self.conn.info.host
-        port = self.conn.info.port
-        database_name = self.conn.info.dbname
-        system_call = f"pg_dump {self.conninfo} -E UTF8 -f {output_location}"  # noqa: E501
+        system_call = f"pg_dump {self.conninfo} -E UTF8 -f {output_location}"
         result = os.system(system_call)
         if result != 0:
             raise DatabaseException(
