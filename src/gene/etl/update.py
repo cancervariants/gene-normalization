@@ -74,7 +74,7 @@ def load_source(
         SourceName.NCBI: NCBI,
     }
 
-    source_class = sources_table[source](database=db)
+    source_class = sources_table[source](database=db, silent=silent)
     try:
         processed_ids = source_class.perform_etl(use_existing)
     except GeneNormalizerEtlError as e:
@@ -185,7 +185,7 @@ def update_normalized(
         _logger.error(msg)
         click.get_current_context().exit()
 
-    merge = Merge(database=db)
+    merge = Merge(database=db, silent=silent)
     if not silent:
         click.echo("Constructing normalized records...")
     merge.create_merged_concepts(processed_ids)

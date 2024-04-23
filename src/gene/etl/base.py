@@ -7,9 +7,9 @@ from pathlib import Path
 from typing import Dict, List, Optional, Union
 
 import click
+import pandas as pd
 import pydantic
 from biocommons.seqrepo import SeqRepo
-from gffutils.feature import Feature
 from wags_tails import EnsemblData, HgncData, NcbiGeneData
 
 from gene.database import AbstractDatabase
@@ -26,13 +26,6 @@ APP_ROOT = Path(__file__).resolve().parent
 SEQREPO_ROOT_DIR = Path(
     environ.get("SEQREPO_ROOT_DIR", "/usr/local/share/seqrepo/latest")
 )
-
-
-DATA_DISPATCH = {
-    SourceName.HGNC: HgncData,
-    SourceName.ENSEMBL: EnsemblData,
-    SourceName.NCBI: NcbiGeneData,
-}
 
 
 DATA_DISPATCH = {
@@ -86,13 +79,13 @@ class Base(ABC):
             uploaded.
         """
         self._extract_data(use_existing)
-        _logger.info(f"Transforming and loading {self._src_name} data to DB...")
-        if not self._silent:
-            click.echo("Transforming and loading data to DB...")
+        self._print_info(
+            f"Transforming and loading {self._src_name.value} data to DB..."
+        )
         self._add_meta()
         self._transform_data()
         self._database.complete_write_transaction()
-        _logger.info(f"Data load complete for {self._src_name}.")
+        self._print_info(f"Data load complete for {self._src_name.value}.")
         return self._processed_ids
 
     def _extract_data(self, use_existing: bool) -> None:
@@ -214,6 +207,35 @@ class Base(ABC):
     #             return chr_location
     #     return None
 
+    def _build_sequence_location(
+        self, seq_id: str, row: pd.Series, concept_id: str
+    ) -> Optional[StoredSequenceLocation]:
+        """Construct a sequence location for storing in a DB.
+
+        :param seq_id: The sequence ID.
+        :param row: A gene from the source file.
+        :param concept_id: record ID from source
+        :return: A storable SequenceLocation containing relevant params for returning a
+        VRS SequenceLocation, or None if unable to retrieve valid parameters
+        """
+        aliases = self._get_seq_id_aliases(seq_id)
+        if not aliases or row.start is None or row.end is None:
+            return None
+
+        sequence = aliases[0]
+
+        if row.start != "." and row.end != "." and sequence:
+            if 0 <= row.start <= row.end:
+                return StoredSequenceLocation(
+                    start=row.start - 1,
+                    end=row.end,
+                    sequence_id=sequence,
+                )
+            else:
+                _logger.warning(
+                    f"{concept_id} has invalid interval: start={row.start - 1} end={row.end}"
+                )
+
     def _get_seq_id_aliases(self, seq_id: str) -> List[str]:
         """Get GA4GH aliases for a sequence id
 
@@ -227,31 +249,11 @@ class Base(ABC):
             _logger.warning(f"SeqRepo raised KeyError: {e}")
         return aliases
 
-    def _build_sequence_location(
-        self, seq_id: str, gene: Feature, concept_id: str
-    ) -> Optional[StoredSequenceLocation]:
-        """Construct a sequence location for storing in a DB.
+    def _print_info(self, msg: str) -> None:
+        """Log information and print to console if not on silent mode.
 
-        :param seq_id: The sequence ID.
-        :param gene: A gene from the source file.
-        :param concept_id: record ID from source
-        :return: A storable SequenceLocation containing relevant params for returning a
-        VRS SequenceLocation, or None if unable to retrieve valid parameters
+        :param msg: message to print
         """
-        aliases = self._get_seq_id_aliases(seq_id)
-        if not aliases or gene.start is None or gene.end is None:
-            return None
-
-        sequence = aliases[0]
-
-        if gene.start != "." and gene.end != "." and sequence:
-            if 0 <= gene.start <= gene.end:
-                return StoredSequenceLocation(
-                    start=gene.start - 1,
-                    end=gene.end,
-                    sequence_id=sequence,
-                )
-            else:
-                _logger.warning(
-                    f"{concept_id} has invalid interval: start={gene.start - 1} end={gene.end}"
-                )
+        if not self._silent:
+            click.echo(msg)
+        _logger.info(msg)
