@@ -812,7 +812,7 @@ class PostgresDatabase(AbstractDatabase):
             result = os.system(system_call)
         if result != 0:
             raise DatabaseException(
-                f"System call '{result}' returned failing exit code."
+                f"System call '{system_call}' returned failing exit code {result}."
             )
 
     def export_db(self, output_directory: Path) -> None:
@@ -843,5 +843,5 @@ class PostgresDatabase(AbstractDatabase):
         result = os.system(system_call)
         if result != 0:
             raise DatabaseException(
-                f"System call '{system_call}' returned failing exit code."
+                f"System call '{system_call}' returned failing exit code {result}."
             )
