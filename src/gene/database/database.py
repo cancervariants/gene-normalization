@@ -63,12 +63,10 @@ class AbstractDatabase(abc.ABC):
         """
         if environ.get(AWS_ENV_VAR_NAME, "") == AwsEnvName.PRODUCTION:
             if environ.get(SKIP_AWS_DB_ENV_NAME, "") == "true":
-                raise DatabaseWriteError(
-                    f"Must unset {SKIP_AWS_DB_ENV_NAME} env variable to enable drop_db()"  # noqa: E501
-                )
+                msg = f"Must unset {SKIP_AWS_DB_ENV_NAME} env variable to enable drop_db()"
+                raise DatabaseWriteError(msg)
             return click.confirm("Are you sure you want to delete existing data?")
-        else:
-            return True
+        return True
 
     @abc.abstractmethod
     def drop_db(self) -> None:
@@ -328,7 +326,7 @@ def create_db(
     else:
         if db_url:
             endpoint_url = db_url
-        elif "GENE_NORM_DB_URL" in environ.keys():
+        elif "GENE_NORM_DB_URL" in environ:
             endpoint_url = environ["GENE_NORM_DB_URL"]
         else:
             endpoint_url = "http://localhost:8000"

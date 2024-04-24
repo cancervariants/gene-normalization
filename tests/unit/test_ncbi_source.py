@@ -1,5 +1,5 @@
 """Test import of NCBI source data"""
-from datetime import datetime
+import datetime
 
 import pytest
 
@@ -36,8 +36,7 @@ def ncbi(database):
             resp = self.query_handler.search(query_str, sources=[SourceName.NCBI])
             return resp.source_matches[SourceName.NCBI]
 
-    n = QueryGetter()
-    return n
+    return QueryGetter()
 
 
 @pytest.fixture(scope="module")
@@ -848,7 +847,9 @@ def test_no_match(ncbi, source_urls):
         response.source_meta_.data_license_url
         == "https://www.ncbi.nlm.nih.gov/home/about/policies/"
     )
-    assert datetime.strptime(response.source_meta_.version, "%Y%m%d")
+    assert datetime.datetime.strptime(response.source_meta_.version, "%Y%m%d").replace(
+        tzinfo=datetime.timezone.utc
+    )
     assert response.source_meta_.data_url == source_urls
     assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
     assert response.source_meta_.data_license_attributes.non_commercial is False
@@ -894,7 +895,9 @@ def test_meta(ncbi, source_urls):
         response.source_meta_.data_license_url
         == "https://www.ncbi.nlm.nih.gov/home/about/policies/"
     )
-    assert datetime.strptime(response.source_meta_.version, "%Y%m%d")
+    assert datetime.datetime.strptime(response.source_meta_.version, "%Y%m%d").replace(
+        tzinfo=datetime.timezone.utc
+    )
     assert response.source_meta_.data_url == source_urls
     assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
     assert response.source_meta_.genome_assemblies == ["GRCh38.p14"]

@@ -1,13 +1,13 @@
 """Provide PostgreSQL client."""
 import atexit
+import datetime
 import json
 import logging
 import os
 import tarfile
 import tempfile
-from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, Generator, List, Optional, Set, Tuple
+from typing import Any, ClassVar, Dict, Generator, List, Optional, Set, Tuple
 
 import click
 import psycopg
@@ -70,7 +70,9 @@ class PostgresDatabase(AbstractDatabase):
                 self.conninfo = f"postgresql://{user}@/{db_name}"
 
         if db_args.get("silent") != True:  # noqa: E712
-            click.echo(f"***Using Gene-Normalizer PostgreSQL connection: {self.conninfo}***")
+            click.echo(
+                f"***Using Gene-Normalizer PostgreSQL connection: {self.conninfo}***"
+            )
 
         self.conn = psycopg.connect(self.conninfo)
         self.initialize_db()
@@ -287,7 +289,8 @@ class PostgresDatabase(AbstractDatabase):
             cur.execute(metadata_query, [src_name])
             metadata_result = cur.fetchone()
             if not metadata_result:
-                raise DatabaseReadError(f"{src_name} metadata lookup failed")
+                msg = f"{src_name} metadata lookup failed"
+                raise DatabaseReadError(msg)
             metadata = {
                 "data_license": metadata_result[1],
                 "data_license_url": metadata_result[2],
@@ -305,7 +308,7 @@ class PostgresDatabase(AbstractDatabase):
             return metadata
 
     _get_record_query = (
-        b"SELECT * FROM record_lookup_view WHERE lower(concept_id) = %s;"  # noqa: E501
+        b"SELECT * FROM record_lookup_view WHERE lower(concept_id) = %s;"
     )
 
     def _format_source_record(self, source_row: Tuple) -> Dict:
@@ -377,7 +380,7 @@ class PostgresDatabase(AbstractDatabase):
         return {k: v for k, v in merged_record.items() if v}
 
     _get_merged_record_query = (
-        b"SELECT * FROM gene_merged WHERE lower(concept_id) = %s;"  # noqa: E501
+        b"SELECT * FROM gene_merged WHERE lower(concept_id) = %s;"
     )
 
     def _get_merged_record(
@@ -410,13 +413,12 @@ class PostgresDatabase(AbstractDatabase):
         """
         if merge:
             return self._get_merged_record(concept_id, case_sensitive)
-        else:
-            return self._get_record(concept_id, case_sensitive)
+        return self._get_record(concept_id, case_sensitive)
 
-    _ref_types_query = {
-        RefType.SYMBOL: b"SELECT concept_id FROM gene_symbols WHERE lower(symbol) = %s;",  # noqa: E501
-        RefType.PREVIOUS_SYMBOLS: b"SELECT concept_id FROM gene_previous_symbols WHERE lower(prev_symbol) = %s;",  # noqa: E501
-        RefType.ALIASES: b"SELECT concept_id FROM gene_aliases WHERE lower(alias) = %s;",  # noqa: E501
+    _ref_types_query: ClassVar = {
+        RefType.SYMBOL: b"SELECT concept_id FROM gene_symbols WHERE lower(symbol) = %s;",
+        RefType.PREVIOUS_SYMBOLS: b"SELECT concept_id FROM gene_previous_symbols WHERE lower(prev_symbol) = %s;",
+        RefType.ALIASES: b"SELECT concept_id FROM gene_aliases WHERE lower(alias) = %s;",
         RefType.XREFS: b"SELECT concept_id FROM gene_xrefs WHERE lower(xref) = %s;",
     }
 
@@ -430,15 +432,15 @@ class PostgresDatabase(AbstractDatabase):
         """
         query = self._ref_types_query.get(ref_type)
         if not query:
-            raise ValueError("invalid reference type")
+            msg = "invalid reference type"
+            raise ValueError(msg)
 
         with self.conn.cursor() as cur:
             cur.execute(query, (search_term.lower(),))
             concept_ids = cur.fetchall()
         if concept_ids:
             return [i[0] for i in concept_ids]
-        else:
-            return []
+        return []
 
     _ids_query = b"SELECT concept_id FROM gene_concepts;"
 
@@ -454,7 +456,7 @@ class PostgresDatabase(AbstractDatabase):
 
     _get_all_normalized_records_query = b"SELECT * FROM gene_merged;"
     _get_all_unmerged_source_records_query = (
-        b"SELECT * FROM record_lookup_view WHERE merge_ref IS NULL;"  # noqa: E501
+        b"SELECT * FROM record_lookup_view WHERE merge_ref IS NULL;"
     )
     _get_all_source_records_query = b"SELECT * FROM record_lookup_view;"
 
@@ -590,7 +592,7 @@ class PostgresDatabase(AbstractDatabase):
                     cur.execute(self._ins_symbol_query, [record["symbol"], concept_id])
                 self.conn.commit()
             except UniqueViolation:
-                _logger.error(f"Record with ID {concept_id} already exists")
+                _logger.error("Record with ID %s already exists", concept_id)
                 self.conn.rollback()
 
     _add_merged_record_query = b"""
@@ -662,9 +664,8 @@ class PostgresDatabase(AbstractDatabase):
 
         # UPDATE will fail silently unless we check the # of affected rows
         if row_count < 1:
-            raise DatabaseWriteError(
-                f"No such record exists for primary key {concept_id}"
-            )
+            msg = f"No such record exists for primary key {concept_id}"
+            raise DatabaseWriteError(msg)
 
     def delete_normalized_concepts(self) -> None:
         """Remove merged records from the database. Use when performing a new update
@@ -770,35 +771,33 @@ class PostgresDatabase(AbstractDatabase):
             fails
         """
         if not url:
-            url = "https://vicc-normalizers.s3.us-east-2.amazonaws.com/gene_normalization/postgresql/gene_norm_latest.sql.tar.gz"  # noqa: E501
+            url = "https://vicc-normalizers.s3.us-east-2.amazonaws.com/gene_normalization/postgresql/gene_norm_latest.sql.tar.gz"
         with tempfile.TemporaryDirectory() as tempdir:
             tempdir_path = Path(tempdir)
             temp_tarfile = tempdir_path / "gene_norm_latest.tar.gz"
-            with requests.get(url, stream=True) as r:
+            with requests.get(url, stream=True, timeout=30) as r:
                 try:
                     r.raise_for_status()
-                except requests.HTTPError:
-                    raise DatabaseError(
-                        f"Unable to retrieve PostgreSQL dump file from {url}"
-                    )
-                with open(temp_tarfile, "wb") as h:
+                except requests.HTTPError as e:
+                    msg = f"Unable to retrieve PostgreSQL dump file from {url}"
+                    raise DatabaseError(msg) from e
+                with temp_tarfile.open("wb") as h:
                     for chunk in r.iter_content(chunk_size=8192):
                         if chunk:
                             h.write(chunk)
             tar = tarfile.open(temp_tarfile, "r:gz")
-            tar_dump_file = [
-                f for f in tar.getmembers() if f.name.startswith("gene_norm_")
-            ][0]
-            tar.extractall(path=tempdir_path, members=[tar_dump_file])
+            tar_dump_file = next(
+                iter([f for f in tar.getmembers() if f.name.startswith("gene_norm_")])
+            )
+            tar.extractall(path=tempdir_path, members=[tar_dump_file])  # noqa: S202
             dump_file = tempdir_path / tar_dump_file.name
 
             self.drop_db()
             system_call = f"psql {self.conninfo} -f {dump_file.absolute()}"
-            result = os.system(system_call)
+            result = os.system(system_call)  # noqa: S605
         if result != 0:
-            raise DatabaseError(
-                f"System call '{system_call}' returned failing exit code {result}."
-            )
+            msg = f"System call '{system_call}' returned failing exit code {result}."
+            raise DatabaseError(msg)
 
     def export_db(self, output_directory: Path) -> None:
         """Dump DB to specified location.
@@ -810,14 +809,14 @@ class PostgresDatabase(AbstractDatabase):
         :raise DatabaseError: if psql call fails
         """
         if not output_directory.is_dir() or not output_directory.exists():
-            raise ValueError(
+            msg = (
                 f"Output location {output_directory} isn't a directory or doesn't exist"
-            )  # noqa: E501
-        now = datetime.now().strftime("%Y%m%d%H%M%S")
+            )
+            raise ValueError(msg)
+        now = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y%m%d%H%M%S")
         output_location = output_directory / f"gene_norm_{now}.sql"
         system_call = f"pg_dump {self.conninfo} -E UTF8 -f {output_location}"
-        result = os.system(system_call)
+        result = os.system(system_call)  # noqa: S605
         if result != 0:
-            raise DatabaseError(
-                f"System call '{system_call}' returned failing exit code {result}."
-            )
+            msg = f"System call '{system_call}' returned failing exit code {result}."
+            raise DatabaseError(msg)

@@ -62,7 +62,7 @@ def load_source(
 
     # used to get source class name from string
     try:
-        from gene.etl import HGNC, NCBI, Ensembl, GeneNormalizerEtlError  # noqa: F401
+        from gene.etl import HGNC, NCBI, Ensembl, GeneNormalizerEtlError
     except ModuleNotFoundError as e:
         click.echo(
             f"Encountered ModuleNotFoundError attempting to import {e.name}. {_etl_dependency_help}"
