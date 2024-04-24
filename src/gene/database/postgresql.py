@@ -55,19 +55,19 @@ class PostgresDatabase(AbstractDatabase):
         :raise DatabaseInitializationException: if initial setup fails
         """
         if db_url:
-            conninfo = db_url
+            self.conninfo = db_url
         elif "GENE_NORM_DB_URL" in os.environ:
-            conninfo = os.environ["GENE_NORM_DB_URL"]
+            self.conninfo = os.environ["GENE_NORM_DB_URL"]
         else:
             user = db_args.get("user", "postgres")
             password = db_args.get("password", "")
             db_name = db_args.get("db_name", "gene_normalizer")
             if password:
-                conninfo = f"dbname={db_name} user={user} password={password}"
+                self.conninfo = f"postgresql://{user}:{password}@/{db_name}"
             else:
-                conninfo = f"dbname={db_name} user={user}"
+                self.conninfo = f"postgresql://{user}@/{db_name}"
 
-        self.conn = psycopg.connect(conninfo)
+        self.conn = psycopg.connect(self.conninfo)
         self.initialize_db()
         self._cached_sources = {}
 
@@ -806,17 +806,12 @@ class PostgresDatabase(AbstractDatabase):
             tar.extractall(path=tempdir_path, members=[tar_dump_file])
             dump_file = tempdir_path / tar_dump_file.name
 
-            if self.conn.info.password:
-                pw_param = f"-W {self.conn.info.password}"
-            else:
-                pw_param = "-w"
-
             self.drop_db()
-            system_call = f"psql -d {self.conn.info.dbname} -U {self.conn.info.user} {pw_param} -f {dump_file.absolute()}"  # noqa: E501
+            system_call = f"psql {self.conninfo} -f {dump_file.absolute()}"
             result = os.system(system_call)
         if result != 0:
             raise DatabaseException(
-                f"System call '{result}' returned failing exit code."
+                f"System call '{system_call}' returned failing exit code {result}."
             )
 
     def export_db(self, output_directory: Path) -> None:
@@ -834,18 +829,9 @@ class PostgresDatabase(AbstractDatabase):
             )  # noqa: E501
         now = datetime.now().strftime("%Y%m%d%H%M%S")
         output_location = output_directory / f"gene_norm_{now}.sql"
-        user = self.conn.info.user
-        host = self.conn.info.host
-        port = self.conn.info.port
-        database_name = self.conn.info.dbname
-        if self.conn.info.password:
-            pw_param = f"-W {self.conn.info.password}"
-        else:
-            pw_param = "-w"
-
-        system_call = f"pg_dump -E UTF8 -f {output_location} -U {user} {pw_param} -h {host} -p {port} {database_name}"  # noqa: E501
+        system_call = f"pg_dump {self.conninfo} -E UTF8 -f {output_location}"
         result = os.system(system_call)
         if result != 0:
             raise DatabaseException(
-                f"System call '{system_call}' returned failing exit code."
+                f"System call '{system_call}' returned failing exit code {result}."
             )
