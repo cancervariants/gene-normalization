@@ -32,24 +32,24 @@ def pytest_configure(config):
         logging.getLogger("urllib3.connectionpool").setLevel(logging.ERROR)
 
 
-def _compare_records(normalized_gene, test_gene, match_type):
+def _compare_records(normalized_gene, fixture_gene, match_type):
     """Check that normalized_gene and test_gene are the same."""
     assert normalized_gene.match_type == match_type
-    assert normalized_gene.label == test_gene.label
-    assert normalized_gene.concept_id == test_gene.concept_id
-    assert set(normalized_gene.aliases) == set(test_gene.aliases)
-    assert set(normalized_gene.xrefs) == set(test_gene.xrefs)
-    assert normalized_gene.symbol_status == test_gene.symbol_status
-    assert set(normalized_gene.previous_symbols) == set(test_gene.previous_symbols)
-    assert normalized_gene.symbol == test_gene.symbol
-    assert len(normalized_gene.locations) == len(test_gene.locations)
+    assert normalized_gene.label == fixture_gene.label
+    assert normalized_gene.concept_id == fixture_gene.concept_id
+    assert set(normalized_gene.aliases) == set(fixture_gene.aliases)
+    assert set(normalized_gene.xrefs) == set(fixture_gene.xrefs)
+    assert normalized_gene.symbol_status == fixture_gene.symbol_status
+    assert set(normalized_gene.previous_symbols) == set(fixture_gene.previous_symbols)
+    assert normalized_gene.symbol == fixture_gene.symbol
+    assert len(normalized_gene.locations) == len(fixture_gene.locations)
     for loc in normalized_gene.locations:
-        assert loc in test_gene.locations
+        assert loc in fixture_gene.locations
     assert set(normalized_gene.location_annotations) == set(
-        test_gene.location_annotations
+        fixture_gene.location_annotations
     )
-    assert normalized_gene.strand == test_gene.strand
-    assert normalized_gene.gene_type == test_gene.gene_type
+    assert normalized_gene.strand == fixture_gene.strand
+    assert normalized_gene.gene_type == fixture_gene.gene_type
 
 
 @pytest.fixture(scope="session")
