@@ -17,13 +17,12 @@ def ensembl(database):
             resp = self.query_handler.search(query_str, sources=[SourceName.ENSEMBL])
             return resp.source_matches[SourceName.ENSEMBL]
 
-    e = QueryGetter()
-    return e
+    return QueryGetter()
 
 
 @pytest.fixture(scope="module")
 def ddx11l1():
-    """Create a DDX11L1 fixutre."""
+    """Create a DDX11L1 fixture."""
     params = {
         "match_type": MatchType.NO_MATCH,
         "concept_id": "ensembl:ENSG00000223972",
@@ -36,7 +35,7 @@ def ddx11l1():
         "location_annotations": [],
         "locations": [
             {
-                "id": "ga4gh:SL.Ihi0T86UoFIEbH0DHttX2nIw_BdOkI5L",
+                "id": "ga4gh:SL.cVhZkPm3Dtmqka5imaxIxA8NTOWkfjsB",
                 "end": 14409,
                 "start": 11868,
                 "sequenceReference": {
@@ -44,6 +43,7 @@ def ddx11l1():
                     "refgetAccession": "SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
                 },
                 "type": "SequenceLocation",
+                "digest": "cVhZkPm3Dtmqka5imaxIxA8NTOWkfjsB",
             }
         ],
         "strand": "+",
@@ -67,7 +67,7 @@ def tp53():
         "location_annotations": [],
         "locations": [
             {
-                "id": "ga4gh:SL.TlGoA-JmP3Xky3RhJ6_UU3eJKq8EpEp9",
+                "id": "ga4gh:SL.fPR5aPzsxVW_vzQeiX7u4NLUopq35WQi",
                 "end": 7687538,
                 "start": 7661778,
                 "sequenceReference": {
@@ -75,6 +75,7 @@ def tp53():
                     "refgetAccession": "SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7",
                 },
                 "type": "SequenceLocation",
+                "digest": "fPR5aPzsxVW_vzQeiX7u4NLUopq35WQi",
             }
         ],
         "strand": "-",
@@ -98,7 +99,7 @@ def ATP6AP1_DT():  # noqa: N802
         "location_annotations": [],
         "locations": [
             {
-                "id": "ga4gh:SL.bPbeeEGSqjlZJ1Ddmg5T9ptJz9tKxYi3",
+                "id": "ga4gh:SL.BtAK641MgbS9-8Mkbp_4b3cCkK_YzggB",
                 "end": 154428526,
                 "start": 154424377,
                 "sequenceReference": {
@@ -106,6 +107,7 @@ def ATP6AP1_DT():  # noqa: N802
                     "refgetAccession": "SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
                 },
                 "type": "SequenceLocation",
+                "digest": "BtAK641MgbS9-8Mkbp_4b3cCkK_YzggB",
             }
         ],
         "strand": "-",
@@ -128,7 +130,7 @@ def hsa_mir_1253():
         "location_annotations": [],
         "locations": [
             {
-                "id": "ga4gh:SL.x4kOE6ZXG-xY7nm6bu2W7lvm6ljaJXzR",
+                "id": "ga4gh:SL.FQOKjpXhjVgZvT3ldgmIuSrn2DMXiTvA",
                 "end": 2748182,
                 "start": 2748077,
                 "sequenceReference": {
@@ -136,6 +138,7 @@ def hsa_mir_1253():
                     "refgetAccession": "SQ.dLZ15tNO1Ur0IcGjwc3Sdi_0A6Yf4zm7",
                 },
                 "type": "SequenceLocation",
+                "digest": "FQOKjpXhjVgZvT3ldgmIuSrn2DMXiTvA",
             }
         ],
         "strand": "+",
@@ -160,7 +163,7 @@ def spry3():
         "location_annotations": [],
         "locations": [
             {
-                "id": "ga4gh:SL.fxU7Axal2_GbyOfW8NQf0plM-SUWFCB0",
+                "id": "ga4gh:SL.KIwmMchAG4ApWxJUigdfUw2Y4wSdhsOd",
                 "end": 155782459,
                 "start": 155612571,
                 "sequenceReference": {
@@ -168,6 +171,7 @@ def spry3():
                     "refgetAccession": "SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
                 },
                 "type": "SequenceLocation",
+                "digest": "KIwmMchAG4ApWxJUigdfUw2Y4wSdhsOd",
             }
         ],
         "strand": "+",

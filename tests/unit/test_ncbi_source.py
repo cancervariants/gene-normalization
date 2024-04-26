@@ -1,5 +1,5 @@
 """Test import of NCBI source data"""
-from datetime import datetime
+import datetime
 
 import pytest
 
@@ -36,8 +36,7 @@ def ncbi(database):
             resp = self.query_handler.search(query_str, sources=[SourceName.NCBI])
             return resp.source_matches[SourceName.NCBI]
 
-    n = QueryGetter()
-    return n
+    return QueryGetter()
 
 
 @pytest.fixture(scope="module")
@@ -64,7 +63,7 @@ def dpf1():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.0bmpLh_dlBRrzfviiQY9Vg4iEH0XeR20",
+                "id": "ga4gh:SL.rR9fASAGEC1fxbe2CoU_QywsIN502R78",
                 "end": 38229695,
                 "start": 38211005,
                 "sequenceReference": {
@@ -72,6 +71,7 @@ def dpf1():
                     "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
                 },
                 "type": "SequenceLocation",
+                "digest": "rR9fASAGEC1fxbe2CoU_QywsIN502R78",
             }
         ],
         "gene_type": "protein-coding",
@@ -103,7 +103,7 @@ def pdp1_symbol():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.-455M-S51D8nXPFoGH0dYNFVFAJxm5dG",
+                "id": "ga4gh:SL.JJ4cz7_OuxFZQ7i1J4c4NbyLd0M74fCA",
                 "end": 93926068,
                 "start": 93916922,
                 "sequenceReference": {
@@ -111,6 +111,7 @@ def pdp1_symbol():
                     "refgetAccession": "SQ.209Z7zJ-mFypBEWLk4rNC6S_OxY5p7bs",
                 },
                 "type": "SequenceLocation",
+                "digest": "JJ4cz7_OuxFZQ7i1J4c4NbyLd0M74fCA",
             }
         ],
         "gene_type": "protein-coding",
@@ -142,7 +143,7 @@ def pdp1_alias():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.VI_0P0-ei90MDsLjAeUrDfeXBlZVJtJY",
+                "id": "ga4gh:SL.6JIWLg48NzkU5TuMrHJ3TlFS1QKYmQ2W",
                 "end": 4665258,
                 "start": 4662293,
                 "sequenceReference": {
@@ -150,6 +151,7 @@ def pdp1_alias():
                     "refgetAccession": "SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
                 },
                 "type": "SequenceLocation",
+                "digest": "6JIWLg48NzkU5TuMrHJ3TlFS1QKYmQ2W",
             }
         ],
         "gene_type": "protein-coding",
@@ -190,7 +192,7 @@ def spry3():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.2N5aguRIvBdGemRgABZFutmLTV925dsV",
+                "id": "ga4gh:SL.wn-2JhwdvKqHLW3fuP3w_HgMstxBgfDj",
                 "end": 155782459,
                 "start": 155612585,
                 "sequenceReference": {
@@ -198,9 +200,10 @@ def spry3():
                     "refgetAccession": "SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
                 },
                 "type": "SequenceLocation",
+                "digest": "wn-2JhwdvKqHLW3fuP3w_HgMstxBgfDj",
             },
             {
-                "id": "ga4gh:SL.U9E9WtQdzFc4elR3t1qw48nueHgfWFWL",
+                "id": "ga4gh:SL.tfIWUCWL9N99vBw_HhBLu5G-XJ_nf2wW",
                 "end": 56968979,
                 "start": 56954315,
                 "sequenceReference": {
@@ -208,6 +211,7 @@ def spry3():
                     "refgetAccession": "SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
                 },
                 "type": "SequenceLocation",
+                "digest": "tfIWUCWL9N99vBw_HhBLu5G-XJ_nf2wW",
             },
         ],
         "gene_type": "protein-coding",
@@ -282,7 +286,7 @@ def znf84():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.IRsls9vud2-CiA7Jq4L3ry2VVK7LoNud",
+                "id": "ga4gh:SL.iVZ8b-X1k7egMDYe_FPSTUwyzJEWQWXB",
                 "end": 133063299,
                 "start": 133037508,
                 "sequenceReference": {
@@ -290,6 +294,7 @@ def znf84():
                     "refgetAccession": "SQ.6wlJpONE3oNb4D69ULmEXhqyDZ4vwNfl",
                 },
                 "type": "SequenceLocation",
+                "digest": "iVZ8b-X1k7egMDYe_FPSTUwyzJEWQWXB",
             }
         ],
         "gene_type": "protein-coding",
@@ -336,7 +341,7 @@ def slc25a6():
             #     "end": "p11.2"
             # },
             {
-                "id": "ga4gh:SL.dvD-ZopQGZkVWx4Z-vFpP9ateicPHgQ6",
+                "id": "ga4gh:SL._eLXsn_yz0kSJAl7QH42n4wE3Fy57z2P",
                 "type": "SequenceLocation",
                 "sequenceReference": {
                     "type": "SequenceReference",
@@ -344,9 +349,10 @@ def slc25a6():
                 },
                 "start": 1386151,
                 "end": 1392113,
+                "digest": "_eLXsn_yz0kSJAl7QH42n4wE3Fy57z2P",
             },
             {
-                "id": "ga4gh:SL.bv3LobZZ-sERq5cIthyS4w_tmSwV2QSg",
+                "id": "ga4gh:SL.qoi_lciuVRoZjmT5_oZ28LOHICPER1a4",
                 "type": "SequenceLocation",
                 "sequenceReference": {
                     "type": "SequenceReference",
@@ -354,6 +360,7 @@ def slc25a6():
                 },
                 "start": 1386151,
                 "end": 1392113,
+                "digest": "qoi_lciuVRoZjmT5_oZ28LOHICPER1a4",
             },
         ],
         "gene_type": "protein-coding",
@@ -477,7 +484,7 @@ def prkrap1():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.LwWy5JYncZVnOM9hWiLWW_z0n2eY-peb",
+                "id": "ga4gh:SL.1wklqN-Yvbdsx5m5XV7JuoaYS-Gl94cx",
                 "end": 3941874,
                 "start": 3940269,
                 "sequenceReference": {
@@ -485,9 +492,10 @@ def prkrap1():
                     "refgetAccession": "SQ.MjujHSAsgNWRTX4w3ysM7b5OVhZpdXu1",
                 },
                 "type": "SequenceLocation",
+                "digest": "1wklqN-Yvbdsx5m5XV7JuoaYS-Gl94cx",
             },
             {
-                "id": "ga4gh:SL.q36ql_fX4HrZy_G2EXX_SGWl-7X5Bq6c",
+                "id": "ga4gh:SL.k-GoObtGSBDvWeu5gYWUca1osgbJpGib",
                 "end": 3932085,
                 "start": 3930480,
                 "sequenceReference": {
@@ -495,6 +503,7 @@ def prkrap1():
                     "refgetAccession": "SQ.Q8IworEhpLeXwpz1CHM7C3luysh-ltx-",
                 },
                 "type": "SequenceLocation",
+                "digest": "k-GoObtGSBDvWeu5gYWUca1osgbJpGib",
             },
         ],
         "gene_type": "pseudo",
@@ -848,7 +857,9 @@ def test_no_match(ncbi, source_urls):
         response.source_meta_.data_license_url
         == "https://www.ncbi.nlm.nih.gov/home/about/policies/"
     )
-    assert datetime.strptime(response.source_meta_.version, "%Y%m%d")
+    assert datetime.datetime.strptime(response.source_meta_.version, "%Y%m%d").replace(
+        tzinfo=datetime.timezone.utc
+    )
     assert response.source_meta_.data_url == source_urls
     assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
     assert response.source_meta_.data_license_attributes.non_commercial is False
@@ -894,7 +905,9 @@ def test_meta(ncbi, source_urls):
         response.source_meta_.data_license_url
         == "https://www.ncbi.nlm.nih.gov/home/about/policies/"
     )
-    assert datetime.strptime(response.source_meta_.version, "%Y%m%d")
+    assert datetime.datetime.strptime(response.source_meta_.version, "%Y%m%d").replace(
+        tzinfo=datetime.timezone.utc
+    )
     assert response.source_meta_.data_url == source_urls
     assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
     assert response.source_meta_.genome_assemblies == ["GRCh38.p14"]

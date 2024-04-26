@@ -108,7 +108,7 @@ def normalized_ache():
                     #     "start": "q22.1"
                     # },
                     {
-                        "id": "ga4gh:SL.U7vPSlX8eyCKdFSiROIsc9om0Y7pCm2g",
+                        "id": "ga4gh:SL.OWr9DoyBhr2zpf4uLLcZSvsTSIDElU6R",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -116,6 +116,7 @@ def normalized_ache():
                         },
                         "start": 100889993,
                         "end": 100896994,
+                        "digest": "OWr9DoyBhr2zpf4uLLcZSvsTSIDElU6R",
                     }
                 ],
                 "type": "Extension",
@@ -138,7 +139,8 @@ def normalized_ache():
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.dnydHb2Bnv5pwXjI4MpJmrZUADf5QLe1",
+                        "id": "ga4gh:SL.4taOKYezIxUvFozs6c6OC0bJAQ2zwjxu",
+                        "digest": "4taOKYezIxUvFozs6c6OC0bJAQ2zwjxu",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -265,7 +267,7 @@ def normalized_braf():
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.WJ0hsPzXuK54mQyVysTqUNV5jaCATnRf",
+                        "id": "ga4gh:SL.fUv91vYrVHBMg-B_QW7UpOQj50g_49hb",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -273,6 +275,7 @@ def normalized_braf():
                         },
                         "start": 140719326,
                         "end": 140924929,
+                        "digest": "fUv91vYrVHBMg-B_QW7UpOQj50g_49hb",
                     }
                 ],
                 "type": "Extension",
@@ -289,7 +292,8 @@ def normalized_braf():
                     #     "end": "q34"
                     # },
                     {
-                        "id": "ga4gh:SL.uNBZoxhjhohl24VlIut-JxPJAGfJ7EQE",
+                        "id": "ga4gh:SL.0nPwKHYNnTmJ06G-gSmz8BEhB_NTp-0B",
+                        "digest": "0nPwKHYNnTmJ06G-gSmz8BEhB_NTp-0B",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -434,7 +438,7 @@ def normalized_abl1():
                     #     "end": "q34.12"
                     # },
                     {
-                        "id": "ga4gh:SL.F1QUtInXQaBEjAJNR1sYHXdp0XC000Qi",
+                        "id": "ga4gh:SL.LXhnhuUvUttSXuPOZYRY6ZrBgbgm2vRH",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -442,6 +446,7 @@ def normalized_abl1():
                         },
                         "start": 130713042,
                         "end": 130887675,
+                        "digest": "LXhnhuUvUttSXuPOZYRY6ZrBgbgm2vRH",
                     }
                 ],
                 "type": "Extension",
@@ -450,7 +455,8 @@ def normalized_abl1():
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.P9Qu87GYxoWPYh1BdAQC5bTLorjvvye7",
+                        "id": "ga4gh:SL.9uinq-DLvJ2MJCoi9Hi762F06oXUQUpe",
+                        "digest": "9uinq-DLvJ2MJCoi9Hi762F06oXUQUpe",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -558,7 +564,7 @@ def normalized_p150():
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.tLUFh2LAYq-bsMi0Vob_TIWrz-sE4HgE",
+                        "id": "ga4gh:SL.YQpWCl-kVi_sYEaYUv4XFR-0pPiS-M2c",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -566,6 +572,7 @@ def normalized_p150():
                         },
                         "start": 4402639,
                         "end": 4445018,
+                        "digest": "YQpWCl-kVi_sYEaYUv4XFR-0pPiS-M2c",
                     }
                 ],
             },
@@ -581,7 +588,8 @@ def normalized_p150():
                     #     "end": "p13.3"
                     # },
                     {
-                        "id": "ga4gh:SL.-3T7UXNk6nIkMKB9YGEb0RTYxbVY2TUy",
+                        "id": "ga4gh:SL.UGw_DTmBcQHvQ1Jg_qeG7iJMkk1iVuko",
+                        "digest": "UGw_DTmBcQHvQ1Jg_qeG7iJMkk1iVuko",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -638,7 +646,8 @@ def normalized_loc_653303():
                     #     "end": "q23.3"
                     # },
                     {
-                        "id": "ga4gh:SL.hgpw5EH5q6_PFX1CTcOx5od0LKUQRuDH",
+                        "id": "ga4gh:SL.DHR_wt6pP_sl-K8E1wDlB9LWuzVd15F_",
+                        "digest": "DHR_wt6pP_sl-K8E1wDlB9LWuzVd15F_",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -676,7 +685,7 @@ def normalize_unmerged_loc_653303():
                         "concept_id": "ncbigene:653303",
                         "symbol": "LOC653303",
                         "symbol_status": None,
-                        "label": "proprotein convertase subtilisin/kexin type 7 pseudogene",  # noqa: E501
+                        "label": "proprotein convertase subtilisin/kexin type 7 pseudogene",
                         "strand": "+",
                         "location_annotations": [],
                         "locations": [
@@ -689,11 +698,12 @@ def normalize_unmerged_loc_653303():
                             #     "end": "q23.3"
                             # },
                             {
-                                "id": "ga4gh:SL.hgpw5EH5q6_PFX1CTcOx5od0LKUQRuDH",
+                                "id": "ga4gh:SL.DHR_wt6pP_sl-K8E1wDlB9LWuzVd15F_",
+                                "digest": "DHR_wt6pP_sl-K8E1wDlB9LWuzVd15F_",
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
-                                    "refgetAccession": "SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1",  # noqa: E501
+                                    "refgetAccession": "SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1",
                                 },
                                 "start": 117135528,
                                 "end": 117138867,
@@ -771,11 +781,12 @@ def normalize_unmerged_chaf1a():
                         "location_annotations": [],
                         "locations": [
                             {
-                                "id": "ga4gh:SL.tLUFh2LAYq-bsMi0Vob_TIWrz-sE4HgE",
+                                "id": "ga4gh:SL.YQpWCl-kVi_sYEaYUv4XFR-0pPiS-M2c",
+                                "digest": "YQpWCl-kVi_sYEaYUv4XFR-0pPiS-M2c",
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
-                                    "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",  # noqa: E501
+                                    "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
                                 },
                                 "start": 4402639,
                                 "end": 4445018,
@@ -807,11 +818,12 @@ def normalize_unmerged_chaf1a():
                             #     "end": "p13.3"
                             # },
                             {
-                                "id": "ga4gh:SL.-3T7UXNk6nIkMKB9YGEb0RTYxbVY2TUy",
+                                "id": "ga4gh:SL.UGw_DTmBcQHvQ1Jg_qeG7iJMkk1iVuko",
+                                "digest": "UGw_DTmBcQHvQ1Jg_qeG7iJMkk1iVuko",
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
-                                    "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",  # noqa: E501
+                                    "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
                                 },
                                 "start": 4402639,
                                 "end": 4450830,
@@ -857,14 +869,15 @@ def normalize_unmerged_ache():
                             #     "end": "q22.1"
                             # },
                             {
-                                "id": "ga4gh:SL.U7vPSlX8eyCKdFSiROIsc9om0Y7pCm2g",
+                                "id": "ga4gh:SL.OWr9DoyBhr2zpf4uLLcZSvsTSIDElU6R",
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
-                                    "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                    "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                                 },
                                 "start": 100889993,
                                 "end": 100896994,
+                                "digest": "OWr9DoyBhr2zpf4uLLcZSvsTSIDElU6R",
                             }
                         ],
                         "aliases": ["YT", "ARACHE", "ACEE", "N-ACHE"],
@@ -885,11 +898,12 @@ def normalize_unmerged_ache():
                         "location_annotations": [],
                         "locations": [
                             {
-                                "id": "ga4gh:SL.dnydHb2Bnv5pwXjI4MpJmrZUADf5QLe1",
+                                "id": "ga4gh:SL.4taOKYezIxUvFozs6c6OC0bJAQ2zwjxu",
+                                "digest": "4taOKYezIxUvFozs6c6OC0bJAQ2zwjxu",
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
-                                    "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                    "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                                 },
                                 "start": 100889993,
                                 "end": 100896974,
@@ -991,7 +1005,7 @@ def normalized_ifnr():
 @pytest.fixture(scope="module")
 def num_sources():
     """Get the number of sources."""
-    return len({s for s in SourceName})
+    return len(set(SourceName))
 
 
 @pytest.fixture(scope="module")
@@ -1037,7 +1051,7 @@ def compare_normalize_resp(
         resp_source_meta_keys = resp.source_meta_.keys()
         assert len(resp_source_meta_keys) == len(
             expected_source_meta
-        ), "source_meta_keys"  # noqa: E501
+        ), "source_meta_keys"
         for src in expected_source_meta:
             assert src in resp_source_meta_keys
     compare_service_meta(resp.service_meta_)
@@ -1110,8 +1124,8 @@ def compare_gene(test, actual):
         assert len(actual.mappings) == len(test.mappings)
 
     assert set(actual.aliases) == set(test.aliases), "aliases"
-    extensions_present = "extensions" in test.model_fields.keys()
-    assert ("extensions" in actual.model_fields.keys()) == extensions_present
+    extensions_present = "extensions" in test.model_fields
+    assert ("extensions" in actual.model_fields) == extensions_present
     if extensions_present:
         actual_ext_names = sorted([ext.name for ext in actual.extensions])
         unique_actual_ext_names = sorted(set(actual_ext_names))
