@@ -65,10 +65,21 @@ jobs:
 
   docs:
     runs-on: ubuntu-latest
+    env:
+      SPHINX_GITHUB_CHANGELOG_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v3
 
-      - uses: ammaraskar/sphinx-action@master
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          pre-build-command: 'python3 -m pip install --upgrade pip &&  python3 -m pip install .[docs]'
-          docs-folder: "docs/"
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install '.[docs]'
+
+      - name: Attempt docs build
+        working-directory: ./docs
+        run: make html
