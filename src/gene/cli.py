@@ -20,7 +20,7 @@ def cli() -> None:
 
 @cli.command()
 @click.argument("sources", nargs=-1)
-@click.option("--all", is_flag=True, help="Update records for all sources.")
+@click.option("--all", "all_", is_flag=True, help="Update records for all sources.")
 @click.option("--normalize", is_flag=True, help="Create normalized records.")
 @click.option("--db_url", help=url_description)
 @click.option("--aws_instance", is_flag=True, help="Use cloud DynamodDB instance.")
@@ -37,7 +37,7 @@ def update(
     sources: Tuple[str],
     aws_instance: bool,
     db_url: str,
-    all: bool,
+    all_: bool,
     normalize: bool,
     use_existing: bool,
     silent: bool,
@@ -71,7 +71,7 @@ def update(
     :param use_existing: if True, use most recent local data instead of fetching latest version
     :param silent: if True, suppress console output
     """  # noqa: D301
-    if (not sources) and (not all) and (not normalize):
+    if (not sources) and (not all_) and (not normalize):
         click.echo(
             "Error: must provide SOURCES or at least one of --all, --normalize\n"
         )
@@ -82,7 +82,7 @@ def update(
     db = create_db(db_url, aws_instance, silent)
 
     processed_ids = None
-    if all:
+    if all_:
         processed_ids = update_all_sources(db, use_existing, silent=silent)
     elif sources:
         parsed_sources = set()
@@ -135,10 +135,10 @@ def update_from_remote(data_url: Optional[str], db_url: str, silent: bool) -> No
     except NotImplementedError:
         click.echo(
             f"Error: Fetching remote data dump not supported for {db.__class__.__name__}"
-        )  # noqa: E501
+        )
         click.get_current_context().exit(1)
     except DatabaseError as e:
-        click.echo(f"Encountered exception during update: {str(e)}")
+        click.echo(f"Encountered exception during update: {e!s}")
         click.get_current_context().exit(1)
 
 
@@ -210,7 +210,7 @@ def dump_database(output_directory: Path, db_url: str, silent: bool) -> None:
     :param silent: if True, suppress console output
     """  # noqa: D301
     if not output_directory:
-        output_directory = Path(".")
+        output_directory = Path()
 
     db = create_db(db_url, False, silent)
     try:
@@ -218,10 +218,10 @@ def dump_database(output_directory: Path, db_url: str, silent: bool) -> None:
     except NotImplementedError:
         click.echo(
             f"Error: Dumping data to file not supported for {db.__class__.__name__}"
-        )  # noqa: E501
+        )
         click.get_current_context().exit(1)
     except DatabaseError as e:
-        click.echo(f"Encountered exception during update: {str(e)}")
+        click.echo(f"Encountered exception during update: {e!s}")
         click.get_current_context().exit(1)
 
 

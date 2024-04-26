@@ -64,7 +64,7 @@ class Base(ABC):
         self._data_source = self._get_data_handler(data_path)
         self._database = database
         self.seqrepo = self.get_seqrepo(seqrepo_dir)
-        self._processed_ids = list()
+        self._processed_ids = []
 
     def _get_data_handler(
         self, data_path: Optional[Path] = None
@@ -86,13 +86,13 @@ class Base(ABC):
             uploaded.
         """
         self._extract_data(use_existing)
-        _logger.info(f"Transforming and loading {self._src_name} data to DB...")
+        _logger.info("Transforming and loading %s data to DB...", self._src_name)
         if not self._silent:
             click.echo("Transforming and loading data to DB...")
         self._add_meta()
         self._transform_data()
         self._database.complete_write_transaction()
-        _logger.info(f"Data load complete for {self._src_name}.")
+        _logger.info("Data load complete for %s.", self._src_name)
         return self._processed_ids
 
     def _extract_data(self, use_existing: bool) -> None:
@@ -126,9 +126,9 @@ class Base(ABC):
         :param gene: Gene record
         """
         try:
-            assert Gene(match_type=MatchType.NO_MATCH, **gene)
+            assert Gene(match_type=MatchType.NO_MATCH, **gene)  # noqa: S101
         except pydantic.ValidationError as e:
-            _logger.warning(f"Unable to load {gene} due to validation error: " f"{e}")
+            _logger.warning("Unable to load %s due to validation error: %s", gene, e)
         else:
             for attr_type in ITEM_TYPES:
                 if attr_type in gene:
@@ -149,7 +149,8 @@ class Base(ABC):
         :return: SeqRepo instance
         """
         if not Path(seqrepo_dir).exists():
-            raise NotADirectoryError(f"Could not find {seqrepo_dir}")
+            msg = f"Could not find {seqrepo_dir}"
+            raise NotADirectoryError(msg)
         return SeqRepo(seqrepo_dir)
 
     def _set_cl_interval_range(self, loc: str, arm_ix: int, location: Dict) -> None:
@@ -159,10 +160,10 @@ class Base(ABC):
         :param arm_ix: The index of the q or p arm for a given location
         :param location: VRS chromosome location. This will be mutated.
         """
-        range_ix = re.search("-", loc).start()  # type: ignore
+        range_ix = re.search("-", loc).start()
 
         start = loc[arm_ix:range_ix]
-        start_arm_ix = re.search("[pq]", start).start()  # type: ignore
+        start_arm_ix = re.search("[pq]", start).start()
         start_arm = start[start_arm_ix]
 
         end = loc[range_ix + 1 :]
@@ -173,7 +174,7 @@ class Base(ABC):
             end = f"{start[0]}{end}"
             end_arm_match = re.search("[pq]", end)
 
-        end_arm_ix = end_arm_match.start()  # type: ignore
+        end_arm_ix = end_arm_match.start()
         end_arm = end[end_arm_ix]
 
         if (start_arm == end_arm and start > end) or (
@@ -224,7 +225,7 @@ class Base(ABC):
         try:
             aliases = self.seqrepo.translate_alias(seq_id, target_namespaces="ga4gh")
         except KeyError as e:
-            _logger.warning(f"SeqRepo raised KeyError: {e}")
+            _logger.warning("SeqRepo raised KeyError: %s", e)
         return aliases
 
     def _build_sequence_location(
@@ -251,7 +252,10 @@ class Base(ABC):
                     end=gene.end,
                     sequence_id=sequence,
                 )
-            else:
-                _logger.warning(
-                    f"{concept_id} has invalid interval: start={gene.start - 1} end={gene.end}"
-                )
+            _logger.warning(
+                "%s has invalid interval: start=%s end=%s",
+                concept_id,
+                gene.start - 1,
+                gene.end,
+            )
+        return None

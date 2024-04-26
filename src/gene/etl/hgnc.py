@@ -2,7 +2,7 @@
 import json
 import logging
 import re
-from typing import Dict, List
+from typing import ClassVar, Dict, List
 
 from gene.etl.base import Base, GeneNormalizerEtlError
 from gene.schemas import (
@@ -24,7 +24,7 @@ class HGNC(Base):
     def _transform_data(self) -> None:
         """Transform the HGNC source."""
         _logger.info("Transforming HGNC data...")
-        with open(self._data_file, "r") as f:  # type: ignore
+        with self._data_file.open() as f:
             data = json.load(f)
 
         records = data["response"]["docs"]
@@ -59,8 +59,8 @@ class HGNC(Base):
         :param r: A gene record in the HGNC data file
         :param gene: A transformed gene record
         """
-        alias_symbol = list()
-        enzyme_id = list()
+        alias_symbol = []
+        enzyme_id = []
         if "alias_symbol" in r:
             alias_symbol = r["alias_symbol"]
 
@@ -86,7 +86,7 @@ class HGNC(Base):
         :param record: A gene record in the HGNC data file
         :param gene: A transformed gene record
         """
-        xrefs = list()
+        xrefs = []
         sources = [
             "entrez_id",
             "ensembl_gene_id",
@@ -128,7 +128,7 @@ class HGNC(Base):
                 if key.upper() in NamespacePrefix.__members__:
                     self._get_xref(key, src, record, xrefs)
                 else:
-                    _logger.warning(f"{key} not in schemas.py")
+                    _logger.warning("%s not in schemas.py", key)
 
         if xrefs:
             gene["xrefs"] = xrefs
@@ -162,8 +162,8 @@ class HGNC(Base):
         else:
             locations = [r["location"]]
 
-        location_list = list()
-        gene["location_annotations"] = list()
+        location_list = []
+        gene["location_annotations"] = []
         for loc in locations:
             loc = loc.strip()
             loc = self._set_annotation(loc, gene)
@@ -172,7 +172,7 @@ class HGNC(Base):
                 if loc == "mitochondria":
                     gene["location_annotations"].append(Chromosome.MITOCHONDRIA.value)
                 else:
-                    location = dict()
+                    location = {}
                     self._set_location(loc, location, gene)
                     # chr_location = self._get_chromosome_location(location, gene)
                     # if chr_location:
@@ -183,7 +183,7 @@ class HGNC(Base):
         if not gene["location_annotations"]:
             del gene["location_annotations"]
 
-    _annotation_types = {v.value for v in Annotation.__members__.values()}
+    _annotation_types: ClassVar = {v.value for v in Annotation.__members__.values()}
 
     def _set_annotation(self, loc: str, gene: Dict) -> None:
         """Set the annotations attribute if one is provided.
@@ -234,9 +234,8 @@ class HGNC(Base):
         :raise GeneNormalizerEtlError: if requisite metadata is unset
         """
         if not self._version:
-            raise GeneNormalizerEtlError(
-                "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
-            )
+            msg = "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
+            raise GeneNormalizerEtlError(msg)
         metadata = SourceMeta(
             data_license="CC0",
             data_license_url="https://www.genenames.org/about/license/",

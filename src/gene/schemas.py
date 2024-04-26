@@ -68,7 +68,7 @@ class StoredSequenceLocation(BaseModel):
     type: Literal["SequenceLocation"] = "SequenceLocation"
     start: StrictInt
     end: StrictInt
-    sequence_id: constr(pattern=r"^ga4gh:SQ.[0-9A-Za-z_\-]{32}$")  # noqa: F722
+    sequence_id: constr(pattern=r"^ga4gh:SQ.[0-9A-Za-z_\-]{32}$")
 
 
 # class GeneChromosomeLocation(BaseModel):
@@ -164,7 +164,7 @@ class SourceIDAfterNamespace(Enum):
 
     HGNC = ""
     ENSEMBL = "ENSG"
-    NCBI = ""
+    NCBI = ""  # noqa: PIE796
 
 
 class NamespacePrefix(Enum):
@@ -205,7 +205,7 @@ class NamespacePrefix(Enum):
 PREFIX_LOOKUP = {
     v.value: SourceName[k].value
     for k, v in NamespacePrefix.__members__.items()
-    if k in SourceName.__members__.keys()
+    if k in SourceName.__members__
 }
 
 # use to generate namespace prefix from source ID value
@@ -297,7 +297,7 @@ class ServiceMeta(BaseModel):
     response_datetime: StrictStr
     url: Literal[
         "https://github.com/cancervariants/gene-normalization"
-    ] = "https://github.com/cancervariants/gene-normalization"  # noqa: E501
+    ] = "https://github.com/cancervariants/gene-normalization"
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -436,7 +436,7 @@ class NormalizeService(BaseNormalizationService):
                         # {
                         #     "name": "chromosome_location",
                         #     "value": {
-                        #         "id": "ga4gh:CL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",  # noqa: E501
+                        #         "id": "ga4gh:CL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
                         #         "type": "ChromosomeLocation",
                         #         "species_id": "taxonomy:9606",
                         #         "chr": "7",
@@ -465,7 +465,7 @@ class NormalizeService(BaseNormalizationService):
                     },
                     "Ensembl": {
                         "data_license": "custom",
-                        "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",  # noqa: E501
+                        "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",
                         "version": "104",
                         "data_url": {
                             "genome_annotations": "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz"
@@ -480,7 +480,7 @@ class NormalizeService(BaseNormalizationService):
                     },
                     "NCBI": {
                         "data_license": "custom",
-                        "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
+                        "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",
                         "version": "20210813",
                         "data_url": {
                             "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
@@ -543,13 +543,13 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "concept_id": "hgnc:108",
                                 "symbol": "ACHE",
                                 "symbol_status": "approved",
-                                "label": "acetylcholinesterase (Cartwright blood group)",  # noqa: E501
+                                "label": "acetylcholinesterase (Cartwright blood group)",
                                 "strand": None,
                                 "location_annotations": [],
                                 "locations": [
                                     # {
                                     #     "type": "ChromosomeLocation",
-                                    #     "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",  # noqa: E501
+                                    #     "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
                                     #     "species_id": "taxonomy:9606",
                                     #     "chr": "7",
                                     #     "start": "q22.1",
@@ -598,16 +598,16 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "concept_id": "ensembl:ENSG00000087085",
                                 "symbol": "ACHE",
                                 "symbol_status": None,
-                                "label": "acetylcholinesterase (Cartwright blood group)",  # noqa: E501
+                                "label": "acetylcholinesterase (Cartwright blood group)",
                                 "strand": "-",
                                 "location_annotations": [],
                                 "locations": [
                                     {
-                                        "id": "ga4gh:SL.dnydHb2Bnv5pwXjI4MpJmrZUADf5QLe1",  # noqa: E501
+                                        "id": "ga4gh:SL.dnydHb2Bnv5pwXjI4MpJmrZUADf5QLe1",
                                         "type": "SequenceLocation",
                                         "sequenceReference": {
                                             "type": "SequenceReference",
-                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                                         },
                                         "start": 100889993,
                                         "end": 100896974,
@@ -621,7 +621,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
                         ],
                         "source_meta_": {
                             "data_license": "custom",
-                            "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",  # noqa: E501
+                            "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",
                             "version": "104",
                             "data_url": {
                                 "genome_annotations": "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz"
@@ -641,24 +641,24 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "concept_id": "ncbigene:43",
                                 "symbol": "ACHE",
                                 "symbol_status": None,
-                                "label": "acetylcholinesterase (Cartwright blood group)",  # noqa: E501
+                                "label": "acetylcholinesterase (Cartwright blood group)",
                                 "strand": "-",
                                 "location_annotations": [],
                                 "locations": [
                                     {
                                         # "type": "ChromosomeLocation",
-                                        # "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",  # noqa: E501
+                                        # "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
                                         # "species_id": "taxonomy:9606",
                                         # "chr": "7",
                                         # "start": "q22.1",
                                         # "end": "q22.1"
                                     },
                                     {
-                                        "id": "ga4gh:SL.U7vPSlX8eyCKdFSiROIsc9om0Y7pCm2g",  # noqa: E501
+                                        "id": "ga4gh:SL.U7vPSlX8eyCKdFSiROIsc9om0Y7pCm2g",
                                         "type": "SequenceLocation",
                                         "sequenceReference": {
                                             "type": "SequenceReference",
-                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                                         },
                                         "start": 100889993,
                                         "end": 100896994,
@@ -676,7 +676,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
                         ],
                         "source_meta_": {
                             "data_license": "custom",
-                            "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
+                            "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",
                             "version": "20220407",
                             "data_url": {
                                 "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",

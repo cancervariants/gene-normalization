@@ -35,7 +35,7 @@ class Ensembl(Base):
         match = re.match(r"(GRCh\d+)_(\d+)", raw_version)
         self._assembly = match.groups()[0]
         self._version = match.groups()[1]
-        _logger.info(f"Acquired data for Ensembl: {self._data_file}")
+        _logger.info("Acquired data for Ensembl: %s", self._data_file)
 
     def _transform_data(self) -> None:
         """Transform the Ensembl source."""
@@ -49,7 +49,7 @@ class Ensembl(Base):
         )
 
         # Get accession numbers
-        accession_numbers = dict()
+        accession_numbers = {}
         for item in db.features_of_type("scaffold"):
             accession_numbers[item[0]] = item[8]["Alias"][-1]
         for item in db.features_of_type("chromosome"):
@@ -70,7 +70,7 @@ class Ensembl(Base):
         :param accession_numbers: Accession numbers for each chromosome and scaffold
         :return: A gene dictionary containing data if the ID attribute exists.
         """
-        gene_params = dict()
+        gene_params = {}
         if f.strand == "-":
             gene_params["strand"] = Strand.REVERSE.value
         elif f.strand == "+":
@@ -136,9 +136,8 @@ class Ensembl(Base):
         :raise GeneNormalizerEtlError: if requisite metadata is unset
         """
         if not self._version or not self._assembly:
-            raise GeneNormalizerEtlError(
-                "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
-            )
+            msg = "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
+            raise GeneNormalizerEtlError(msg)
         metadata = SourceMeta(
             data_license="custom",
             data_license_url="https://useast.ensembl.org/info/about"
