@@ -7,7 +7,7 @@ The Gene Normalizer defines a command line tool for data management. It includes
 
 .. note::
 
-    See the :ref:`ETL API documentation<etl-api>` for information on programmatic access to the data loader classes.
+    See the :ref:`data updates API documentation <data_updates_api>` for information on programmatic access to the data loader classes.
 
 
 .. click:: gene.cli:cli
