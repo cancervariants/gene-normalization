@@ -283,7 +283,10 @@ class QueryHandler:
 
         :return: Service Meta
         """
-        return ServiceMeta(version=__version__, response_datetime=str(datetime.now()))
+        return ServiceMeta(
+            version=__version__,
+            response_datetime=str(datetime.datetime.now(tz=datetime.timezone.utc)),
+        )
 
     def search(
         self,

@@ -36,5 +36,4 @@ Source ETL
    gene.etl.ensembl
    gene.etl.hgnc
    gene.etl.ncbi
-   gene.etl.exceptions
    gene.etl.merge
