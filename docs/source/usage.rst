@@ -24,7 +24,7 @@ The individual endpoints are:
 Internal Python API
 -------------------
 
-Each search mode can be accessed directly within Python using the :ref:`query API<query-api>`:
+Each search mode can be accessed directly within Python using the :py:class:`QueryHandler class <gene.query.QueryHandler>`:
 
 .. code-block:: pycon
 
@@ -58,7 +58,7 @@ Users hoping for a more explicit connection declaration may instead call a datab
     )
     q = QueryHandler(pg_db)
 
-See the API documentation for the :ref:`database <database_api>`, :ref:`DynamoDB <dynamodb_api>`, and :ref:`PostgreSQL <postgres_api>` modules for more details.
+See the API documentation for the :py:mod:`database <gene.database.database>`, :py:mod:`DynamoDB <gene.database.dynamodb>`, and :py:mod:`PostgreSQL <gene.database.postgresql>` modules for more details.
 
 Inputs
 ------
@@ -68,13 +68,4 @@ Gene symbols and aliases often contain only a handful of characters, raising a n
 Match types
 -----------
 
-The **best match** for a search string is determined by which fields in a gene record that it matches against. The Gene Normalizer will first try to match a search string against known concept IDs and gene symbols, then check for matches against previous or deprecated symbols, then aliases, etc. Matches are case-insensitive but must otherwise be exact.
-
-.. autoclass:: gene.schemas.MatchType
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-.. note::
-
-    The `FUZZY_MATCH` Match Type is not currently used by the Gene Normalizer.
+The **best match** for a search string is determined by which fields in a gene record that it matches against. The Gene Normalizer will first try to match a search string against known concept IDs and gene symbols, then check for matches against previous or deprecated symbols, then aliases, etc. Matches are case-insensitive but must otherwise be exact. See the :py:class:`MatchType enum description <gene.schemas.MatchType>` for further information.

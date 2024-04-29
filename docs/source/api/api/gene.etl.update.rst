@@ -1,7 +1,7 @@
-﻿gene.etl.exceptions
-===================
+﻿gene.etl.update
+===============
 
-.. automodule:: gene.etl.exceptions
+.. automodule:: gene.etl.update
    :members:
    :undoc-members:
    :special-members: __init__

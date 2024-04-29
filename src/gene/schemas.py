@@ -51,7 +51,12 @@ class Chromosome(str, Enum):
 
 
 class MatchType(IntEnum):
-    """Define string constraints for use in Match Type attributes."""
+    """Define string constraints for use in Match Type attributes.
+
+    .. note::
+
+        The `FUZZY_MATCH` Match Type is not currently used by the Gene Normalizer.
+    """
 
     CONCEPT_ID = 100
     SYMBOL = 100

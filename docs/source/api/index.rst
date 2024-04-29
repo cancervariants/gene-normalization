@@ -24,17 +24,19 @@ Database connections
    gene.database.dynamodb
    gene.database.postgresql
 
-Source ETL
-----------
+.. _data_updates_api:
+
+Data updates
+------------
 
 .. autosummary::
    :nosignatures:
    :toctree: api/
    :template: module_summary.rst
 
+   gene.etl.update
    gene.etl.base
    gene.etl.ensembl
    gene.etl.hgnc
    gene.etl.ncbi
-   gene.etl.exceptions
    gene.etl.merge
