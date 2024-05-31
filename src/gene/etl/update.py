@@ -15,6 +15,17 @@ from gene.schemas import SourceName
 _logger = logging.getLogger(__name__)
 
 
+def _emit_info_msg(msg: str, silent: bool) -> None:
+    """Handle info message display.
+
+    :param msg: message to log/print
+    :param silent: if True, don't print to console
+    """
+    if not silent:
+        click.echo(msg)
+    _logger.info(msg)
+
+
 def delete_source(
     source: SourceName, db: AbstractDatabase, silent: bool = True
 ) -> float:
@@ -25,18 +36,12 @@ def delete_source(
     :param silent: if True, suppress console output
     :return: time spent deleting source
     """
-    msg = f"Deleting {source.value}..."
-    if not silent:
-        click.echo(f"\n{msg}")
-    _logger.info(msg)
+    _emit_info_msg(f"Deleting {source.value}...", silent)
     start_delete = timer()
     db.delete_source(source)
     end_delete = timer()
     delete_time = end_delete - start_delete
-    msg = f"Deleted {source.value} in {delete_time:.5f} seconds."
-    if not silent:
-        click.echo(f"{msg}")
-    _logger.info(msg)
+    _emit_info_msg(f"Deleted {source.value} in {delete_time:.5f} seconds.", silent)
     return delete_time
 
 
@@ -54,10 +59,7 @@ def load_source(
     :param silent: if True, suppress console output
     :return: time spent loading data, and set of processed IDs from that source
     """
-    msg = f"Loading {source.value}..."
-    if not silent:
-        click.echo(msg)
-    _logger.info(msg)
+    _emit_info_msg(f"Loading {source.value}...", silent)
     start_load = timer()
 
     # used to get source class name from string
@@ -83,10 +85,10 @@ def load_source(
         click.get_current_context().exit()
     end_load = timer()
     load_time = end_load - start_load
-    msg = f"Loaded {len(processed_ids)} records from {source.value} in {load_time:.5f} seconds."
-    if not silent:
-        click.echo(msg)
-    _logger.info(msg)
+    _emit_info_msg(
+        f"Loaded {len(processed_ids)} records from {source.value} in {load_time:.5f} seconds.",
+        silent,
+    )
 
     return (load_time, set(processed_ids))
 
@@ -112,10 +114,10 @@ def update_source(
     """
     delete_time = delete_source(source, db, silent)
     load_time, processed_ids = load_source(source, db, use_existing, silent)
-    msg = f"Total time for {source.value}: {(delete_time + load_time):.5f} seconds."
-    if not silent:
-        click.echo(msg)
-    _logger.info(msg)
+    _emit_info_msg(
+        f"Total time for {source.value}: {(delete_time + load_time):.5f} seconds.",
+        silent,
+    )
     return processed_ids
 
 
@@ -142,10 +144,7 @@ def delete_normalized(database: AbstractDatabase, silent: bool = True) -> None:
     :param database: DB instance
     :param silent: if True, suppress console output
     """
-    msg = "\nDeleting normalized records..."
-    _logger.info(msg)
-    if not silent:
-        click.echo(msg)
+    _emit_info_msg("\nDeleting normalized records...", silent)
     start_delete = timer()
     try:
         database.delete_normalized_concepts()
@@ -154,10 +153,7 @@ def delete_normalized(database: AbstractDatabase, silent: bool = True) -> None:
         raise e
     end_delete = timer()
     delete_time = end_delete - start_delete
-    msg = f"Deleted normalized records in {delete_time:.5f} seconds."
-    if not silent:
-        click.echo(msg)
-    _logger.info(msg)
+    _emit_info_msg(f"Deleted normalized records in {delete_time:.5f} seconds.", silent)
 
 
 def update_normalized(
@@ -190,10 +186,10 @@ def update_normalized(
         click.echo("Constructing normalized records...")
     merge.create_merged_concepts(processed_ids)
     end = timer()
-    msg = f"Merged concept generation completed in " f"{(end - start):.5f} seconds"
-    if not silent:
-        click.echo(msg)
-    _logger.info(msg)
+    _emit_info_msg(
+        f"Merged concept generation completed in " f"{(end - start):.5f} seconds",
+        silent,
+    )
 
 
 def update_all_and_normalize(

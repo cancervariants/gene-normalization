@@ -51,7 +51,7 @@ class NCBI(Base):
 
         :param use_existing: if True, use latest available local file
         """
-        _logger.info("Gathering {self._src_name} data...", self._src_name)
+        _logger.info("Gathering %s data...", self._src_name.value)
         self._gff_src, self._assembly = self._genome_data_handler.get_latest(
             from_local=use_existing
         )

@@ -86,7 +86,7 @@ class Base(ABC):
             uploaded.
         """
         self._extract_data(use_existing)
-        _logger.info("Transforming and loading %s data to DB...", self._src_name)
+        _logger.info("Transforming and loading %s data to DB...", self._src_name.value)
         if not self._silent:
             click.echo("Transforming and loading data to DB...")
         self._add_meta()
@@ -106,6 +106,7 @@ class Base(ABC):
         self._data_file, self._version = self._data_source.get_latest(
             from_local=use_existing
         )
+        _logger.info("Acquired data for %s: %s", self._src_name.value, self._data_file)
 
     @abstractmethod
     def _transform_data(self) -> None:
