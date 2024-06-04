@@ -1,4 +1,5 @@
 """Provides a CLI util to make updates to normalizer database."""
+import logging
 import os
 from pathlib import Path
 from typing import Optional, Tuple
@@ -10,7 +11,18 @@ from gene.database.database import DatabaseError
 from gene.etl.update import update_all_sources, update_normalized, update_source
 from gene.schemas import SourceName
 
+_logger = logging.getLogger(__name__)
+
 url_description = 'URL endpoint for the application database. Can either be a URL to a local DynamoDB server (e.g. "http://localhost:8001") or a libpq-compliant PostgreSQL connection description (e.g. "postgresql://postgres:password@localhost:5432/gene_normalizer").'
+
+
+def _configure_logging() -> None:
+    """Configure logging."""
+    logging.basicConfig(
+        filename=f"{__package__}.log",
+        format="[%(asctime)s] - %(name)s - %(levelname)s : %(message)s",
+    )
+    logging.getLogger(__package__).setLevel(logging.DEBUG)
 
 
 @click.group()
@@ -71,6 +83,7 @@ def update(
     :param use_existing: if True, use most recent local data instead of fetching latest version
     :param silent: if True, suppress console output
     """  # noqa: D301
+    _configure_logging()
     if (not sources) and (not all_) and (not normalize):
         click.echo(
             "Error: must provide SOURCES or at least one of --all, --normalize\n"
@@ -125,6 +138,7 @@ def update_from_remote(data_url: Optional[str], db_url: str, silent: bool) -> No
     :param db_url: URL to normalizer database
     :param silent: if True, suppress console output
     """  # noqa: D301
+    _configure_logging()
     if not click.confirm("Are you sure you want to overwrite existing data?"):
         click.get_current_context().exit()
     if not data_url:
@@ -140,6 +154,7 @@ def update_from_remote(data_url: Optional[str], db_url: str, silent: bool) -> No
     except DatabaseError as e:
         click.echo(f"Encountered exception during update: {e!s}")
         click.get_current_context().exit(1)
+    _logger.info("Successfully loaded data from remote snapshot.")
 
 
 @cli.command()
@@ -175,6 +190,7 @@ def check_db(db_url: str, verbose: bool, silent: bool) -> None:
     :param verbose: if true, print result to console
     :param silent: if True, suppress console output
     """  # noqa: D301
+    _configure_logging()
     db = create_db(db_url, False, silent)
     if not db.check_schema_initialized():
         if verbose:
@@ -186,8 +202,10 @@ def check_db(db_url: str, verbose: bool, silent: bool) -> None:
             click.echo("Health check failed: DB is incompletely populated.")
         click.get_current_context().exit(1)
 
+    msg = "DB health check successful: tables appear complete."
     if verbose:
-        click.echo("DB health check successful: tables appear complete.")
+        click.echo(msg)
+    _logger.info(msg)
 
 
 @cli.command()
@@ -209,6 +227,7 @@ def dump_database(output_directory: Path, db_url: str, silent: bool) -> None:
     :param db_url: URL to normalizer database
     :param silent: if True, suppress console output
     """  # noqa: D301
+    _configure_logging()
     if not output_directory:
         output_directory = Path()
 
@@ -223,6 +242,7 @@ def dump_database(output_directory: Path, db_url: str, silent: bool) -> None:
     except DatabaseError as e:
         click.echo(f"Encountered exception during update: {e!s}")
         click.get_current_context().exit(1)
+    _logger.info("Database dump successful.")
 
 
 if __name__ == "__main__":
