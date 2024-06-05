@@ -1,8 +1,8 @@
 Gene Normalizer |version|
 =========================
 
-.. image:: https://img.shields.io/pypi/pyversions/gene-normalizer?color=gr
-   :alt: PyPI - Python Version
+.. image:: https://img.shields.io/pypi/v/gene-normalizer.svg
+   :alt: PyPI - Latest stable version
    :target: https://pypi.python.org/pypi/gene-normalizer
 
 .. image:: https://img.shields.io/pypi/l/gene-normalizer.svg

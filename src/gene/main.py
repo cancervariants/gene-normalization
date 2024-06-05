@@ -22,7 +22,7 @@ description = """
 The Gene Normalizer provides tools for resolving ambiguous gene references to
 consistently-structured, normalized terms.
 
-See the [documentation](https://gene-normalizer.readthedocs.io/en/latest/) for more
+See the [documentation](https://gene-normalizer.readthedocs.io/latest/) for more
 information.
 """
 
