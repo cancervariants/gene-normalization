@@ -26,7 +26,7 @@ from gene.database import (
 )
 from gene.schemas import RecordType, RefType, SourceMeta, SourceName
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 SCRIPTS_DIR = Path(__file__).parent / "postgresql"
@@ -119,7 +119,7 @@ class PostgresDatabase(AbstractDatabase):
         with self.conn.cursor() as cur:
             cur.execute(self._drop_db_query)
             self.conn.commit()
-        logger.info("Dropped all existing gene normalizer tables.")
+        _logger.info("Dropped all existing gene normalizer tables.")
 
     def check_schema_initialized(self) -> bool:
         """Check if database schema is properly initialized.
@@ -132,7 +132,7 @@ class PostgresDatabase(AbstractDatabase):
         except DuplicateTable:
             self.conn.rollback()
         else:
-            logger.info("Gene table existence check failed.")
+            _logger.info("Gene table existence check failed.")
             self.conn.rollback()
             return False
         try:
@@ -141,7 +141,7 @@ class PostgresDatabase(AbstractDatabase):
         except DuplicateObject:
             self.conn.rollback()
         else:
-            logger.info("Gene foreign key existence check failed.")
+            _logger.info("Gene foreign key existence check failed.")
             self.conn.rollback()
             return False
         try:
@@ -152,7 +152,7 @@ class PostgresDatabase(AbstractDatabase):
         except DuplicateTable:
             self.conn.rollback()
         else:
-            logger.info("Gene normalized view lookup failed.")
+            _logger.info("Gene normalized view lookup failed.")
             self.conn.rollback()
             return False
         try:
@@ -161,7 +161,7 @@ class PostgresDatabase(AbstractDatabase):
         except DuplicateTable:
             self.conn.rollback()
         else:
-            logger.info("Gene indexes check failed.")
+            _logger.info("Gene indexes check failed.")
             self.conn.rollback()
             return False
 
@@ -184,21 +184,21 @@ class PostgresDatabase(AbstractDatabase):
             cur.execute(self._check_sources_query)
             results = cur.fetchall()
         if len(results) < len(SourceName):
-            logger.info("Gene sources table is missing expected sources.")
+            _logger.info("Gene sources table is missing expected sources.")
             return False
 
         with self.conn.cursor() as cur:
             cur.execute(self._check_concepts_query)
             result = cur.fetchone()
         if not result or result[0] < 1:
-            logger.info("Gene records table is empty.")
+            _logger.info("Gene records table is empty.")
             return False
 
         with self.conn.cursor() as cur:
             cur.execute(self._check_merged_query)
             result = cur.fetchone()
         if not result or result[0] < 1:
-            logger.info("Normalized gene records table is empty.")
+            _logger.info("Normalized gene records table is empty.")
             return False
 
         return True
@@ -260,7 +260,7 @@ class PostgresDatabase(AbstractDatabase):
 
     def _create_tables(self) -> None:
         """Create all tables, indexes, and views."""
-        logger.debug("Creating new gene normalizer tables.")
+        _logger.debug("Creating new gene normalizer tables.")
         tables_query = (SCRIPTS_DIR / "create_tables.sql").read_bytes()
 
         with self.conn.cursor() as cur:
@@ -594,7 +594,7 @@ class PostgresDatabase(AbstractDatabase):
                     cur.execute(self._ins_symbol_query, [record["symbol"], concept_id])
                 self.conn.commit()
             except UniqueViolation:
-                logger.error(f"Record with ID {concept_id} already exists")
+                _logger.error(f"Record with ID {concept_id} already exists")
                 self.conn.rollback()
 
     _add_merged_record_query = b"""

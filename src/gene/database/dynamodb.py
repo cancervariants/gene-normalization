@@ -25,7 +25,7 @@ from gene.database.database import (
 )
 from gene.schemas import RecordType, RefType, SourceMeta, SourceName
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class DynamoDbDatabase(AbstractDatabase):
@@ -156,7 +156,7 @@ class DynamoDbDatabase(AbstractDatabase):
         existing_tables = self.list_tables()
         exists = self.gene_table in existing_tables
         if not exists:
-            logger.info(f"{self.gene_table} table is missing or unavailable.")
+            _logger.info(f"{self.gene_table} table is missing or unavailable.")
         return exists
 
     def check_tables_populated(self) -> bool:
@@ -173,7 +173,7 @@ class DynamoDbDatabase(AbstractDatabase):
             KeyConditionExpression=Key("item_type").eq("source"),
         ).get("Items", [])
         if len(sources) < len(SourceName):
-            logger.info("Gene sources table is missing expected sources.")
+            _logger.info("Gene sources table is missing expected sources.")
             return False
 
         records = self.genes.query(
@@ -182,7 +182,7 @@ class DynamoDbDatabase(AbstractDatabase):
             Limit=1,
         )
         if len(records.get("Items", [])) < 1:
-            logger.info("Gene records index is empty.")
+            _logger.info("Gene records index is empty.")
             return False
 
         normalized_records = self.genes.query(
@@ -191,7 +191,7 @@ class DynamoDbDatabase(AbstractDatabase):
             Limit=1,
         )
         if len(normalized_records.get("Items", [])) < 1:
-            logger.info("Normalized gene records index is empty.")
+            _logger.info("Normalized gene records index is empty.")
             return False
 
         return True
@@ -253,7 +253,7 @@ class DynamoDbDatabase(AbstractDatabase):
                 del record["label_and_type"]
                 return record
         except ClientError as e:
-            logger.error(
+            _logger.error(
                 f"boto3 client error on get_records_by_id for "
                 f"search term {concept_id}: "
                 f"{e.response['Error']['Message']}"
@@ -276,7 +276,7 @@ class DynamoDbDatabase(AbstractDatabase):
             matches = self.genes.query(KeyConditionExpression=filter_exp)
             return [m["concept_id"] for m in matches.get("Items", None)]
         except ClientError as e:
-            logger.error(
+            _logger.error(
                 f"boto3 client error on get_refs_by_type for "
                 f"search term {search_term}: "
                 f"{e.response['Error']['Message']}"
@@ -380,7 +380,7 @@ class DynamoDbDatabase(AbstractDatabase):
         try:
             self.batch.put_item(Item=record)
         except ClientError as e:
-            logger.error(
+            _logger.error(
                 "boto3 client error on add_record for "
                 f"{concept_id}: {e.response['Error']['Message']}"
             )
@@ -412,7 +412,7 @@ class DynamoDbDatabase(AbstractDatabase):
         try:
             self.batch.put_item(Item=record)
         except ClientError as e:
-            logger.error(
+            _logger.error(
                 "boto3 client error on add_record for "
                 f"{concept_id}: {e.response['Error']['Message']}"
             )
@@ -438,7 +438,7 @@ class DynamoDbDatabase(AbstractDatabase):
         try:
             self.batch.put_item(Item=record)
         except ClientError as e:
-            logger.error(
+            _logger.error(
                 f"boto3 client error adding reference {term} for "
                 f"{concept_id} with match type {ref_type}: "
                 f"{e.response['Error']['Message']}"
@@ -470,7 +470,7 @@ class DynamoDbDatabase(AbstractDatabase):
                     f"No such record exists for keys {label_and_type}, {concept_id}"
                 )
             else:
-                logger.error(
+                _logger.error(
                     f"boto3 client error in `database.update_record()`: "
                     f"{e.response['Error']['Message']}"
                 )
