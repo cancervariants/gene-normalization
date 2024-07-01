@@ -15,8 +15,7 @@ from gene import ITEM_TYPES, SEQREPO_ROOT_DIR
 from gene.database import AbstractDatabase
 from gene.schemas import Gene, GeneSequenceLocation, MatchType, SourceName
 
-logger = logging.getLogger("gene")
-logger.setLevel(logging.DEBUG)
+_logger = logging.getLogger(__name__)
 
 
 DATA_DISPATCH = {
@@ -70,6 +69,7 @@ class Base(ABC):
             uploaded.
         """
         self._extract_data(use_existing)
+        _logger.info("Transforming and loading %s data to DB...", self._src_name.value)
         if not self._silent:
             click.echo("Transforming and loading data to DB...")
         self._add_meta()
@@ -88,6 +88,7 @@ class Base(ABC):
         self._data_file, self._version = self._data_source.get_latest(
             from_local=use_existing
         )
+        _logger.info("Acquired data for %s: %s", self._src_name.value, self._data_file)
 
     @abstractmethod
     def _transform_data(self) -> None:
@@ -110,7 +111,7 @@ class Base(ABC):
         try:
             assert Gene(match_type=MatchType.NO_MATCH, **gene)
         except pydantic.ValidationError as e:
-            logger.warning(f"Unable to load {gene} due to validation error: " f"{e}")
+            _logger.warning(f"Unable to load {gene} due to validation error: " f"{e}")
         else:
             concept_id = gene["concept_id"]
             gene["label_and_type"] = f"{concept_id.lower()}##identity"
@@ -211,7 +212,7 @@ class Base(ABC):
         try:
             aliases = self.seqrepo.translate_alias(seq_id, target_namespaces="ga4gh")
         except KeyError as e:
-            logger.warning(f"SeqRepo raised KeyError: {e}")
+            _logger.warning(f"SeqRepo raised KeyError: {e}")
         return aliases
 
     def _get_sequence_location(self, seq_id: str, gene: Feature, params: Dict) -> Dict:
@@ -238,7 +239,7 @@ class Base(ABC):
                     sequence_id=sequence,
                 ).model_dump()  # type: ignore
             else:
-                logger.warning(
+                _logger.warning(
                     f"{params['concept_id']} has invalid interval:"
                     f"start={gene.start - 1} end={gene.end}"
                 )  # type: ignore

@@ -12,8 +12,7 @@ from gene.etl.exceptions import (
 )
 from gene.schemas import NamespacePrefix, SourceMeta, SourceName, Strand
 
-logger = logging.getLogger("gene")
-logger.setLevel(logging.DEBUG)
+_logger = logging.getLogger(__name__)
 
 
 class Ensembl(Base):
@@ -36,7 +35,7 @@ class Ensembl(Base):
 
     def _transform_data(self) -> None:
         """Transform the Ensembl source."""
-        logger.info("Transforming Ensembl...")
+        _logger.info("Transforming Ensembl...")
         db = gffutils.create_db(
             str(self._data_file),
             dbfn=":memory:",
@@ -59,7 +58,7 @@ class Ensembl(Base):
                     gene = self._add_gene(f, accession_numbers)
                     if gene:
                         self._load_gene(gene)
-        logger.info("Successfully transformed Ensembl.")
+        _logger.info("Successfully transformed Ensembl.")
 
     def _add_gene(self, f: Feature, accession_numbers: Dict) -> Dict:
         """Create a transformed gene record.
