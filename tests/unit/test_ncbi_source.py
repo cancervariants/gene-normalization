@@ -66,7 +66,6 @@ def dpf1():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.0bmpLh_dlBRrzfviiQY9Vg4iEH0XeR20",
                 "end": 38229695,
                 "start": 38211005,
                 "sequenceReference": {
@@ -106,7 +105,6 @@ def pdp1_symbol():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.-455M-S51D8nXPFoGH0dYNFVFAJxm5dG",
                 "end": 93926068,
                 "start": 93916922,
                 "sequenceReference": {
@@ -146,7 +144,6 @@ def pdp1_alias():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.VI_0P0-ei90MDsLjAeUrDfeXBlZVJtJY",
                 "end": 4665258,
                 "start": 4662293,
                 "sequenceReference": {
@@ -195,7 +192,6 @@ def spry3():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.2N5aguRIvBdGemRgABZFutmLTV925dsV",
                 "end": 155782459,
                 "start": 155612585,
                 "sequenceReference": {
@@ -205,7 +201,6 @@ def spry3():
                 "type": "SequenceLocation",
             },
             {
-                "id": "ga4gh:SL.U9E9WtQdzFc4elR3t1qw48nueHgfWFWL",
                 "end": 56968979,
                 "start": 56954315,
                 "sequenceReference": {
@@ -290,7 +285,6 @@ def znf84():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.IRsls9vud2-CiA7Jq4L3ry2VVK7LoNud",
                 "end": 133063299,
                 "start": 133037508,
                 "sequenceReference": {
@@ -339,7 +333,6 @@ def slc25a6():
             #     "end": "p11.2"
             # },
             {
-                "id": "ga4gh:SL.dvD-ZopQGZkVWx4Z-vFpP9ateicPHgQ6",
                 "type": "SequenceLocation",
                 "sequenceReference": {
                     "type": "SequenceReference",
@@ -349,7 +342,6 @@ def slc25a6():
                 "end": 1392113,
             },
             {
-                "id": "ga4gh:SL.bv3LobZZ-sERq5cIthyS4w_tmSwV2QSg",
                 "type": "SequenceLocation",
                 "sequenceReference": {
                     "type": "SequenceReference",
@@ -484,7 +476,6 @@ def prkrap1():
             #     "type": "ChromosomeLocation"
             # },
             {
-                "id": "ga4gh:SL.LwWy5JYncZVnOM9hWiLWW_z0n2eY-peb",
                 "end": 3941874,
                 "start": 3940269,
                 "sequenceReference": {
@@ -494,7 +485,6 @@ def prkrap1():
                 "type": "SequenceLocation",
             },
             {
-                "id": "ga4gh:SL.q36ql_fX4HrZy_G2EXX_SGWl-7X5Bq6c",
                 "end": 3932085,
                 "start": 3930480,
                 "sequenceReference": {

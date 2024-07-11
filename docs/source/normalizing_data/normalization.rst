@@ -73,26 +73,23 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
      "label": "BRAF",
      "extensions": [
        {
-         "type": "Extension",
          "name": "symbol_status",
          "value": "approved"
        },
        {
-         "type": "Extension",
          "name": "approved_name",
          "value": "B-Raf proto-oncogene, serine/threonine kinase"
        },
        {
-         "type": "Extension",
          "name": "strand",
          "value": "-"
        },
        {
-         "type": "Extension",
          "name": "ensembl_locations",
          "value": [
            {
-             "id": "ga4gh:SL.WJ0hsPzXuK54mQyVysTqUNV5jaCATnRf",
+             "id": "ga4gh:SL.fUv91vYrVHBMg-B_QW7UpOQj50g_49hb",
+             "digest": "fUv91vYrVHBMg-B_QW7UpOQj50g_49hb",
              "type": "SequenceLocation",
              "sequenceReference": {
                "type": "SequenceReference",
@@ -104,11 +101,11 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
          ]
        },
        {
-         "type": "Extension",
          "name": "ncbi_locations",
          "value": [
            {
-             "id": "ga4gh:SL.uNBZoxhjhohl24VlIut-JxPJAGfJ7EQE",
+             "id": "ga4gh:SL.0nPwKHYNnTmJ06G-gSmz8BEhB_NTp-0B",
+             "digest": "0nPwKHYNnTmJ06G-gSmz8BEhB_NTp-0B",
              "type": "SequenceLocation",
              "sequenceReference": {
                "type": "SequenceReference",
@@ -120,17 +117,14 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
          ]
        },
        {
-         "type": "Extension",
          "name": "hgnc_locus_type",
          "value": "gene with protein product"
        },
        {
-         "type": "Extension",
          "name": "ncbi_gene_type",
          "value": "protein-coding"
        },
        {
-         "type": "Extension",
          "name": "ensembl_biotype",
          "value": "protein_coding"
        }
