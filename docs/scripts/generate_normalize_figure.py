@@ -6,9 +6,9 @@ just call like so: ::
 
 Embeddable HTML for the normalization figure should be deposited in the correct
 location, within docs/source/_static/html/.
-"""
+"""  # noqa: INP001
+
 import json
-from typing import Dict
 
 import gravis as gv
 
@@ -24,7 +24,7 @@ COLORS = [
 ]
 
 
-def create_gjgf(result: UnmergedNormalizationService) -> Dict:
+def create_gjgf(result: UnmergedNormalizationService) -> dict:
     """Create gravis input.
 
     :param result: result from Unmerged Normalization search
@@ -57,22 +57,23 @@ def create_gjgf(result: UnmergedNormalizationService) -> Dict:
                     {"source": match.concept_id, "target": xref}
                 )
 
-    included_edges = []
-    for edge in graph["graph"]["edges"]:
+    included_edges = [
+        edge
+        for edge in graph["graph"]["edges"]
         if (
             edge["target"] in graph["graph"]["nodes"]
             and edge["source"] in graph["graph"]["nodes"]
-        ):
-            included_edges.append(edge)
+        )
+    ]
+
     graph["graph"]["edges"] = included_edges
 
     included_nodes = {k["source"] for k in graph["graph"]["edges"]}.union(
         {k["target"] for k in graph["graph"]["edges"]}
     )
-    new_nodes = {}
-    for key, value in graph["graph"]["nodes"].items():
-        if key in included_nodes:
-            new_nodes[key] = value
+    new_nodes = {
+        key: value for key, value in graph["graph"]["nodes"].items() if key in included_nodes
+    }
     graph["graph"]["nodes"] = new_nodes
 
     return graph

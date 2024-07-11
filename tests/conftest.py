@@ -1,4 +1,5 @@
 """Provide utilities for test cases."""
+
 import logging
 
 import pytest
@@ -45,6 +46,9 @@ def _compare_records(normalized_gene, test_gene, match_type):
     assert normalized_gene.symbol == test_gene.symbol
     assert len(normalized_gene.locations) == len(test_gene.locations)
     for loc in normalized_gene.locations:
+        assert loc.id.split("ga4gh:SL.")[-1] == loc.digest
+        loc.id = None
+        loc.digest = None
         assert loc in test_gene.locations
     assert set(normalized_gene.location_annotations) == set(
         test_gene.location_annotations

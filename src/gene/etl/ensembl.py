@@ -1,7 +1,7 @@
 """Defines the Ensembl ETL methods."""
+
 import logging
 import re
-from typing import Dict
 
 import gffutils
 from gffutils.feature import Feature
@@ -12,8 +12,7 @@ from gene.etl.exceptions import (
 )
 from gene.schemas import NamespacePrefix, SourceMeta, SourceName, Strand
 
-logger = logging.getLogger("gene")
-logger.setLevel(logging.DEBUG)
+_logger = logging.getLogger(__name__)
 
 
 class Ensembl(Base):
@@ -36,7 +35,7 @@ class Ensembl(Base):
 
     def _transform_data(self) -> None:
         """Transform the Ensembl source."""
-        logger.info("Transforming Ensembl...")
+        _logger.info("Transforming Ensembl...")
         db = gffutils.create_db(
             str(self._data_file),
             dbfn=":memory:",
@@ -59,9 +58,9 @@ class Ensembl(Base):
                     gene = self._add_gene(f, accession_numbers)
                     if gene:
                         self._load_gene(gene)
-        logger.info("Successfully transformed Ensembl.")
+        _logger.info("Successfully transformed Ensembl.")
 
-    def _add_gene(self, f: Feature, accession_numbers: Dict) -> Dict:
+    def _add_gene(self, f: Feature, accession_numbers: dict) -> dict:
         """Create a transformed gene record.
 
         :param f: A gene from the data
@@ -85,7 +84,7 @@ class Ensembl(Base):
 
         return gene
 
-    def _add_attributes(self, f: Feature, gene: Dict) -> None:
+    def _add_attributes(self, f: Feature, gene: dict) -> None:
         """Add concept_id, symbol, xrefs, and associated_with to a gene record.
 
         :param f: A gene from the data
@@ -130,7 +129,7 @@ class Ensembl(Base):
 
                 gene[attributes[key]] = val
 
-    def _add_location(self, f: Feature, gene: Dict, accession_numbers: Dict) -> Dict:
+    def _add_location(self, f: Feature, gene: dict, accession_numbers: dict) -> dict:
         """Add GA4GH SequenceLocation to a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
 
@@ -141,7 +140,7 @@ class Ensembl(Base):
         """
         return self._get_sequence_location(accession_numbers[f.seqid], f, gene)
 
-    def _get_xref_associated_with(self, src_name: str, src_id: str) -> Dict:
+    def _get_xref_associated_with(self, src_name: str, src_id: str) -> dict:
         """Get xref or associated_with concept.
 
         :param src_name: Source name

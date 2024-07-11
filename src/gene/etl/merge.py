@@ -1,14 +1,13 @@
 """Create concept groups and merged records."""
+
 import logging
 from timeit import default_timer as timer
-from typing import Dict, Optional, Set, Tuple
 
 from gene.database import AbstractDatabase
 from gene.database.database import DatabaseWriteException
 from gene.schemas import GeneTypeFieldName, RecordType, SourcePriority
 
-logger = logging.getLogger("gene")
-logger.setLevel(logging.DEBUG)
+_logger = logging.getLogger(__name__)
 
 
 class Merge:
@@ -22,13 +21,13 @@ class Merge:
         self._database = database
         self._groups = {}  # dict keying concept IDs to group Sets
 
-    def create_merged_concepts(self, record_ids: Set[str]) -> None:
+    def create_merged_concepts(self, record_ids: set[str]) -> None:
         """Create concept groups, generate merged concept records, and update database.
 
         :param record_ids: concept identifiers from which groups should be generated.
             Should *not* include any records from excluded sources.
         """
-        logger.info("Generating record ID sets...")
+        _logger.info("Generating record ID sets...")
         start = timer()
         for record_id in record_ids:
             new_group = self._create_record_id_set(record_id)
@@ -36,11 +35,11 @@ class Merge:
                 for concept_id in new_group:
                     self._groups[concept_id] = new_group
         end = timer()
-        logger.debug("Built record ID sets in %f seconds", end - start)
+        _logger.debug("Built record ID sets in %f seconds", end - start)
 
         self._groups = {k: v for k, v in self._groups.items() if len(v) > 1}
 
-        logger.info("Creating merged records and updating database...")
+        _logger.info("Creating merged records and updating database...")
         uploaded_ids = set()
         start = timer()
         for record_id, group in self._groups.items():
@@ -58,22 +57,22 @@ class Merge:
                     self._database.update_merge_ref(concept_id, merge_ref)
                 except DatabaseWriteException as dw:
                     if str(dw).startswith("No such record exists"):
-                        logger.error(
+                        _logger.error(
                             "Updating nonexistent record: %s for merge ref to %s",
                             concept_id,
                             merge_ref,
                         )
                     else:
-                        logger.error(str(dw))
+                        _logger.error(str(dw))
             uploaded_ids |= group
         self._database.complete_write_transaction()
-        logger.info("Merged concept generation successful.")
+        _logger.info("Merged concept generation successful.")
         end = timer()
-        logger.debug("Generated and added concepts in %f seconds", end - start)
+        _logger.debug("Generated and added concepts in %f seconds", end - start)
 
     def _create_record_id_set(
-        self, record_id: str, observed_id_set: Optional[Set] = None
-    ) -> Set[str]:
+        self, record_id: str, observed_id_set: set | None = None
+    ) -> set[str]:
         """Recursively create concept ID group for an individual record ID.
 
         :param record_id: concept ID for record to build group from
@@ -89,7 +88,7 @@ class Merge:
 
         db_record = self._database.get_record_by_id(record_id)
         if not db_record:
-            logger.warning(
+            _logger.warning(
                 "Record ID set creator could not resolve lookup for %s in ID set: %s",
                 record_id,
                 observed_id_set,
@@ -106,7 +105,7 @@ class Merge:
             merged_id_set |= self._create_record_id_set(local_record_id, merged_id_set)
         return merged_id_set
 
-    def _generate_merged_record(self, record_id_set: Set[str]) -> Dict:
+    def _generate_merged_record(self, record_id_set: set[str]) -> dict:
         """Generate merged record from provided concept ID group.
         Where attributes are sets, they should be merged, and where they are
         scalars, assign from the highest-priority source where that attribute
@@ -123,13 +122,13 @@ class Merge:
             if record:
                 records.append(record)
             else:
-                logger.error(
+                _logger.error(
                     "Merge record generator could not retrieve record for %s in %s",
                     record_id,
                     record_id_set,
                 )
 
-        def record_order(record: Dict) -> Tuple:
+        def record_order(record: dict) -> tuple:
             """Provide priority values of concepts for sort function."""
             src = record["src_name"].upper()
             if src in SourcePriority.__members__:

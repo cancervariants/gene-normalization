@@ -1,9 +1,9 @@
 """Defines ETL methods for the NCBI data source."""
+
 import csv
 import logging
 import re
 from pathlib import Path
-from typing import Dict, List, Optional
 
 import gffutils
 from wags_tails import NcbiGenomeData
@@ -24,8 +24,7 @@ from gene.schemas import (
     SymbolStatus,
 )
 
-logger = logging.getLogger("gene")
-logger.setLevel(logging.DEBUG)
+_logger = logging.getLogger(__name__)
 
 
 class NCBI(Base):
@@ -35,7 +34,7 @@ class NCBI(Base):
         self,
         database: AbstractDatabase,
         seqrepo_dir: Path = SEQREPO_ROOT_DIR,
-        data_path: Optional[Path] = None,
+        data_path: Path | None = None,
         silent: bool = True,
     ) -> None:
         """Instantiate Base class.
@@ -53,6 +52,7 @@ class NCBI(Base):
 
         :param use_existing: if True, use latest available local file
         """
+        _logger.info("Gathering %s data...", self._src_name.value)
         self._gff_src, self._assembly = self._genome_data_handler.get_latest(
             from_local=use_existing
         )
@@ -68,7 +68,7 @@ class NCBI(Base):
         self._history_url = "ftp.ncbi.nlm.nih.govgene/DATA/gene_history.gz"
         self._assembly_url = "ftp.ncbi.nlm.nih.govgenomes/refseq/vertebrate_mammalian/Homo_sapiens/latest_assembly_versions/"
 
-    def _get_prev_symbols(self) -> Dict[str, str]:
+    def _get_prev_symbols(self) -> dict[str, str]:
         """Store a gene's symbol history.
 
         :return: A dictionary of a gene's previous symbols
@@ -98,7 +98,7 @@ class NCBI(Base):
         history_file.close()
         return prev_symbols
 
-    def _add_xrefs_associated_with(self, val: List[str], params: Dict) -> None:
+    def _add_xrefs_associated_with(self, val: list[str], params: dict) -> None:
         """Add xrefs and associated_with refs to a transformed gene.
 
         :param val: A list of source ids for a given gene
@@ -130,13 +130,13 @@ class NCBI(Base):
                 if prefix:
                     params["associated_with"].append(f"{prefix}:{src_id}")
                 else:
-                    logger.info("%s is not in NameSpacePrefix.", src_name)
+                    _logger.info("%s is not in NameSpacePrefix.", src_name)
         if not params["xrefs"]:
             del params["xrefs"]
         if not params["associated_with"]:
             del params["associated_with"]
 
-    def _get_gene_info(self, prev_symbols: Dict[str, str]) -> Dict[str, str]:
+    def _get_gene_info(self, prev_symbols: dict[str, str]) -> dict[str, str]:
         """Store genes from NCBI info file.
 
         :param prev_symbols: A dictionary of a gene's previous symbols
@@ -182,7 +182,7 @@ class NCBI(Base):
                 params["gene_type"] = row[9]
         return info_genes
 
-    def _get_gene_gff(self, db: gffutils.FeatureDB, info_genes: Dict) -> None:
+    def _get_gene_gff(self, db: gffutils.FeatureDB, info_genes: dict) -> None:
         """Store genes from NCBI gff file.
 
         :param db: GFF database
@@ -206,7 +206,7 @@ class NCBI(Base):
 
     def _add_gff_gene(
         self, db: gffutils.FeatureDB, f: gffutils.Feature, f_id: str
-    ) -> Optional[Dict]:
+    ) -> dict | None:
         """Create a transformed gene recor from NCBI gff file.
 
         :param db: GFF database
@@ -225,7 +225,7 @@ class NCBI(Base):
         params["label_and_type"] = f"{params['concept_id'].lower()}##identity"
         return params
 
-    def _add_attributes(self, f: gffutils.feature.Feature, gene: Dict) -> None:
+    def _add_attributes(self, f: gffutils.feature.Feature, gene: dict) -> None:
         """Add concept_id, symbol, and xrefs/associated_with to a gene record.
 
         :param gffutils.feature.Feature f: A gene from the data
@@ -247,8 +247,8 @@ class NCBI(Base):
                     gene["symbol"] = val
 
     def _get_vrs_sq_location(
-        self, db: gffutils.FeatureDB, params: Dict, f_id: str
-    ) -> Dict:
+        self, db: gffutils.FeatureDB, params: dict, f_id: str
+    ) -> dict:
         """Store GA4GH VRS SequenceLocation in a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#sequencelocation
 
@@ -261,7 +261,7 @@ class NCBI(Base):
         params["strand"] = gene.strand
         return self._get_sequence_location(gene.seqid, gene, params)
 
-    def _get_xref_associated_with(self, src_name: str, src_id: str) -> Dict:
+    def _get_xref_associated_with(self, src_name: str, src_id: str) -> dict:
         """Get xref or associated_with ref.
 
         :param src_name: Source name
@@ -281,7 +281,7 @@ class NCBI(Base):
             source["associated_with"] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]
         return source
 
-    def _get_vrs_chr_location(self, row: List[str], params: Dict) -> List:
+    def _get_vrs_chr_location(self, row: list[str], params: dict) -> list:
         """Store GA4GH VRS ChromosomeLocation in a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#chromosomelocation
 
@@ -309,7 +309,7 @@ class NCBI(Base):
             del params["location_annotations"]
         return location_list
 
-    def _set_chromsomes_locations(self, row: List[str], params: Dict) -> Dict:
+    def _set_chromsomes_locations(self, row: list[str], params: dict) -> dict:
         """Set chromosomes and locations for a given gene record.
 
         :param row: A gene row in the NCBI data file
@@ -326,7 +326,7 @@ class NCBI(Base):
                 and "X" not in chromosomes
                 and "Y" not in chromosomes
             ):
-                logger.info(
+                _logger.info(
                     "%s contains multiple distinct chromosomes: %s", row[2], chromosomes
                 )
                 chromosomes = None
@@ -350,7 +350,7 @@ class NCBI(Base):
             # Exclude genes where there are multiple distinct locations
             # i.e. OMS: '10q26.3', '19q13.42-q13.43', '3p25.3'
             if len(locations) > 2:
-                logger.info(
+                _logger.info(
                     "%s contains multiple distinct locations: %s", row[2], locations
                 )
                 locations = None
@@ -361,18 +361,17 @@ class NCBI(Base):
                 for i in range(len(locations)):
                     loc = locations[i].strip()
                     if not re.match("^([1-9][0-9]?|X[pq]?|Y[pq]?)", loc):
-                        logger.info("%s contains invalid map location: %s", row[2], loc)
+                        _logger.info(
+                            "%s contains invalid map location: %s", row[2], loc
+                        )
                         params["location_annotations"].append(loc)
                         del locations[i]
         return {"locations": locations, "chromosomes": chromosomes, "exclude": exclude}
 
-    def _add_chromosome_location(
-        self, locations: List, location_list: List, params: Dict
-    ) -> None:
+    def _add_chromosome_location(self, locations: list, params: dict) -> None:
         """Add a chromosome location to the location list.
 
         :param locations: NCBI map locations for a gene record.
-        :param location_list: A list to store chromosome locations.
         :param params: A transformed gene record
         """
         for i in range(len(locations)):
@@ -421,7 +420,7 @@ class NCBI(Base):
             # if chr_location:
             #     location_list.append(chr_location)
 
-    def _set_centromere_location(self, loc: str, location: Dict) -> None:
+    def _set_centromere_location(self, loc: str, location: dict) -> None:
         """Set centromere location for a gene.
 
         :param loc: A gene location
@@ -447,7 +446,7 @@ class NCBI(Base):
 
     def _transform_data(self) -> None:
         """Modify data and pass to loading functions."""
-        logger.info("Transforming NCBI...")
+        _logger.info("Transforming NCBI...")
         prev_symbols = self._get_prev_symbols()
         info_genes = self._get_gene_info(prev_symbols)
 
@@ -464,7 +463,7 @@ class NCBI(Base):
 
         for gene in info_genes:
             self._load_gene(info_genes[gene])
-        logger.info("Successfully transformed NCBI.")
+        _logger.info("Successfully transformed NCBI.")
 
     def _add_meta(self) -> None:
         """Add Ensembl metadata.

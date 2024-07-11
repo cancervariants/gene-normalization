@@ -1,6 +1,6 @@
 """Main application for FastAPI"""
+
 import html
-from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Query
 
@@ -16,7 +16,7 @@ description = """
 The Gene Normalizer provides tools for resolving ambiguous gene references to
 consistently-structured, normalized terms.
 
-See the [documentation](https://gene-normalizer.readthedocs.io/en/latest/) for more
+See the [documentation](https://gene-normalizer.readthedocs.io/latest/) for more
 information.
 """
 
@@ -66,8 +66,8 @@ search_description = (
 )
 def search(
     q: str = Query(..., description=q_descr),
-    incl: Optional[str] = Query(None, description=incl_descr),
-    excl: Optional[str] = Query(None, description=excl_descr),
+    incl: str | None = Query(None, description=incl_descr),
+    excl: str | None = Query(None, description=excl_descr),
 ) -> SearchService:
     """Return strongest match concepts to query string provided by user.
 

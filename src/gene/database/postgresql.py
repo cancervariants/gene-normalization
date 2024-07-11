@@ -1,4 +1,5 @@
 """Provide PostgreSQL client."""
+
 import atexit
 import datetime
 import json
@@ -6,8 +7,9 @@ import logging
 import os
 import tarfile
 import tempfile
+from collections.abc import Generator
 from pathlib import Path
-from typing import Any, ClassVar, Dict, Generator, List, Optional, Set, Tuple
+from typing import Any, ClassVar
 
 import psycopg
 import requests
@@ -26,7 +28,7 @@ from gene.database import (
 )
 from gene.schemas import RecordType, RefType, SourceMeta, SourceName
 
-logger = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 SCRIPTS_DIR = Path(__file__).parent / "postgresql"
@@ -35,7 +37,7 @@ SCRIPTS_DIR = Path(__file__).parent / "postgresql"
 class PostgresDatabase(AbstractDatabase):
     """Database class employing PostgreSQL."""
 
-    def __init__(self, db_url: Optional[str] = None, **db_args) -> None:
+    def __init__(self, db_url: str | None = None, **db_args) -> None:
         """Initialize Postgres connection.
 
         >>> from gene.database.postgresql import PostgresDatabase
@@ -55,19 +57,19 @@ class PostgresDatabase(AbstractDatabase):
         :raise DatabaseInitializationException: if initial setup fails
         """
         if db_url:
-            conninfo = db_url
+            self.conninfo = db_url
         elif "GENE_NORM_DB_URL" in os.environ:
-            conninfo = os.environ["GENE_NORM_DB_URL"]
+            self.conninfo = os.environ["GENE_NORM_DB_URL"]
         else:
             user = db_args.get("user", "postgres")
             password = db_args.get("password", "")
             db_name = db_args.get("db_name", "gene_normalizer")
             if password:
-                conninfo = f"dbname={db_name} user={user} password={password}"
+                self.conninfo = f"postgresql://{user}:{password}@/{db_name}"
             else:
-                conninfo = f"dbname={db_name} user={user}"
+                self.conninfo = f"postgresql://{user}@/{db_name}"
 
-        self.conn = psycopg.connect(conninfo)
+        self.conn = psycopg.connect(self.conninfo)
         self.initialize_db()
         self._cached_sources = {}
 
@@ -79,7 +81,7 @@ class PostgresDatabase(AbstractDatabase):
     AND table_type = 'BASE TABLE';
     """
 
-    def list_tables(self) -> List[str]:
+    def list_tables(self) -> list[str]:
         """Return names of tables in database.
 
         :return: Table names in database
@@ -119,7 +121,7 @@ class PostgresDatabase(AbstractDatabase):
         with self.conn.cursor() as cur:
             cur.execute(self._drop_db_query)
             self.conn.commit()
-        logger.info("Dropped all existing gene normalizer tables.")
+        _logger.info("Dropped all existing gene normalizer tables.")
 
     def check_schema_initialized(self) -> bool:
         """Check if database schema is properly initialized.
@@ -132,7 +134,7 @@ class PostgresDatabase(AbstractDatabase):
         except DuplicateTable:
             self.conn.rollback()
         else:
-            logger.info("Gene table existence check failed.")
+            _logger.info("Gene table existence check failed.")
             self.conn.rollback()
             return False
         try:
@@ -141,7 +143,7 @@ class PostgresDatabase(AbstractDatabase):
         except DuplicateObject:
             self.conn.rollback()
         else:
-            logger.info("Gene foreign key existence check failed.")
+            _logger.info("Gene foreign key existence check failed.")
             self.conn.rollback()
             return False
         try:
@@ -152,7 +154,7 @@ class PostgresDatabase(AbstractDatabase):
         except DuplicateTable:
             self.conn.rollback()
         else:
-            logger.info("Gene normalized view lookup failed.")
+            _logger.info("Gene normalized view lookup failed.")
             self.conn.rollback()
             return False
         try:
@@ -161,7 +163,7 @@ class PostgresDatabase(AbstractDatabase):
         except DuplicateTable:
             self.conn.rollback()
         else:
-            logger.info("Gene indexes check failed.")
+            _logger.info("Gene indexes check failed.")
             self.conn.rollback()
             return False
 
@@ -184,21 +186,21 @@ class PostgresDatabase(AbstractDatabase):
             cur.execute(self._check_sources_query)
             results = cur.fetchall()
         if len(results) < len(SourceName):
-            logger.info("Gene sources table is missing expected sources.")
+            _logger.info("Gene sources table is missing expected sources.")
             return False
 
         with self.conn.cursor() as cur:
             cur.execute(self._check_concepts_query)
             result = cur.fetchone()
         if not result or result[0] < 1:
-            logger.info("Gene records table is empty.")
+            _logger.info("Gene records table is empty.")
             return False
 
         with self.conn.cursor() as cur:
             cur.execute(self._check_merged_query)
             result = cur.fetchone()
         if not result or result[0] < 1:
-            logger.info("Normalized gene records table is empty.")
+            _logger.info("Normalized gene records table is empty.")
             return False
 
         return True
@@ -260,14 +262,14 @@ class PostgresDatabase(AbstractDatabase):
 
     def _create_tables(self) -> None:
         """Create all tables, indexes, and views."""
-        logger.debug("Creating new gene normalizer tables.")
+        _logger.debug("Creating new gene normalizer tables.")
         tables_query = (SCRIPTS_DIR / "create_tables.sql").read_bytes()
 
         with self.conn.cursor() as cur:
             cur.execute(tables_query)
             self.conn.commit()
 
-    def get_source_metadata(self, src_name: SourceName) -> Dict:
+    def get_source_metadata(self, src_name: SourceName) -> dict:
         """Get license, versioning, data lookup, etc information for a source.
 
         :param src_name: name of the source to get data for
@@ -305,7 +307,7 @@ class PostgresDatabase(AbstractDatabase):
         b"SELECT * FROM record_lookup_view WHERE lower(concept_id) = %s;"
     )
 
-    def _format_source_record(self, source_row: Tuple) -> Dict:
+    def _format_source_record(self, source_row: tuple) -> dict:
         """Restructure row from gene_concepts table as source record result object.
 
         :param source_row: result tuple from psycopg
@@ -330,13 +332,11 @@ class PostgresDatabase(AbstractDatabase):
         }
         return {k: v for k, v in gene_record.items() if v}
 
-    def _get_record(self, concept_id: str, case_sensitive: bool) -> Optional[Dict]:
+    def _get_record(self, concept_id: str) -> dict | None:
         """Retrieve non-merged record. The query is pretty different, so this method
         is broken out for PostgreSQL.
 
         :param concept_id: ID of concept to get
-        :param case_sensitive: record lookups are performed using a case-insensitive
-            index, so this parameter isn't used by Postgres
         :return: complete record object if successful
         """
         concept_id_param = concept_id.lower()
@@ -348,7 +348,7 @@ class PostgresDatabase(AbstractDatabase):
             return None
         return self._format_source_record(result)
 
-    def _format_merged_record(self, merged_row: Tuple) -> Dict:
+    def _format_merged_record(self, merged_row: tuple) -> dict:
         """Restructure row from gene_merged table as normalized result object.
 
         :param merged_row: result tuple from psycopg
@@ -379,14 +379,10 @@ class PostgresDatabase(AbstractDatabase):
         b"SELECT * FROM gene_merged WHERE lower(concept_id) = %s;"
     )
 
-    def _get_merged_record(
-        self, concept_id: str, case_sensitive: bool
-    ) -> Optional[Dict]:
+    def _get_merged_record(self, concept_id: str) -> dict | None:
         """Retrieve normalized record from DB.
 
         :param concept_id: normalized ID for the merged record
-        :param case_sensitive: record lookups are performed using a case-insensitive
-            index, so this parameter isn't used by Postgres
         :return: normalized record if successful
         """
         concept_id = concept_id.lower()
@@ -398,19 +394,22 @@ class PostgresDatabase(AbstractDatabase):
         return self._format_merged_record(result)
 
     def get_record_by_id(
-        self, concept_id: str, case_sensitive: bool = True, merge: bool = False
-    ) -> Optional[Dict]:
+        self,
+        concept_id: str,
+        case_sensitive: bool = True,  # noqa: ARG002
+        merge: bool = False,
+    ) -> dict | None:
         """Fetch record corresponding to provided concept ID
         :param str concept_id: concept ID for gene record
-        :param bool case_sensitive:
+        :param bool case_sensitive: Not used
         :param bool merge: if true, look for merged record; look for identity record
         otherwise.
         :return: complete gene record, if match is found; None otherwise
         """
         if merge:
-            return self._get_merged_record(concept_id, case_sensitive)
+            return self._get_merged_record(concept_id)
 
-        return self._get_record(concept_id, case_sensitive)
+        return self._get_record(concept_id)
 
     _ref_types_query: ClassVar[dict] = {
         RefType.SYMBOL: b"SELECT concept_id FROM gene_symbols WHERE lower(symbol) = %s;",
@@ -420,7 +419,7 @@ class PostgresDatabase(AbstractDatabase):
         RefType.ASSOCIATED_WITH: b"SELECT concept_id FROM gene_associations WHERE lower(associated_with) = %s;",
     }
 
-    def get_refs_by_type(self, search_term: str, ref_type: RefType) -> List[str]:
+    def get_refs_by_type(self, search_term: str, ref_type: RefType) -> list[str]:
         """Retrieve concept IDs for records matching the user's query. Other methods
         are responsible for actually retrieving full records.
 
@@ -443,7 +442,7 @@ class PostgresDatabase(AbstractDatabase):
 
     _ids_query = b"SELECT concept_id FROM gene_concepts;"
 
-    def get_all_concept_ids(self) -> Set[str]:
+    def get_all_concept_ids(self) -> set[str]:
         """Retrieve concept IDs for use in generating normalized records.
 
         :return: Set of concept IDs as strings.
@@ -459,7 +458,7 @@ class PostgresDatabase(AbstractDatabase):
     )
     _get_all_source_records_query = b"SELECT * FROM record_lookup_view;"
 
-    def get_all_records(self, record_type: RecordType) -> Generator[Dict, None, None]:
+    def get_all_records(self, record_type: RecordType) -> Generator[dict, None, None]:
         """Retrieve all source or normalized records. Either return all source records,
         or all records that qualify as "normalized" (i.e., merged groups + source
         records that are otherwise ungrouped).
@@ -559,7 +558,7 @@ class PostgresDatabase(AbstractDatabase):
         b"INSERT INTO gene_associations (associated_with, concept_id) VALUES (%s, %s);"
     )
 
-    def add_record(self, record: Dict, src_name: SourceName) -> None:
+    def add_record(self, record: dict, src_name: SourceName) -> None:  # noqa: ARG002
         """Add new record to database.
 
         :param record: record to upload
@@ -596,7 +595,7 @@ class PostgresDatabase(AbstractDatabase):
                     cur.execute(self._ins_symbol_query, [record["symbol"], concept_id])
                 self.conn.commit()
             except UniqueViolation:
-                logger.error("Record with ID %s already exists", concept_id)
+                _logger.error("Record with ID %s already exists", concept_id)
                 self.conn.rollback()
 
     _add_merged_record_query = b"""
@@ -609,7 +608,7 @@ class PostgresDatabase(AbstractDatabase):
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
 
-    def add_merged_record(self, record: Dict) -> None:
+    def add_merged_record(self, record: dict) -> None:
         """Add merged record to database.
 
         :param record: merged record to add
@@ -776,7 +775,7 @@ class PostgresDatabase(AbstractDatabase):
             self.conn.commit()
             self.conn.close()
 
-    def load_from_remote(self, url: Optional[str]) -> None:
+    def load_from_remote(self, url: str | None) -> None:
         """Load DB from remote dump. Warning: Deletes all existing data. If not
         passed as an argument, will try to grab latest release from VICC S3 bucket.
 
@@ -806,16 +805,13 @@ class PostgresDatabase(AbstractDatabase):
             tar.extractall(path=tempdir_path, members=[tar_dump_file])  # noqa: S202
             dump_file = tempdir_path / tar_dump_file.name
 
-            if self.conn.info.password:
-                pw_param = f"-W {self.conn.info.password}"
-            else:
-                pw_param = "-w"
-
             self.drop_db()
-            system_call = f"psql -d {self.conn.info.dbname} -U {self.conn.info.user} {pw_param} -f {dump_file.absolute()}"
+            system_call = f"psql {self.conninfo} -f {dump_file.absolute()}"
             result = os.system(system_call)  # noqa: S605
         if result != 0:
-            err_msg = f"System call '{result}' returned failing exit code."
+            err_msg = (
+                f"System call '{system_call}' returned failing exit code {result}."
+            )
             raise DatabaseException(err_msg)
 
     def export_db(self, output_directory: Path) -> None:
@@ -834,14 +830,10 @@ class PostgresDatabase(AbstractDatabase):
             raise ValueError(err_msg)
         now = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y%m%d%H%M%S")
         output_location = output_directory / f"gene_norm_{now}.sql"
-        user = self.conn.info.user
-        host = self.conn.info.host
-        port = self.conn.info.port
-        database_name = self.conn.info.dbname
-        pw_param = f"-W {self.conn.info.password}" if self.conn.info.password else "-w"
-
-        system_call = f"pg_dump -E UTF8 -f {output_location} -U {user} {pw_param} -h {host} -p {port} {database_name}"
+        system_call = f"pg_dump {self.conninfo} -E UTF8 -f {output_location}"
         result = os.system(system_call)  # noqa: S605
         if result != 0:
-            err_msg = f"System call '{system_call}' returned failing exit code."
+            err_msg = (
+                f"System call '{system_call}' returned failing exit code {result}."
+            )
             raise DatabaseException(err_msg)

@@ -1,4 +1,5 @@
 """Test that the gene normalizer works as intended for the HGNC source."""
+
 import datetime
 
 import pytest

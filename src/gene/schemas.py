@@ -1,8 +1,9 @@
 """Contains data models for representing VICC normalized gene records."""
-from enum import Enum, IntEnum
-from typing import Dict, List, Literal, Optional, Union
 
-from ga4gh.core import core_models
+from enum import Enum, IntEnum
+from typing import Literal
+
+from ga4gh.core import domain_models
 from ga4gh.vrs import models
 from pydantic import (
     BaseModel,
@@ -89,20 +90,16 @@ class BaseGene(BaseModel):
 
     concept_id: CURIE
     symbol: StrictStr
-    symbol_status: Optional[SymbolStatus] = None
-    label: Optional[StrictStr] = None
-    strand: Optional[Strand] = None
-    location_annotations: List[StrictStr] = []
-    locations: Union[
-        List[models.SequenceLocation], List[GeneSequenceLocation]
-        # List[Union[SequenceLocation, ChromosomeLocation]],
-        # List[Union[GeneSequenceLocation, GeneChromosomeLocation]]  # dynamodb
-    ] = []
-    aliases: List[StrictStr] = []
-    previous_symbols: List[StrictStr] = []
-    xrefs: List[CURIE] = []
-    associated_with: List[CURIE] = []
-    gene_type: Optional[StrictStr] = None
+    symbol_status: SymbolStatus | None = None
+    label: StrictStr | None = None
+    strand: Strand | None = None
+    location_annotations: list[StrictStr] = []
+    locations: list[models.SequenceLocation] | list[GeneSequenceLocation] = []
+    aliases: list[StrictStr] = []
+    previous_symbols: list[StrictStr] = []
+    xrefs: list[CURIE] = []
+    associated_with: list[CURIE] = []
+    gene_type: StrictStr | None = None
 
 
 class Gene(BaseGene):
@@ -136,7 +133,7 @@ class GeneGroup(Gene):
 
     description: StrictStr
     type_identifier: StrictStr
-    genes: List[Gene] = []
+    genes: list[Gene] = []
 
 
 class SourceName(Enum):
@@ -228,10 +225,10 @@ class SourceMeta(BaseModel):
     data_license: StrictStr
     data_license_url: StrictStr
     version: StrictStr
-    data_url: Dict[StrictStr, StrictStr]  # TODO strictness necessary?
-    rdp_url: Optional[StrictStr] = None
-    data_license_attributes: Dict[StrictStr, StrictBool]
-    genome_assemblies: List[StrictStr] = []
+    data_url: dict[StrictStr, StrictStr]  # TODO strictness necessary?
+    rdp_url: StrictStr | None = None
+    data_license_attributes: dict[StrictStr, StrictBool]
+    genome_assemblies: list[StrictStr] = []
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -259,7 +256,7 @@ class SourceMeta(BaseModel):
 class SourceSearchMatches(BaseModel):
     """Container for matching information from an individual source."""
 
-    records: List[Gene] = []
+    records: list[Gene] = []
     source_meta_: SourceMeta
 
     model_config = ConfigDict(json_schema_extra={"example": {}})  # TODO
@@ -271,9 +268,9 @@ class ServiceMeta(BaseModel):
     name: Literal["gene-normalizer"] = "gene-normalizer"
     version: StrictStr
     response_datetime: StrictStr
-    url: Literal[
+    url: Literal["https://github.com/cancervariants/gene-normalization"] = (
         "https://github.com/cancervariants/gene-normalization"
-    ] = "https://github.com/cancervariants/gene-normalization"
+    )
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -291,8 +288,8 @@ class SearchService(BaseModel):
     """Define model for returning highest match typed concepts from sources."""
 
     query: StrictStr
-    warnings: List[Dict] = []
-    source_matches: Dict[SourceName, SourceSearchMatches]
+    warnings: list[dict] = []
+    source_matches: dict[SourceName, SourceSearchMatches]
     service_meta_: ServiceMeta
 
     model_config = ConfigDict(json_schema_extra={})  # TODO
@@ -312,7 +309,7 @@ class BaseNormalizationService(BaseModel):
     """Base method providing shared attributes to Normalization service classes."""
 
     query: StrictStr
-    warnings: List[Dict] = []
+    warnings: list[dict] = []
     match_type: MatchType
     service_meta_: ServiceMeta
 
@@ -320,9 +317,9 @@ class BaseNormalizationService(BaseModel):
 class NormalizeService(BaseNormalizationService):
     """Define model for returning normalized concept."""
 
-    normalized_id: Optional[str] = None
-    gene: Optional[core_models.Gene] = None
-    source_meta_: Dict[SourceName, SourceMeta] = {}
+    normalized_id: str | None = None
+    gene: domain_models.Gene | None = None
+    source_meta_: dict[SourceName, SourceMeta] = {}
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -402,12 +399,10 @@ class NormalizeService(BaseNormalizationService):
                         {
                             "name": "approved_name",
                             "value": "B-Raf proto-oncogene, serine/threonine kinase",
-                            "type": "Extension",
                         },
                         {
                             "name": "symbol_status",
                             "value": "approved",
-                            "type": "Extension",
                         },
                         # {
                         #     "name": "chromosome_location",
@@ -419,7 +414,6 @@ class NormalizeService(BaseNormalizationService):
                         #         "end": "q34",
                         #         "start": "q34",
                         #     },
-                        #     "type": "Extension"
                         # }
                     ],
                 },
@@ -486,7 +480,7 @@ class NormalizeService(BaseNormalizationService):
 class MatchesNormalized(BaseModel):
     """Matches associated with normalized concept from a single source."""
 
-    records: List[BaseGene] = []
+    records: list[BaseGene] = []
     source_meta_: SourceMeta
 
 
@@ -496,8 +490,8 @@ class UnmergedNormalizationService(BaseNormalizationService):
     attributes.
     """
 
-    normalized_concept_id: Optional[CURIE] = None
-    source_matches: Dict[SourceName, MatchesNormalized]
+    normalized_concept_id: CURIE | None = None
+    source_matches: dict[SourceName, MatchesNormalized]
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -578,7 +572,8 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "location_annotations": [],
                                 "locations": [
                                     {
-                                        "id": "ga4gh:SL.dnydHb2Bnv5pwXjI4MpJmrZUADf5QLe1",
+                                        "id": "ga4gh:SL.4taOKYezIxUvFozs6c6OC0bJAQ2zwjxu",
+                                        "digest": "4taOKYezIxUvFozs6c6OC0bJAQ2zwjxu",
                                         "type": "SequenceLocation",
                                         "sequenceReference": {
                                             "type": "SequenceReference",
@@ -630,7 +625,8 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                         # "end": "q22.1"
                                     },
                                     {
-                                        "id": "ga4gh:SL.U7vPSlX8eyCKdFSiROIsc9om0Y7pCm2g",
+                                        "id": "ga4gh:SL.OWr9DoyBhr2zpf4uLLcZSvsTSIDElU6R",
+                                        "digest": "OWr9DoyBhr2zpf4uLLcZSvsTSIDElU6R",
                                         "type": "SequenceLocation",
                                         "sequenceReference": {
                                             "type": "SequenceReference",
