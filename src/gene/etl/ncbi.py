@@ -304,7 +304,7 @@ class NCBI(Base):
                 else:
                     params["location_annotations"].append(chromosome.strip())
         elif locations:
-            self._add_chromosome_location(locations, location_list, params)
+            self._add_chromosome_location(locations, params)
         if not params["location_annotations"]:
             del params["location_annotations"]
         return location_list
