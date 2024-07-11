@@ -36,7 +36,6 @@ def ddx11l1():
         "location_annotations": [],
         "locations": [
             {
-                "id": "ga4gh:SL.Ihi0T86UoFIEbH0DHttX2nIw_BdOkI5L",
                 "end": 14409,
                 "start": 11868,
                 "sequenceReference": {
@@ -68,7 +67,6 @@ def tp53():
         "location_annotations": [],
         "locations": [
             {
-                "id": "ga4gh:SL.TlGoA-JmP3Xky3RhJ6_UU3eJKq8EpEp9",
                 "end": 7687538,
                 "start": 7661778,
                 "sequenceReference": {
@@ -100,7 +98,6 @@ def ATP6AP1_DT():  # noqa: N802
         "location_annotations": [],
         "locations": [
             {
-                "id": "ga4gh:SL.bPbeeEGSqjlZJ1Ddmg5T9ptJz9tKxYi3",
                 "end": 154428526,
                 "start": 154424377,
                 "sequenceReference": {
@@ -132,7 +129,6 @@ def hsa_mir_1253():
         "location_annotations": [],
         "locations": [
             {
-                "id": "ga4gh:SL.x4kOE6ZXG-xY7nm6bu2W7lvm6ljaJXzR",
                 "end": 2748182,
                 "start": 2748077,
                 "sequenceReference": {
@@ -164,7 +160,6 @@ def spry3():
         "location_annotations": [],
         "locations": [
             {
-                "id": "ga4gh:SL.fxU7Axal2_GbyOfW8NQf0plM-SUWFCB0",
                 "end": 155782459,
                 "start": 155612571,
                 "sequenceReference": {

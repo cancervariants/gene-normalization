@@ -2,7 +2,7 @@
 from enum import Enum, IntEnum
 from typing import Dict, List, Literal, Optional, Union
 
-from ga4gh.core import core_models
+from ga4gh.core import domain_models
 from ga4gh.vrs import models
 from pydantic import (
     BaseModel,
@@ -321,7 +321,7 @@ class NormalizeService(BaseNormalizationService):
     """Define model for returning normalized concept."""
 
     normalized_id: Optional[str] = None
-    gene: Optional[core_models.Gene] = None
+    gene: Optional[domain_models.Gene] = None
     source_meta_: Dict[SourceName, SourceMeta] = {}
 
     model_config = ConfigDict(
@@ -402,12 +402,10 @@ class NormalizeService(BaseNormalizationService):
                         {
                             "name": "approved_name",
                             "value": "B-Raf proto-oncogene, serine/threonine kinase",
-                            "type": "Extension",
                         },
                         {
                             "name": "symbol_status",
                             "value": "approved",
-                            "type": "Extension",
                         },
                         # {
                         #     "name": "chromosome_location",
@@ -419,7 +417,6 @@ class NormalizeService(BaseNormalizationService):
                         #         "end": "q34",
                         #         "start": "q34",
                         #     },
-                        #     "type": "Extension"
                         # }
                     ],
                 },
@@ -578,7 +575,8 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "location_annotations": [],
                                 "locations": [
                                     {
-                                        "id": "ga4gh:SL.dnydHb2Bnv5pwXjI4MpJmrZUADf5QLe1",  # noqa: E501
+                                        "id": "ga4gh:SL.4taOKYezIxUvFozs6c6OC0bJAQ2zwjxu",  # noqa: E501
+                                        "digest": "4taOKYezIxUvFozs6c6OC0bJAQ2zwjxu",
                                         "type": "SequenceLocation",
                                         "sequenceReference": {
                                             "type": "SequenceReference",
@@ -630,7 +628,8 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                         # "end": "q22.1"
                                     },
                                     {
-                                        "id": "ga4gh:SL.U7vPSlX8eyCKdFSiROIsc9om0Y7pCm2g",  # noqa: E501
+                                        "id": "ga4gh:SL.OWr9DoyBhr2zpf4uLLcZSvsTSIDElU6R",  # noqa: E501
+                                        "digest": "OWr9DoyBhr2zpf4uLLcZSvsTSIDElU6R",
                                         "type": "SequenceLocation",
                                         "sequenceReference": {
                                             "type": "SequenceReference",

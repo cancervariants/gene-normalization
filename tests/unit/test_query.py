@@ -1,6 +1,6 @@
 """Module to test the query module."""
 import pytest
-from ga4gh.core import core_models
+from ga4gh.core import domain_models
 
 from gene.query import InvalidParameterException, QueryHandler
 from gene.schemas import BaseGene, MatchType, SourceName
@@ -87,15 +87,14 @@ def normalized_ache():
                 "relation": "relatedMatch",
             },
         ],
-        "aliases": ["3.1.1.7", "YT", "N-ACHE", "ARACHE", "ACEE"],
+        "alternativeLabels": ["3.1.1.7", "YT", "N-ACHE", "ARACHE", "ACEE"],
         "extensions": [
-            {"name": "previous_symbols", "value": ["ACEE", "YT"], "type": "Extension"},
+            {"name": "previous_symbols", "value": ["ACEE", "YT"]},
             {
                 "name": "approved_name",
                 "value": "acetylcholinesterase (Cartwright blood group)",
-                "type": "Extension",
             },
-            {"name": "symbol_status", "value": "approved", "type": "Extension"},
+            {"name": "symbol_status", "value": "approved"},
             {
                 "name": "ncbi_locations",
                 "value": [
@@ -108,7 +107,6 @@ def normalized_ache():
                     #     "start": "q22.1"
                     # },
                     {
-                        "id": "ga4gh:SL.U7vPSlX8eyCKdFSiROIsc9om0Y7pCm2g",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -118,7 +116,6 @@ def normalized_ache():
                         "end": 100896994,
                     }
                 ],
-                "type": "Extension",
             },
             # {
             #     "name": "hgnc_locations",
@@ -132,13 +129,11 @@ def normalized_ache():
             #             "end": "q22.1"
             #         }
             #     ],
-            #     "type": "Extension"
             # },
             {
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.dnydHb2Bnv5pwXjI4MpJmrZUADf5QLe1",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -148,19 +143,17 @@ def normalized_ache():
                         "end": 100896974,
                     }
                 ],
-                "type": "Extension",
             },
-            {"name": "ncbi_gene_type", "type": "Extension", "value": "protein-coding"},
+            {"name": "ncbi_gene_type", "value": "protein-coding"},
             {
                 "name": "hgnc_locus_type",
-                "type": "Extension",
                 "value": "gene with protein product",
             },
-            {"name": "ensembl_biotype", "type": "Extension", "value": "protein_coding"},
-            {"name": "strand", "type": "Extension", "value": "-"},
+            {"name": "ensembl_biotype", "value": "protein_coding"},
+            {"name": "strand", "value": "-"},
         ],
     }
-    return core_models.Gene(**params)
+    return domain_models.Gene(**params)
 
 
 @pytest.fixture(scope="module")
@@ -240,12 +233,11 @@ def normalized_braf():
                 "relation": "relatedMatch",
             },
         ],
-        "aliases": ["BRAF1", "BRAF-1", "RAFB1", "NS7", "B-RAF1", "B-raf"],
+        "alternativeLabels": ["BRAF1", "BRAF-1", "RAFB1", "NS7", "B-RAF1", "B-raf"],
         "extensions": [
             {
                 "name": "approved_name",
                 "value": "B-Raf proto-oncogene, serine/threonine kinase",
-                "type": "Extension",
             },
             # {
             #     "name": "hgnc_locations",
@@ -259,13 +251,11 @@ def normalized_braf():
             #             "start": "q34",
             #         }
             #     ],
-            #     "type": "Extension"
             # },
             {
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.WJ0hsPzXuK54mQyVysTqUNV5jaCATnRf",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -275,7 +265,6 @@ def normalized_braf():
                         "end": 140924929,
                     }
                 ],
-                "type": "Extension",
             },
             {
                 "name": "ncbi_locations",
@@ -289,7 +278,6 @@ def normalized_braf():
                     #     "end": "q34"
                     # },
                     {
-                        "id": "ga4gh:SL.uNBZoxhjhohl24VlIut-JxPJAGfJ7EQE",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -299,20 +287,18 @@ def normalized_braf():
                         "end": 140924929,
                     }
                 ],
-                "type": "Extension",
             },
-            {"name": "ncbi_gene_type", "type": "Extension", "value": "protein-coding"},
+            {"name": "ncbi_gene_type", "value": "protein-coding"},
             {
                 "name": "hgnc_locus_type",
-                "type": "Extension",
                 "value": "gene with protein product",
             },
-            {"name": "ensembl_biotype", "type": "Extension", "value": "protein_coding"},
-            {"name": "strand", "type": "Extension", "value": "-"},
-            {"name": "symbol_status", "type": "Extension", "value": "approved"},
+            {"name": "ensembl_biotype", "value": "protein_coding"},
+            {"name": "strand", "value": "-"},
+            {"name": "symbol_status", "value": "approved"},
         ],
     }
-    return core_models.Gene(**params)
+    return domain_models.Gene(**params)
 
 
 @pytest.fixture(scope="module")
@@ -384,7 +370,7 @@ def normalized_abl1():
                 "relation": "relatedMatch",
             },
         ],
-        "aliases": [
+        "alternativeLabels": [
             "c-ABL",
             "JTK7",
             "p150",
@@ -401,12 +387,10 @@ def normalized_abl1():
             {
                 "name": "previous_symbols",
                 "value": ["LOC116063", "LOC112779", "ABL"],
-                "type": "Extension",
             },
             {
                 "name": "approved_name",
                 "value": "ABL proto-oncogene 1, non-receptor tyrosine kinase",
-                "type": "Extension",
             },
             # {
             #     "name": "hgnc_locations",
@@ -420,7 +404,6 @@ def normalized_abl1():
             #             "start": "q34.12"
             #         }
             #     ],
-            #     "type": "Extension"
             # },
             {
                 "name": "ncbi_locations",
@@ -434,7 +417,6 @@ def normalized_abl1():
                     #     "end": "q34.12"
                     # },
                     {
-                        "id": "ga4gh:SL.F1QUtInXQaBEjAJNR1sYHXdp0XC000Qi",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -444,13 +426,11 @@ def normalized_abl1():
                         "end": 130887675,
                     }
                 ],
-                "type": "Extension",
             },
             {
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.P9Qu87GYxoWPYh1BdAQC5bTLorjvvye7",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -460,20 +440,18 @@ def normalized_abl1():
                         "end": 130887675,
                     }
                 ],
-                "type": "Extension",
             },
-            {"name": "ncbi_gene_type", "type": "Extension", "value": "protein-coding"},
+            {"name": "ncbi_gene_type", "value": "protein-coding"},
             {
                 "name": "hgnc_locus_type",
-                "type": "Extension",
                 "value": "gene with protein product",
             },
-            {"name": "ensembl_biotype", "type": "Extension", "value": "protein_coding"},
-            {"name": "strand", "type": "Extension", "value": "+"},
-            {"name": "symbol_status", "type": "Extension", "value": "approved"},
+            {"name": "ensembl_biotype", "value": "protein_coding"},
+            {"name": "strand", "value": "+"},
+            {"name": "symbol_status", "value": "approved"},
         ],
     }
-    return core_models.Gene(**params)
+    return domain_models.Gene(**params)
 
 
 @pytest.fixture(scope="module")
@@ -525,7 +503,7 @@ def normalized_p150():
                 "relation": "relatedMatch",
             },
         ],
-        "aliases": [
+        "alternativeLabels": [
             "CAF1P150",
             "MGC71229",
             "CAF-1",
@@ -538,7 +516,6 @@ def normalized_p150():
             {
                 "name": "approved_name",
                 "value": "chromatin assembly factor 1 subunit A",
-                "type": "Extension",
             },
             # {
             #     "name": "hgnc_locations",
@@ -552,13 +529,11 @@ def normalized_p150():
             #             "start": "p13.3"
             #         }
             #     ],
-            #     "type": "Extension"
             # },
             {
                 "name": "ensembl_locations",
                 "value": [
                     {
-                        "id": "ga4gh:SL.tLUFh2LAYq-bsMi0Vob_TIWrz-sE4HgE",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -581,7 +556,6 @@ def normalized_p150():
                     #     "end": "p13.3"
                     # },
                     {
-                        "id": "ga4gh:SL.-3T7UXNk6nIkMKB9YGEb0RTYxbVY2TUy",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -592,23 +566,21 @@ def normalized_p150():
                     }
                 ],
             },
-            {"name": "ncbi_gene_type", "type": "Extension", "value": "protein-coding"},
+            {"name": "ncbi_gene_type", "value": "protein-coding"},
             {
                 "name": "hgnc_locus_type",
-                "type": "Extension",
                 "value": "gene with protein product",
             },
-            {"name": "ensembl_biotype", "type": "Extension", "value": "protein_coding"},
+            {"name": "ensembl_biotype", "value": "protein_coding"},
             {
                 "name": "previous_symbols",
-                "type": "Extension",
                 "value": ["LOC107985297"],
             },
-            {"name": "strand", "type": "Extension", "value": "+"},
-            {"name": "symbol_status", "type": "Extension", "value": "approved"},
+            {"name": "strand", "value": "+"},
+            {"name": "symbol_status", "value": "approved"},
         ],
     }
-    return core_models.Gene(**params)
+    return domain_models.Gene(**params)
 
 
 @pytest.fixture(scope="module")
@@ -619,10 +591,9 @@ def normalized_loc_653303():
     params = {
         "type": "Gene",
         "label": "LOC653303",
-        "aliases": ["LOC196266", "LOC654080", "LOC731196"],
+        "alternativeLabels": ["LOC196266", "LOC654080", "LOC731196"],
         "extensions": [
             {
-                "type": "Extension",
                 "name": "approved_name",
                 "value": "proprotein convertase subtilisin/kexin type 7 pseudogene",
             },
@@ -638,7 +609,6 @@ def normalized_loc_653303():
                     #     "end": "q23.3"
                     # },
                     {
-                        "id": "ga4gh:SL.hgpw5EH5q6_PFX1CTcOx5od0LKUQRuDH",
                         "type": "SequenceLocation",
                         "sequenceReference": {
                             "type": "SequenceReference",
@@ -650,16 +620,15 @@ def normalized_loc_653303():
                 ],
             },
             {
-                "type": "Extension",
                 "name": "previous_symbols",
                 "value": ["LOC196266", "LOC731196", "LOC654080"],
             },
-            {"type": "Extension", "name": "ncbi_gene_type", "value": "pseudo"},
-            {"name": "strand", "type": "Extension", "value": "+"},
+            {"name": "ncbi_gene_type", "value": "pseudo"},
+            {"name": "strand", "value": "+"},
         ],
         "id": "normalize.gene.ncbigene:653303",
     }
-    return core_models.Gene(**params)
+    return domain_models.Gene(**params)
 
 
 @pytest.fixture(scope="module")
@@ -689,7 +658,6 @@ def normalize_unmerged_loc_653303():
                             #     "end": "q23.3"
                             # },
                             {
-                                "id": "ga4gh:SL.hgpw5EH5q6_PFX1CTcOx5od0LKUQRuDH",
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
@@ -771,7 +739,6 @@ def normalize_unmerged_chaf1a():
                         "location_annotations": [],
                         "locations": [
                             {
-                                "id": "ga4gh:SL.tLUFh2LAYq-bsMi0Vob_TIWrz-sE4HgE",
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
@@ -808,7 +775,6 @@ def normalize_unmerged_chaf1a():
                             #     "end": "p13.3"
                             # },
                             {
-                                "id": "ga4gh:SL.-3T7UXNk6nIkMKB9YGEb0RTYxbVY2TUy",
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
@@ -855,7 +821,6 @@ def normalize_unmerged_ache():
                             #     "end": "q22.1"
                             # },
                             {
-                                "id": "ga4gh:SL.U7vPSlX8eyCKdFSiROIsc9om0Y7pCm2g",
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
@@ -884,7 +849,6 @@ def normalize_unmerged_ache():
                         "location_annotations": [],
                         "locations": [
                             {
-                                "id": "ga4gh:SL.dnydHb2Bnv5pwXjI4MpJmrZUADf5QLe1",
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
@@ -970,21 +934,20 @@ def normalized_ifnr():
                 "relation": "relatedMatch",
             },
         ],
-        "aliases": ["IFNGM", "IFNGM2"],
+        "alternativeLabels": ["IFNGM", "IFNGM2"],
         "extensions": [
             {
                 "name": "approved_name",
                 "value": "interferon production regulator",
-                "type": "Extension",
             },
-            {"name": "symbol_status", "value": "approved", "type": "Extension"},
-            {"name": "symbol_status", "value": "approved", "type": "Extension"},
-            {"name": "ncbi_gene_type", "type": "Extension", "value": "unknown"},
-            {"name": "hgnc_locus_type", "type": "Extension", "value": "unknown"},
-            {"name": "location_annotations", "type": "Extension", "value": ["16"]},
+            {"name": "symbol_status", "value": "approved"},
+            {"name": "symbol_status", "value": "approved"},
+            {"name": "ncbi_gene_type", "value": "unknown"},
+            {"name": "hgnc_locus_type", "value": "unknown"},
+            {"name": "location_annotations", "value": ["16"]},
         ],
     }
-    return core_models.Gene(**params)
+    return domain_models.Gene(**params)
 
 
 @pytest.fixture(scope="module")
@@ -1054,6 +1017,9 @@ def compare_unmerged_record(gene, test_gene):
     assert gene.symbol == test_gene.symbol
     assert len(gene.locations) == len(test_gene.locations)
     for loc in gene.locations:
+        assert loc.id.split("ga4gh:SL.")[-1] == loc.digest
+        loc.id = None
+        loc.digest = None
         assert loc in test_gene.locations
     assert set(gene.location_annotations) == set(test_gene.location_annotations)
     assert gene.strand == test_gene.strand
@@ -1109,7 +1075,7 @@ def compare_gene(test, actual):
         assert no_matches == [], no_matches
         assert len(actual.mappings) == len(test.mappings)
 
-    assert set(actual.aliases) == set(test.aliases), "aliases"
+    assert set(actual.alternativeLabels) == set(test.alternativeLabels), "alternativeLabels"
     extensions_present = "extensions" in test.model_fields.keys()
     assert ("extensions" in actual.model_fields.keys()) == extensions_present
     if extensions_present:
@@ -1126,6 +1092,9 @@ def compare_gene(test, actual):
                     if isinstance(test_ext.value, list):
                         if test_ext.value:
                             if isinstance(test_ext.value[0], dict):
+                                if test_ext.value[0].get("type") == "SequenceLocation":
+                                    actual_digest = actual_ext.value[0].pop("id").split("ga4gh:SL.")[-1]
+                                    assert actual_ext.value[0].pop("digest") == actual_digest
                                 assert actual_ext.value == test_ext.value
                             else:
                                 assert set(actual_ext.value) == set(
@@ -1135,7 +1104,6 @@ def compare_gene(test, actual):
                             assert actual_ext.value == test_ext.value
                     else:
                         assert actual_ext.value == test_ext.value
-                    assert actual_ext.type == test_ext.type
                     n_ext_correct += 1
         assert n_ext_correct == len(test.extensions), "number of correct extensions"
 

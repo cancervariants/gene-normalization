@@ -74,7 +74,8 @@ Ensembl
      "location_annotations": [],
      "locations": [
        {
-         "id": "ga4gh:SL.WJ0hsPzXuK54mQyVysTqUNV5jaCATnRf",
+         "id": "ga4gh:SL.fUv91vYrVHBMg-B_QW7UpOQj50g_49hb",
+         "digest": "fUv91vYrVHBMg-B_QW7UpOQj50g_49hb",
          "label": null,
          "description": null,
          "extensions": null,
@@ -122,7 +123,8 @@ The `NCBI Gene Database <https://www.ncbi.nlm.nih.gov/gene/>`_ is a service prov
       "location_annotations": [],
       "locations": [
         {
-          "id": "ga4gh:SL.uNBZoxhjhohl24VlIut-JxPJAGfJ7EQE",
+          "id": "ga4gh:SL.0nPwKHYNnTmJ06G-gSmz8BEhB_NTp-0B",
+          "digest": "0nPwKHYNnTmJ06G-gSmz8BEhB_NTp-0B",
           "type": "SequenceLocation",
           "sequenceReference": {
             "type": "SequenceReference",

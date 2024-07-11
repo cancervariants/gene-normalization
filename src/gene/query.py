@@ -4,7 +4,7 @@ import re
 from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, TypeVar
 
-from ga4gh.core import core_models, ga4gh_identify
+from ga4gh.core import domain_models, entity_models, ga4gh_identify
 from ga4gh.vrs import models
 
 from gene import ITEM_TYPES, NAMESPACE_LOOKUP, PREFIX_LOOKUP
@@ -420,7 +420,7 @@ class QueryHandler:
         :param possible_concepts: List of other normalized concepts found
         :return: Response with core Gene
         """
-        gene_obj = core_models.Gene(
+        gene_obj = domain_models.Gene(
             id=f"normalize.gene.{record['concept_id']}",
             label=record["symbol"],
         )
@@ -431,11 +431,11 @@ class QueryHandler:
         for source_id in source_ids:
             system, code = source_id.split(":")
             mappings.append(
-                core_models.Mapping(
-                    coding=core_models.Coding(
-                        code=core_models.Code(code), system=system.lower()
+                entity_models.ConceptMapping(
+                    coding=entity_models.Coding(
+                        code=entity_models.Code(code), system=system.lower()
                     ),
-                    relation=core_models.Relation.RELATED_MATCH,
+                    relation=entity_models.Relation.RELATED_MATCH,
                 )
             )
         if mappings:
@@ -450,7 +450,7 @@ class QueryHandler:
                     val = [val]
                 aliases.update(val)
         if aliases:
-            gene_obj.aliases = list(aliases)
+            gene_obj.alternativeLabels = list(aliases)
 
         # extensions
         extensions = []
@@ -464,7 +464,7 @@ class QueryHandler:
         for ext_label, record_label in extension_and_record_labels:
             if record_label in record and record[record_label]:
                 extensions.append(
-                    core_models.Extension(name=ext_label, value=record[record_label])
+                    entity_models.Extension(name=ext_label, value=record[record_label])
                 )
 
         record_locations = {}
@@ -485,7 +485,7 @@ class QueryHandler:
 
             if transformed_locs:
                 extensions.append(
-                    core_models.Extension(name=loc_name, value=transformed_locs)
+                    entity_models.Extension(name=loc_name, value=transformed_locs)
                 )
 
         # handle gene types separately because they're wonky
@@ -493,7 +493,7 @@ class QueryHandler:
             gene_type = record.get("gene_type")
             if gene_type:
                 extensions.append(
-                    core_models.Extension(
+                    entity_models.Extension(
                         name=GeneTypeFieldName[record["src_name"].upper()].value,
                         value=gene_type,
                     )
@@ -504,7 +504,7 @@ class QueryHandler:
                 values = record.get(field_name, [])
                 for value in values:
                     extensions.append(
-                        core_models.Extension(name=field_name, value=value)
+                        entity_models.Extension(name=field_name, value=value)
                     )
         if extensions:
             gene_obj.extensions = extensions
