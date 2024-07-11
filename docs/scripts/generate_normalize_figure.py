@@ -72,7 +72,9 @@ def create_gjgf(result: UnmergedNormalizationService) -> dict:
         {k["target"] for k in graph["graph"]["edges"]}
     )
     new_nodes = {
-        key: value for key, value in graph["graph"]["nodes"].items() if key in included_nodes
+        key: value
+        for key, value in graph["graph"]["nodes"].items()
+        if key in included_nodes
     }
     graph["graph"]["nodes"] = new_nodes
 
