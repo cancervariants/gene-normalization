@@ -6,9 +6,9 @@ just call like so: ::
 
 Embeddable HTML for the normalization figure should be deposited in the correct
 location, within docs/source/_static/html/.
-"""
+"""  # noqa: INP001
+
 import json
-from typing import Dict
 
 import gravis as gv
 
@@ -24,7 +24,7 @@ COLORS = [
 ]
 
 
-def create_gjgf(result: UnmergedNormalizationService) -> Dict:
+def create_gjgf(result: UnmergedNormalizationService) -> dict:
     """Create gravis input.
 
     :param result: result from Unmerged Normalization search
@@ -43,13 +43,13 @@ def create_gjgf(result: UnmergedNormalizationService) -> Dict:
         }
     }
 
-    for i, (source, matches) in enumerate(result.source_matches.items()):
+    for i, (_, matches) in enumerate(result.source_matches.items()):
         for match in matches.records:
             graph["graph"]["nodes"][match.concept_id] = {
                 "metadata": {
                     "color": COLORS[i],
-                    "hover": f"{match.concept_id}\n{match.symbol}\n<i>{match.label}</i>",  # noqa: E501
-                    "click": f"<p color='black'>{json.dumps(match.model_dump(), indent=2)}</p>",  # noqa: E501
+                    "hover": f"{match.concept_id}\n{match.symbol}\n<i>{match.label}</i>",
+                    "click": f"<p color='black'>{json.dumps(match.model_dump(), indent=2)}</p>",
                 }
             }
             for xref in match.xrefs:
@@ -57,22 +57,25 @@ def create_gjgf(result: UnmergedNormalizationService) -> Dict:
                     {"source": match.concept_id, "target": xref}
                 )
 
-    included_edges = []
-    for edge in graph["graph"]["edges"]:
+    included_edges = [
+        edge
+        for edge in graph["graph"]["edges"]
         if (
             edge["target"] in graph["graph"]["nodes"]
             and edge["source"] in graph["graph"]["nodes"]
-        ):
-            included_edges.append(edge)
+        )
+    ]
+
     graph["graph"]["edges"] = included_edges
 
     included_nodes = {k["source"] for k in graph["graph"]["edges"]}.union(
         {k["target"] for k in graph["graph"]["edges"]}
     )
-    new_nodes = {}
-    for key, value in graph["graph"]["nodes"].items():
-        if key in included_nodes:
-            new_nodes[key] = value
+    new_nodes = {
+        key: value
+        for key, value in graph["graph"]["nodes"].items()
+        if key in included_nodes
+    }
     graph["graph"]["nodes"] = new_nodes
 
     return graph

@@ -1,8 +1,8 @@
 """Defines the HGNC ETL methods."""
+
 import json
 import logging
 import re
-from typing import Dict
 
 from gene import PREFIX_LOOKUP
 from gene.etl.base import Base
@@ -27,13 +27,13 @@ class HGNC(Base):
     def _transform_data(self) -> None:
         """Transform the HGNC source."""
         _logger.info("Transforming HGNC...")
-        with open(self._data_file, "r") as f:  # type: ignore
+        with self._data_file.open() as f:
             data = json.load(f)
 
         records = data["response"]["docs"]
 
         for r in records:
-            gene = dict()
+            gene = {}
             gene["concept_id"] = r["hgnc_id"].lower()
             gene["label_and_type"] = f"{gene['concept_id']}##identity"
             gene["item_type"] = "identity"
@@ -59,14 +59,14 @@ class HGNC(Base):
                 self._load_gene(gene)
         _logger.info("Successfully transformed HGNC.")
 
-    def _get_aliases(self, r: Dict, gene: Dict) -> None:
+    def _get_aliases(self, r: dict, gene: dict) -> None:
         """Store aliases in a gene record.
 
         :param r: A gene record in the HGNC data file
         :param gene: A transformed gene record
         """
-        alias_symbol = list()
-        enzyme_id = list()
+        alias_symbol = []
+        enzyme_id = []
         if "alias_symbol" in r:
             alias_symbol = r["alias_symbol"]
 
@@ -76,7 +76,7 @@ class HGNC(Base):
         if alias_symbol or enzyme_id:
             gene["aliases"] = list(set(alias_symbol + enzyme_id))
 
-    def _get_previous_symbols(self, r: Dict, gene: Dict) -> None:
+    def _get_previous_symbols(self, r: dict, gene: dict) -> None:
         """Store previous symbols in a gene record.
 
         :param r: A gene record in the HGNC data file
@@ -86,14 +86,14 @@ class HGNC(Base):
         if prev_symbols:
             gene["previous_symbols"] = list(set(prev_symbols))
 
-    def _get_xrefs_associated_with(self, r: Dict, gene: Dict) -> None:
+    def _get_xrefs_associated_with(self, r: dict, gene: dict) -> None:
         """Store xrefs and/or associated_with refs in a gene record.
 
         :param r: A gene record in the HGNC data file
         :param gene: A transformed gene record
         """
-        xrefs = list()
-        associated_with = list()
+        xrefs = []
+        associated_with = []
         sources = [
             "entrez_id",
             "ensembl_gene_id",
@@ -133,12 +133,12 @@ class HGNC(Base):
                     key = src
 
                 if key.upper() in NamespacePrefix.__members__:
-                    if NamespacePrefix[key.upper()].value in PREFIX_LOOKUP.keys():
+                    if NamespacePrefix[key.upper()].value in PREFIX_LOOKUP:
                         self._get_xref_associated_with(key, src, r, xrefs)
                     else:
                         self._get_xref_associated_with(key, src, r, associated_with)
                 else:
-                    _logger.warning(f"{key} not in schemas.py")
+                    _logger.warning("%s not in schemas.py", key)
 
         if xrefs:
             gene["xrefs"] = xrefs
@@ -146,7 +146,7 @@ class HGNC(Base):
             gene["associated_with"] = associated_with
 
     def _get_xref_associated_with(
-        self, key: str, src: str, r: Dict, src_type: Dict
+        self, key: str, src: str, r: dict, src_type: dict
     ) -> None:
         """Add an xref or associated_with ref to a gene record.
 
@@ -163,7 +163,7 @@ class HGNC(Base):
                 r[src] = r[src].split(":")[-1].strip()
             src_type.append(f"{NamespacePrefix[key.upper()].value}" f":{r[src]}")
 
-    def _get_location(self, r: Dict, gene: Dict) -> None:
+    def _get_location(self, r: dict, gene: dict) -> None:
         """Store GA4GH VRS ChromosomeLocation in a gene record.
         https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#chromosomelocation
 
@@ -176,8 +176,8 @@ class HGNC(Base):
         else:
             locations = [r["location"]]
 
-        location_list = list()
-        gene["location_annotations"] = list()
+        location_list = []
+        gene["location_annotations"] = []
         for loc in locations:
             loc = loc.strip()
             loc = self._set_annotation(loc, gene)
@@ -186,7 +186,7 @@ class HGNC(Base):
                 if loc == "mitochondria":
                     gene["location_annotations"].append(Chromosome.MITOCHONDRIA.value)
                 else:
-                    location = dict()
+                    location = {}
                     self._set_location(loc, location, gene)
                     # chr_location = self._get_chromosome_location(location, gene)
                     # if chr_location:
@@ -197,7 +197,7 @@ class HGNC(Base):
         if not gene["location_annotations"]:
             del gene["location_annotations"]
 
-    def _set_annotation(self, loc: str, gene: Dict) -> None:
+    def _set_annotation(self, loc: str, gene: dict) -> None:
         """Set the annotations attribute if one is provided.
         Return `True` if a location is provided, `False` otherwise.
 
@@ -216,7 +216,7 @@ class HGNC(Base):
                     return None
         return loc
 
-    def _set_location(self, loc: str, location: Dict, gene: Dict) -> None:
+    def _set_location(self, loc: str, location: dict, gene: dict) -> None:
         """Set a gene's location.
 
         :param loc: A gene location
@@ -248,9 +248,8 @@ class HGNC(Base):
         :raise GeneNormalizerEtlError: if requisite metadata is unset
         """
         if not self._version:
-            raise GeneNormalizerEtlError(
-                "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
-            )
+            err_msg = "Source metadata unavailable -- was data properly acquired before attempting to load DB?"
+            raise GeneNormalizerEtlError(err_msg)
         metadata = SourceMeta(
             data_license="CC0",
             data_license_url="https://www.genenames.org/about/license/",
