@@ -227,7 +227,7 @@ class SourceMeta(BaseModel):
     version: StrictStr
     data_url: dict[StrictStr, StrictStr]  # TODO strictness necessary?
     rdp_url: StrictStr | None = None
-    data_license_attributes: dict[StrictStr, StrictBool]
+    data_license_attributes: DataLicenseAttributes
     genome_assemblies: list[StrictStr] = []
 
     model_config = ConfigDict(

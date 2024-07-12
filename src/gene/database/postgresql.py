@@ -26,7 +26,13 @@ from gene.database import (
     DatabaseReadException,
     DatabaseWriteException,
 )
-from gene.schemas import RecordType, RefType, SourceMeta, SourceName
+from gene.schemas import (
+    DataLicenseAttributes,
+    RecordType,
+    RefType,
+    SourceMeta,
+    SourceName,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -293,11 +299,11 @@ class PostgresDatabase(AbstractDatabase):
                 "version": metadata_result[3],
                 "data_url": metadata_result[4],
                 "rdp_url": metadata_result[5],
-                "data_license_attributes": {
-                    "non_commercial": metadata_result[6],
-                    "attribution": metadata_result[7],
-                    "share_alike": metadata_result[8],
-                },
+                "data_license_attributes": DataLicenseAttributes(
+                    non_commercial=metadata_result[6],
+                    attribution=metadata_result[7],
+                    share_alike=metadata_result[8],
+                ),
                 "genome_assemblies": metadata_result[9],
             }
             self._cached_sources[src_name] = metadata
@@ -531,9 +537,9 @@ class PostgresDatabase(AbstractDatabase):
                     meta.version,
                     json.dumps(meta.data_url),
                     meta.rdp_url,
-                    meta.data_license_attributes["non_commercial"],
-                    meta.data_license_attributes["attribution"],
-                    meta.data_license_attributes["share_alike"],
+                    meta.data_license_attributes.non_commercial,
+                    meta.data_license_attributes.attribution,
+                    meta.data_license_attributes.share_alike,
                     meta.genome_assemblies,
                 ],
             )
