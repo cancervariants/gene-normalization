@@ -1,15 +1,22 @@
 """The VICC library for normalizing genes."""
 
+from importlib.metadata import PackageNotFoundError, version
 from os import environ
 from pathlib import Path
-
-from .version import __version__
 
 APP_ROOT = Path(__file__).resolve().parent
 
 SEQREPO_ROOT_DIR = Path(
     environ.get("SEQREPO_ROOT_DIR", "/usr/local/share/seqrepo/latest")
 )
+
+
+try:
+    __version__ = version("gene-normalizer")
+except PackageNotFoundError:
+    __version__ = "unknown"
+finally:
+    del version, PackageNotFoundError
 
 
 class DownloadException(Exception):  # noqa: N818

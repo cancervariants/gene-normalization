@@ -14,7 +14,7 @@ from pydantic import (
     constr,
 )
 
-from gene.version import __version__
+from gene import __version__
 
 CURIE = constr(pattern=r"^\w[^:]*:.+$")
 

@@ -9,7 +9,7 @@ from typing import Any, TypeVar
 from ga4gh.core import domain_models, entity_models, ga4gh_identify
 from ga4gh.vrs import models
 
-from gene import ITEM_TYPES, NAMESPACE_LOOKUP, PREFIX_LOOKUP
+from gene import ITEM_TYPES, NAMESPACE_LOOKUP, PREFIX_LOOKUP, __version__
 from gene.database import AbstractDatabase, DatabaseReadException
 from gene.schemas import (
     BaseGene,
@@ -29,7 +29,6 @@ from gene.schemas import (
     SourcePriority,
     UnmergedNormalizationService,
 )
-from gene.version import __version__
 
 _logger = logging.getLogger(__name__)
 
