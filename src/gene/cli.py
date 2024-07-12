@@ -2,7 +2,6 @@
 
 import logging
 import os
-from ast import literal_eval
 from collections.abc import Collection
 from pathlib import Path
 from timeit import default_timer as timer
@@ -201,7 +200,7 @@ def _load_source(
             f"Encountered ModuleNotFoundError attempting to import {e.name}. {_etl_dependency_help}"
         )
         click.get_current_context().exit()
-    SourceClass = literal_eval(n.value)  # noqa: N806
+    SourceClass = eval(n.value)  # noqa: N806, S307
 
     source = SourceClass(database=db, silent=False)
     try:
