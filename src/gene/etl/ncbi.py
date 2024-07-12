@@ -150,7 +150,7 @@ class NCBI(Base):
             next(info)
 
             for row in info:
-                params = {}
+                params = {"locations": []}
                 params["concept_id"] = f"{NamespacePrefix.NCBI.value}:{row[1]}"
                 # get symbol
                 params["symbol"] = row[2]
@@ -168,7 +168,6 @@ class NCBI(Base):
                 if do_exclude:
                     # Exclude genes with multiple distinct locations (e.g. OMS)
                     continue
-                params["locations"] = []
                 # get label
                 if row[8] != "-":
                     params["label"] = row[8]
