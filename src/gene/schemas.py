@@ -1,6 +1,7 @@
 """Contains data models for representing VICC normalized gene records."""
+
 from enum import Enum, IntEnum
-from typing import Dict, List, Literal, Optional, Union
+from typing import Literal
 
 from ga4gh.core import domain_models
 from ga4gh.vrs import models
@@ -69,7 +70,7 @@ class GeneSequenceLocation(BaseModel):
     type: Literal["SequenceLocation"] = "SequenceLocation"
     start: StrictInt
     end: StrictInt
-    sequence_id: constr(pattern=r"^ga4gh:SQ.[0-9A-Za-z_\-]{32}$")  # noqa: F722
+    sequence_id: constr(pattern=r"^ga4gh:SQ.[0-9A-Za-z_\-]{32}$")
 
 
 # class GeneChromosomeLocation(BaseModel):
@@ -89,20 +90,16 @@ class BaseGene(BaseModel):
 
     concept_id: CURIE
     symbol: StrictStr
-    symbol_status: Optional[SymbolStatus] = None
-    label: Optional[StrictStr] = None
-    strand: Optional[Strand] = None
-    location_annotations: List[StrictStr] = []
-    locations: Union[
-        List[models.SequenceLocation], List[GeneSequenceLocation]
-        # List[Union[SequenceLocation, ChromosomeLocation]],
-        # List[Union[GeneSequenceLocation, GeneChromosomeLocation]]  # dynamodb
-    ] = []
-    aliases: List[StrictStr] = []
-    previous_symbols: List[StrictStr] = []
-    xrefs: List[CURIE] = []
-    associated_with: List[CURIE] = []
-    gene_type: Optional[StrictStr] = None
+    symbol_status: SymbolStatus | None = None
+    label: StrictStr | None = None
+    strand: Strand | None = None
+    location_annotations: list[StrictStr] = []
+    locations: list[models.SequenceLocation] | list[GeneSequenceLocation] = []
+    aliases: list[StrictStr] = []
+    previous_symbols: list[StrictStr] = []
+    xrefs: list[CURIE] = []
+    associated_with: list[CURIE] = []
+    gene_type: StrictStr | None = None
 
 
 class Gene(BaseGene):
@@ -136,7 +133,7 @@ class GeneGroup(Gene):
 
     description: StrictStr
     type_identifier: StrictStr
-    genes: List[Gene] = []
+    genes: list[Gene] = []
 
 
 class SourceName(Enum):
@@ -160,7 +157,7 @@ class SourceIDAfterNamespace(Enum):
 
     HGNC = ""
     ENSEMBL = "ENSG"
-    NCBI = ""
+    NCBI = ""  # noqa: PIE796
 
 
 class NamespacePrefix(Enum):
@@ -228,10 +225,10 @@ class SourceMeta(BaseModel):
     data_license: StrictStr
     data_license_url: StrictStr
     version: StrictStr
-    data_url: Dict[StrictStr, StrictStr]  # TODO strictness necessary?
-    rdp_url: Optional[StrictStr] = None
-    data_license_attributes: Dict[StrictStr, StrictBool]
-    genome_assemblies: List[StrictStr] = []
+    data_url: dict[StrictStr, StrictStr]  # TODO strictness necessary?
+    rdp_url: StrictStr | None = None
+    data_license_attributes: dict[StrictStr, StrictBool]
+    genome_assemblies: list[StrictStr] = []
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -259,7 +256,7 @@ class SourceMeta(BaseModel):
 class SourceSearchMatches(BaseModel):
     """Container for matching information from an individual source."""
 
-    records: List[Gene] = []
+    records: list[Gene] = []
     source_meta_: SourceMeta
 
     model_config = ConfigDict(json_schema_extra={"example": {}})  # TODO
@@ -271,9 +268,9 @@ class ServiceMeta(BaseModel):
     name: Literal["gene-normalizer"] = "gene-normalizer"
     version: StrictStr
     response_datetime: StrictStr
-    url: Literal[
+    url: Literal["https://github.com/cancervariants/gene-normalization"] = (
         "https://github.com/cancervariants/gene-normalization"
-    ] = "https://github.com/cancervariants/gene-normalization"  # noqa: E501
+    )
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -291,8 +288,8 @@ class SearchService(BaseModel):
     """Define model for returning highest match typed concepts from sources."""
 
     query: StrictStr
-    warnings: List[Dict] = []
-    source_matches: Dict[SourceName, SourceSearchMatches]
+    warnings: list[dict] = []
+    source_matches: dict[SourceName, SourceSearchMatches]
     service_meta_: ServiceMeta
 
     model_config = ConfigDict(json_schema_extra={})  # TODO
@@ -312,7 +309,7 @@ class BaseNormalizationService(BaseModel):
     """Base method providing shared attributes to Normalization service classes."""
 
     query: StrictStr
-    warnings: List[Dict] = []
+    warnings: list[dict] = []
     match_type: MatchType
     service_meta_: ServiceMeta
 
@@ -320,9 +317,9 @@ class BaseNormalizationService(BaseModel):
 class NormalizeService(BaseNormalizationService):
     """Define model for returning normalized concept."""
 
-    normalized_id: Optional[str] = None
-    gene: Optional[domain_models.Gene] = None
-    source_meta_: Dict[SourceName, SourceMeta] = {}
+    normalized_id: str | None = None
+    gene: domain_models.Gene | None = None
+    source_meta_: dict[SourceName, SourceMeta] = {}
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -410,7 +407,7 @@ class NormalizeService(BaseNormalizationService):
                         # {
                         #     "name": "chromosome_location",
                         #     "value": {
-                        #         "id": "ga4gh:CL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",  # noqa: E501
+                        #         "id": "ga4gh:CL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
                         #         "type": "ChromosomeLocation",
                         #         "species_id": "taxonomy:9606",
                         #         "chr": "7",
@@ -438,7 +435,7 @@ class NormalizeService(BaseNormalizationService):
                     },
                     "Ensembl": {
                         "data_license": "custom",
-                        "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",  # noqa: E501
+                        "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",
                         "version": "104",
                         "data_url": {
                             "genome_annotations": "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz"
@@ -453,7 +450,7 @@ class NormalizeService(BaseNormalizationService):
                     },
                     "NCBI": {
                         "data_license": "custom",
-                        "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
+                        "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",
                         "version": "20210813",
                         "data_url": {
                             "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",
@@ -483,7 +480,7 @@ class NormalizeService(BaseNormalizationService):
 class MatchesNormalized(BaseModel):
     """Matches associated with normalized concept from a single source."""
 
-    records: List[BaseGene] = []
+    records: list[BaseGene] = []
     source_meta_: SourceMeta
 
 
@@ -493,8 +490,8 @@ class UnmergedNormalizationService(BaseNormalizationService):
     attributes.
     """
 
-    normalized_concept_id: Optional[CURIE] = None
-    source_matches: Dict[SourceName, MatchesNormalized]
+    normalized_concept_id: CURIE | None = None
+    source_matches: dict[SourceName, MatchesNormalized]
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -516,13 +513,13 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "concept_id": "hgnc:108",
                                 "symbol": "ACHE",
                                 "symbol_status": "approved",
-                                "label": "acetylcholinesterase (Cartwright blood group)",  # noqa: E501
+                                "label": "acetylcholinesterase (Cartwright blood group)",
                                 "strand": None,
                                 "location_annotations": [],
                                 "locations": [
                                     # {
                                     #     "type": "ChromosomeLocation",
-                                    #     "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",  # noqa: E501
+                                    #     "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
                                     #     "species_id": "taxonomy:9606",
                                     #     "chr": "7",
                                     #     "start": "q22.1",
@@ -570,17 +567,17 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "concept_id": "ensembl:ENSG00000087085",
                                 "symbol": "ACHE",
                                 "symbol_status": None,
-                                "label": "acetylcholinesterase (Cartwright blood group)",  # noqa: E501
+                                "label": "acetylcholinesterase (Cartwright blood group)",
                                 "strand": "-",
                                 "location_annotations": [],
                                 "locations": [
                                     {
-                                        "id": "ga4gh:SL.4taOKYezIxUvFozs6c6OC0bJAQ2zwjxu",  # noqa: E501
+                                        "id": "ga4gh:SL.4taOKYezIxUvFozs6c6OC0bJAQ2zwjxu",
                                         "digest": "4taOKYezIxUvFozs6c6OC0bJAQ2zwjxu",
                                         "type": "SequenceLocation",
                                         "sequenceReference": {
                                             "type": "SequenceReference",
-                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                                         },
                                         "start": 100889993,
                                         "end": 100896974,
@@ -595,7 +592,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
                         ],
                         "source_meta_": {
                             "data_license": "custom",
-                            "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",  # noqa: E501
+                            "data_license_url": "https://useast.ensembl.org/info/about/legal/disclaimer.html",
                             "version": "104",
                             "data_url": {
                                 "genome_annotations": "ftp://ftp.ensembl.org/pub/current_gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz"
@@ -615,25 +612,25 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "concept_id": "ncbigene:43",
                                 "symbol": "ACHE",
                                 "symbol_status": None,
-                                "label": "acetylcholinesterase (Cartwright blood group)",  # noqa: E501
+                                "label": "acetylcholinesterase (Cartwright blood group)",
                                 "strand": "-",
                                 "location_annotations": [],
                                 "locations": [
                                     {
                                         # "type": "ChromosomeLocation",
-                                        # "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",  # noqa: E501
+                                        # "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
                                         # "species_id": "taxonomy:9606",
                                         # "chr": "7",
                                         # "start": "q22.1",
                                         # "end": "q22.1"
                                     },
                                     {
-                                        "id": "ga4gh:SL.OWr9DoyBhr2zpf4uLLcZSvsTSIDElU6R",  # noqa: E501
+                                        "id": "ga4gh:SL.OWr9DoyBhr2zpf4uLLcZSvsTSIDElU6R",
                                         "digest": "OWr9DoyBhr2zpf4uLLcZSvsTSIDElU6R",
                                         "type": "SequenceLocation",
                                         "sequenceReference": {
                                             "type": "SequenceReference",
-                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                            "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                                         },
                                         "start": 100889993,
                                         "end": 100896994,
@@ -648,7 +645,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
                         ],
                         "source_meta_": {
                             "data_license": "custom",
-                            "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",  # noqa: E501
+                            "data_license_url": "https://www.ncbi.nlm.nih.gov/home/about/policies/",
                             "version": "20220407",
                             "data_url": {
                                 "info_file": "ftp.ncbi.nlm.nih.govgene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz",

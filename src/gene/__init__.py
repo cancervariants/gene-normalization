@@ -1,8 +1,9 @@
 """The VICC library for normalizing genes."""
+
 from os import environ
 from pathlib import Path
 
-from .version import __version__  # noqa: F401
+from .version import __version__
 
 APP_ROOT = Path(__file__).resolve().parent
 
@@ -37,7 +38,7 @@ XREF_SOURCES = {src.lower() for src in SourceName.__members__}
 PREFIX_LOOKUP = {
     v.value: SourceName[k].value
     for k, v in NamespacePrefix.__members__.items()
-    if k in SourceName.__members__.keys()
+    if k in SourceName.__members__
 }
 
 # use to generate namespace prefix from source ID value

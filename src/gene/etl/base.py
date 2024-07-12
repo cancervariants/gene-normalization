@@ -1,9 +1,9 @@
 """A base class for extraction, transformation, and loading of data."""
+
 import logging
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Dict, List, Optional, Union
 
 import click
 import pydantic
@@ -32,7 +32,7 @@ class Base(ABC):
         self,
         database: AbstractDatabase,
         seqrepo_dir: Path = SEQREPO_ROOT_DIR,
-        data_path: Optional[Path] = None,
+        data_path: Path | None = None,
         silent: bool = True,
     ) -> None:
         """Instantiate Base class.
@@ -47,11 +47,11 @@ class Base(ABC):
         self._data_source = self._get_data_handler(data_path)
         self._database = database
         self.seqrepo = self.get_seqrepo(seqrepo_dir)
-        self._processed_ids = list()
+        self._processed_ids = []
 
     def _get_data_handler(
-        self, data_path: Optional[Path] = None
-    ) -> Union[HgncData, EnsemblData, NcbiGeneData]:
+        self, data_path: Path | None = None
+    ) -> HgncData | EnsemblData | NcbiGeneData:
         """Construct data handler instance for source. Overwrite for edge-case sources.
 
         :param data_path: location of data storage
@@ -59,7 +59,7 @@ class Base(ABC):
         """
         return DATA_DISPATCH[self._src_name](data_dir=data_path, silent=self._silent)
 
-    def perform_etl(self, use_existing: bool = False) -> List[str]:
+    def perform_etl(self, use_existing: bool = False) -> list[str]:
         """Public-facing method to begin ETL procedures on given data.
         Returned concept IDs can be passed to Merge method for computing
         merged concepts.
@@ -100,7 +100,7 @@ class Base(ABC):
         """Add source meta to database source info."""
         raise NotImplementedError
 
-    def _load_gene(self, gene: Dict) -> None:
+    def _load_gene(self, gene: dict) -> None:
         """Load a gene record into database. This method takes responsibility for:
          * validating structure correctness
          * removing duplicates from list-like fields
@@ -109,9 +109,9 @@ class Base(ABC):
         :param gene: Gene record
         """
         try:
-            assert Gene(match_type=MatchType.NO_MATCH, **gene)
+            Gene(match_type=MatchType.NO_MATCH, **gene)
         except pydantic.ValidationError as e:
-            _logger.warning(f"Unable to load {gene} due to validation error: " f"{e}")
+            _logger.warning("Unable to load %s due to validation error: %s", gene, e)
         else:
             concept_id = gene["concept_id"]
             gene["label_and_type"] = f"{concept_id.lower()}##identity"
@@ -137,20 +137,21 @@ class Base(ABC):
         :return: SeqRepo instance
         """
         if not Path(seqrepo_dir).exists():
-            raise NotADirectoryError(f"Could not find {seqrepo_dir}")
+            err_msg = f"Could not find {seqrepo_dir}"
+            raise NotADirectoryError(err_msg)
         return SeqRepo(seqrepo_dir)
 
-    def _set_cl_interval_range(self, loc: str, arm_ix: int, location: Dict) -> None:
+    def _set_cl_interval_range(self, loc: str, arm_ix: int, location: dict) -> None:
         """Set the Chromosome location interval range.
 
         :param loc: A gene location
         :param arm_ix: The index of the q or p arm for a given location
         :param location: VRS chromosome location. This will be mutated.
         """
-        range_ix = re.search("-", loc).start()  # type: ignore
+        range_ix = re.search("-", loc).start()
 
         start = loc[arm_ix:range_ix]
-        start_arm_ix = re.search("[pq]", start).start()  # type: ignore
+        start_arm_ix = re.search("[pq]", start).start()
         start_arm = start[start_arm_ix]
 
         end = loc[range_ix + 1 :]
@@ -161,7 +162,7 @@ class Base(ABC):
             end = f"{start[0]}{end}"
             end_arm_match = re.search("[pq]", end)
 
-        end_arm_ix = end_arm_match.start()  # type: ignore
+        end_arm_ix = end_arm_match.start()
         end_arm = end[end_arm_ix]
 
         if (start_arm == end_arm and start > end) or (
@@ -202,7 +203,7 @@ class Base(ABC):
     #             return chr_location
     #     return None
 
-    def _get_seq_id_aliases(self, seq_id: str) -> List[str]:
+    def _get_seq_id_aliases(self, seq_id: str) -> list[str]:
         """Get GA4GH aliases for a sequence id
 
         :param seq_id: Sequence ID accession
@@ -212,10 +213,10 @@ class Base(ABC):
         try:
             aliases = self.seqrepo.translate_alias(seq_id, target_namespaces="ga4gh")
         except KeyError as e:
-            _logger.warning(f"SeqRepo raised KeyError: {e}")
+            _logger.warning("SeqRepo raised KeyError: %s", e)
         return aliases
 
-    def _get_sequence_location(self, seq_id: str, gene: Feature, params: Dict) -> Dict:
+    def _get_sequence_location(self, seq_id: str, gene: Feature, params: dict) -> dict:
         """Get a gene's GeneSequenceLocation.
 
         :param seq_id: The sequence ID.
@@ -232,15 +233,17 @@ class Base(ABC):
         sequence = aliases[0]
 
         if gene.start != "." and gene.end != "." and sequence:
-            if 0 <= gene.start <= gene.end:  # type: ignore
+            if 0 <= gene.start <= gene.end:
                 location = GeneSequenceLocation(
-                    start=gene.start - 1,  # type: ignore
-                    end=gene.end,  # type: ignore
+                    start=gene.start - 1,
+                    end=gene.end,
                     sequence_id=sequence,
-                ).model_dump()  # type: ignore
+                ).model_dump()
             else:
                 _logger.warning(
-                    f"{params['concept_id']} has invalid interval:"
-                    f"start={gene.start - 1} end={gene.end}"
-                )  # type: ignore
+                    "%s has invalid interval: start=%i end=%i",
+                    params["concept_id"],
+                    gene.start - 1,
+                    gene.end,
+                )
         return location

@@ -1,8 +1,10 @@
 """Provides methods for handling queries."""
+
+import datetime
 import logging
 import re
-from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from ga4gh.core import domain_models, entity_models, ga4gh_identify
 from ga4gh.vrs import models
@@ -28,7 +30,6 @@ from gene.schemas import (
     UnmergedNormalizationService,
 )
 from gene.version import __version__
-
 
 _logger = logging.getLogger(__name__)
 
@@ -62,7 +63,7 @@ class QueryHandler:
         self.db = database
 
     @staticmethod
-    def _emit_warnings(query_str: str) -> List:
+    def _emit_warnings(query_str: str) -> list:
         """Emit warnings if query contains non breaking space characters.
 
         :param query_str: query string
@@ -77,12 +78,12 @@ class QueryHandler:
                 }
             ]
             _logger.warning(
-                f"Query ({query_str}) contains non-breaking space characters."
+                "Query (%s) contains non-breaking space characters.", query_str
             )
         return warnings
 
     @staticmethod
-    def _transform_sequence_location(loc: Dict) -> models.SequenceLocation:
+    def _transform_sequence_location(loc: dict) -> models.SequenceLocation:
         """Transform a sequence location to VRS sequence location
 
         :param loc: GeneSequenceLocation represented as a dict
@@ -110,7 +111,7 @@ class QueryHandler:
     #         end=loc["end"]
     #     )
 
-    def _transform_location(self, loc: Dict) -> Dict:
+    def _transform_location(self, loc: dict) -> dict:
         """Transform a sequence/chromosome location to VRS sequence/chromosome location
 
         :param loc: Sequence or Chromosome location
@@ -125,17 +126,19 @@ class QueryHandler:
         transformed_loc.id = ga4gh_identify(transformed_loc)
         return transformed_loc.model_dump(exclude_none=True)
 
-    def _transform_locations(self, record: Dict) -> Dict:
+    def _transform_locations(self, record: dict) -> dict:
         """Transform gene locations to VRS Chromosome/Sequence Locations
 
         :param record: original record
         :return: record with transformed locations attributes, if applicable
         """
-        record_locations = list()
+        record_locations = []
         if "locations" in record:
-            for loc in record["locations"]:
-                if loc["type"] == "SequenceLocation":
-                    record_locations.append(self._transform_location(loc))
+            record_locations.extend(
+                self._transform_location(loc)
+                for loc in record["locations"]
+                if loc["type"] == "SequenceLocation"
+            )
         record["locations"] = record_locations
         return record
 
@@ -148,15 +151,18 @@ class QueryHandler:
         """
         if concept_id.startswith(NamespacePrefix.ENSEMBL.value):
             return SourceName.ENSEMBL
-        elif concept_id.startswith(NamespacePrefix.NCBI.value):
+
+        if concept_id.startswith(NamespacePrefix.NCBI.value):
             return SourceName.NCBI
-        elif concept_id.startswith(NamespacePrefix.HGNC.value):
+
+        if concept_id.startswith(NamespacePrefix.HGNC.value):
             return SourceName.HGNC
-        else:
-            raise ValueError("Invalid or unrecognized concept ID provided")
+
+        err_msg = "Invalid or unrecognized concept ID provided"
+        raise ValueError(err_msg)
 
     def _add_record(
-        self, response: Dict[str, Dict], item: Dict, match_type: MatchType
+        self, response: dict[str, dict], item: dict, match_type: MatchType
     ) -> None:
         """Add individual record (i.e. Item in DynamoDB) to response object
 
@@ -170,7 +176,7 @@ class QueryHandler:
         src_name = item["src_name"]
 
         matches = response["source_matches"]
-        if src_name not in matches.keys():
+        if src_name not in matches:
             pass
         elif matches[src_name] is None:
             matches[src_name] = {
@@ -181,7 +187,7 @@ class QueryHandler:
             matches[src_name]["records"].append(gene)
 
     def _fetch_record(
-        self, response: Dict[str, Dict], concept_id: str, match_type: MatchType
+        self, response: dict[str, dict], concept_id: str, match_type: MatchType
     ) -> None:
         """Add fetched record to response
 
@@ -193,17 +199,19 @@ class QueryHandler:
             match = self.db.get_record_by_id(concept_id, case_sensitive=False)
         except DatabaseReadException as e:
             _logger.error(
-                f"Encountered DatabaseReadException looking up {concept_id}: {e}"
+                "Encountered DatabaseReadException looking up %s: %s", concept_id, e
             )
         else:
             if match:
                 self._add_record(response, match, match_type)
             else:
                 _logger.error(
-                    f"Unable to find expected record for {concept_id} matching as {match_type}"
-                )  # noqa: E501
+                    "Unable to find expected record for %s matching as %s",
+                    concept_id,
+                    match_type,
+                )
 
-    def _post_process_resp(self, resp: Dict) -> Dict:
+    def _post_process_resp(self, resp: dict) -> dict:
         """Fill all empty source_matches slots with NO_MATCH results and
         sort source records by descending `match_type`.
 
@@ -211,7 +219,7 @@ class QueryHandler:
         :return: response object with empty source slots filled with NO_MATCH results
             and corresponding source metadata
         """
-        for src_name in resp["source_matches"].keys():
+        for src_name in resp["source_matches"]:
             if resp["source_matches"][src_name] is None:
                 resp["source_matches"][src_name] = {
                     "match_type": MatchType.NO_MATCH,
@@ -224,7 +232,7 @@ class QueryHandler:
                     records = sorted(records, key=lambda k: k.match_type, reverse=True)
         return resp
 
-    def _get_search_response(self, query: str, sources: Set[str]) -> Dict:
+    def _get_search_response(self, query: str, sources: set[str]) -> dict:
         """Return response as dict where key is source name and value is a list of
         records.
 
@@ -241,18 +249,17 @@ class QueryHandler:
             return self._post_process_resp(resp)
         query_l = query.lower()
 
-        queries = list()
-        if [p for p in PREFIX_LOOKUP.keys() if query_l.startswith(p)]:
+        queries = []
+        if [p for p in PREFIX_LOOKUP if query_l.startswith(p)]:
             queries.append((query_l, RecordType.IDENTITY.value))
 
-        for prefix in [p for p in NAMESPACE_LOOKUP.keys() if query_l.startswith(p)]:
+        for prefix in [p for p in NAMESPACE_LOOKUP if query_l.startswith(p)]:
             term = f"{NAMESPACE_LOOKUP[prefix].lower()}:{query_l}"
             queries.append((term, RecordType.IDENTITY.value))
 
-        for match in ITEM_TYPES.values():
-            queries.append((query_l, match))
+        queries.extend((query_l, match) for match in ITEM_TYPES.values())
 
-        matched_concept_ids = list()
+        matched_concept_ids = []
         for term, item_type in queries:
             try:
                 if item_type == RecordType.IDENTITY.value:
@@ -266,10 +273,12 @@ class QueryHandler:
                             self._fetch_record(resp, ref, MatchType[item_type.upper()])
                             matched_concept_ids.append(ref)
 
-            except DatabaseReadException as e:
+            except DatabaseReadException as e:  # noqa: PERF203
                 _logger.error(
-                    f"Encountered DatabaseReadException looking up {item_type}"
-                    f" {term}: {e}"
+                    "Encountered DatabaseReadException looking up %s %s: ",
+                    item_type,
+                    term,
+                    e,
                 )
                 continue
 
@@ -282,14 +291,16 @@ class QueryHandler:
 
         :return: Service Meta
         """
-        return ServiceMeta(version=__version__, response_datetime=str(datetime.now()))
+        return ServiceMeta(
+            version=__version__,
+            response_datetime=str(datetime.datetime.now(tz=datetime.timezone.utc)),
+        )
 
     def search(
         self,
         query_str: str,
         incl: str = "",
         excl: str = "",
-        **params,
     ) -> SearchService:
         """Return highest match for each source.
 
@@ -312,10 +323,9 @@ class QueryHandler:
         possible_sources = {
             name.value.lower(): name.value for name in SourceName.__members__.values()
         }
-        sources = dict()
-        for k, v in possible_sources.items():
-            if self.db.get_source_metadata(v):
-                sources[k] = v
+        sources = {
+            k: v for k, v in possible_sources.items() if self.db.get_source_metadata(v)
+        }
 
         if not incl and not excl:
             query_sources = set(sources.values())
@@ -327,7 +337,7 @@ class QueryHandler:
             invalid_sources = []
             query_sources = set()
             for source in req_sources:
-                if source.lower() in sources.keys():
+                if source.lower() in sources:
                     query_sources.add(sources[source.lower()])
                 else:
                     invalid_sources.append(source)
@@ -340,10 +350,10 @@ class QueryHandler:
             invalid_sources = []
             query_sources = set()
             for req_l, req in req_excl_dict.items():
-                if req_l not in sources.keys():
+                if req_l not in sources:
                     invalid_sources.append(req)
             for src_l, src in sources.items():
-                if src_l not in req_excl_dict.keys():
+                if src_l not in req_excl_dict:
                     query_sources.add(src)
             if invalid_sources:
                 detail = f"Invalid source name(s): {invalid_sources}"
@@ -371,7 +381,7 @@ class QueryHandler:
         for src in sources:
             try:
                 src_name = PREFIX_LOOKUP[src]
-            except KeyError:
+            except KeyError:  # noqa: PERF203
                 # not an imported source
                 continue
             else:
@@ -382,7 +392,7 @@ class QueryHandler:
         return response
 
     def _add_alt_matches(
-        self, response: NormService, record: Dict, possible_concepts: List[str]
+        self, response: NormService, record: dict, possible_concepts: list[str]
     ) -> NormService:
         """Add alternate matches warning to response object
 
@@ -408,9 +418,9 @@ class QueryHandler:
     def _add_gene(
         self,
         response: NormalizeService,
-        record: Dict,
+        record: dict,
         match_type: MatchType,
-        possible_concepts: Optional[List[str]] = None,
+        possible_concepts: list[str] | None = None,
     ) -> NormalizeService:
         """Add core Gene object to response.
 
@@ -444,7 +454,7 @@ class QueryHandler:
         # aliases
         aliases = set()
         for key in ["previous_symbols", "aliases"]:
-            if key in record and record[key]:
+            if record.get(key):
                 val = record[key]
                 if isinstance(val, str):
                     val = [val]
@@ -462,7 +472,7 @@ class QueryHandler:
             ("strand", "strand"),
         ]
         for ext_label, record_label in extension_and_record_labels:
-            if record_label in record and record[record_label]:
+            if record.get(record_label):
                 extensions.append(
                     entity_models.Extension(name=ext_label, value=record[record_label])
                 )
@@ -473,15 +483,16 @@ class QueryHandler:
             if locs:
                 record_locations[f"{record['src_name'].lower()}_locations"] = locs
         elif record["item_type"] == RecordType.MERGER:
-            for k, v in record.items():
-                if k.endswith("locations") and v:
-                    record_locations[k] = v
+            record_locations.update(
+                {k: v for k, v in record.items() if k.endswith("locations") and v}
+            )
 
         for loc_name, locations in record_locations.items():
-            transformed_locs = []
-            for loc in locations:
-                if loc["type"] == "SequenceLocation":
-                    transformed_locs.append(self._transform_location(loc))
+            transformed_locs = [
+                self._transform_location(loc)
+                for loc in locations
+                if loc["type"] == "SequenceLocation"
+            ]
 
             if transformed_locs:
                 extensions.append(
@@ -502,10 +513,10 @@ class QueryHandler:
             for f in GeneTypeFieldName:
                 field_name = f.value
                 values = record.get(field_name, [])
-                for value in values:
-                    extensions.append(
-                        entity_models.Extension(name=field_name, value=value)
-                    )
+                extensions.extend(
+                    entity_models.Extension(name=field_name, value=value)
+                    for value in values
+                )
         if extensions:
             gene_obj.extensions = extensions
 
@@ -520,7 +531,7 @@ class QueryHandler:
         return response
 
     @staticmethod
-    def _record_order(record: Dict) -> Tuple[int, str]:
+    def _record_order(record: dict) -> tuple[int, str]:
         """Construct priority order for matching. Only called by sort().
 
         :param record: individual record item in iterable to sort
@@ -531,7 +542,7 @@ class QueryHandler:
         return source_rank, record["concept_id"]
 
     @staticmethod
-    def _handle_failed_merge_ref(record: Dict, response: Dict, query: str) -> Dict:
+    def _handle_failed_merge_ref(record: dict, response: dict, query: str) -> dict:
         """Log + fill out response for a failed merge reference lookup.
 
         :param record: record containing failed merge_ref
@@ -540,13 +551,15 @@ class QueryHandler:
         :return: response with no match
         """
         _logger.error(
-            f"Merge ref lookup failed for ref {record['merge_ref']} "
-            f"in record {record['concept_id']} from query {query}"
+            "Merge ref lookup failed for ref %s in record %s from query %s",
+            record["merge_ref"],
+            record["concept_id"],
+            query,
         )
         response["match_type"] = MatchType.NO_MATCH
         return response
 
-    def _prepare_normalized_response(self, query: str) -> Dict[str, Any]:
+    def _prepare_normalized_response(self, query: str) -> dict[str, Any]:
         """Provide base response object for normalize endpoints.
 
         :param query: user-provided query
@@ -557,7 +570,8 @@ class QueryHandler:
             "match_type": MatchType.NO_MATCH,
             "warnings": self._emit_warnings(query),
             "service_meta_": ServiceMeta(
-                version=__version__, response_datetime=str(datetime.now())
+                version=__version__,
+                response_datetime=str(datetime.datetime.now(tz=datetime.timezone.utc)),
             ),
         }
 
@@ -584,10 +598,10 @@ class QueryHandler:
     def _resolve_merge(
         self,
         response: NormService,
-        record: Dict,
+        record: dict,
         match_type: MatchType,
         callback: Callable,
-        possible_concepts: Optional[List[str]] = None,
+        possible_concepts: list[str] | None = None,
     ) -> NormService:
         """Given a record, return the corresponding normalized record
 
@@ -605,15 +619,17 @@ class QueryHandler:
             if merge is None:
                 query = response.query
                 _logger.error(
-                    f"Merge ref lookup failed for ref {record['merge_ref']} "
-                    f"in record {record['concept_id']} from query `{query}`"
+                    "Merge ref lookup failed for ref %s in record %s from query `%s`",
+                    record["merge_ref"],
+                    record["concept_id"],
+                    query,
                 )
                 return response
-            else:
-                return callback(response, merge, match_type, possible_concepts)
-        else:
-            # record is sole member of concept group
-            return callback(response, record, match_type, possible_concepts)
+
+            return callback(response, merge, match_type, possible_concepts)
+
+        # record is sole member of concept group
+        return callback(response, record, match_type, possible_concepts)
 
     def _perform_normalized_lookup(
         self, response: NormService, query: str, response_builder: Callable
@@ -623,6 +639,7 @@ class QueryHandler:
         :param response: in-progress response object
         :param query: user-provided query
         :param response_builder: response constructor callback method
+        :raises ValueError: If a matching record is null
         :return: completed service response object
         """
         if query == "":
@@ -647,16 +664,15 @@ class QueryHandler:
             matching_records = [
                 self.db.get_record_by_id(ref, False) for ref in matching_refs
             ]
-            matching_records.sort(key=self._record_order)  # type: ignore
+            matching_records.sort(key=self._record_order)
 
-            if len(matching_refs) > 1:
-                possible_concepts = [ref for ref in matching_refs]
-            else:
-                possible_concepts = None
+            possible_concepts = list(matching_refs) if len(matching_refs) > 1 else None
 
             # attempt merge ref resolution until successful
             for match in matching_records:
-                assert match is not None
+                if match is None:
+                    err_msg = "Matching record must be nonnull"
+                    raise ValueError(err_msg)
                 record = self.db.get_record_by_id(match["concept_id"], False)
                 if record:
                     match_type_value = MatchType[match_type.value.upper()]
@@ -672,9 +688,9 @@ class QueryHandler:
     def _add_normalized_records(
         self,
         response: UnmergedNormalizationService,
-        normalized_record: Dict,
+        normalized_record: dict,
         match_type: MatchType,
-        possible_concepts: Optional[List[str]] = None,
+        possible_concepts: list[str] | None = None,
     ) -> UnmergedNormalizationService:
         """Add individual records to unmerged normalize response.
 
@@ -692,12 +708,11 @@ class QueryHandler:
             meta = self.db.get_source_metadata(record_source.value)
             response.source_matches[record_source] = MatchesNormalized(
                 records=[BaseGene(**self._transform_locations(normalized_record))],
-                source_meta_=meta,  # type: ignore
+                source_meta_=meta,
             )
         else:
-            concept_ids = [normalized_record["concept_id"]] + normalized_record.get(
-                "xrefs", []
-            )
+            xrefs = normalized_record.get("xrefs") or []
+            concept_ids = [normalized_record["concept_id"], *xrefs]
             for concept_id in concept_ids:
                 record = self.db.get_record_by_id(concept_id, case_sensitive=False)
                 if not record:
@@ -709,8 +724,7 @@ class QueryHandler:
                 else:
                     meta = self.db.get_source_metadata(record_source.value)
                     response.source_matches[record_source] = MatchesNormalized(
-                        records=[gene],
-                        source_meta_=meta,  # type: ignore
+                        records=[gene], source_meta_=meta
                     )
         if possible_concepts:
             response = self._add_alt_matches(

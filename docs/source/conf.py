@@ -79,7 +79,7 @@ def linkcode_resolve(domain, info):
     if not info["module"]:
         return None
     filename = info["module"].replace(".", "/")
-    return f"https://github.com/cancervariants/gene-normalization/blob/main/{filename}.py"  # noqa: E501
+    return f"https://github.com/cancervariants/gene-normalization/blob/main/{filename}.py"
 
 
 # -- code block style --------------------------------------------------------

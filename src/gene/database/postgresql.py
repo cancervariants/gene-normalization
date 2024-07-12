@@ -1,13 +1,15 @@
 """Provide PostgreSQL client."""
+
 import atexit
+import datetime
 import json
 import logging
 import os
 import tarfile
 import tempfile
-from datetime import datetime
+from collections.abc import Generator
 from pathlib import Path
-from typing import Any, Dict, Generator, List, Optional, Set, Tuple
+from typing import Any, ClassVar
 
 import psycopg
 import requests
@@ -35,7 +37,7 @@ SCRIPTS_DIR = Path(__file__).parent / "postgresql"
 class PostgresDatabase(AbstractDatabase):
     """Database class employing PostgreSQL."""
 
-    def __init__(self, db_url: Optional[str] = None, **db_args) -> None:
+    def __init__(self, db_url: str | None = None, **db_args) -> None:
         """Initialize Postgres connection.
 
         >>> from gene.database.postgresql import PostgresDatabase
@@ -79,7 +81,7 @@ class PostgresDatabase(AbstractDatabase):
     AND table_type = 'BASE TABLE';
     """
 
-    def list_tables(self) -> List[str]:
+    def list_tables(self) -> list[str]:
         """Return names of tables in database.
 
         :return: Table names in database
@@ -267,7 +269,7 @@ class PostgresDatabase(AbstractDatabase):
             cur.execute(tables_query)
             self.conn.commit()
 
-    def get_source_metadata(self, src_name: SourceName) -> Dict:
+    def get_source_metadata(self, src_name: SourceName) -> dict:
         """Get license, versioning, data lookup, etc information for a source.
 
         :param src_name: name of the source to get data for
@@ -283,7 +285,8 @@ class PostgresDatabase(AbstractDatabase):
             cur.execute(metadata_query, [src_name])
             metadata_result = cur.fetchone()
             if not metadata_result:
-                raise DatabaseReadException(f"{src_name} metadata lookup failed")
+                err_msg = f"{src_name} metadata lookup failed"
+                raise DatabaseReadException(err_msg)
             metadata = {
                 "data_license": metadata_result[1],
                 "data_license_url": metadata_result[2],
@@ -301,10 +304,10 @@ class PostgresDatabase(AbstractDatabase):
             return metadata
 
     _get_record_query = (
-        b"SELECT * FROM record_lookup_view WHERE lower(concept_id) = %s;"  # noqa: E501
+        b"SELECT * FROM record_lookup_view WHERE lower(concept_id) = %s;"
     )
 
-    def _format_source_record(self, source_row: Tuple) -> Dict:
+    def _format_source_record(self, source_row: tuple) -> dict:
         """Restructure row from gene_concepts table as source record result object.
 
         :param source_row: result tuple from psycopg
@@ -329,13 +332,11 @@ class PostgresDatabase(AbstractDatabase):
         }
         return {k: v for k, v in gene_record.items() if v}
 
-    def _get_record(self, concept_id: str, case_sensitive: bool) -> Optional[Dict]:
+    def _get_record(self, concept_id: str) -> dict | None:
         """Retrieve non-merged record. The query is pretty different, so this method
         is broken out for PostgreSQL.
 
         :param concept_id: ID of concept to get
-        :param case_sensitive: record lookups are performed using a case-insensitive
-            index, so this parameter isn't used by Postgres
         :return: complete record object if successful
         """
         concept_id_param = concept_id.lower()
@@ -347,7 +348,7 @@ class PostgresDatabase(AbstractDatabase):
             return None
         return self._format_source_record(result)
 
-    def _format_merged_record(self, merged_row: Tuple) -> Dict:
+    def _format_merged_record(self, merged_row: tuple) -> dict:
         """Restructure row from gene_merged table as normalized result object.
 
         :param merged_row: result tuple from psycopg
@@ -375,17 +376,13 @@ class PostgresDatabase(AbstractDatabase):
         return {k: v for k, v in merged_record.items() if v}
 
     _get_merged_record_query = (
-        b"SELECT * FROM gene_merged WHERE lower(concept_id) = %s;"  # noqa: E501
+        b"SELECT * FROM gene_merged WHERE lower(concept_id) = %s;"
     )
 
-    def _get_merged_record(
-        self, concept_id: str, case_sensitive: bool
-    ) -> Optional[Dict]:
+    def _get_merged_record(self, concept_id: str) -> dict | None:
         """Retrieve normalized record from DB.
 
         :param concept_id: normalized ID for the merged record
-        :param case_sensitive: record lookups are performed using a case-insensitive
-            index, so this parameter isn't used by Postgres
         :return: normalized record if successful
         """
         concept_id = concept_id.lower()
@@ -397,29 +394,32 @@ class PostgresDatabase(AbstractDatabase):
         return self._format_merged_record(result)
 
     def get_record_by_id(
-        self, concept_id: str, case_sensitive: bool = True, merge: bool = False
-    ) -> Optional[Dict]:
+        self,
+        concept_id: str,
+        case_sensitive: bool = True,  # noqa: ARG002
+        merge: bool = False,
+    ) -> dict | None:
         """Fetch record corresponding to provided concept ID
         :param str concept_id: concept ID for gene record
-        :param bool case_sensitive:
+        :param bool case_sensitive: Not used by PostgreSQL instance.
         :param bool merge: if true, look for merged record; look for identity record
         otherwise.
         :return: complete gene record, if match is found; None otherwise
         """
         if merge:
-            return self._get_merged_record(concept_id, case_sensitive)
-        else:
-            return self._get_record(concept_id, case_sensitive)
+            return self._get_merged_record(concept_id)
 
-    _ref_types_query = {
-        RefType.SYMBOL: b"SELECT concept_id FROM gene_symbols WHERE lower(symbol) = %s;",  # noqa: E501
-        RefType.PREVIOUS_SYMBOLS: b"SELECT concept_id FROM gene_previous_symbols WHERE lower(prev_symbol) = %s;",  # noqa: E501
-        RefType.ALIASES: b"SELECT concept_id FROM gene_aliases WHERE lower(alias) = %s;",  # noqa: E501
+        return self._get_record(concept_id)
+
+    _ref_types_query: ClassVar[dict] = {
+        RefType.SYMBOL: b"SELECT concept_id FROM gene_symbols WHERE lower(symbol) = %s;",
+        RefType.PREVIOUS_SYMBOLS: b"SELECT concept_id FROM gene_previous_symbols WHERE lower(prev_symbol) = %s;",
+        RefType.ALIASES: b"SELECT concept_id FROM gene_aliases WHERE lower(alias) = %s;",
         RefType.XREFS: b"SELECT concept_id FROM gene_xrefs WHERE lower(xref) = %s;",
-        RefType.ASSOCIATED_WITH: b"SELECT concept_id FROM gene_associations WHERE lower(associated_with) = %s;",  # noqa: E501
+        RefType.ASSOCIATED_WITH: b"SELECT concept_id FROM gene_associations WHERE lower(associated_with) = %s;",
     }
 
-    def get_refs_by_type(self, search_term: str, ref_type: RefType) -> List[str]:
+    def get_refs_by_type(self, search_term: str, ref_type: RefType) -> list[str]:
         """Retrieve concept IDs for records matching the user's query. Other methods
         are responsible for actually retrieving full records.
 
@@ -429,19 +429,20 @@ class PostgresDatabase(AbstractDatabase):
         """
         query = self._ref_types_query.get(ref_type)
         if not query:
-            raise ValueError("invalid reference type")
+            err_msg = "invalid reference type"
+            raise ValueError(err_msg)
 
         with self.conn.cursor() as cur:
             cur.execute(query, (search_term.lower(),))
             concept_ids = cur.fetchall()
         if concept_ids:
             return [i[0] for i in concept_ids]
-        else:
-            return []
+
+        return []
 
     _ids_query = b"SELECT concept_id FROM gene_concepts;"
 
-    def get_all_concept_ids(self) -> Set[str]:
+    def get_all_concept_ids(self) -> set[str]:
         """Retrieve concept IDs for use in generating normalized records.
 
         :return: Set of concept IDs as strings.
@@ -453,11 +454,11 @@ class PostgresDatabase(AbstractDatabase):
 
     _get_all_normalized_records_query = b"SELECT * FROM gene_merged;"
     _get_all_unmerged_source_records_query = (
-        b"SELECT * FROM record_lookup_view WHERE merge_ref IS NULL;"  # noqa: E501
+        b"SELECT * FROM record_lookup_view WHERE merge_ref IS NULL;"
     )
     _get_all_source_records_query = b"SELECT * FROM record_lookup_view;"
 
-    def get_all_records(self, record_type: RecordType) -> Generator[Dict, None, None]:
+    def get_all_records(self, record_type: RecordType) -> Generator[dict, None, None]:
         """Retrieve all source or normalized records. Either return all source records,
         or all records that qualify as "normalized" (i.e., merged groups + source
         records that are otherwise ungrouped).
@@ -557,7 +558,7 @@ class PostgresDatabase(AbstractDatabase):
         b"INSERT INTO gene_associations (associated_with, concept_id) VALUES (%s, %s);"
     )
 
-    def add_record(self, record: Dict, src_name: SourceName) -> None:
+    def add_record(self, record: dict, src_name: SourceName) -> None:  # noqa: ARG002
         """Add new record to database.
 
         :param record: record to upload
@@ -594,7 +595,7 @@ class PostgresDatabase(AbstractDatabase):
                     cur.execute(self._ins_symbol_query, [record["symbol"], concept_id])
                 self.conn.commit()
             except UniqueViolation:
-                _logger.error(f"Record with ID {concept_id} already exists")
+                _logger.error("Record with ID %s already exists", concept_id)
                 self.conn.rollback()
 
     _add_merged_record_query = b"""
@@ -607,7 +608,7 @@ class PostgresDatabase(AbstractDatabase):
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
 
-    def add_merged_record(self, record: Dict) -> None:
+    def add_merged_record(self, record: dict) -> None:
         """Add merged record to database.
 
         :param record: merged record to add
@@ -668,9 +669,8 @@ class PostgresDatabase(AbstractDatabase):
 
         # UPDATE will fail silently unless we check the # of affected rows
         if row_count < 1:
-            raise DatabaseWriteException(
-                f"No such record exists for primary key {concept_id}"
-            )
+            err_msg = f"No such record exists for primary key {concept_id}"
+            raise DatabaseWriteException(err_msg)
 
     def delete_normalized_concepts(self) -> None:
         """Remove merged records from the database. Use when performing a new update
@@ -775,7 +775,7 @@ class PostgresDatabase(AbstractDatabase):
             self.conn.commit()
             self.conn.close()
 
-    def load_from_remote(self, url: Optional[str]) -> None:
+    def load_from_remote(self, url: str | None) -> None:
         """Load DB from remote dump. Warning: Deletes all existing data. If not
         passed as an argument, will try to grab latest release from VICC S3 bucket.
 
@@ -784,35 +784,35 @@ class PostgresDatabase(AbstractDatabase):
             command fails
         """
         if not url:
-            url = "https://vicc-normalizers.s3.us-east-2.amazonaws.com/gene_normalization/postgresql/gene_norm_latest.sql.tar.gz"  # noqa: E501
+            url = "https://vicc-normalizers.s3.us-east-2.amazonaws.com/gene_normalization/postgresql/gene_norm_latest.sql.tar.gz"
         with tempfile.TemporaryDirectory() as tempdir:
             tempdir_path = Path(tempdir)
             temp_tarfile = tempdir_path / "gene_norm_latest.tar.gz"
-            with requests.get(url, stream=True) as r:
+            with requests.get(url, stream=True, timeout=10) as r:
                 try:
                     r.raise_for_status()
-                except requests.HTTPError:
-                    raise DatabaseException(
-                        f"Unable to retrieve PostgreSQL dump file from {url}"
-                    )
-                with open(temp_tarfile, "wb") as h:
+                except requests.HTTPError as e:
+                    err_msg = f"Unable to retrieve PostgreSQL dump file from {url}"
+                    raise DatabaseException(err_msg) from e
+                with temp_tarfile.open("wb") as h:
                     for chunk in r.iter_content(chunk_size=8192):
                         if chunk:
                             h.write(chunk)
             tar = tarfile.open(temp_tarfile, "r:gz")
-            tar_dump_file = [
+            tar_dump_file = next(
                 f for f in tar.getmembers() if f.name.startswith("gene_norm_")
-            ][0]
-            tar.extractall(path=tempdir_path, members=[tar_dump_file])
+            )
+            tar.extractall(path=tempdir_path, members=[tar_dump_file])  # noqa: S202
             dump_file = tempdir_path / tar_dump_file.name
 
             self.drop_db()
             system_call = f"psql {self.conninfo} -f {dump_file.absolute()}"
-            result = os.system(system_call)
+            result = os.system(system_call)  # noqa: S605
         if result != 0:
-            raise DatabaseException(
+            err_msg = (
                 f"System call '{system_call}' returned failing exit code {result}."
             )
+            raise DatabaseException(err_msg)
 
     def export_db(self, output_directory: Path) -> None:
         """Dump DB to specified location.
@@ -824,14 +824,16 @@ class PostgresDatabase(AbstractDatabase):
         :raise DatabaseException: if psql call fails
         """
         if not output_directory.is_dir() or not output_directory.exists():
-            raise ValueError(
+            err_msg = (
                 f"Output location {output_directory} isn't a directory or doesn't exist"
-            )  # noqa: E501
-        now = datetime.now().strftime("%Y%m%d%H%M%S")
+            )
+            raise ValueError(err_msg)
+        now = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y%m%d%H%M%S")
         output_location = output_directory / f"gene_norm_{now}.sql"
         system_call = f"pg_dump {self.conninfo} -E UTF8 -f {output_location}"
-        result = os.system(system_call)
+        result = os.system(system_call)  # noqa: S605
         if result != 0:
-            raise DatabaseException(
+            err_msg = (
                 f"System call '{system_call}' returned failing exit code {result}."
             )
+            raise DatabaseException(err_msg)

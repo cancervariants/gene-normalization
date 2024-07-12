@@ -1,4 +1,5 @@
 """Module to test the query module."""
+
 import pytest
 from ga4gh.core import domain_models
 
@@ -645,7 +646,7 @@ def normalize_unmerged_loc_653303():
                         "concept_id": "ncbigene:653303",
                         "symbol": "LOC653303",
                         "symbol_status": None,
-                        "label": "proprotein convertase subtilisin/kexin type 7 pseudogene",  # noqa: E501
+                        "label": "proprotein convertase subtilisin/kexin type 7 pseudogene",
                         "strand": "+",
                         "location_annotations": [],
                         "locations": [
@@ -661,7 +662,7 @@ def normalize_unmerged_loc_653303():
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
-                                    "refgetAccession": "SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1",  # noqa: E501
+                                    "refgetAccession": "SQ.2NkFm8HK88MqeNkCgj78KidCAXgnsfV1",
                                 },
                                 "start": 117135528,
                                 "end": 117138867,
@@ -742,7 +743,7 @@ def normalize_unmerged_chaf1a():
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
-                                    "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",  # noqa: E501
+                                    "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
                                 },
                                 "start": 4402639,
                                 "end": 4445018,
@@ -778,7 +779,7 @@ def normalize_unmerged_chaf1a():
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
-                                    "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",  # noqa: E501
+                                    "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
                                 },
                                 "start": 4402639,
                                 "end": 4450830,
@@ -824,7 +825,7 @@ def normalize_unmerged_ache():
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
-                                    "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                    "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                                 },
                                 "start": 100889993,
                                 "end": 100896994,
@@ -852,7 +853,7 @@ def normalize_unmerged_ache():
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
                                     "type": "SequenceReference",
-                                    "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",  # noqa: E501
+                                    "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                                 },
                                 "start": 100889993,
                                 "end": 100896974,
@@ -953,7 +954,7 @@ def normalized_ifnr():
 @pytest.fixture(scope="module")
 def num_sources():
     """Get the number of sources."""
-    return len({s for s in SourceName})
+    return len(set(SourceName))
 
 
 @pytest.fixture(scope="module")
@@ -999,7 +1000,7 @@ def compare_normalize_resp(
         resp_source_meta_keys = resp.source_meta_.keys()
         assert len(resp_source_meta_keys) == len(
             expected_source_meta
-        ), "source_meta_keys"  # noqa: E501
+        ), "source_meta_keys"
         for src in expected_source_meta:
             assert src in resp_source_meta_keys
     compare_service_meta(resp.service_meta_)
@@ -1075,9 +1076,11 @@ def compare_gene(test, actual):
         assert no_matches == [], no_matches
         assert len(actual.mappings) == len(test.mappings)
 
-    assert set(actual.alternativeLabels) == set(test.alternativeLabels), "alternativeLabels"
-    extensions_present = "extensions" in test.model_fields.keys()
-    assert ("extensions" in actual.model_fields.keys()) == extensions_present
+    assert set(actual.alternativeLabels) == set(
+        test.alternativeLabels
+    ), "alternativeLabels"
+    extensions_present = "extensions" in test.model_fields
+    assert ("extensions" in actual.model_fields) == extensions_present
     if extensions_present:
         actual_ext_names = sorted([ext.name for ext in actual.extensions])
         unique_actual_ext_names = sorted(set(actual_ext_names))
@@ -1093,8 +1096,15 @@ def compare_gene(test, actual):
                         if test_ext.value:
                             if isinstance(test_ext.value[0], dict):
                                 if test_ext.value[0].get("type") == "SequenceLocation":
-                                    actual_digest = actual_ext.value[0].pop("id").split("ga4gh:SL.")[-1]
-                                    assert actual_ext.value[0].pop("digest") == actual_digest
+                                    actual_digest = (
+                                        actual_ext.value[0]
+                                        .pop("id")
+                                        .split("ga4gh:SL.")[-1]
+                                    )
+                                    assert (
+                                        actual_ext.value[0].pop("digest")
+                                        == actual_digest
+                                    )
                                 assert actual_ext.value == test_ext.value
                             else:
                                 assert set(actual_ext.value) == set(
@@ -1142,7 +1152,7 @@ def test_search_query_inc_exc(query_handler, num_sources):
 def test_search_invalid_parameter_exception(query_handler):
     """Test that Invalid parameter exception works correctly."""
     with pytest.raises(InvalidParameterException):
-        _ = query_handler.search("BRAF", incl="hgn")  # noqa: F841, E501
+        _ = query_handler.search("BRAF", incl="hgn")
 
     with pytest.raises(InvalidParameterException):
         resp = query_handler.search("BRAF", incl="hgnc", excl="hgnc")  # noqa: F841

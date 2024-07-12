@@ -1,9 +1,10 @@
 """Provides a CLI util to make updates to normalizer database."""
+
 import logging
 import os
+from collections.abc import Collection
 from pathlib import Path
 from timeit import default_timer as timer
-from typing import Collection, List, Optional, Set
 
 import click
 
@@ -61,7 +62,7 @@ def check_db(db_url: str, verbose: bool = False) -> None:
 @click.command()
 @click.option("--data_url", help="URL to data dump")
 @click.option("--db_url", help="URL endpoint for the application database.")
-def update_from_remote(data_url: Optional[str], db_url: str) -> None:
+def update_from_remote(data_url: str | None, db_url: str) -> None:
     """Update data from remotely-hosted DB dump. By default, fetches from latest
     available dump on VICC S3 bucket; specific URLs can be provided instead by
     command line option or GENE_NORM_REMOTE_DB_URL environment variable.
@@ -81,10 +82,10 @@ def update_from_remote(data_url: Optional[str], db_url: str) -> None:
     except NotImplementedError:
         click.echo(
             f"Error: Fetching remote data dump not supported for {db.__class__.__name__}"
-        )  # noqa: E501
+        )
         click.get_current_context().exit(1)
     except DatabaseException as e:
-        click.echo(f"Encountered exception during update: {str(e)}")
+        click.echo(f"Encountered exception during update: {e!s}")
         click.get_current_context().exit(1)
     _logger.info("Successfully loaded data from remote snapshot.")
 
@@ -106,7 +107,7 @@ def dump_database(output_directory: Path, db_url: str) -> None:
     """  # noqa: D301
     _configure_logging()
     if not output_directory:
-        output_directory = Path(".")
+        output_directory = Path()
 
     db = create_db(db_url, False)
     try:
@@ -114,10 +115,10 @@ def dump_database(output_directory: Path, db_url: str) -> None:
     except NotImplementedError:
         click.echo(
             f"Error: Dumping data to file not supported for {db.__class__.__name__}"
-        )  # noqa: E501
+        )
         click.get_current_context().exit(1)
     except DatabaseException as e:
-        click.echo(f"Encountered exception during update: {str(e)}")
+        click.echo(f"Encountered exception during update: {e!s}")
         click.get_current_context().exit(1)
     _logger.info("Database dump successful.")
 
@@ -137,7 +138,7 @@ def _update_normalizer(
     :param use_existing: if True, use most recent local version of source data instead of
         fetching from remote
     """
-    processed_ids = list()
+    processed_ids = []
     for n in sources:
         delete_time = _delete_source(n, db)
         _load_source(n, db, delete_time, processed_ids, use_existing)
@@ -173,7 +174,7 @@ def _load_source(
     n: SourceName,
     db: AbstractDatabase,
     delete_time: float,
-    processed_ids: List[str],
+    processed_ids: list[str],
     use_existing: bool,
 ) -> None:
     """Load individual source data.
@@ -199,7 +200,7 @@ def _load_source(
             f"Encountered ModuleNotFoundError attempting to import {e.name}. {_etl_dependency_help}"
         )
         click.get_current_context().exit()
-    SourceClass = eval(n.value)  # noqa: N806
+    SourceClass = eval(n.value)  # noqa: N806, S307
 
     source = SourceClass(database=db, silent=False)
     try:
@@ -234,7 +235,7 @@ def _delete_normalized_data(database: AbstractDatabase) -> None:
     click.echo(f"Deleted normalized records in {delete_time:.5f} seconds.")
 
 
-def _load_merge(db: AbstractDatabase, processed_ids: Set[str]) -> None:
+def _load_merge(db: AbstractDatabase, processed_ids: set[str]) -> None:
     """Load merged concepts
 
     :param db: database instance
@@ -313,19 +314,21 @@ def update_normalizer_db(
             ctx = click.get_current_context()
             click.echo(
                 "Must either enter 1 or more sources, or use `--update_all` parameter"
-            )  # noqa: E501
+            )
             click.echo(ctx.get_help())
             ctx.exit()
     else:
         sources_split = sources.lower().split()
 
         if len(sources_split) == 0:
-            raise Exception("Must enter 1 or more source names to update")
+            err_msg = "Must enter 1 or more source names to update"
+            raise Exception(err_msg)
 
         non_sources = set(sources_split) - set(SOURCES)
 
         if len(non_sources) != 0:
-            raise Exception(f"Not valid source(s): {non_sources}")
+            err_msg = f"Not valid source(s): {non_sources}"
+            raise Exception(err_msg)
 
         parsed_source_names = {SourceName(SOURCES[s]) for s in sources_split}
         _update_normalizer(parsed_source_names, db, update_merged, use_existing)

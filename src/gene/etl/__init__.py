@@ -1,4 +1,5 @@
 """Module to load and init namespace at package level."""
+
 from .ensembl import Ensembl
 from .exceptions import (
     GeneFileVersionError,

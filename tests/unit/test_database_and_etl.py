@@ -1,10 +1,11 @@
 """Test DynamoDB and ETL methods."""
+
 from os import environ
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from boto3.dynamodb.conditions import Key
-from mock import patch
 
 from gene.database import AWS_ENV_VAR_NAME
 from gene.etl import HGNC, NCBI, Ensembl
@@ -52,7 +53,7 @@ def db_fixture(database):
 @pytest.fixture(scope="module")
 def processed_ids():
     """Create a test fixture to store processed ids for merged concepts."""
-    return list()
+    return []
 
 
 def _get_aliases(seqid):
@@ -95,7 +96,7 @@ def test_ensembl_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path)
     """Test that ensembl etl methods work correctly."""
     test_get_seqrepo.return_value = None
     e = Ensembl(db_fixture.db, data_path=etl_data_path)
-    e._get_seq_id_aliases = _get_aliases  # type: ignore
+    e._get_seq_id_aliases = _get_aliases
     ensembl_ids = e.perform_etl(use_existing=True)
     processed_ids += ensembl_ids
 
@@ -116,7 +117,7 @@ def test_ncbi_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     """Test that ncbi etl methods work correctly."""
     test_get_seqrepo.return_value = None
     n = NCBI(db_fixture.db, data_path=etl_data_path)
-    n._get_seq_id_aliases = _get_aliases  # type: ignore
+    n._get_seq_id_aliases = _get_aliases
     ncbi_ids = n.perform_etl(use_existing=True)
     processed_ids += ncbi_ids
 

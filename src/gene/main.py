@@ -1,6 +1,6 @@
 """Main application for FastAPI"""
+
 import html
-from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Query
 
@@ -27,7 +27,7 @@ app = FastAPI(
     contact={
         "name": "Alex H. Wagner",
         "email": "Alex.Wagner@nationwidechildrens.org",
-        "url": "https://www.nationwidechildrens.org/specialties/institute-for-genomic-medicine/research-labs/wagner-lab",  # noqa: E501
+        "url": "https://www.nationwidechildrens.org/specialties/institute-for-genomic-medicine/research-labs/wagner-lab",
     },
     license={
         "name": "MIT",
@@ -65,9 +65,9 @@ search_description = (
     tags=["Query"],
 )
 def search(
-    q: str = Query(..., description=q_descr),  # noqa: D103
-    incl: Optional[str] = Query(None, description=incl_descr),
-    excl: Optional[str] = Query(None, description=excl_descr),
+    q: str = Query(..., description=q_descr),
+    incl: str | None = Query(None, description=incl_descr),
+    excl: str | None = Query(None, description=excl_descr),
 ) -> SearchService:
     """Return strongest match concepts to query string provided by user.
 
@@ -83,7 +83,7 @@ def search(
     try:
         resp = query_handler.search(html.unescape(q), incl=incl, excl=excl)
     except InvalidParameterException as e:
-        raise HTTPException(status_code=422, detail=str(e))
+        raise HTTPException(status_code=422, detail=str(e)) from e
     return resp
 
 
@@ -108,8 +108,7 @@ def normalize(q: str = Query(..., description=normalize_q_descr)) -> NormalizeSe
     :param str q: gene search term
     :return: JSON response with normalized gene concept
     """
-    resp = query_handler.normalize(html.unescape(q))
-    return resp
+    return query_handler.normalize(html.unescape(q))
 
 
 unmerged_matches_summary = (
@@ -142,5 +141,4 @@ def normalize_unmerged(
     :param q: Gene search term
     :returns: JSON response with matching normalized record and source metadata
     """
-    response = query_handler.normalize_unmerged(html.unescape(q))
-    return response
+    return query_handler.normalize_unmerged(html.unescape(q))
