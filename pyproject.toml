@@ -81,10 +81,6 @@ testpaths = ["tests"]
 [tool.coverage.run]
 branch = true
 
-[tool.black]
-line-length = 88
-extend-exclude = "^/docs/source/conf.py"
-
 [tool.ruff]
 src = ["src"]
 exclude = ["docs/source/conf.py"]
@@ -174,7 +170,6 @@ ignore = [
 # F401 - unused-import
 # N805 - invalid-first-argument-name-for-method
 # S101 - assert
-# B011 - assert-false
 # D100 - undocumented-public-module
 # D103 - undocumented-public-function
 # I001 - unsorted-imports
