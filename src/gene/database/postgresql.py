@@ -401,7 +401,7 @@ class PostgresDatabase(AbstractDatabase):
     ) -> dict | None:
         """Fetch record corresponding to provided concept ID
         :param str concept_id: concept ID for gene record
-        :param bool case_sensitive: Not used
+        :param bool case_sensitive: Not used by PostgreSQL instance.
         :param bool merge: if true, look for merged record; look for identity record
         otherwise.
         :return: complete gene record, if match is found; None otherwise
