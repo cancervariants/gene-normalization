@@ -186,3 +186,6 @@ ignore = [
 "*__init__.py" = ["F401"]
 "gene/schemas.py" = ["ANN001", "ANN201", "N805"]
 "docs/source/conf.py" = ["D100", "I001", "D103", "ANN201", "ANN001"]
+
+[tool.ruff.format]
+docstring-code-format = true
