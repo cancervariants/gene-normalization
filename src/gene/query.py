@@ -639,6 +639,7 @@ class QueryHandler:
         :param response: in-progress response object
         :param query: user-provided query
         :param response_builder: response constructor callback method
+        :raises ValueError: If a matching record is null
         :return: completed service response object
         """
         if query == "":
@@ -670,7 +671,8 @@ class QueryHandler:
             # attempt merge ref resolution until successful
             for match in matching_records:
                 if match is None:
-                    raise ValueError
+                    err_msg = "Matching record must be nonnull"
+                    raise ValueError(err_msg)
                 record = self.db.get_record_by_id(match["concept_id"], False)
                 if record:
                     match_type_value = MatchType[match_type.value.upper()]
