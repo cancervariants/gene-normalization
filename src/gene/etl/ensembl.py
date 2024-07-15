@@ -10,7 +10,13 @@ from gene.etl.base import Base
 from gene.etl.exceptions import (
     GeneNormalizerEtlError,
 )
-from gene.schemas import NamespacePrefix, SourceMeta, SourceName, Strand
+from gene.schemas import (
+    DataLicenseAttributes,
+    NamespacePrefix,
+    SourceMeta,
+    SourceName,
+    Strand,
+)
 
 _logger = logging.getLogger(__name__)
 
@@ -177,11 +183,9 @@ class Ensembl(Base):
                 "genome_annotations": f"ftp://ftp.ensembl.org/pub/release-{self._version}/gff3/homo_sapiens/Homo_sapiens.{self._assembly}.{self._version}.gff3.gz"
             },
             rdp_url=None,
-            data_license_attributes={
-                "non_commercial": False,
-                "share_alike": False,
-                "attribution": False,
-            },
+            data_license_attributes=DataLicenseAttributes(
+                non_commercial=False, share_alike=False, attribution=False
+            ),
             genome_assemblies=[self._assembly],
         )
 

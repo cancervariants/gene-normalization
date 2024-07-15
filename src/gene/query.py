@@ -9,7 +9,7 @@ from typing import Any, TypeVar
 from ga4gh.core import domain_models, entity_models, ga4gh_identify
 from ga4gh.vrs import models
 
-from gene import ITEM_TYPES, NAMESPACE_LOOKUP, PREFIX_LOOKUP
+from gene import ITEM_TYPES, NAMESPACE_LOOKUP, PREFIX_LOOKUP, __version__
 from gene.database import AbstractDatabase, DatabaseReadException
 from gene.schemas import (
     BaseGene,
@@ -18,7 +18,6 @@ from gene.schemas import (
     GeneTypeFieldName,
     MatchesNormalized,
     MatchType,
-    NamespacePrefix,
     NormalizeService,
     RecordType,
     RefType,
@@ -29,7 +28,6 @@ from gene.schemas import (
     SourcePriority,
     UnmergedNormalizationService,
 )
-from gene.version import __version__
 
 _logger = logging.getLogger(__name__)
 
@@ -97,37 +95,18 @@ class QueryHandler:
             end=int(loc["end"]),
         )
 
-    # @staticmethod
-    # def _transform_chromosome_location(loc: Dict) -> ChromosomeLocation:
-    #     """Transform a chromosome location to VRS chromosome location
-
-    #     :param loc: Chromosome location
-    #     :return: VRS chromosome location
-    #     """
-    #     return ChromosomeLocation(
-    #         species_id=loc["species_id"],
-    #         chr=loc["chr"],
-    #         start=loc["start"],
-    #         end=loc["end"]
-    #     )
-
     def _transform_location(self, loc: dict) -> dict:
-        """Transform a sequence/chromosome location to VRS sequence/chromosome location
+        """Transform a sequence location to VRS sequence location
 
-        :param loc: Sequence or Chromosome location
-        :return: VRS sequence or chromosome location represented as a dictionary
+        :param loc: Sequence location
+        :return: VRS sequence location represented as a dictionary
         """
-        # if loc["type"] == "SequenceLocation":
-        #     transformed_loc = self._transform_sequence_location(loc)
-        # else:
-        #     transformed_loc = self._transform_chromosome_location(loc)
-        # Only support sequence locations atm
         transformed_loc = self._transform_sequence_location(loc)
         transformed_loc.id = ga4gh_identify(transformed_loc)
         return transformed_loc.model_dump(exclude_none=True)
 
     def _transform_locations(self, record: dict) -> dict:
-        """Transform gene locations to VRS Chromosome/Sequence Locations
+        """Transform gene locations to VRS Sequence Locations
 
         :param record: original record
         :return: record with transformed locations attributes, if applicable
@@ -141,25 +120,6 @@ class QueryHandler:
             )
         record["locations"] = record_locations
         return record
-
-    def _get_src_name(self, concept_id: str) -> SourceName:
-        """Get source name enum from ID.
-
-        :param concept_id: candidate concept ID string to check
-        :return: SourceName option
-        :raise: ValueError if unrecognized ID provided
-        """
-        if concept_id.startswith(NamespacePrefix.ENSEMBL.value):
-            return SourceName.ENSEMBL
-
-        if concept_id.startswith(NamespacePrefix.NCBI.value):
-            return SourceName.NCBI
-
-        if concept_id.startswith(NamespacePrefix.HGNC.value):
-            return SourceName.HGNC
-
-        err_msg = "Invalid or unrecognized concept ID provided"
-        raise ValueError(err_msg)
 
     def _add_record(
         self, response: dict[str, dict], item: dict, match_type: MatchType
@@ -540,24 +500,6 @@ class QueryHandler:
         src = record["src_name"].upper()
         source_rank = SourcePriority[src]
         return source_rank, record["concept_id"]
-
-    @staticmethod
-    def _handle_failed_merge_ref(record: dict, response: dict, query: str) -> dict:
-        """Log + fill out response for a failed merge reference lookup.
-
-        :param record: record containing failed merge_ref
-        :param response: in-progress response object
-        :param query: original query value
-        :return: response with no match
-        """
-        _logger.error(
-            "Merge ref lookup failed for ref %s in record %s from query %s",
-            record["merge_ref"],
-            record["concept_id"],
-            query,
-        )
-        response["match_type"] = MatchType.NO_MATCH
-        return response
 
     def _prepare_normalized_response(self, query: str) -> dict[str, Any]:
         """Provide base response object for normalize endpoints.

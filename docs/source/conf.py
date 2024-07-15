@@ -68,8 +68,7 @@ autodoc_preserve_defaults = True
 # -- get version -------------------------------------------------------------
 from gene import __version__  # noqa: E402
 
-version = __version__
-release = version
+version = release = __version__
 
 
 # -- linkcode ----------------------------------------------------------------

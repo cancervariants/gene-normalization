@@ -99,14 +99,6 @@ def normalized_ache():
             {
                 "name": "ncbi_locations",
                 "value": [
-                    # {
-                    #     "id": "ga4gh:CL.JSw-08GkF-7M-OQR-33MLLKQHSi7QJb5",
-                    #     "type": "ChromosomeLocation",
-                    #     "species_id": "taxonomy:9606",
-                    #     "chr": "7",
-                    #     "end": "q22.1",
-                    #     "start": "q22.1"
-                    # },
                     {
                         "type": "SequenceLocation",
                         "sequenceReference": {
@@ -118,19 +110,6 @@ def normalized_ache():
                     }
                 ],
             },
-            # {
-            #     "name": "hgnc_locations",
-            #     "value": [
-            #         {
-            #             "id": "ga4gh:CL.JSw-08GkF-7M-OQR-33MLLKQHSi7QJb5",
-            #             "type": "ChromosomeLocation",
-            #             "species_id": "taxonomy:9606",
-            #             "chr": "7",
-            #             "start": "q22.1",
-            #             "end": "q22.1"
-            #         }
-            #     ],
-            # },
             {
                 "name": "ensembl_locations",
                 "value": [
@@ -240,19 +219,6 @@ def normalized_braf():
                 "name": "approved_name",
                 "value": "B-Raf proto-oncogene, serine/threonine kinase",
             },
-            # {
-            #     "name": "hgnc_locations",
-            #     "value": [
-            #         {
-            #             "id": "ga4gh:CL.ZZZYpOwuW1BLLJXc_Dm4eVZ5E0smVYCc",
-            #             "type": "ChromosomeLocation",
-            #             "species_id": "taxonomy:9606",
-            #             "chr": "7",
-            #             "end": "q34",
-            #             "start": "q34",
-            #         }
-            #     ],
-            # },
             {
                 "name": "ensembl_locations",
                 "value": [
@@ -270,14 +236,6 @@ def normalized_braf():
             {
                 "name": "ncbi_locations",
                 "value": [
-                    # {
-                    #     "id": "ga4gh:CL.ZZZYpOwuW1BLLJXc_Dm4eVZ5E0smVYCc",
-                    #     "type": "ChromosomeLocation",
-                    #     "species_id": "taxonomy:9606",
-                    #     "chr": "7",
-                    #     "start": "q34",
-                    #     "end": "q34"
-                    # },
                     {
                         "type": "SequenceLocation",
                         "sequenceReference": {
@@ -393,30 +351,9 @@ def normalized_abl1():
                 "name": "approved_name",
                 "value": "ABL proto-oncogene 1, non-receptor tyrosine kinase",
             },
-            # {
-            #     "name": "hgnc_locations",
-            #     "value": [
-            #         {
-            #             "id": "ga4gh:CL.1vsxettosueUHyFIOoTPzwIFD1DodLuT",
-            #             "type": "ChromosomeLocation",
-            #             "species_id": "taxonomy:9606",
-            #             "chr": "9",
-            #             "end": "q34.12",
-            #             "start": "q34.12"
-            #         }
-            #     ],
-            # },
             {
                 "name": "ncbi_locations",
                 "value": [
-                    # {
-                    #     "id": "ga4gh:CL.1vsxettosueUHyFIOoTPzwIFD1DodLuT",
-                    #     "type": "ChromosomeLocation",
-                    #     "species_id": "taxonomy:9606",
-                    #     "chr": "9",
-                    #     "start": "q34.12",
-                    #     "end": "q34.12"
-                    # },
                     {
                         "type": "SequenceLocation",
                         "sequenceReference": {
@@ -518,19 +455,6 @@ def normalized_p150():
                 "name": "approved_name",
                 "value": "chromatin assembly factor 1 subunit A",
             },
-            # {
-            #     "name": "hgnc_locations",
-            #     "value": [
-            #         {
-            #             "id": "ga4gh:CL.kPEG2TGUPOAsAYK6HY0ukprQ-DR_IuMZ",
-            #             "type": "ChromosomeLocation",
-            #             "species_id": "taxonomy:9606",
-            #             "chr": "19",
-            #             "end": "p13.3",
-            #             "start": "p13.3"
-            #         }
-            #     ],
-            # },
             {
                 "name": "ensembl_locations",
                 "value": [
@@ -548,14 +472,6 @@ def normalized_p150():
             {
                 "name": "ncbi_locations",
                 "value": [
-                    # {
-                    #     "id": "ga4gh:CL.kPEG2TGUPOAsAYK6HY0ukprQ-DR_IuMZ",
-                    #     "type": "ChromosomeLocation",
-                    #     "species_id": "taxonomy:9606",
-                    #     "chr": "19",
-                    #     "start": "p13.3",
-                    #     "end": "p13.3"
-                    # },
                     {
                         "type": "SequenceLocation",
                         "sequenceReference": {
@@ -601,14 +517,6 @@ def normalized_loc_653303():
             {
                 "name": "ncbi_locations",
                 "value": [
-                    # {
-                    #     "id": "ga4gh:CL.82tL1yxucvwp5U2Yo4jNYX06pru8zZYl",
-                    #     "type": "ChromosomeLocation",
-                    #     "species_id": "taxonomy:9606",
-                    #     "chr": "11",
-                    #     "start": "q23.3",
-                    #     "end": "q23.3"
-                    # },
                     {
                         "type": "SequenceLocation",
                         "sequenceReference": {
@@ -650,14 +558,6 @@ def normalize_unmerged_loc_653303():
                         "strand": "+",
                         "location_annotations": [],
                         "locations": [
-                            # {
-                            #     "type": "ChromosomeLocation",
-                            #     "id": "ga4gh:CL.82tL1yxucvwp5U2Yo4jNYX06pru8zZYl",
-                            #     "species_id": "taxonomy:9606",
-                            #     "chr": "11",
-                            #     "start": "q23.3",
-                            #     "end": "q23.3"
-                            # },
                             {
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
@@ -695,16 +595,7 @@ def normalize_unmerged_chaf1a():
                         "label": "chromatin assembly factor 1 subunit A",
                         "strand": None,
                         "location_annotations": [],
-                        "locations": [
-                            # {
-                            #     "type": "ChromosomeLocation",
-                            #     "id": "ga4gh:CL.kPEG2TGUPOAsAYK6HY0ukprQ-DR_IuMZ",
-                            #     "species_id": "taxonomy:9606",
-                            #     "chr": "19",
-                            #     "start": "p13.3",
-                            #     "end": "p13.3"
-                            # }
-                        ],
+                        "locations": [],
                         "aliases": [
                             "CAF1P150",
                             "P150",
@@ -767,14 +658,6 @@ def normalize_unmerged_chaf1a():
                         "strand": "+",
                         "location_annotations": [],
                         "locations": [
-                            # {
-                            #     "type": "ChromosomeLocation",
-                            #     "id": "ga4gh:CL.kPEG2TGUPOAsAYK6HY0ukprQ-DR_IuMZ",
-                            #     "species_id": "taxonomy:9606",
-                            #     "chr": "19",
-                            #     "start": "p13.3",
-                            #     "end": "p13.3"
-                            # },
                             {
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
@@ -813,14 +696,6 @@ def normalize_unmerged_ache():
                         "strand": "-",
                         "location_annotations": [],
                         "locations": [
-                            # {
-                            #     "type": "ChromosomeLocation",
-                            #     "id": "ga4gh:CL.JSw-08GkF-7M-OQR-33MLLKQHSi7QJb5",
-                            #     "species_id": "taxonomy:9606",
-                            #     "chr": "7",
-                            #     "start": "q22.1",
-                            #     "end": "q22.1"
-                            # },
                             {
                                 "type": "SequenceLocation",
                                 "sequenceReference": {
@@ -876,16 +751,7 @@ def normalize_unmerged_ache():
                         "label": "acetylcholinesterase (Cartwright blood group)",
                         "strand": None,
                         "location_annotations": [],
-                        "locations": [
-                            # {
-                            #     "type": "ChromosomeLocation",
-                            #     "id": "ga4gh:CL.JSw-08GkF-7M-OQR-33MLLKQHSi7QJb5",
-                            #     "species_id": "taxonomy:9606",
-                            #     "chr": "7",
-                            #     "start": "q22.1",
-                            #     "end": "q22.1"
-                            # }
-                        ],
+                        "locations": [],
                         "aliases": ["3.1.1.7"],
                         "previous_symbols": ["YT"],
                         "xrefs": ["ncbigene:43", "ensembl:ENSG00000087085"],

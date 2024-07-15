@@ -1,9 +1,8 @@
 """The VICC library for normalizing genes."""
 
+from importlib.metadata import PackageNotFoundError, version
 from os import environ
 from pathlib import Path
-
-from .version import __version__
 
 APP_ROOT = Path(__file__).resolve().parent
 
@@ -12,8 +11,12 @@ SEQREPO_ROOT_DIR = Path(
 )
 
 
-class DownloadException(Exception):  # noqa: N818
-    """Exception for failures relating to source file downloads."""
+try:
+    __version__ = version("gene-normalizer")
+except PackageNotFoundError:
+    __version__ = "unknown"
+finally:
+    del version, PackageNotFoundError
 
 
 from gene.schemas import (  # noqa: E402
@@ -29,9 +32,6 @@ ITEM_TYPES = {k.lower(): v.value for k, v in RefType.__members__.items()}
 SOURCES = {
     source.value.lower(): source.value for source in SourceName.__members__.values()
 }
-
-# Set of sources we import directly
-XREF_SOURCES = {src.lower() for src in SourceName.__members__}
 
 # use to fetch source name from schema based on concept id namespace
 # e.g. {"hgnc": "HGNC"}

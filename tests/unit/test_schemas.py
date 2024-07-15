@@ -6,16 +6,6 @@ from ga4gh.vrs import models
 
 from gene.schemas import Gene
 
-# @pytest.fixture(scope='module')
-# def chromosome_location():
-#     """Create a valid chromosome location test fixture."""
-#     return ChromosomeLocation(
-#         species_id='taxonomy:9606',
-#         chr='7',
-#         start='q34',
-#         end='q34'
-#     )
-
 
 @pytest.fixture(scope="module")
 def sequence_location():

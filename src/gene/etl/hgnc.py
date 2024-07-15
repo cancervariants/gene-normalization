@@ -12,6 +12,7 @@ from gene.etl.exceptions import (
 from gene.schemas import (
     Annotation,
     Chromosome,
+    DataLicenseAttributes,
     NamespacePrefix,
     SourceMeta,
     SourceName,
@@ -53,7 +54,7 @@ class HGNC(Base):
             if "prev_symbol" in r:
                 self._get_previous_symbols(r, gene)
             if "location" in r:
-                self._get_location(r, gene)
+                self._add_location_annotations(r, gene)
             if "locus_type" in r:
                 gene["gene_type"] = r["locus_type"]
                 self._load_gene(gene)
@@ -163,12 +164,11 @@ class HGNC(Base):
                 r[src] = r[src].split(":")[-1].strip()
             src_type.append(f"{NamespacePrefix[key.upper()].value}" f":{r[src]}")
 
-    def _get_location(self, r: dict, gene: dict) -> None:
-        """Store GA4GH VRS ChromosomeLocation in a gene record.
-        https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#chromosomelocation
+    def _add_location_annotations(self, r: dict, gene: dict) -> None:
+        """Add location annotations to ``gene``
 
         :param r: A gene record in the HGNC data file
-        :param gene: A transformed gene record
+        :param gene: A transformed gene record. This may get mutated in place.
         """
         # Get list of a gene's map locations
         if "and" in r["location"]:
@@ -176,7 +176,6 @@ class HGNC(Base):
         else:
             locations = [r["location"]]
 
-        location_list = []
         gene["location_annotations"] = []
         for loc in locations:
             loc = loc.strip()
@@ -188,12 +187,7 @@ class HGNC(Base):
                 else:
                     location = {}
                     self._set_location(loc, location, gene)
-                    # chr_location = self._get_chromosome_location(location, gene)
-                    # if chr_location:
-                    #     location_list.append(chr_location)
 
-        if location_list:
-            gene["locations"] = location_list
         if not gene["location_annotations"]:
             del gene["location_annotations"]
 
@@ -258,11 +252,9 @@ class HGNC(Base):
                 "complete_set_archive": "ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
             },
             rdp_url=None,
-            data_license_attributes={
-                "non_commercial": False,
-                "share_alike": False,
-                "attribution": False,
-            },
+            data_license_attributes=DataLicenseAttributes(
+                non_commercial=False, share_alike=False, attribution=False
+            ),
             genome_assemblies=[],
         )
         self._database.add_source_metadata(SourceName.HGNC, metadata)

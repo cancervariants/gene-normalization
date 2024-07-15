@@ -5,7 +5,13 @@ import datetime
 import pytest
 
 from gene.query import QueryHandler
-from gene.schemas import Gene, MatchType, SourceName, SymbolStatus
+from gene.schemas import (
+    DataLicenseAttributes,
+    Gene,
+    MatchType,
+    SourceName,
+    SymbolStatus,
+)
 
 
 def check_ncbi_discontinued_gene(normalizer_response, concept_id, symbol, match_type):
@@ -57,14 +63,6 @@ def dpf1():
         "location_annotations": [],
         "strand": "-",
         "locations": [
-            # {
-            #     "id": "ga4gh:CL.bzgLv8gt3KHK00OWTAEUNZcdgUjbHU8i",
-            #     "chr": "19",
-            #     "end": "q13.2",
-            #     "start": "q13.2",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # },
             {
                 "end": 38229695,
                 "start": 38211005,
@@ -96,14 +94,6 @@ def pdp1_symbol():
         "location_annotations": [],
         "strand": "+",
         "locations": [
-            # {
-            #     "id": "ga4gh:CL.cJsZWKrEtzpFn5psdCtgofb6NaEDVPfB",
-            #     "chr": "8",
-            #     "end": "q22.1",
-            #     "start": "q22.1",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # },
             {
                 "end": 93926068,
                 "start": 93916922,
@@ -135,14 +125,6 @@ def pdp1_alias():
         "location_annotations": [],
         "strand": "+",
         "locations": [
-            # {
-            #     "id": "ga4gh:CL.7ivmMgKAqiFiRh1qsbA909w2kUcPabr_",
-            #     "chr": "9",
-            #     "end": "p24.1",
-            #     "start": "p24.1",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # },
             {
                 "end": 4665258,
                 "start": 4662293,
@@ -175,22 +157,6 @@ def spry3():
         "location_annotations": [],
         "strand": "+",
         "locations": [
-            # {
-            #     "id": "ga4gh:CL.r8Qv_b-B3SoguReqdunL3GCkt1RH-es1",
-            #     "chr": "Y",
-            #     "end": "q12",
-            #     "start": "q12",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # },
-            # {
-            #     "id": "ga4gh:CL.p5Va-YpCTrSTYWyJrpR-rvnxO1YWPIDY",
-            #     "chr": "X",
-            #     "end": "q28",
-            #     "start": "q28",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # },
             {
                 "end": 155782459,
                 "start": 155612585,
@@ -276,14 +242,6 @@ def znf84():
         "location_annotations": ["map from Rosati ref via FISH [AFS]"],
         "strand": "+",
         "locations": [
-            # {
-            #     "id": "ga4gh:CL.6YvQEs6MuHuNvt0Vlv8r4hMKIOK5Ktq4",
-            #     "chr": "12",
-            #     "end": "q24.33",
-            #     "start": "q24.33",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # },
             {
                 "end": 133063299,
                 "start": 133037508,
@@ -316,22 +274,6 @@ def slc25a6():
         "location_annotations": [],
         "strand": "-",
         "locations": [
-            # {
-            #     "id": "ga4gh:CL.Z5pOXNI2Bt8L2NpypNYsbbtgC9L1uyl4",
-            #     "type": "ChromosomeLocation",
-            #     "species_id": "taxonomy:9606",
-            #     "chr": "X",
-            #     "start": "p22.33",
-            #     "end": "p22.33"
-            # },
-            # {
-            #     "id": "ga4gh:CL.bp7nyvEa1yIoZTw93GnpRSXubcLT0qFM",
-            #     "type": "ChromosomeLocation",
-            #     "species_id": "taxonomy:9606",
-            #     "chr": "Y",
-            #     "start": "p11.2",
-            #     "end": "p11.2"
-            # },
             {
                 "type": "SequenceLocation",
                 "sequenceReference": {
@@ -372,16 +314,7 @@ def loc106783576():
         "symbol_status": None,
         "location_annotations": [],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.YYGQrLtmKwKgp38asAkHT8AydAidnui8",
-            #     "chr": "10",
-            #     "end": "cen",
-            #     "start": "pter",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "gene_type": "biological-region",
     }
     return Gene(**params)
@@ -403,16 +336,7 @@ def glc1b():
         "symbol_status": None,
         "location_annotations": [],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.8D0hLCktRxyPrx4Etgabq10vEq6TtU43",
-            #     "chr": "2",
-            #     "end": "q13",
-            #     "start": "cen",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "gene_type": "unknown",
     }
     return Gene(**params)
@@ -434,16 +358,7 @@ def hdpa():
         "symbol_status": None,
         "location_annotations": [],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.kl9HXvnUCE6Z1ktXibt83NBdXvxnT2RA",
-            #     "chr": "X",
-            #     "end": "p22.32",
-            #     "start": "pter",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "gene_type": "unknown",
     }
     return Gene(**params)
@@ -467,14 +382,6 @@ def prkrap1():
         "location_annotations": ["alternate reference locus"],
         "strand": "+",
         "locations": [
-            # {
-            #     "id": "ga4gh:CL.FYt7UkCHZVLpkYe7zhNdMk1K6lxl_k7I",
-            #     "chr": "6",
-            #     "end": "p21.3",
-            #     "start": "p21.3",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # },
             {
                 "end": 3941874,
                 "start": 3940269,
@@ -515,16 +422,7 @@ def mhb():
         "symbol_status": None,
         "location_annotations": [],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.6vlmdqdXYxSAGsJI9no7kLN5iLKpvr5X",
-            #     "chr": "3",
-            #     "end": "p21.32",
-            #     "start": "p22.2",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "gene_type": "unknown",
     }
     return Gene(**params)
@@ -546,16 +444,7 @@ def spg37():
         "symbol_status": None,
         "location_annotations": [],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.XWbwTwmJ95KD-aCuXfJcD8cNIvXbiXRh",
-            #     "chr": "8",
-            #     "end": "q13.3",
-            #     "start": "p21.2",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "gene_type": "unknown",
     }
     return Gene(**params)
@@ -852,9 +741,9 @@ def test_no_match(ncbi, source_urls):
     )
     assert response.source_meta_.data_url == source_urls
     assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
-    assert not response.source_meta_.data_license_attributes["non_commercial"]
-    assert not response.source_meta_.data_license_attributes["share_alike"]
-    assert not response.source_meta_.data_license_attributes["attribution"]
+    assert not response.source_meta_.data_license_attributes.non_commercial
+    assert not response.source_meta_.data_license_attributes.share_alike
+    assert not response.source_meta_.data_license_attributes.attribution
 
     # check blank
     response = ncbi.search("")
@@ -901,8 +790,6 @@ def test_meta(ncbi, source_urls):
     assert response.source_meta_.data_url == source_urls
     assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
     assert response.source_meta_.genome_assemblies == ["GRCh38.p14"]
-    assert response.source_meta_.data_license_attributes == {
-        "non_commercial": False,
-        "share_alike": False,
-        "attribution": False,
-    }
+    assert response.source_meta_.data_license_attributes == DataLicenseAttributes(
+        non_commercial=False, share_alike=False, attribution=False
+    )
