@@ -5,7 +5,13 @@ import datetime
 import pytest
 
 from gene.query import QueryHandler
-from gene.schemas import Gene, MatchType, SourceName, SymbolStatus
+from gene.schemas import (
+    DataLicenseAttributes,
+    Gene,
+    MatchType,
+    SourceName,
+    SymbolStatus,
+)
 
 
 def check_ncbi_discontinued_gene(normalizer_response, concept_id, symbol, match_type):
@@ -735,9 +741,9 @@ def test_no_match(ncbi, source_urls):
     )
     assert response.source_meta_.data_url == source_urls
     assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
-    assert not response.source_meta_.data_license_attributes["non_commercial"]
-    assert not response.source_meta_.data_license_attributes["share_alike"]
-    assert not response.source_meta_.data_license_attributes["attribution"]
+    assert not response.source_meta_.data_license_attributes.non_commercial
+    assert not response.source_meta_.data_license_attributes.share_alike
+    assert not response.source_meta_.data_license_attributes.attribution
 
     # check blank
     response = ncbi.search("")
@@ -784,8 +790,6 @@ def test_meta(ncbi, source_urls):
     assert response.source_meta_.data_url == source_urls
     assert response.source_meta_.rdp_url == "https://reusabledata.org/ncbi-gene.html"
     assert response.source_meta_.genome_assemblies == ["GRCh38.p14"]
-    assert response.source_meta_.data_license_attributes == {
-        "non_commercial": False,
-        "share_alike": False,
-        "attribution": False,
-    }
+    assert response.source_meta_.data_license_attributes == DataLicenseAttributes(
+        non_commercial=False, share_alike=False, attribution=False
+    )

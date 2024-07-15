@@ -18,6 +18,7 @@ from gene.etl.exceptions import (
 from gene.schemas import (
     Annotation,
     Chromosome,
+    DataLicenseAttributes,
     NamespacePrefix,
     SourceMeta,
     SourceName,
@@ -483,11 +484,9 @@ class NCBI(Base):
                 "assembly_file": self._assembly_url,
             },
             rdp_url="https://reusabledata.org/ncbi-gene.html",
-            data_license_attributes={
-                "non_commercial": False,
-                "share_alike": False,
-                "attribution": False,
-            },
+            data_license_attributes=DataLicenseAttributes(
+                non_commercial=False, share_alike=False, attribution=False
+            ),
             genome_assemblies=[self._assembly],
         )
 

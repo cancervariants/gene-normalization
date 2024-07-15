@@ -12,6 +12,7 @@ from gene.etl.exceptions import (
 from gene.schemas import (
     Annotation,
     Chromosome,
+    DataLicenseAttributes,
     NamespacePrefix,
     SourceMeta,
     SourceName,
@@ -251,11 +252,9 @@ class HGNC(Base):
                 "complete_set_archive": "ftp.ebi.ac.uk/pub/databases/genenames/hgnc/json/hgnc_complete_set.json"
             },
             rdp_url=None,
-            data_license_attributes={
-                "non_commercial": False,
-                "share_alike": False,
-                "attribution": False,
-            },
+            data_license_attributes=DataLicenseAttributes(
+                non_commercial=False, share_alike=False, attribution=False
+            ),
             genome_assemblies=[],
         )
         self._database.add_source_metadata(SourceName.HGNC, metadata)

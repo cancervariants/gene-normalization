@@ -3,7 +3,7 @@
 import pytest
 
 from gene.query import QueryHandler
-from gene.schemas import Gene, MatchType, SourceName
+from gene.schemas import DataLicenseAttributes, Gene, MatchType, SourceName
 
 
 @pytest.fixture(scope="module")
@@ -308,8 +308,6 @@ def test_meta_info(ensembl):
     }
     assert resp.source_meta_.rdp_url is None
     assert resp.source_meta_.genome_assemblies == ["GRCh38"]
-    assert resp.source_meta_.data_license_attributes == {
-        "non_commercial": False,
-        "share_alike": False,
-        "attribution": False,
-    }
+    assert resp.source_meta_.data_license_attributes == DataLicenseAttributes(
+        non_commercial=False, share_alike=False, attribution=False
+    )
