@@ -47,7 +47,7 @@ jobs:
 
       - name: Run tests
         run: python3 -m pytest
-  
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -79,7 +79,7 @@ jobs:
       - name: Install dependencies
         run: |
           python3 -m pip install --upgrade pip
-          python3 -m pip install '.[docs]'
+          python3 -m pip install '.[docs,pg,etl]'
 
       - name: Attempt docs build
         working-directory: ./docs

@@ -1,7 +1,9 @@
+.. _api_reference:
+
 API Reference
 =============
 
-Core functions
+Core Modules
 --------------
 
 .. autosummary::
@@ -12,24 +14,26 @@ Core functions
    gene.query
    gene.schemas
 
-Database connections
+Database Modules
 --------------------
 
 .. autosummary::
    :nosignatures:
-   :toctree: api/
+   :toctree: api/database
    :template: module_summary.rst
 
    gene.database.database
    gene.database.dynamodb
    gene.database.postgresql
 
-Source ETL
+.. _etl-api:
+
+ETL Modules
 ----------
 
 .. autosummary::
    :nosignatures:
-   :toctree: api/
+   :toctree: api/etl
    :template: module_summary.rst
 
    gene.etl.base
