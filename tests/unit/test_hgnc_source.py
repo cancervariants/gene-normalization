@@ -36,16 +36,7 @@ def a1bg_as1():
         "symbol": "A1BG-AS1",
         "location_annotations": [],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.Rz-M5wA0_bIhQYLKi2ZPqlqW3nBPfAx5",
-            #     "chr": "19",
-            #     "end": "q13.43",
-            #     "start": "q13.43",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "previous_symbols": ["NCRNA00181", "A1BGAS", "A1BG-AS"],
         "aliases": ["FLJ23569"],
         "symbol_status": "approved",
@@ -73,16 +64,7 @@ def tp53():
         "symbol": "TP53",
         "location_annotations": [],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.BPk3okUhv4BBatjkyC7eQQsyXL6YwmeF",
-            #     "chr": "17",
-            #     "end": "p13.1",
-            #     "start": "p13.1",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "previous_symbols": [],
         "aliases": ["p53", "LFS1"],
         "symbol_status": "approved",
@@ -127,16 +109,7 @@ def a3galt2():
         "symbol": "A3GALT2",
         "location_annotations": [],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.iiwv6oaDfVVkjMZ_OH6XEQmM0daVft4u",
-            #     "chr": "1",
-            #     "end": "p35.1",
-            #     "start": "p35.1",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "previous_symbols": ["A3GALT2P"],
         "aliases": ["IGBS3S", "IGB3S"],
         "symbol_status": "approved",
@@ -167,16 +140,7 @@ def wdhd1():
         "symbol": "WDHD1",
         "location_annotations": [],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.sNe5mpPbxivH2KE6HdaDA3U29BkCQXc3",
-            #     "chr": "14",
-            #     "end": "q22.2",
-            #     "start": "q22.3",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "previous_symbols": [],
         "aliases": ["AND-1", "CTF4", "CHTF4"],
         "symbol_status": "approved",
@@ -250,16 +214,7 @@ def gage4():
         "symbol": "GAGE4",
         "location_annotations": ["not on reference assembly"],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.6KzwrFm2WeSXqwIIiNbAu-pKQQHt2q5Q",
-            #     "chr": "X",
-            #     "end": "p11.2",
-            #     "start": "p11.4",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "previous_symbols": [],
         "aliases": ["CT4.4"],
         "symbol_status": "approved",
@@ -336,16 +291,7 @@ def cecr():
         "symbol": "CECR",
         "location_annotations": [],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.AgASk5sB6LCeaB6rcqOwmrm16ise3pof",
-            #     "chr": "22",
-            #     "end": "q11",
-            #     "start": "pter",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "previous_symbols": [],
         "aliases": [],
         "symbol_status": "approved",
@@ -366,24 +312,7 @@ def csf2ra():
         "symbol": "CSF2RA",
         "location_annotations": [],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.cITg67iNn_QNZTKpJd0I-1JMMhW_yHGU",
-            #     "chr": "X",
-            #     "end": "p22.32",
-            #     "start": "p22.32",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # },
-            # {
-            #     "id": "ga4gh:CL.2uc0CuKSdD7pkb4jKUqg2eusTXro99wM",
-            #     "chr": "Y",
-            #     "end": "p11.3",
-            #     "start": "p11.3",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "previous_symbols": ["CSF2R"],
         "aliases": ["CD116", "alphaGMR"],
         "symbol_status": "approved",
@@ -422,16 +351,7 @@ def rps24p5():
         "symbol": "RPS24P5",
         "location_annotations": [],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.Ri0ddtMpe6DGzrC9_QGbL35gYAtU2bh_",
-            #     "chr": "1",
-            #     "end": "q41",
-            #     "start": "p36.13",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "previous_symbols": [],
         "aliases": [],
         "symbol_status": "approved",
@@ -452,16 +372,7 @@ def trl_cag2_1():
         "symbol": "TRL-CAG2-1",
         "location_annotations": [],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.aZ5aYHaC3GhDWgwhKkAcd9GBvkEo034v",
-            #     "chr": "16",
-            #     "end": "q13",
-            #     "start": "q21",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "previous_symbols": ["TRNAL13"],
         "aliases": ["tRNA-Leu-CAG-2-1"],
         "symbol_status": "approved",
@@ -482,16 +393,7 @@ def myo5b():
         "symbol": "MYO5B",
         "location_annotations": [],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.hFukVqPVLD70cshAz1Gtmd6EC1imobpO",
-            #     "chr": "18",
-            #     "end": "qter",
-            #     "start": "cen",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "previous_symbols": [],
         "aliases": ["KIAA1119"],
         "symbol_status": "approved",
@@ -526,16 +428,7 @@ def gstt1():
         "symbol": "GSTT1",
         "location_annotations": ["alternate reference locus"],
         "strand": None,
-        "locations": [
-            # {
-            #     "id": "ga4gh:CL.g74mxFvAzPoenOlyMjY32j-UFMvjjas_",
-            #     "chr": "22",
-            #     "end": "q11.23",
-            #     "start": "q11.23",
-            #     "species_id": "taxonomy:9606",
-            #     "type": "ChromosomeLocation"
-            # }
-        ],
+        "locations": [],
         "previous_symbols": [],
         "aliases": ["2.5.1.18"],
         "symbol_status": "approved",

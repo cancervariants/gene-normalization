@@ -146,7 +146,7 @@ class Base(ABC):
 
         :param loc: A gene location
         :param arm_ix: The index of the q or p arm for a given location
-        :param location: VRS chromosome location. This will be mutated.
+        :param location: Gene chromosome location. This will be mutated.
         """
         range_ix = re.search("-", loc).start()
 
@@ -175,33 +175,6 @@ class Base(ABC):
         ):
             location["start"] = end
             location["end"] = start
-
-    # Add back once VRS Chromosome Location is supported in 2.0-alpha
-    # def _get_chromosome_location(self, location: Dict, gene: Dict) -> Optional[Dict]:
-    #     """Transform a gene's location into a GeneChromosomeLocation.
-
-    #     :param location: A gene's location.
-    #     :param gene: A transformed gene record.
-    #     :return: If location is a valid VRS ChromosomeLocation, return a dictionary
-    #         containing the ChromosomeLocation. Else, return None.
-    #     """
-    #     if "chr" in location and "start" in location and "end" in location:
-    #         if location["start"] == "p" and location["end"] == "p":
-    #             location["start"] = "pter"
-    #             location["end"] = "cen"
-    #         elif location["start"] == "q" and location["end"] == "q":
-    #             location["start"] = "cen"
-    #             location["end"] = "qter"
-    #         try:
-    #             chr_location = GeneChromosomeLocation(
-    #                 chr=location["chr"],
-    #                 start=location["start"],
-    #                 end=location["end"]).model_dump()
-    #         except ValidationError as e:
-    #             logger.info(f"{e} for {gene['symbol']}")
-    #         else:
-    #             return chr_location
-    #     return None
 
     def _get_seq_id_aliases(self, seq_id: str) -> list[str]:
         """Get GA4GH aliases for a sequence id

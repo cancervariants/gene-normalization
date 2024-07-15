@@ -60,7 +60,6 @@ class MatchType(IntEnum):
     ALIAS = 60
     XREF = 60
     ASSOCIATED_WITH = 60
-    FUZZY_MATCH = 20
     NO_MATCH = 0
 
 
@@ -71,16 +70,6 @@ class GeneSequenceLocation(BaseModel):
     start: StrictInt
     end: StrictInt
     sequence_id: constr(pattern=r"^ga4gh:SQ.[0-9A-Za-z_\-]{32}$")
-
-
-# class GeneChromosomeLocation(BaseModel):
-#     """Chromosome Location model when storing in DynamDB."""
-
-#     type: Literal["ChromosomeLocation"] = "ChromosomeLocation"
-#     species_id: Literal["taxonomy:9606"] = "taxonomy:9606"
-#     chr: StrictStr
-#     start: StrictStr
-#     end: StrictStr
 
 
 class BaseGene(BaseModel):
@@ -126,14 +115,6 @@ class Gene(BaseGene):
             }
         }
     )
-
-
-class GeneGroup(Gene):
-    """A grouping of genes based on common attributes."""
-
-    description: StrictStr
-    type_identifier: StrictStr
-    genes: list[Gene] = []
 
 
 class SourceName(Enum):
@@ -404,17 +385,6 @@ class NormalizeService(BaseNormalizationService):
                             "name": "symbol_status",
                             "value": "approved",
                         },
-                        # {
-                        #     "name": "chromosome_location",
-                        #     "value": {
-                        #         "id": "ga4gh:CL.O6yCQ1cnThOrTfK9YUgMlTfM6HTqbrKw",
-                        #         "type": "ChromosomeLocation",
-                        #         "species_id": "taxonomy:9606",
-                        #         "chr": "7",
-                        #         "end": "q34",
-                        #         "start": "q34",
-                        #     },
-                        # }
                     ],
                 },
                 "source_meta_": {
@@ -516,16 +486,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "label": "acetylcholinesterase (Cartwright blood group)",
                                 "strand": None,
                                 "location_annotations": [],
-                                "locations": [
-                                    # {
-                                    #     "type": "ChromosomeLocation",
-                                    #     "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
-                                    #     "species_id": "taxonomy:9606",
-                                    #     "chr": "7",
-                                    #     "start": "q22.1",
-                                    #     "end": "q22.1"
-                                    # }
-                                ],
+                                "locations": [],
                                 "aliases": ["3.1.1.7"],
                                 "previous_symbols": ["YT"],
                                 "xrefs": ["ncbigene:43", "ensembl:ENSG00000087085"],
@@ -616,14 +577,6 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                 "strand": "-",
                                 "location_annotations": [],
                                 "locations": [
-                                    {
-                                        # "type": "ChromosomeLocation",
-                                        # "id": "ga4gh:CL.VtdU_0lYXL_o95lXRUfhv-NDJVVpmKoD",
-                                        # "species_id": "taxonomy:9606",
-                                        # "chr": "7",
-                                        # "start": "q22.1",
-                                        # "end": "q22.1"
-                                    },
                                     {
                                         "id": "ga4gh:SL.OWr9DoyBhr2zpf4uLLcZSvsTSIDElU6R",
                                         "digest": "OWr9DoyBhr2zpf4uLLcZSvsTSIDElU6R",

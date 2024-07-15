@@ -19,10 +19,6 @@ finally:
     del version, PackageNotFoundError
 
 
-class DownloadException(Exception):  # noqa: N818
-    """Exception for failures relating to source file downloads."""
-
-
 from gene.schemas import (  # noqa: E402
     NamespacePrefix,
     RefType,
@@ -36,9 +32,6 @@ ITEM_TYPES = {k.lower(): v.value for k, v in RefType.__members__.items()}
 SOURCES = {
     source.value.lower(): source.value for source in SourceName.__members__.values()
 }
-
-# Set of sources we import directly
-XREF_SOURCES = {src.lower() for src in SourceName.__members__}
 
 # use to fetch source name from schema based on concept id namespace
 # e.g. {"hgnc": "HGNC"}

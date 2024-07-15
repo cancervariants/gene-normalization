@@ -150,7 +150,7 @@ class NCBI(Base):
             next(info)
 
             for row in info:
-                params = {}
+                params = {"locations": []}
                 params["concept_id"] = f"{NamespacePrefix.NCBI.value}:{row[1]}"
                 # get symbol
                 params["symbol"] = row[2]
@@ -164,13 +164,10 @@ class NCBI(Base):
                     associated_with = row[5].split("|")
                     self._add_xrefs_associated_with(associated_with, params)
                 # get chromosome location
-                vrs_chr_location = self._get_vrs_chr_location(row, params)
-                if "exclude" in vrs_chr_location:
+                do_exclude = self._add_location_annotations(row, params)
+                if do_exclude:
                     # Exclude genes with multiple distinct locations (e.g. OMS)
                     continue
-                if not vrs_chr_location:
-                    vrs_chr_location = []
-                params["locations"] = vrs_chr_location
                 # get label
                 if row[8] != "-":
                     params["label"] = row[8]
@@ -281,22 +278,21 @@ class NCBI(Base):
             source["associated_with"] = [f"{NamespacePrefix.RFAM.value}:{src_id}"]
         return source
 
-    def _get_vrs_chr_location(self, row: list[str], params: dict) -> list:
-        """Store GA4GH VRS ChromosomeLocation in a gene record.
-        https://vr-spec.readthedocs.io/en/1.1/terms_and_model.html#chromosomelocation
+    def _add_location_annotations(self, row: list[str], params: dict) -> bool:
+        """Add location annotations to ``params``
 
         :param row: A row in NCBI data file
-        :param params: A transformed gene record
-        :return: A list of GA4GH VRS ChromosomeLocations
+        :param params: A transformed gene record. This may get mutated in place.
+        :return: ``True`` if gene found with multiple distinct locations.
+            ``False``, otherwise.
         """
         params["location_annotations"] = []
         chromosomes_locations = self._set_chromsomes_locations(row, params)
         locations = chromosomes_locations["locations"]
         chromosomes = chromosomes_locations["chromosomes"]
         if chromosomes_locations["exclude"]:
-            return ["exclude"]
+            return True
 
-        location_list = []
         if chromosomes and not locations:
             for chromosome in chromosomes:
                 if chromosome == "MT":
@@ -307,7 +303,7 @@ class NCBI(Base):
             self._add_chromosome_location(locations, params)
         if not params["location_annotations"]:
             del params["location_annotations"]
-        return location_list
+        return False
 
     def _set_chromsomes_locations(self, row: list[str], params: dict) -> dict:
         """Set chromosomes and locations for a given gene record.
@@ -415,10 +411,6 @@ class NCBI(Base):
             else:
                 # Location only gives chr
                 params["location_annotations"].append(loc)
-
-            # chr_location = self._get_chromosome_location(location, params)
-            # if chr_location:
-            #     location_list.append(chr_location)
 
     def _set_centromere_location(self, loc: str, location: dict) -> None:
         """Set centromere location for a gene.
