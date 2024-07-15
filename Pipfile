@@ -18,7 +18,7 @@ gffutils = "*"
 wags-tails = ">=0.1.1"
 psycopg = {version = "*", extras=["binary"]}
 pytest = "*"
-pre-commit = "*"
+pre-commit = ">=3.7.1"
 ruff = "==0.5.0"
 pytest-cov = "*"
 httpx = "*"
