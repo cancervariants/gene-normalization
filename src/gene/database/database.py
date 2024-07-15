@@ -295,8 +295,7 @@ def create_db(
     >>> local_db = create_db()  # creates DynamoDB connection on port 8001
     >>>
     >>> os.environ["GENE_NORM_ENV"] = "Prod"
-    >>> prod_db = create_db()  # creates connection to AWS cloud DynamoDB instance,
-    >>>                        # overruling `GENE_NORM_DB_URL` variable setting
+    >>> prod_db = create_db()  # creates connection to AWS cloud DynamoDB instance, overruling `GENE_NORM_DB_URL` variable setting
 
     Precedence is handled for connection settings like so:
 
