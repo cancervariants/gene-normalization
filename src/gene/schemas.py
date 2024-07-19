@@ -1,7 +1,7 @@
 """Contains data models for representing VICC normalized gene records."""
 
 from enum import Enum, IntEnum
-from typing import Literal
+from typing import Annotated, Literal
 
 from ga4gh.core import domain_models
 from ga4gh.vrs import models
@@ -11,12 +11,12 @@ from pydantic import (
     StrictBool,
     StrictInt,
     StrictStr,
-    constr,
+    StringConstraints,
 )
 
 from gene import __version__
 
-CURIE = constr(pattern=r"^\w[^:]*:.+$")
+CURIE_REGEX = r"^\w[^:]*:.+$"
 
 
 class SymbolStatus(str, Enum):
@@ -69,7 +69,9 @@ class GeneSequenceLocation(BaseModel):
     type: Literal["SequenceLocation"] = "SequenceLocation"
     start: StrictInt
     end: StrictInt
-    sequence_id: constr(pattern=r"^ga4gh:SQ.[0-9A-Za-z_\-]{32}$")
+    sequence_id: Annotated[
+        str, StringConstraints(pattern=r"^ga4gh:SQ.[0-9A-Za-z_\-]{32}$")
+    ]
 
 
 class BaseGene(BaseModel):
@@ -77,7 +79,7 @@ class BaseGene(BaseModel):
     /search and /normalize_unmerged.
     """
 
-    concept_id: CURIE
+    concept_id: Annotated[str, StringConstraints(pattern=CURIE_REGEX)]
     symbol: StrictStr
     symbol_status: SymbolStatus | None = None
     label: StrictStr | None = None
@@ -86,8 +88,8 @@ class BaseGene(BaseModel):
     locations: list[models.SequenceLocation] | list[GeneSequenceLocation] = []
     aliases: list[StrictStr] = []
     previous_symbols: list[StrictStr] = []
-    xrefs: list[CURIE] = []
-    associated_with: list[CURIE] = []
+    xrefs: list[Annotated[str, StringConstraints(pattern=CURIE_REGEX)]] = []
+    associated_with: list[Annotated[str, StringConstraints(pattern=CURIE_REGEX)]] = []
     gene_type: StrictStr | None = None
 
 
@@ -460,7 +462,9 @@ class UnmergedNormalizationService(BaseNormalizationService):
     attributes.
     """
 
-    normalized_concept_id: CURIE | None = None
+    normalized_concept_id: (
+        Annotated[str, StringConstraints(pattern=CURIE_REGEX)] | None
+    ) = None
     source_matches: dict[SourceName, MatchesNormalized]
 
     model_config = ConfigDict(
