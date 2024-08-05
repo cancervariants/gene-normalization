@@ -12,7 +12,7 @@ As mentioned earlier in the documentation, the Gene Normalizer incorporates stru
      - VRS version
    * - `main <https://github.com/cancervariants/gene-normalization>`_
      - 0.3.x
-     - `2.X <https://github.com/ga4gh/vrs/tree/2.0-alpha>`_
+     - `2.X <https://github.com/ga4gh/vrs/tree/2.x>`_
    * - `vrs-1.x <https://github.com/cancervariants/gene-normalization>`_ (no longer maintained)
      - 0.1.x
      - `1.X <https://github.com/ga4gh/vrs>`_
