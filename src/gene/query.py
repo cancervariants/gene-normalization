@@ -233,7 +233,7 @@ class QueryHandler:
                             self._fetch_record(resp, ref, MatchType[item_type.upper()])
                             matched_concept_ids.append(ref)
 
-            except DatabaseReadException as e:  # noqa: PERF203
+            except DatabaseReadException as e:
                 _logger.error(
                     "Encountered DatabaseReadException looking up %s %s: ",
                     item_type,
@@ -253,7 +253,7 @@ class QueryHandler:
         """
         return ServiceMeta(
             version=__version__,
-            response_datetime=str(datetime.datetime.now(tz=datetime.timezone.utc)),
+            response_datetime=str(datetime.datetime.now(tz=datetime.UTC)),
         )
 
     def search(
@@ -341,7 +341,7 @@ class QueryHandler:
         for src in sources:
             try:
                 src_name = PREFIX_LOOKUP[src]
-            except KeyError:  # noqa: PERF203
+            except KeyError:
                 # not an imported source
                 continue
             else:
@@ -513,7 +513,7 @@ class QueryHandler:
             "warnings": self._emit_warnings(query),
             "service_meta_": ServiceMeta(
                 version=__version__,
-                response_datetime=str(datetime.datetime.now(tz=datetime.timezone.utc)),
+                response_datetime=str(datetime.datetime.now(tz=datetime.UTC)),
             ),
         }
 
