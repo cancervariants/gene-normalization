@@ -1,6 +1,6 @@
 # A simple container for gene-service.
 # Runs service on port 80.
-# Healthchecks service up every 5m.  
+# Healthchecks service up every 5m.
 
 FROM python:3.7
 RUN pip install pipenv uvicorn[standard]

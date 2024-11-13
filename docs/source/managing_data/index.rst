@@ -8,4 +8,3 @@ The current iteration of the Gene Normalizer stores millions of symbols, names, 
     Loading and updating data<loading_and_updating_data>
     DynamoDB storage backend<dynamodb>
     PostgreSQL storage backend<postgresql>
-
