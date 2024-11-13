@@ -251,9 +251,9 @@ class ServiceMeta(BaseModel):
     name: Literal["gene-normalizer"] = "gene-normalizer"
     version: StrictStr
     response_datetime: StrictStr
-    url: Literal["https://github.com/cancervariants/gene-normalization"] = (
+    url: Literal[
         "https://github.com/cancervariants/gene-normalization"
-    )
+    ] = "https://github.com/cancervariants/gene-normalization"
 
     model_config = ConfigDict(
         json_schema_extra={

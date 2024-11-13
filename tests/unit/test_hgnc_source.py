@@ -709,7 +709,7 @@ def test_meta_info(hgnc):
     assert (
         resp.source_meta_.data_license_url == "https://www.genenames.org/about/license/"
     )
-    assert datetime.datetime.now(tz=datetime.timezone.utc).strptime(
+    assert datetime.datetime.now(tz=datetime.UTC).strptime(
         resp.source_meta_.version, "%Y%m%d"
     )
     assert resp.source_meta_.data_url == {

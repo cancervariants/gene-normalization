@@ -736,7 +736,7 @@ def test_no_match(ncbi, source_urls):
         response.source_meta_.data_license_url
         == "https://www.ncbi.nlm.nih.gov/home/about/policies/"
     )
-    assert datetime.datetime.now(tz=datetime.timezone.utc).strptime(
+    assert datetime.datetime.now(tz=datetime.UTC).strptime(
         response.source_meta_.version, "%Y%m%d"
     )
     assert response.source_meta_.data_url == source_urls
@@ -784,7 +784,7 @@ def test_meta(ncbi, source_urls):
         response.source_meta_.data_license_url
         == "https://www.ncbi.nlm.nih.gov/home/about/policies/"
     )
-    assert datetime.datetime.now(tz=datetime.timezone.utc).strptime(
+    assert datetime.datetime.now(tz=datetime.UTC).strptime(
         response.source_meta_.version, "%Y%m%d"
     )
     assert response.source_meta_.data_url == source_urls
