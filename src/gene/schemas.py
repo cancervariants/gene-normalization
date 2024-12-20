@@ -3,8 +3,8 @@
 from enum import Enum, IntEnum
 from typing import Annotated, Literal
 
-from ga4gh.core import domain_models
-from ga4gh.vrs import models
+from ga4gh.core.models import MappableConcept
+from ga4gh.vrs.models import SequenceLocation
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -85,7 +85,7 @@ class BaseGene(BaseModel):
     label: StrictStr | None = None
     strand: Strand | None = None
     location_annotations: list[StrictStr] = []
-    locations: list[models.SequenceLocation] | list[GeneSequenceLocation] = []
+    locations: list[SequenceLocation] | list[GeneSequenceLocation] = []
     aliases: list[StrictStr] = []
     previous_symbols: list[StrictStr] = []
     xrefs: list[Annotated[str, StringConstraints(pattern=CURIE_REGEX)]] = []
@@ -301,7 +301,7 @@ class NormalizeService(BaseNormalizationService):
     """Define model for returning normalized concept."""
 
     normalized_id: str | None = None
-    gene: domain_models.Gene | None = None
+    gene: MappableConcept | None = None
     source_meta_: dict[SourceName, SourceMeta] = {}
 
     model_config = ConfigDict(
