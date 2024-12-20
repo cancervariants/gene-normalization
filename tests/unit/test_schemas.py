@@ -2,7 +2,7 @@
 
 import pydantic
 import pytest
-from ga4gh.vrs import models
+from ga4gh.vrs.models import SequenceLocation, SequenceReference
 
 from gene.schemas import Gene
 
@@ -10,8 +10,8 @@ from gene.schemas import Gene
 @pytest.fixture(scope="module")
 def sequence_location():
     """Create a valid sequence location test fixture."""
-    return models.SequenceLocation(
-        sequenceReference=models.SequenceReference(
+    return SequenceLocation(
+        sequenceReference=SequenceReference(
             refgetAccession="SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul"
         ),
         start=140719327,

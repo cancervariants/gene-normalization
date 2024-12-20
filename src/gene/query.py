@@ -6,8 +6,16 @@ import re
 from collections.abc import Callable
 from typing import Any, TypeVar
 
-from ga4gh.core import domain_models, entity_models, ga4gh_identify
-from ga4gh.vrs import models
+from ga4gh.core import ga4gh_identify
+from ga4gh.core.models import (
+    Coding,
+    ConceptMapping,
+    Extension,
+    MappableConcept,
+    Relation,
+    code,
+)
+from ga4gh.vrs.models import SequenceLocation, SequenceReference
 
 from gene import ITEM_TYPES, NAMESPACE_LOOKUP, PREFIX_LOOKUP, __version__
 from gene.database import AbstractDatabase, DatabaseReadException
@@ -81,7 +89,7 @@ class QueryHandler:
         return warnings
 
     @staticmethod
-    def _transform_sequence_location(loc: dict) -> models.SequenceLocation:
+    def _transform_sequence_location(loc: dict) -> SequenceLocation:
         """Transform a sequence location to VRS sequence location
 
         :param loc: GeneSequenceLocation represented as a dict
@@ -89,8 +97,8 @@ class QueryHandler:
         """
         refget_ac = loc["sequence_id"].split("ga4gh:")[-1]
 
-        return models.SequenceLocation(
-            sequenceReference=models.SequenceReference(refgetAccession=refget_ac),
+        return SequenceLocation(
+            sequenceReference=SequenceReference(refgetAccession=refget_ac),
             start=int(loc["start"]),
             end=int(loc["end"]),
         )
@@ -390,26 +398,28 @@ class QueryHandler:
         :param possible_concepts: List of other normalized concepts found
         :return: Response with core Gene
         """
-        gene_obj = domain_models.Gene(
+        gene_obj = MappableConcept(
             id=f"normalize.gene.{record['concept_id']}",
             label=record["symbol"],
+            conceptType="Gene",
         )
 
         # mappings
         source_ids = record.get("xrefs", []) + record.get("associated_with", [])
         mappings = []
         for source_id in source_ids:
-            system, code = source_id.split(":")
+            system, system_code = source_id.split(":")
             mappings.append(
-                entity_models.ConceptMapping(
-                    coding=entity_models.Coding(
-                        code=entity_models.Code(code), system=system.lower()
-                    ),
-                    relation=entity_models.Relation.RELATED_MATCH,
+                ConceptMapping(
+                    coding=Coding(code=code(system_code), system=system.lower()),
+                    relation=Relation.RELATED_MATCH,
                 )
             )
         if mappings:
             gene_obj.mappings = mappings
+
+        # extensions
+        extensions = []
 
         # aliases
         aliases = set()
@@ -420,10 +430,8 @@ class QueryHandler:
                     val = [val]
                 aliases.update(val)
         if aliases:
-            gene_obj.alternativeLabels = list(aliases)
+            extensions.append(Extension(name="aliases", value=list(aliases)))
 
-        # extensions
-        extensions = []
         extension_and_record_labels = [
             ("symbol_status", "symbol_status"),
             ("approved_name", "label"),
@@ -433,9 +441,7 @@ class QueryHandler:
         ]
         for ext_label, record_label in extension_and_record_labels:
             if record.get(record_label):
-                extensions.append(
-                    entity_models.Extension(name=ext_label, value=record[record_label])
-                )
+                extensions.append(Extension(name=ext_label, value=record[record_label]))
 
         record_locations = {}
         if record["item_type"] == RecordType.IDENTITY:
@@ -455,16 +461,14 @@ class QueryHandler:
             ]
 
             if transformed_locs:
-                extensions.append(
-                    entity_models.Extension(name=loc_name, value=transformed_locs)
-                )
+                extensions.append(Extension(name=loc_name, value=transformed_locs))
 
         # handle gene types separately because they're wonky
         if record["item_type"] == RecordType.IDENTITY:
             gene_type = record.get("gene_type")
             if gene_type:
                 extensions.append(
-                    entity_models.Extension(
+                    Extension(
                         name=GeneTypeFieldName[record["src_name"].upper()].value,
                         value=gene_type,
                     )
@@ -474,8 +478,7 @@ class QueryHandler:
                 field_name = f.value
                 values = record.get(field_name, [])
                 extensions.extend(
-                    entity_models.Extension(name=field_name, value=value)
-                    for value in values
+                    Extension(name=field_name, value=value) for value in values
                 )
         if extensions:
             gene_obj.extensions = extensions
