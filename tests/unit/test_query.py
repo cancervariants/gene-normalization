@@ -1,7 +1,8 @@
 """Module to test the query module."""
 
 import pytest
-from ga4gh.core import domain_models
+from deepdiff import DeepDiff
+from ga4gh.core.models import MappableConcept
 
 from gene.query import InvalidParameterException, QueryHandler
 from gene.schemas import BaseGene, MatchType, SourceName
@@ -31,7 +32,7 @@ def query_handler(database):
 def normalized_ache():
     """Return normalized core Gene object for ACHE."""
     params = {
-        "type": "Gene",
+        "conceptType": "Gene",
         "id": "normalize.gene.hgnc:108",
         "label": "ACHE",
         "mappings": [
@@ -88,8 +89,8 @@ def normalized_ache():
                 "relation": "relatedMatch",
             },
         ],
-        "alternativeLabels": ["3.1.1.7", "YT", "N-ACHE", "ARACHE", "ACEE"],
         "extensions": [
+            {"name": "aliases", "value": ["3.1.1.7", "YT", "N-ACHE", "ARACHE", "ACEE"]},
             {"name": "previous_symbols", "value": ["ACEE", "YT"]},
             {
                 "name": "approved_name",
@@ -133,14 +134,14 @@ def normalized_ache():
             {"name": "strand", "value": "-"},
         ],
     }
-    return domain_models.Gene(**params)
+    return MappableConcept(**params)
 
 
 @pytest.fixture(scope="module")
 def normalized_braf():
     """Return normalized core Gene object for BRAF."""
     params = {
-        "type": "Gene",
+        "conceptType": "Gene",
         "id": "normalize.gene.hgnc:1097",
         "label": "BRAF",
         "mappings": [
@@ -213,8 +214,11 @@ def normalized_braf():
                 "relation": "relatedMatch",
             },
         ],
-        "alternativeLabels": ["BRAF1", "BRAF-1", "RAFB1", "NS7", "B-RAF1", "B-raf"],
         "extensions": [
+            {
+                "name": "aliases",
+                "value": ["BRAF1", "BRAF-1", "RAFB1", "NS7", "B-RAF1", "B-raf"],
+            },
             {
                 "name": "approved_name",
                 "value": "B-Raf proto-oncogene, serine/threonine kinase",
@@ -257,14 +261,14 @@ def normalized_braf():
             {"name": "symbol_status", "value": "approved"},
         ],
     }
-    return domain_models.Gene(**params)
+    return MappableConcept(**params)
 
 
 @pytest.fixture(scope="module")
 def normalized_abl1():
     """Return normalized core Gene object for ABL1."""
     params = {
-        "type": "Gene",
+        "conceptType": "Gene",
         "id": "normalize.gene.hgnc:76",
         "label": "ABL1",
         "mappings": [
@@ -329,20 +333,23 @@ def normalized_abl1():
                 "relation": "relatedMatch",
             },
         ],
-        "alternativeLabels": [
-            "c-ABL",
-            "JTK7",
-            "p150",
-            "CHDSKM",
-            "BCR-ABL",
-            "v-abl",
-            "c-ABL1",
-            "bcr/abl",
-            "LOC116063",
-            "LOC112779",
-            "ABL",
-        ],
         "extensions": [
+            {
+                "name": "aliases",
+                "value": [
+                    "c-ABL",
+                    "JTK7",
+                    "p150",
+                    "CHDSKM",
+                    "BCR-ABL",
+                    "v-abl",
+                    "c-ABL1",
+                    "bcr/abl",
+                    "LOC116063",
+                    "LOC112779",
+                    "ABL",
+                ],
+            },
             {
                 "name": "previous_symbols",
                 "value": ["LOC116063", "LOC112779", "ABL"],
@@ -389,14 +396,14 @@ def normalized_abl1():
             {"name": "symbol_status", "value": "approved"},
         ],
     }
-    return domain_models.Gene(**params)
+    return MappableConcept(**params)
 
 
 @pytest.fixture(scope="module")
 def normalized_p150():
     """Return normalized core Gene object for p150."""
     params = {
-        "type": "Gene",
+        "conceptType": "Gene",
         "id": "normalize.gene.hgnc:1910",
         "label": "CHAF1A",
         "mappings": [
@@ -441,16 +448,19 @@ def normalized_p150():
                 "relation": "relatedMatch",
             },
         ],
-        "alternativeLabels": [
-            "CAF1P150",
-            "MGC71229",
-            "CAF-1",
-            "P150",
-            "CAF1B",
-            "CAF1",
-            "LOC107985297",
-        ],
         "extensions": [
+            {
+                "name": "aliases",
+                "value": [
+                    "CAF1P150",
+                    "MGC71229",
+                    "CAF-1",
+                    "P150",
+                    "CAF1B",
+                    "CAF1",
+                    "LOC107985297",
+                ],
+            },
             {
                 "name": "approved_name",
                 "value": "chromatin assembly factor 1 subunit A",
@@ -497,7 +507,7 @@ def normalized_p150():
             {"name": "symbol_status", "value": "approved"},
         ],
     }
-    return domain_models.Gene(**params)
+    return MappableConcept(**params)
 
 
 @pytest.fixture(scope="module")
@@ -506,10 +516,13 @@ def normalized_loc_653303():
     normalized results that don't merge records.
     """
     params = {
-        "type": "Gene",
+        "conceptType": "Gene",
         "label": "LOC653303",
-        "alternativeLabels": ["LOC196266", "LOC654080", "LOC731196"],
         "extensions": [
+            {
+                "name": "aliases",
+                "value": ["LOC196266", "LOC654080", "LOC731196"],
+            },
             {
                 "name": "approved_name",
                 "value": "proprotein convertase subtilisin/kexin type 7 pseudogene",
@@ -537,7 +550,7 @@ def normalized_loc_653303():
         ],
         "id": "normalize.gene.ncbigene:653303",
     }
-    return domain_models.Gene(**params)
+    return MappableConcept(**params)
 
 
 @pytest.fixture(scope="module")
@@ -780,7 +793,7 @@ def normalize_unmerged_ache():
 def normalized_ifnr():
     """Return normalized core Gene object for IFNR."""
     params = {
-        "type": "Gene",
+        "conceptType": "Gene",
         "id": "normalize.gene.hgnc:5447",
         "label": "IFNR",
         "mappings": [
@@ -801,8 +814,11 @@ def normalized_ifnr():
                 "relation": "relatedMatch",
             },
         ],
-        "alternativeLabels": ["IFNGM", "IFNGM2"],
         "extensions": [
+            {
+                "name": "aliases",
+                "value": ["IFNGM", "IFNGM2"],
+            },
             {
                 "name": "approved_name",
                 "value": "interferon production regulator",
@@ -814,7 +830,7 @@ def normalized_ifnr():
             {"name": "location_annotations", "value": ["16"]},
         ],
     }
-    return domain_models.Gene(**params)
+    return MappableConcept(**params)
 
 
 @pytest.fixture(scope="module")
@@ -924,64 +940,15 @@ def compare_service_meta(service_meta):
 
 def compare_gene(test, actual):
     """Test that actual and expected core gene objects match."""
-    assert actual.id == test.id
-    assert actual.type == test.type
-    assert actual.label == test.label
+    for ext in actual.extensions:
+        if ext.name.endswith("_locations"):
+            for loc in ext.value:
+                loc_id = loc.pop("id")
+                loc_digest = loc.pop("digest")
+                assert loc_id.split("ga4gh:SL.")[-1] == loc_digest
 
-    assert bool(actual.mappings) == bool(test.mappings)
-    if actual.mappings:
-        no_matches = []
-        for actual_mapping in actual.mappings:
-            match = None
-            for fixture_mapping in test.mappings:
-                if actual_mapping == fixture_mapping:
-                    match = actual_mapping
-                    break
-            if not match:
-                no_matches.append(actual_mapping)
-        assert no_matches == [], no_matches
-        assert len(actual.mappings) == len(test.mappings)
-
-    assert set(actual.alternativeLabels) == set(
-        test.alternativeLabels
-    ), "alternativeLabels"
-    extensions_present = "extensions" in test.model_fields
-    assert ("extensions" in actual.model_fields) == extensions_present
-    if extensions_present:
-        actual_ext_names = sorted([ext.name for ext in actual.extensions])
-        unique_actual_ext_names = sorted(set(actual_ext_names))
-        assert actual_ext_names == unique_actual_ext_names, "duplicate extension names"
-        test_ext_names = {ext.name for ext in test.extensions}
-        assert set(actual_ext_names) == test_ext_names, "extension names dont match"
-        n_ext_correct = 0
-        for test_ext in test.extensions:
-            for actual_ext in actual.extensions:
-                if actual_ext.name == test_ext.name:
-                    assert isinstance(actual_ext.value, type(test_ext.value))
-                    if isinstance(test_ext.value, list):
-                        if test_ext.value:
-                            if isinstance(test_ext.value[0], dict):
-                                if test_ext.value[0].get("type") == "SequenceLocation":
-                                    actual_digest = (
-                                        actual_ext.value[0]
-                                        .pop("id")
-                                        .split("ga4gh:SL.")[-1]
-                                    )
-                                    assert (
-                                        actual_ext.value[0].pop("digest")
-                                        == actual_digest
-                                    )
-                                assert actual_ext.value == test_ext.value
-                            else:
-                                assert set(actual_ext.value) == set(
-                                    test_ext.value
-                                ), f"{test_ext.value} value"
-                        else:
-                            assert actual_ext.value == test_ext.value
-                    else:
-                        assert actual_ext.value == test_ext.value
-                    n_ext_correct += 1
-        assert n_ext_correct == len(test.extensions), "number of correct extensions"
+    diff = DeepDiff(actual, test, ignore_order=True)
+    assert diff == {}, test.id
 
 
 def test_search_query(query_handler, num_sources):
