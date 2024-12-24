@@ -342,7 +342,7 @@ class QueryHandler:
         """
         sources_meta = {}
         gene = response.gene
-        sources = [response.normalized_id.split(":")[0]]
+        sources = [gene.primaryCode.root.split(":")[0]]
         if gene.mappings:
             sources += [m.coding.system for m in gene.mappings]
 
@@ -398,23 +398,34 @@ class QueryHandler:
         :param possible_concepts: List of other normalized concepts found
         :return: Response with core Gene
         """
+
+        def _create_concept_mapping(
+            curie: str, relation: Relation = Relation.RELATED_MATCH
+        ) -> ConceptMapping:
+            """Create concept mapping for identifier
+
+            :param curie: Identifier represented as a curie
+            :param relation: SKOS mapping relationship, default is relatedMatch
+            :return: Concept mapping for identifier
+            """
+            system, system_code = curie.split(":")
+            return ConceptMapping(
+                coding=Coding(code=code(system_code), system=system), relation=relation
+            )
+
         gene_obj = MappableConcept(
             id=f"normalize.gene.{record['concept_id']}",
+            primaryCode=code(root=record["concept_id"]),
             label=record["symbol"],
             conceptType="Gene",
         )
 
         # mappings
+        mappings = [
+            _create_concept_mapping(record["concept_id"], relation=Relation.EXACT_MATCH)
+        ]
         source_ids = record.get("xrefs", []) + record.get("associated_with", [])
-        mappings = []
-        for source_id in source_ids:
-            system, system_code = source_id.split(":")
-            mappings.append(
-                ConceptMapping(
-                    coding=Coding(code=code(system_code), system=system.lower()),
-                    relation=Relation.RELATED_MATCH,
-                )
-            )
+        mappings.extend(_create_concept_mapping(source_id) for source_id in source_ids)
         if mappings:
             gene_obj.mappings = mappings
 
@@ -487,7 +498,6 @@ class QueryHandler:
         if possible_concepts:
             response = self._add_alt_matches(response, record, possible_concepts)
 
-        response.normalized_id = record["concept_id"]
         response.gene = gene_obj
         response = self._add_merged_meta(response)
         response.match_type = match_type
@@ -529,9 +539,9 @@ class QueryHandler:
         >>> from gene.database import create_db
         >>> q = QueryHandler(create_db())
         >>> result = q.normalize("BRAF")
-        >>> result.normalized_id
+        >>> result.gene.primaryCode.root
         'hgnc:1097'
-        >>> result.aliases
+        >>> next(ext for ext in result.gene.extensions if ext.name == "aliases").value
         ['BRAF1', 'RAFB1', 'B-raf', 'NS7', 'B-RAF1']
 
         :param query: String to find normalized concept for

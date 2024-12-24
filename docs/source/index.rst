@@ -28,9 +28,9 @@ A `public REST instance of the service <https://normalize.cancervariants.org/gen
 
    >>> import requests
    >>> result = requests.get("https://normalize.cancervariants.org/gene/normalize?q=braf").json()
-   >>> result["normalized_id"]
+   >>> result["gene"]["primaryCode"]
    'hgnc:1097'
-   >>> result["gene"]["aliases"]
+   >>> next(ext for ext in result["gene"]["extensions"] if ext["name"] == "aliases")["value"]
    ['B-raf', 'NS7', 'B-RAF1', 'BRAF-1', 'BRAF1', 'RAFB1']
 
 The Gene Normalizer can also be installed locally as a Python package for fast access:
@@ -41,10 +41,10 @@ The Gene Normalizer can also be installed locally as a Python package for fast a
     >>> from gene.database import create_db
     >>> q = QueryHandler(create_db())
     >>> result = q.normalize("BRAF")
-    >>> result.normalized_id
+    >>> result.gene.primaryCode.root
     'hgnc:1097'
-    >>> result.gene.aliases
-    ['NS7', 'RAFB1', 'B-raf', 'BRAF-1', 'BRAF1', 'B-RAF1']
+    >>> next(ext for ext in result.gene.extensions if ext.name == "aliases").value
+    ['B-raf', 'NS7', 'B-RAF1', 'BRAF-1', 'BRAF1', 'RAFB1']
 
 The Gene Normalizer was created to support the `Knowledgebase Integration Project <https://cancervariants.org/projects/integration/>`_ of the `Variant Interpretation for Cancer Consortium (VICC) <https://cancervariants.org/>`_. It is developed primarily by the `Wagner Lab <https://www.nationwidechildrens.org/specialties/institute-for-genomic-medicine/research-labs/wagner-lab>`_. Full source code is available on `GitHub <https://github.com/cancervariants/gene-normalization>`_.
 
