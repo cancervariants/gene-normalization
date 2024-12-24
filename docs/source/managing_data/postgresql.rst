@@ -7,7 +7,7 @@ The Gene Normalizer can store and retrieve gene records from a `PostgreSQL <http
 
 .. note::
 
-    See the :ref:`PostgreSQL handler API reference<postgres_api>` for information on programmatic access.
+    See the :py:mod:`PostgreSQL handler API reference<gene.database.postgresql>` for information on programmatic access.
 
 Local setup
 --------------

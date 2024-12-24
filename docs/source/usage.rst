@@ -24,7 +24,7 @@ The individual endpoints are:
 Internal Python API
 -------------------
 
-Each search mode can be accessed directly within Python using the :ref:`query API<query-api>`:
+Each search mode can be accessed directly within Python using the :py:mod:`query API<gene.query>`:
 
 .. code-block:: pycon
 
@@ -58,7 +58,7 @@ Users hoping for a more explicit connection declaration may instead call a datab
     )
     q = QueryHandler(pg_db)
 
-See the API documentation for the :ref:`database <database_api>`, :ref:`DynamoDB <dynamodb_api>`, and :ref:`PostgreSQL <postgres_api>` modules for more details.
+See the API documentation for the :py:mod:`database <gene.database.database>`, :py:mod:`DynamoDB <gene.database.dynamodb>`, and :py:mod:`PostgreSQL <gene.database.postgresql>` modules for more details.
 
 Inputs
 ------
@@ -74,6 +74,7 @@ The **best match** for a search string is determined by which fields in a gene r
     :members:
     :undoc-members:
     :show-inheritance:
+    :noindex:
 
 .. note::
 

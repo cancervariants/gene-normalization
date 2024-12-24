@@ -7,7 +7,7 @@ The Gene Normalizer can store and retrieve gene records from a `local DynamoDB <
 
 .. note::
 
-    See the :ref:`DynamoDB handler API reference<dynamodb_api>` for information on programmatic access.
+    See the :py:mod:`DynamoDB handler API reference<gene.database.dynamodb>` for information on programmatic access.
 
 Local setup
 -----------
