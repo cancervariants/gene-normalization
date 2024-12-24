@@ -300,7 +300,6 @@ class BaseNormalizationService(BaseModel):
 class NormalizeService(BaseNormalizationService):
     """Define model for returning normalized concept."""
 
-    normalized_id: str | None = None
     gene: MappableConcept | None = None
     source_meta_: dict[SourceName, SourceMeta] = {}
 
@@ -310,12 +309,16 @@ class NormalizeService(BaseNormalizationService):
                 "query": "BRAF",
                 "warnings": [],
                 "match_type": 100,
-                "normalized_id": "hgnc:1037",
                 "gene": {
-                    "type": "Gene",
+                    "conceptType": "Gene",
                     "id": "normalize.gene.hgnc:1097",
+                    "primaryCode": "hgnc:1097",
                     "label": "BRAF",
                     "mappings": [
+                        {
+                            "coding": {"code": "1097", "system": "hgnc"},
+                            "relation": "exactMatch",
+                        },
                         {
                             "coding": {"code": "673", "system": "ncbigene"},
                             "relation": "relatedMatch",
@@ -376,17 +379,67 @@ class NormalizeService(BaseNormalizationService):
                             "coding": {"code": "1565476", "system": "pubmed"},
                             "relation": "relatedMatch",
                         },
+                        {
+                            "coding": {"code": "CCDS94219", "system": "ccds"},
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {"code": "CCDS94218", "system": "ccds"},
+                            "relation": "relatedMatch",
+                        },
                     ],
-                    "aliases": ["BRAF1", "RAFB1", "B-raf", "NS7", "B-RAF1"],
                     "extensions": [
+                        {
+                            "name": "aliases",
+                            "value": [
+                                "BRAF1",
+                                "BRAF-1",
+                                "RAFB1",
+                                "NS7",
+                                "B-RAF1",
+                                "B-raf",
+                            ],
+                        },
                         {
                             "name": "approved_name",
                             "value": "B-Raf proto-oncogene, serine/threonine kinase",
                         },
                         {
-                            "name": "symbol_status",
-                            "value": "approved",
+                            "name": "ensembl_locations",
+                            "value": [
+                                {
+                                    "type": "SequenceLocation",
+                                    "sequenceReference": {
+                                        "type": "SequenceReference",
+                                        "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+                                    },
+                                    "start": 140719326,
+                                    "end": 140924929,
+                                }
+                            ],
                         },
+                        {
+                            "name": "ncbi_locations",
+                            "value": [
+                                {
+                                    "type": "SequenceLocation",
+                                    "sequenceReference": {
+                                        "type": "SequenceReference",
+                                        "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
+                                    },
+                                    "start": 140713327,
+                                    "end": 140924929,
+                                }
+                            ],
+                        },
+                        {"name": "ncbi_gene_type", "value": "protein-coding"},
+                        {
+                            "name": "hgnc_locus_type",
+                            "value": "gene with protein product",
+                        },
+                        {"name": "ensembl_biotype", "value": "protein_coding"},
+                        {"name": "strand", "value": "-"},
+                        {"name": "symbol_status", "value": "approved"},
                     ],
                 },
                 "source_meta_": {

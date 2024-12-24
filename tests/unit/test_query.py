@@ -34,8 +34,13 @@ def normalized_ache():
     params = {
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:108",
+        "primaryCode": "hgnc:108",
         "label": "ACHE",
         "mappings": [
+            {
+                "coding": {"code": "108", "system": "hgnc"},
+                "relation": "exactMatch",
+            },
             {
                 "coding": {"code": "ENSG00000087085", "system": "ensembl"},
                 "relation": "relatedMatch",
@@ -143,8 +148,10 @@ def normalized_braf():
     params = {
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:1097",
+        "primaryCode": "hgnc:1097",
         "label": "BRAF",
         "mappings": [
+            {"coding": {"code": "1097", "system": "hgnc"}, "relation": "exactMatch"},
             {
                 "coding": {"code": "673", "system": "ncbigene"},
                 "relation": "relatedMatch",
@@ -270,8 +277,13 @@ def normalized_abl1():
     params = {
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:76",
+        "primaryCode": "hgnc:76",
         "label": "ABL1",
         "mappings": [
+            {
+                "coding": {"code": "76", "system": "hgnc"},
+                "relation": "exactMatch",
+            },
             {
                 "coding": {"code": "ENSG00000097007", "system": "ensembl"},
                 "relation": "relatedMatch",
@@ -405,8 +417,13 @@ def normalized_p150():
     params = {
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:1910",
+        "primaryCode": "hgnc:1910",
         "label": "CHAF1A",
         "mappings": [
+            {
+                "coding": {"code": "1910", "system": "hgnc"},
+                "relation": "exactMatch",
+            },
             {
                 "coding": {"code": "ENSG00000167670", "system": "ensembl"},
                 "relation": "relatedMatch",
@@ -518,6 +535,13 @@ def normalized_loc_653303():
     params = {
         "conceptType": "Gene",
         "label": "LOC653303",
+        "primaryCode": "ncbigene:653303",
+        "mappings": [
+            {
+                "coding": {"code": "653303", "system": "ncbigene"},
+                "relation": "exactMatch",
+            },
+        ],
         "extensions": [
             {
                 "name": "aliases",
@@ -795,8 +819,13 @@ def normalized_ifnr():
     params = {
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:5447",
+        "primaryCode": "hgnc:5447",
         "label": "IFNR",
         "mappings": [
+            {
+                "coding": {"code": "5447", "system": "hgnc"},
+                "relation": "exactMatch",
+            },
             {
                 "coding": {"code": "3466", "system": "ncbigene"},
                 "relation": "relatedMatch",
@@ -874,7 +903,7 @@ def compare_normalize_resp(
     assert resp.query == expected_query
     compare_warnings(resp.warnings, expected_warnings)
     assert resp.match_type == expected_match_type
-    assert resp.normalized_id == expected_gene.id.split("normalize.gene.")[-1]
+    assert resp.gene.primaryCode.root == expected_gene.id.split("normalize.gene.")[-1]
     compare_gene(expected_gene, resp.gene)
     if not expected_source_meta:
         assert resp.source_meta_ == {}

@@ -35,19 +35,23 @@ $ curl 'https://normalize.cancervariants.org/gene/normalize?q=BRAF' | python -m 
 {
     "query": "BRAF",
     "match_type": 100,
-    "normalized_id": "hgnc:1097",
     "gene": {
-        "type": "Gene",
+        "conceptType": "Gene",
         "id": "normalize.gene.hgnc:1097"
+        "primaryCode": "hgnc:1097",
         "label": "BRAF",
-        "gene_id": "hgnc:1097",
-        "aliases": [
-            "BRAF1",
-            "B-RAF1",
-            "NS7",
-            "RAFB1",
-            "B-raf",
-            "BRAF-1"
+        "extensions": [
+            {
+                "name": "aliases",
+                "value": [
+                    "BRAF1",
+                    "B-RAF1",
+                    "NS7",
+                    "RAFB1",
+                    "B-raf",
+                    "BRAF-1"
+                ]
+            }
         ]
     }
     # ...
@@ -61,7 +65,7 @@ Or utilize the [Python API](https://gene-normalizer.readthedocs.io/latest/api/qu
 >>> from gene.query import QueryHandler
 >>> q = QueryHandler(create_db())
 >>> result = q.normalize("KRAS")
->>> result.normalized_id
+>>> result.gene.primaryCode
 'hgnc:6407'
 ```
 

@@ -75,8 +75,8 @@ The beginning of the response to a GET request to http://localhost:5000/gene/nor
        "response_datetime": "2023-09-29 14:53:07.329897",
        "url": "https://github.com/cancervariants/gene-normalization"
      },
-     "normalized_id": "hgnc:1097",
      "gene": {
+       "primaryCode": "hgnc:1097",
        "id": "normalize.gene.hgnc:1097",
        "label": "BRAF",
 
