@@ -1,7 +1,6 @@
-﻿gene.etl.base
-=============
+{{ fullname | underline }}
 
-.. automodule:: gene.etl.base
+.. automodule:: {{ fullname }}
    :members:
    :undoc-members:
    :special-members: __init__

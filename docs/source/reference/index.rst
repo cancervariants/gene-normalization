@@ -29,12 +29,12 @@ Database Modules
 .. _etl-api:
 
 ETL Modules
-----------
+-----------
 
 .. autosummary::
    :nosignatures:
    :toctree: api/etl
-   :template: module_summary.rst
+   :template: module_summary_inherited.rst
 
    gene.etl.base
    gene.etl.ensembl
