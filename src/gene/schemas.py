@@ -312,7 +312,7 @@ class NormalizeService(BaseNormalizationService):
                 "match_type": 100,
                 "normalized_id": "hgnc:1037",
                 "gene": {
-                    "type": "Gene",
+                    "conceptType": "Gene",
                     "id": "normalize.gene.hgnc:1097",
                     "label": "BRAF",
                     "mappings": [
@@ -377,8 +377,11 @@ class NormalizeService(BaseNormalizationService):
                             "relation": "relatedMatch",
                         },
                     ],
-                    "aliases": ["BRAF1", "RAFB1", "B-raf", "NS7", "B-RAF1"],
                     "extensions": [
+                        {
+                            "name": "aliases",
+                            "value": ["BRAF1", "RAFB1", "B-raf", "NS7", "B-RAF1"],
+                        },
                         {
                             "name": "approved_name",
                             "value": "B-Raf proto-oncogene, serine/threonine kinase",
