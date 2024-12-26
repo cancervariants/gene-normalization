@@ -47,14 +47,14 @@ def normalized_ache():
             {
                 "coding": {
                     "code": "ENSG00000087085",
-                    "system": "https://useast.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=",
+                    "system": "https://www.ensembl.org/id/",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "43",
-                    "system": "https://www.ncbi.nlm.nih.gov/gene/?term=",
+                    "system": "https://www.ncbi.nlm.nih.gov/gene/",
                 },
                 "relation": "relatedMatch",
             },
@@ -72,14 +72,14 @@ def normalized_ache():
             {
                 "coding": {
                     "code": "P22303",
-                    "system": "https://www.uniprot.org/uniprotkb/",
+                    "system": "https://purl.uniprot.org/uniprot/",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "1380483",
-                    "system": "https://pubmed.ncbi.nlm.nih.gov/",
+                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
                 },
                 "relation": "relatedMatch",
             },
@@ -173,14 +173,14 @@ def normalized_braf():
             {
                 "coding": {
                     "code": "673",
-                    "system": "https://www.ncbi.nlm.nih.gov/gene/?term=",
+                    "system": "https://www.ncbi.nlm.nih.gov/gene/",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "ENSG00000157764",
-                    "system": "https://useast.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=",
+                    "system": "https://www.ensembl.org/id/",
                 },
                 "relation": "relatedMatch",
             },
@@ -198,14 +198,14 @@ def normalized_braf():
             {
                 "coding": {
                     "code": "BRAF",
-                    "system": "https://cancer.sanger.ac.uk/cosmic/gene/analysis?ln=",
+                    "system": "https://cancer.sanger.ac.uk/cosmic/gene/overview?ln=",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "2284096",
-                    "system": "https://pubmed.ncbi.nlm.nih.gov/",
+                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
                 },
                 "relation": "relatedMatch",
             },
@@ -230,7 +230,7 @@ def normalized_braf():
             {
                 "coding": {
                     "code": "P15056",
-                    "system": "https://www.uniprot.org/uniprotkb/",
+                    "system": "https://purl.uniprot.org/uniprot/",
                 },
                 "relation": "relatedMatch",
             },
@@ -248,7 +248,7 @@ def normalized_braf():
             {
                 "coding": {
                     "code": "1565476",
-                    "system": "https://pubmed.ncbi.nlm.nih.gov/",
+                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
                 },
                 "relation": "relatedMatch",
             },
@@ -322,14 +322,14 @@ def normalized_abl1():
             {
                 "coding": {
                     "code": "ENSG00000097007",
-                    "system": "https://useast.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=",
+                    "system": "https://www.ensembl.org/id/",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "25",
-                    "system": "https://www.ncbi.nlm.nih.gov/gene/?term=",
+                    "system": "https://www.ncbi.nlm.nih.gov/gene/",
                 },
                 "relation": "relatedMatch",
             },
@@ -347,28 +347,28 @@ def normalized_abl1():
             {
                 "coding": {
                     "code": "P00519",
-                    "system": "https://www.uniprot.org/uniprotkb/",
+                    "system": "https://purl.uniprot.org/uniprot/",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "1857987",
-                    "system": "https://pubmed.ncbi.nlm.nih.gov/",
+                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "12626632",
-                    "system": "https://pubmed.ncbi.nlm.nih.gov/",
+                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "ABL1",
-                    "system": "https://cancer.sanger.ac.uk/cosmic/gene/analysis?ln=",
+                    "system": "https://cancer.sanger.ac.uk/cosmic/gene/overview?ln=",
                 },
                 "relation": "relatedMatch",
             },
@@ -487,14 +487,14 @@ def normalized_p150():
             {
                 "coding": {
                     "code": "ENSG00000167670",
-                    "system": "https://useast.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=",
+                    "system": "https://www.ensembl.org/id/",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "10036",
-                    "system": "https://www.ncbi.nlm.nih.gov/gene/?term=",
+                    "system": "https://www.ncbi.nlm.nih.gov/gene/",
                 },
                 "relation": "relatedMatch",
             },
@@ -512,7 +512,7 @@ def normalized_p150():
             {
                 "coding": {
                     "code": "7600578",
-                    "system": "https://pubmed.ncbi.nlm.nih.gov/",
+                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
                 },
                 "relation": "relatedMatch",
             },
@@ -523,7 +523,7 @@ def normalized_p150():
             {
                 "coding": {
                     "code": "Q13111",
-                    "system": "https://www.uniprot.org/uniprotkb/",
+                    "system": "https://purl.uniprot.org/uniprot/",
                 },
                 "relation": "relatedMatch",
             },
@@ -624,7 +624,7 @@ def normalized_loc_653303():
             {
                 "coding": {
                     "code": "653303",
-                    "system": "https://www.ncbi.nlm.nih.gov/gene/?term=",
+                    "system": "https://www.ncbi.nlm.nih.gov/gene/",
                 },
                 "relation": "exactMatch",
             },
@@ -916,14 +916,14 @@ def normalized_ifnr():
             {
                 "coding": {
                     "code": "3466",
-                    "system": "https://www.ncbi.nlm.nih.gov/gene/?term=",
+                    "system": "https://www.ncbi.nlm.nih.gov/gene/",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "1906174",
-                    "system": "https://pubmed.ncbi.nlm.nih.gov/",
+                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
                 },
                 "relation": "relatedMatch",
             },
@@ -934,7 +934,7 @@ def normalized_ifnr():
             {
                 "coding": {
                     "code": "1193239",
-                    "system": "https://pubmed.ncbi.nlm.nih.gov/",
+                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
                 },
                 "relation": "relatedMatch",
             },

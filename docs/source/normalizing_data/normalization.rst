@@ -84,14 +84,14 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
           {
               "coding": {
                   "code": "673",
-                  "system": "https://www.ncbi.nlm.nih.gov/gene/?term=",
+                  "system": "https://www.ncbi.nlm.nih.gov/gene/",
               },
               "relation": "relatedMatch",
           },
           {
               "coding": {
                   "code": "ENSG00000157764",
-                  "system": "https://useast.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=",
+                  "system": "https://www.ensembl.org/id/",
               },
               "relation": "relatedMatch",
           },
@@ -109,14 +109,14 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
           {
               "coding": {
                   "code": "BRAF",
-                  "system": "https://cancer.sanger.ac.uk/cosmic/gene/analysis?ln=",
+                  "system": "https://cancer.sanger.ac.uk/cosmic/gene/overview?ln=",
               },
               "relation": "relatedMatch",
           },
           {
               "coding": {
                   "code": "2284096",
-                  "system": "https://pubmed.ncbi.nlm.nih.gov/",
+                  "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
               },
               "relation": "relatedMatch",
           },
@@ -141,7 +141,7 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
           {
               "coding": {
                   "code": "P15056",
-                  "system": "https://www.uniprot.org/uniprotkb/",
+                  "system": "https://purl.uniprot.org/uniprot/",
               },
               "relation": "relatedMatch",
           },
@@ -159,7 +159,7 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
           {
               "coding": {
                   "code": "1565476",
-                  "system": "https://pubmed.ncbi.nlm.nih.gov/",
+                  "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
               },
               "relation": "relatedMatch",
           },

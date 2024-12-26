@@ -178,19 +178,19 @@ class NamespacePrefix(Enum):
     RFAM = "rfam"
 
 
-# Source to URI
+# Source to URI (from identifiers.org, if found)
 NAMESPACE_TO_SYSTEM_URI: dict[NamespacePrefix, str] = {
     NamespacePrefix.HGNC: "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
-    NamespacePrefix.ENSEMBL: "https://useast.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=",
-    NamespacePrefix.NCBI: "https://www.ncbi.nlm.nih.gov/gene/?term=",
-    NamespacePrefix.ENTREZ: "https://www.ncbi.nlm.nih.gov/gene/?term=",
+    NamespacePrefix.ENSEMBL: "https://www.ensembl.org/id/",
+    NamespacePrefix.NCBI: "https://www.ncbi.nlm.nih.gov/gene/",
+    NamespacePrefix.ENTREZ: "https://www.ncbi.nlm.nih.gov/gene/",
     NamespacePrefix.UCSC: "https://genome.cse.ucsc.edu/cgi-bin/hgGene?hgg_gene=",
     NamespacePrefix.ENA: "https://www.ebi.ac.uk/ena/browser/view/",
     NamespacePrefix.REFSEQ: "https://www.ncbi.nlm.nih.gov/refseq/?term=",
     NamespacePrefix.CCDS: "https://www.ncbi.nlm.nih.gov/CCDS/CcdsBrowse.cgi?REQUEST=CCDS&DATA=",
-    NamespacePrefix.UNIPROT: "https://www.uniprot.org/uniprotkb/",
-    NamespacePrefix.PUBMED: "https://pubmed.ncbi.nlm.nih.gov/",
-    NamespacePrefix.COSMIC: "https://cancer.sanger.ac.uk/cosmic/gene/analysis?ln=",
+    NamespacePrefix.UNIPROT: "https://purl.uniprot.org/uniprot/",
+    NamespacePrefix.PUBMED: "https://www.ncbi.nlm.nih.gov/pubmed/",
+    NamespacePrefix.COSMIC: "https://cancer.sanger.ac.uk/cosmic/gene/overview?ln=",
     NamespacePrefix.OMIM: "https://www.omim.org/entry/",
     NamespacePrefix.IUPHAR: "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
 }
@@ -350,14 +350,14 @@ class NormalizeService(BaseNormalizationService):
                         {
                             "coding": {
                                 "code": "673",
-                                "system": "https://www.ncbi.nlm.nih.gov/gene/?term=",
+                                "system": "https://www.ncbi.nlm.nih.gov/gene/",
                             },
                             "relation": "relatedMatch",
                         },
                         {
                             "coding": {
                                 "code": "ENSG00000157764",
-                                "system": "https://useast.ensembl.org/Homo_sapiens/Gene/Summary?db=core;g=",
+                                "system": "https://www.ensembl.org/id/",
                             },
                             "relation": "relatedMatch",
                         },
@@ -375,14 +375,14 @@ class NormalizeService(BaseNormalizationService):
                         {
                             "coding": {
                                 "code": "BRAF",
-                                "system": "https://cancer.sanger.ac.uk/cosmic/gene/analysis?ln=",
+                                "system": "https://cancer.sanger.ac.uk/cosmic/gene/overview?ln=",
                             },
                             "relation": "relatedMatch",
                         },
                         {
                             "coding": {
                                 "code": "2284096",
-                                "system": "https://pubmed.ncbi.nlm.nih.gov/",
+                                "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
                             },
                             "relation": "relatedMatch",
                         },
@@ -410,7 +410,7 @@ class NormalizeService(BaseNormalizationService):
                         {
                             "coding": {
                                 "code": "P15056",
-                                "system": "https://www.uniprot.org/uniprotkb/",
+                                "system": "https://purl.uniprot.org/uniprot/",
                             },
                             "relation": "relatedMatch",
                         },
@@ -428,7 +428,7 @@ class NormalizeService(BaseNormalizationService):
                         {
                             "coding": {
                                 "code": "1565476",
-                                "system": "https://pubmed.ncbi.nlm.nih.gov/",
+                                "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
                             },
                             "relation": "relatedMatch",
                         },
