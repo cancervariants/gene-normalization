@@ -406,28 +406,6 @@ def prkrap1():
     return Gene(**params)
 
 
-# start > end
-@pytest.fixture(scope="module")
-def mhb():
-    """Create gene fixture for MHB."""
-    params = {
-        "match_type": MatchType.NO_MATCH,
-        "label": "myopathy, hyaline body, autosomal recessive",
-        "concept_id": "ncbigene:619511",
-        "symbol": "MHB",
-        "aliases": [],
-        "xrefs": [],
-        "previous_symbols": [],
-        "associated_with": ["omim:255160"],
-        "symbol_status": None,
-        "location_annotations": [],
-        "strand": None,
-        "locations": [],
-        "gene_type": "unknown",
-    }
-    return Gene(**params)
-
-
 # Different arms
 @pytest.fixture(scope="module")
 def spg37():
