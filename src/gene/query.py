@@ -20,12 +20,14 @@ from ga4gh.vrs.models import SequenceLocation, SequenceReference
 from gene import ITEM_TYPES, NAMESPACE_LOOKUP, PREFIX_LOOKUP, __version__
 from gene.database import AbstractDatabase, DatabaseReadException
 from gene.schemas import (
+    NAMESPACE_TO_SYSTEM_URI,
     BaseGene,
     BaseNormalizationService,
     Gene,
     GeneTypeFieldName,
     MatchesNormalized,
     MatchType,
+    NamespacePrefix,
     NormalizeService,
     RecordType,
     RefType,
@@ -342,20 +344,17 @@ class QueryHandler:
         """
         sources_meta = {}
         gene = response.gene
-        sources = [gene.primaryCode.root.split(":")[0]]
-        if gene.mappings:
-            sources += [m.coding.system for m in gene.mappings]
+
+        sources = []
+        for m in gene.mappings or []:
+            for ns, system in NAMESPACE_TO_SYSTEM_URI.items():
+                if system == m.coding.system and ns.value in PREFIX_LOOKUP:
+                    sources.append(PREFIX_LOOKUP[ns.value])
 
         for src in sources:
-            try:
-                src_name = PREFIX_LOOKUP[src]
-            except KeyError:
-                # not an imported source
-                continue
-            else:
-                if src_name not in sources_meta:
-                    _source_meta = self.db.get_source_metadata(src_name)
-                    sources_meta[SourceName(src_name)] = SourceMeta(**_source_meta)
+            if src not in sources_meta:
+                _source_meta = self.db.get_source_metadata(src)
+                sources_meta[SourceName(src)] = SourceMeta(**_source_meta)
         response.source_meta_ = sources_meta
         return response
 
@@ -400,17 +399,27 @@ class QueryHandler:
         """
 
         def _create_concept_mapping(
-            curie: str, relation: Relation = Relation.RELATED_MATCH
+            concept_id: str, relation: Relation = Relation.RELATED_MATCH
         ) -> ConceptMapping:
             """Create concept mapping for identifier
 
-            :param curie: Identifier represented as a curie
+            :param concept_id: Concept identifier represented as a curie
             :param relation: SKOS mapping relationship, default is relatedMatch
             :return: Concept mapping for identifier
             """
-            system, system_code = curie.split(":")
+            source, source_id = concept_id.split(":")
+
+            try:
+                source = NamespacePrefix(source.lower())
+            except ValueError as e:
+                err_msg = f"Namespace prefix not supported: {source.lower()}"
+                raise ValueError(err_msg) from e
+
+            system = NAMESPACE_TO_SYSTEM_URI.get(source, source)
+            code_ = concept_id.upper() if source == NamespacePrefix.HGNC else source_id
+
             return ConceptMapping(
-                coding=Coding(code=code(system_code), system=system), relation=relation
+                coding=Coding(code=code(code_), system=system), relation=relation
             )
 
         gene_obj = MappableConcept(
