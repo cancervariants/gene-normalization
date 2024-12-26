@@ -36,8 +36,8 @@ def ddx11l1():
         "location_annotations": [],
         "locations": [
             {
-                "end": 14409,
-                "start": 11868,
+                "end": 13670,
+                "start": 12009,
                 "sequenceReference": {
                     "type": "SequenceReference",
                     "refgetAccession": "SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO",
@@ -67,7 +67,7 @@ def tp53():
         "location_annotations": [],
         "locations": [
             {
-                "end": 7687538,
+                "end": 7687546,
                 "start": 7661778,
                 "sequenceReference": {
                     "type": "SequenceReference",
@@ -98,8 +98,8 @@ def ATP6AP1_DT():  # noqa: N802
         "location_annotations": [],
         "locations": [
             {
-                "end": 154428526,
-                "start": 154424377,
+                "end": 154428549,
+                "start": 154424376,
                 "sequenceReference": {
                     "type": "SequenceReference",
                     "refgetAccession": "SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
@@ -302,9 +302,9 @@ def test_meta_info(ensembl):
         resp.source_meta_.data_license_url
         == "https://useast.ensembl.org/info/about/legal/disclaimer.html"
     )
-    assert resp.source_meta_.version == "110"
+    assert resp.source_meta_.version == "113"
     assert resp.source_meta_.data_url == {
-        "genome_annotations": "ftp://ftp.ensembl.org/pub/release-110/gff3/homo_sapiens/Homo_sapiens.GRCh38.110.gff3.gz"
+        "genome_annotations": "ftp://ftp.ensembl.org/pub/release-113/gff3/homo_sapiens/Homo_sapiens.GRCh38.113.gff3.gz"
     }
     assert resp.source_meta_.rdp_url is None
     assert resp.source_meta_.genome_assemblies == ["GRCh38"]

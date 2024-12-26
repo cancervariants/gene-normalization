@@ -58,18 +58,6 @@ def normalized_ache():
                 "relation": "relatedMatch",
             },
             {
-                "coding": {"code": "CCDS5710", "system": "ccds"},
-                "relation": "relatedMatch",
-            },
-            {
-                "coding": {"code": "CCDS64736", "system": "ccds"},
-                "relation": "relatedMatch",
-            },
-            {
-                "coding": {"code": "CCDS5709", "system": "ccds"},
-                "relation": "relatedMatch",
-            },
-            {
                 "coding": {"code": "P22303", "system": "uniprot"},
                 "relation": "relatedMatch",
             },
@@ -99,7 +87,7 @@ def normalized_ache():
             {"name": "previous_symbols", "value": ["ACEE", "YT"]},
             {
                 "name": "approved_name",
-                "value": "acetylcholinesterase (Cartwright blood group)",
+                "value": "acetylcholinesterase (Yt blood group)",
             },
             {"name": "symbol_status", "value": "approved"},
             {
@@ -161,10 +149,6 @@ def normalized_braf():
                 "relation": "relatedMatch",
             },
             {
-                "coding": {"code": "CCDS5863", "system": "ccds"},
-                "relation": "relatedMatch",
-            },
-            {
                 "coding": {"code": "1943", "system": "iuphar"},
                 "relation": "relatedMatch",
             },
@@ -193,10 +177,6 @@ def normalized_braf():
                 "relation": "relatedMatch",
             },
             {
-                "coding": {"code": "CCDS87555", "system": "ccds"},
-                "relation": "relatedMatch",
-            },
-            {
                 "coding": {"code": "P15056", "system": "uniprot"},
                 "relation": "relatedMatch",
             },
@@ -210,14 +190,6 @@ def normalized_braf():
             },
             {
                 "coding": {"code": "1565476", "system": "pubmed"},
-                "relation": "relatedMatch",
-            },
-            {
-                "coding": {"code": "CCDS94219", "system": "ccds"},
-                "relation": "relatedMatch",
-            },
-            {
-                "coding": {"code": "CCDS94218", "system": "ccds"},
                 "relation": "relatedMatch",
             },
         ],
@@ -298,14 +270,6 @@ def normalized_abl1():
             },
             {
                 "coding": {"code": "uc004bzv.4", "system": "ucsc"},
-                "relation": "relatedMatch",
-            },
-            {
-                "coding": {"code": "CCDS35166", "system": "ccds"},
-                "relation": "relatedMatch",
-            },
-            {
-                "coding": {"code": "CCDS35165", "system": "ccds"},
                 "relation": "relatedMatch",
             },
             {
@@ -393,7 +357,7 @@ def normalized_abl1():
                             "type": "SequenceReference",
                             "refgetAccession": "SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
                         },
-                        "start": 130713015,
+                        "start": 130713042,
                         "end": 130887675,
                     }
                 ],
@@ -729,7 +693,7 @@ def normalize_unmerged_ache():
                         "concept_id": "ncbigene:43",
                         "symbol": "ACHE",
                         "symbol_status": None,
-                        "label": "acetylcholinesterase (Cartwright blood group)",
+                        "label": "acetylcholinesterase (Yt blood group)",
                         "strand": "-",
                         "location_annotations": [],
                         "locations": [
@@ -757,7 +721,7 @@ def normalize_unmerged_ache():
                         "concept_id": "ensembl:ENSG00000087085",
                         "symbol": "ACHE",
                         "symbol_status": None,
-                        "label": "acetylcholinesterase (Cartwright blood group)",
+                        "label": "acetylcholinesterase (Yt blood group)",
                         "strand": "-",
                         "location_annotations": [],
                         "locations": [
@@ -785,7 +749,7 @@ def normalize_unmerged_ache():
                         "concept_id": "hgnc:108",
                         "symbol": "ACHE",
                         "symbol_status": "approved",
-                        "label": "acetylcholinesterase (Cartwright blood group)",
+                        "label": "acetylcholinesterase (Yt blood group)",
                         "strand": None,
                         "location_annotations": [],
                         "locations": [],
@@ -796,14 +760,11 @@ def normalize_unmerged_ache():
                             "ucsc:uc003uxi.4",
                             "vega:OTTHUMG00000157033",
                             "merops:S09.979",
-                            "ccds:CCDS5710",
                             "omim:100740",
                             "iuphar:2465",
-                            "ccds:CCDS5709",
                             "refseq:NM_015831",
                             "pubmed:1380483",
                             "uniprot:P22303",
-                            "ccds:CCDS64736",
                         ],
                         "gene_type": "gene with protein product",
                     }

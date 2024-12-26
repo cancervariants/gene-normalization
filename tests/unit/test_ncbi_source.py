@@ -86,7 +86,7 @@ def pdp1_symbol():
         "label": "pyruvate dehydrogenase phosphatase catalytic subunit 1",
         "concept_id": "ncbigene:54704",
         "symbol": "PDP1",
-        "aliases": ["PDH", "PDP", "PDPC", "PPM2A", "PPM2C"],
+        "aliases": ["PDH", "PDP", "PDPC", "PPM2A", "PPM2C", "PDPC 1"],
         "xrefs": ["hgnc:9279", "ensembl:ENSG00000164951"],
         "previous_symbols": ["LOC157663", "PPM2C"],
         "associated_with": ["omim:605993"],
@@ -168,7 +168,7 @@ def spry3():
             },
             {
                 "end": 56968979,
-                "start": 56954315,
+                "start": 56923422,
                 "sequenceReference": {
                     "type": "SequenceReference",
                     "refgetAccession": "SQ.8_liLu1aycC0tPQPFmUaGXJLDs5SbPZ5",
@@ -271,7 +271,7 @@ def slc25a6():
         "previous_symbols": ["ANT3Y"],
         "associated_with": ["omim:300151", "omim:403000"],
         "symbol_status": None,
-        "location_annotations": [],
+        "location_annotations": ["X", "Y"],
         "strand": "-",
         "locations": [
             {
@@ -659,21 +659,6 @@ def test_prkrap1(check_resp_single_record, ncbi, prkrap1):
     # xref
     resp = ncbi.search("hgnc:33447")
     check_resp_single_record(resp, prkrap1, MatchType.XREF)
-
-
-def test_mhb(check_resp_single_record, ncbi, mhb):
-    """Test that MHB normalizes to correct gene concept."""
-    # Concept ID
-    resp = ncbi.search("NCBIgene:619511")
-    check_resp_single_record(resp, mhb, MatchType.CONCEPT_ID)
-
-    # Symbol
-    resp = ncbi.search("MHB")
-    check_resp_single_record(resp, mhb, MatchType.SYMBOL)
-
-    # associated_with
-    resp = ncbi.search("OMIM:255160")
-    check_resp_single_record(resp, mhb, MatchType.ASSOCIATED_WITH)
 
 
 def test_spg37(check_resp_single_record, ncbi, spg37):
