@@ -21,6 +21,7 @@ from gene import ITEM_TYPES, NAMESPACE_LOOKUP, PREFIX_LOOKUP, __version__
 from gene.database import AbstractDatabase, DatabaseReadException
 from gene.schemas import (
     NAMESPACE_TO_SYSTEM_URI,
+    SYSTEM_URI_TO_NAMESPACE,
     BaseGene,
     BaseNormalizationService,
     Gene,
@@ -347,9 +348,9 @@ class QueryHandler:
 
         sources = []
         for m in gene.mappings or []:
-            for ns, system in NAMESPACE_TO_SYSTEM_URI.items():
-                if system == m.coding.system and ns.value in PREFIX_LOOKUP:
-                    sources.append(PREFIX_LOOKUP[ns.value])
+            ns = SYSTEM_URI_TO_NAMESPACE.get(m.coding.system)
+            if ns in PREFIX_LOOKUP:
+                sources.append(PREFIX_LOOKUP[ns])
 
         for src in sources:
             if src not in sources_meta:

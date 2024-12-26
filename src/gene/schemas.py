@@ -195,6 +195,11 @@ NAMESPACE_TO_SYSTEM_URI: dict[NamespacePrefix, str] = {
     NamespacePrefix.IUPHAR: "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
 }
 
+# URI to source
+SYSTEM_URI_TO_NAMESPACE = {
+    system_uri: ns.value for ns, system_uri in NAMESPACE_TO_SYSTEM_URI.items()
+}
+
 
 class DataLicenseAttributes(BaseModel):
     """Define constraints for data license attributes."""
