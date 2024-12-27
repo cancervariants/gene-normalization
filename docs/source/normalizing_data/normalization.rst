@@ -74,132 +74,95 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
       "primaryCode": "hgnc:1097",
       "label": "BRAF",
       "mappings": [
-        {
-          "coding": {
-            "code": "1097",
-            "system": "hgnc"
+          {
+              "coding": {
+                  "code": "HGNC:1097",
+                  "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+              },
+              "relation": "exactMatch",
           },
-          "relation": "exactMatch"
-        },
-        {
-          "coding": {
-            "code": "673",
-            "system": "ncbigene"
+          {
+              "coding": {
+                  "code": "673",
+                  "system": "https://www.ncbi.nlm.nih.gov/gene/",
+              },
+              "relation": "relatedMatch",
           },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "ENSG00000157764",
-            "system": "ensembl"
+          {
+              "coding": {
+                  "code": "ENSG00000157764",
+                  "system": "https://www.ensembl.org/id/",
+              },
+              "relation": "relatedMatch",
           },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "CCDS5863",
-            "system": "ccds"
+          {
+              "coding": {
+                  "code": "1943",
+                  "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
+              },
+              "relation": "relatedMatch",
           },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "1943",
-            "system": "iuphar"
+          {
+              "coding": {"code": "119066", "system": "orphanet"},
+              "relation": "relatedMatch",
           },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "119066",
-            "system": "orphanet"
+          {
+              "coding": {
+                  "code": "BRAF",
+                  "system": "https://cancer.sanger.ac.uk/cosmic/gene/overview?ln=",
+              },
+              "relation": "relatedMatch",
           },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "BRAF",
-            "system": "cosmic"
+          {
+              "coding": {
+                  "code": "2284096",
+                  "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
+              },
+              "relation": "relatedMatch",
           },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "2284096",
-            "system": "pubmed"
+          {
+              "coding": {
+                  "code": "uc003vwc.5",
+                  "system": "https://genome.cse.ucsc.edu/cgi-bin/hgGene?hgg_gene=",
+              },
+              "relation": "relatedMatch",
           },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "uc003vwc.5",
-            "system": "ucsc"
+          {
+              "coding": {"code": "164757", "system": "https://www.omim.org/entry/"},
+              "relation": "relatedMatch",
           },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "164757",
-            "system": "omim"
+          {
+              "coding": {
+                  "code": "NM_004333",
+                  "system": "https://www.ncbi.nlm.nih.gov/refseq/?term=",
+              },
+              "relation": "relatedMatch",
           },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "NM_004333",
-            "system": "refseq"
+          {
+              "coding": {
+                  "code": "P15056",
+                  "system": "https://purl.uniprot.org/uniprot/",
+              },
+              "relation": "relatedMatch",
           },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "CCDS87555",
-            "system": "ccds"
+          {
+              "coding": {
+                  "code": "M95712",
+                  "system": "https://www.ebi.ac.uk/ena/browser/view/",
+              },
+              "relation": "relatedMatch",
           },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "P15056",
-            "system": "uniprot"
+          {
+              "coding": {"code": "OTTHUMG00000157457", "system": "vega"},
+              "relation": "relatedMatch",
           },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "M95712",
-            "system": "ena.embl"
+          {
+              "coding": {
+                  "code": "1565476",
+                  "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
+              },
+              "relation": "relatedMatch",
           },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "OTTHUMG00000157457",
-            "system": "vega"
-          },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "1565476",
-            "system": "pubmed"
-          },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "CCDS94219",
-            "system": "ccds"
-          },
-          "relation": "relatedMatch"
-        },
-        {
-          "coding": {
-            "code": "CCDS94218",
-            "system": "ccds"
-          },
-          "relation": "relatedMatch"
-        }
       ],
       "extensions": [
         {
