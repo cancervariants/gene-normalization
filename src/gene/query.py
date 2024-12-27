@@ -396,6 +396,8 @@ class QueryHandler:
         :param record: Gene record
         :param match_type: query's match type
         :param possible_concepts: List of other normalized concepts found
+        :raises ValueError: If source of record's concept ID or xrefs/associated with
+            sources is not a valid ``NamespacePrefix``
         :return: Response with core Gene
         """
 
@@ -404,16 +406,18 @@ class QueryHandler:
         ) -> ConceptMapping:
             """Create concept mapping for identifier
 
-            :param concept_id: Concept identifier represented as a curie
+            :param concept_id: A lowercase concept identifier represented as a curie
             :param relation: SKOS mapping relationship, default is relatedMatch
+            :raises ValueError: If source of concept ID is not a valid
+                ``NamespacePrefix``
             :return: Concept mapping for identifier
             """
             source, source_id = concept_id.split(":")
 
             try:
-                source = NamespacePrefix(source.lower())
+                source = NamespacePrefix(source)
             except ValueError as e:
-                err_msg = f"Namespace prefix not supported: {source.lower()}"
+                err_msg = f"Namespace prefix not supported: {source}"
                 raise ValueError(err_msg) from e
 
             system = NAMESPACE_TO_SYSTEM_URI.get(source, source)
