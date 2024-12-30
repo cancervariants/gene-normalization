@@ -40,14 +40,14 @@ def normalized_ache():
             {
                 "coding": {
                     "code": "HGNC:108",
-                    "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                    "system": "https://www.genenames.org",
                 },
                 "relation": "exactMatch",
             },
             {
                 "coding": {
                     "code": "ENSG00000087085",
-                    "system": "https://www.ensembl.org/id/",
+                    "system": "https://www.ensembl.org",
                 },
                 "relation": "relatedMatch",
             },
@@ -59,49 +59,55 @@ def normalized_ache():
                 "relation": "relatedMatch",
             },
             {
-                "coding": {"code": "OTTHUMG00000157033", "system": "vega"},
+                "coding": {
+                    "code": "OTTHUMG00000157033",
+                    "system": "https://www.sanger.ac.uk/tool/vega-genome-browser/",
+                },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "uc003uxi.4",
-                    "system": "https://genome.cse.ucsc.edu/cgi-bin/hgGene?hgg_gene=",
+                    "system": "https://genome.ucsc.edu",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "P22303",
-                    "system": "https://purl.uniprot.org/uniprot/",
+                    "system": "https://www.uniprot.org",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "1380483",
-                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
+                    "system": "https://pubmed.ncbi.nlm.nih.gov",
                 },
                 "relation": "relatedMatch",
             },
             {
-                "coding": {"code": "100740", "system": "https://www.omim.org/entry/"},
+                "coding": {"code": "100740", "system": "https://www.omim.org"},
                 "relation": "relatedMatch",
             },
             {
-                "coding": {"code": "S09.979", "system": "merops"},
+                "coding": {
+                    "code": "S09.979",
+                    "system": "https://www.ebi.ac.uk/merops/",
+                },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "2465",
-                    "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
+                    "system": "https://www.guidetopharmacology.org",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "NM_015831",
-                    "system": "https://www.ncbi.nlm.nih.gov/refseq/?term=",
+                    "system": "https://www.ncbi.nlm.nih.gov/refseq/",
                 },
                 "relation": "relatedMatch",
             },
@@ -166,7 +172,7 @@ def normalized_braf():
             {
                 "coding": {
                     "code": "HGNC:1097",
-                    "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                    "system": "https://www.genenames.org",
                 },
                 "relation": "exactMatch",
             },
@@ -180,14 +186,14 @@ def normalized_braf():
             {
                 "coding": {
                     "code": "ENSG00000157764",
-                    "system": "https://www.ensembl.org/id/",
+                    "system": "https://www.ensembl.org",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "1943",
-                    "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
+                    "system": "https://www.guidetopharmacology.org",
                 },
                 "relation": "relatedMatch",
             },
@@ -198,57 +204,60 @@ def normalized_braf():
             {
                 "coding": {
                     "code": "BRAF",
-                    "system": "https://cancer.sanger.ac.uk/cosmic/gene/overview?ln=",
+                    "system": "https://cancer.sanger.ac.uk/cosmic/",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "2284096",
-                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
+                    "system": "https://pubmed.ncbi.nlm.nih.gov",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "uc003vwc.5",
-                    "system": "https://genome.cse.ucsc.edu/cgi-bin/hgGene?hgg_gene=",
+                    "system": "https://genome.ucsc.edu",
                 },
                 "relation": "relatedMatch",
             },
             {
-                "coding": {"code": "164757", "system": "https://www.omim.org/entry/"},
+                "coding": {"code": "164757", "system": "https://www.omim.org"},
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "NM_004333",
-                    "system": "https://www.ncbi.nlm.nih.gov/refseq/?term=",
+                    "system": "https://www.ncbi.nlm.nih.gov/refseq/",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "P15056",
-                    "system": "https://purl.uniprot.org/uniprot/",
+                    "system": "https://www.uniprot.org",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "M95712",
-                    "system": "https://www.ebi.ac.uk/ena/browser/view/",
+                    "system": "https://www.ebi.ac.uk/ena/",
                 },
                 "relation": "relatedMatch",
             },
             {
-                "coding": {"code": "OTTHUMG00000157457", "system": "vega"},
+                "coding": {
+                    "code": "OTTHUMG00000157457",
+                    "system": "https://www.sanger.ac.uk/tool/vega-genome-browser/",
+                },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "1565476",
-                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
+                    "system": "https://pubmed.ncbi.nlm.nih.gov",
                 },
                 "relation": "relatedMatch",
             },
@@ -315,14 +324,14 @@ def normalized_abl1():
             {
                 "coding": {
                     "code": "HGNC:76",
-                    "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                    "system": "https://www.genenames.org",
                 },
                 "relation": "exactMatch",
             },
             {
                 "coding": {
                     "code": "ENSG00000097007",
-                    "system": "https://www.ensembl.org/id/",
+                    "system": "https://www.ensembl.org",
                 },
                 "relation": "relatedMatch",
             },
@@ -334,46 +343,49 @@ def normalized_abl1():
                 "relation": "relatedMatch",
             },
             {
-                "coding": {"code": "OTTHUMG00000020813", "system": "vega"},
+                "coding": {
+                    "code": "OTTHUMG00000020813",
+                    "system": "https://www.sanger.ac.uk/tool/vega-genome-browser/",
+                },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "uc004bzv.4",
-                    "system": "https://genome.cse.ucsc.edu/cgi-bin/hgGene?hgg_gene=",
+                    "system": "https://genome.ucsc.edu",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "P00519",
-                    "system": "https://purl.uniprot.org/uniprot/",
+                    "system": "https://www.uniprot.org",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "1857987",
-                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
+                    "system": "https://pubmed.ncbi.nlm.nih.gov",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "12626632",
-                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
+                    "system": "https://pubmed.ncbi.nlm.nih.gov",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "ABL1",
-                    "system": "https://cancer.sanger.ac.uk/cosmic/gene/overview?ln=",
+                    "system": "https://cancer.sanger.ac.uk/cosmic/",
                 },
                 "relation": "relatedMatch",
             },
             {
-                "coding": {"code": "189980", "system": "https://www.omim.org/entry/"},
+                "coding": {"code": "189980", "system": "https://www.omim.org"},
                 "relation": "relatedMatch",
             },
             {
@@ -383,21 +395,21 @@ def normalized_abl1():
             {
                 "coding": {
                     "code": "1923",
-                    "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
+                    "system": "https://www.guidetopharmacology.org",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "M14752",
-                    "system": "https://www.ebi.ac.uk/ena/browser/view/",
+                    "system": "https://www.ebi.ac.uk/ena/",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "NM_007313",
-                    "system": "https://www.ncbi.nlm.nih.gov/refseq/?term=",
+                    "system": "https://www.ncbi.nlm.nih.gov/refseq/",
                 },
                 "relation": "relatedMatch",
             },
@@ -480,14 +492,14 @@ def normalized_p150():
             {
                 "coding": {
                     "code": "HGNC:1910",
-                    "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                    "system": "https://www.genenames.org",
                 },
                 "relation": "exactMatch",
             },
             {
                 "coding": {
                     "code": "ENSG00000167670",
-                    "system": "https://www.ensembl.org/id/",
+                    "system": "https://www.ensembl.org",
                 },
                 "relation": "relatedMatch",
             },
@@ -499,52 +511,55 @@ def normalized_p150():
                 "relation": "relatedMatch",
             },
             {
-                "coding": {"code": "601246", "system": "https://www.omim.org/entry/"},
+                "coding": {"code": "601246", "system": "https://www.omim.org"},
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "CCDS32875",
-                    "system": "https://www.ncbi.nlm.nih.gov/CCDS/CcdsBrowse.cgi?REQUEST=CCDS&DATA=",
+                    "system": "https://www.ncbi.nlm.nih.gov/projects/CCDS/CcdsBrowse.cgi",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "7600578",
-                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
+                    "system": "https://pubmed.ncbi.nlm.nih.gov",
                 },
                 "relation": "relatedMatch",
             },
             {
-                "coding": {"code": "OTTHUMG00000181922", "system": "vega"},
+                "coding": {
+                    "code": "OTTHUMG00000181922",
+                    "system": "https://www.sanger.ac.uk/tool/vega-genome-browser/",
+                },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "Q13111",
-                    "system": "https://purl.uniprot.org/uniprot/",
+                    "system": "https://www.uniprot.org",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "NM_005483",
-                    "system": "https://www.ncbi.nlm.nih.gov/refseq/?term=",
+                    "system": "https://www.ncbi.nlm.nih.gov/refseq/",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "U20979",
-                    "system": "https://www.ebi.ac.uk/ena/browser/view/",
+                    "system": "https://www.ebi.ac.uk/ena/",
                 },
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "uc002mal.4",
-                    "system": "https://genome.cse.ucsc.edu/cgi-bin/hgGene?hgg_gene=",
+                    "system": "https://genome.ucsc.edu",
                 },
                 "relation": "relatedMatch",
             },
@@ -909,7 +924,7 @@ def normalized_ifnr():
             {
                 "coding": {
                     "code": "HGNC:5447",
-                    "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                    "system": "https://www.genenames.org",
                 },
                 "relation": "exactMatch",
             },
@@ -923,18 +938,18 @@ def normalized_ifnr():
             {
                 "coding": {
                     "code": "1906174",
-                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
+                    "system": "https://pubmed.ncbi.nlm.nih.gov",
                 },
                 "relation": "relatedMatch",
             },
             {
-                "coding": {"code": "147573", "system": "https://www.omim.org/entry/"},
+                "coding": {"code": "147573", "system": "https://www.omim.org"},
                 "relation": "relatedMatch",
             },
             {
                 "coding": {
                     "code": "1193239",
-                    "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
+                    "system": "https://pubmed.ncbi.nlm.nih.gov",
                 },
                 "relation": "relatedMatch",
             },

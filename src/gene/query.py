@@ -406,6 +406,9 @@ class QueryHandler:
         ) -> ConceptMapping:
             """Create concept mapping for identifier
 
+            ``system`` will use source homepage or namespace prefix, in that order of \
+            preference, if available.
+
             :param concept_id: A lowercase concept identifier represented as a curie
             :param relation: SKOS mapping relationship, default is relatedMatch
             :raises ValueError: If source of concept ID is not a valid

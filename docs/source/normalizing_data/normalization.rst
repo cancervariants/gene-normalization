@@ -77,7 +77,7 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
           {
               "coding": {
                   "code": "HGNC:1097",
-                  "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                  "system": "https://www.genenames.org",
               },
               "relation": "exactMatch",
           },
@@ -91,14 +91,14 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
           {
               "coding": {
                   "code": "ENSG00000157764",
-                  "system": "https://www.ensembl.org/id/",
+                  "system": "https://www.ensembl.org",
               },
               "relation": "relatedMatch",
           },
           {
               "coding": {
                   "code": "1943",
-                  "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
+                  "system": "https://www.guidetopharmacology.org",
               },
               "relation": "relatedMatch",
           },
@@ -109,46 +109,46 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
           {
               "coding": {
                   "code": "BRAF",
-                  "system": "https://cancer.sanger.ac.uk/cosmic/gene/overview?ln=",
+                  "system": "https://cancer.sanger.ac.uk/cosmic",
               },
               "relation": "relatedMatch",
           },
           {
               "coding": {
                   "code": "2284096",
-                  "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
+                  "system": "https://pubmed.ncbi.nlm.nih.gov",
               },
               "relation": "relatedMatch",
           },
           {
               "coding": {
                   "code": "uc003vwc.5",
-                  "system": "https://genome.cse.ucsc.edu/cgi-bin/hgGene?hgg_gene=",
+                  "system": "https://genome.ucsc.edu",
               },
               "relation": "relatedMatch",
           },
           {
-              "coding": {"code": "164757", "system": "https://www.omim.org/entry/"},
+              "coding": {"code": "164757", "system": "https://www.omim.org"},
               "relation": "relatedMatch",
           },
           {
               "coding": {
                   "code": "NM_004333",
-                  "system": "https://www.ncbi.nlm.nih.gov/refseq/?term=",
+                  "system": "https://www.ncbi.nlm.nih.gov/refseq/",
               },
               "relation": "relatedMatch",
           },
           {
               "coding": {
                   "code": "P15056",
-                  "system": "https://purl.uniprot.org/uniprot/",
+                  "system": "https://www.uniprot.org",
               },
               "relation": "relatedMatch",
           },
           {
               "coding": {
                   "code": "M95712",
-                  "system": "https://www.ebi.ac.uk/ena/browser/view/",
+                  "system": "https://www.ebi.ac.uk/ena/",
               },
               "relation": "relatedMatch",
           },
@@ -159,7 +159,7 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
           {
               "coding": {
                   "code": "1565476",
-                  "system": "https://www.ncbi.nlm.nih.gov/pubmed/",
+                  "system": "https://pubmed.ncbi.nlm.nih.gov",
               },
               "relation": "relatedMatch",
           },
