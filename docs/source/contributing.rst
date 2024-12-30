@@ -27,7 +27,7 @@ Alternatively, use a virtual environment and install all dependency groups: ::
 
     python3 -m venv venv
     source venv/bin/activate
-    python3 -m pip install -e ".[pg,etl,test,dev,docs]"
+    python3 -m pip install -e ".[pg,etl,tests,dev,docs]"
 
 We use `pre-commit <https://pre-commit.com/#usage>`_ to run conformance tests before commits. This provides checks for:
 

@@ -41,7 +41,7 @@ etl = [
     "wags-tails~=0.2.1",
     "setuptools",  # pinned for 3.12 because yoyo-migrations still uses pkg_resources
 ]
-test = ["pytest>=6.0", "pytest-cov", "mock", "httpx", "deepdiff"]
+tests = ["pytest>=6.0", "pytest-cov", "mock", "httpx", "deepdiff"]
 dev = ["pre-commit>=3.7.1", "ruff==0.5.0"]
 docs = [
     "sphinx==6.1.3",

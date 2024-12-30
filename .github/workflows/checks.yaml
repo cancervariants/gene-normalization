@@ -33,11 +33,11 @@ jobs:
 
       - name: Install DynamoDB dependencies
         if: ${{ env.GENE_NORM_DB_URL == 'http://localhost:8000' }}
-        run: python3 -m pip install ".[etl,test]"
+        run: python3 -m pip install ".[etl,tests]"
 
       - name: Install PG dependencies
         if: ${{ env.GENE_NORM_DB_URL != 'http://localhost:8000' }}
-        run: python3 -m pip install ".[pg,etl,test]"
+        run: python3 -m pip install ".[pg,etl,tests]"
 
       - name: Build local DynamoDB
         if: ${{ env.GENE_NORM_DB_URL == 'http://localhost:8000' }}
