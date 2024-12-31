@@ -415,7 +415,7 @@ class QueryHandler:
                 ``NamespacePrefix``
             :return: Concept mapping for identifier
             """
-            source, source_id = concept_id.split(":")
+            source = concept_id.split(":")[0]
 
             try:
                 source = NamespacePrefix(source)
@@ -424,10 +424,9 @@ class QueryHandler:
                 raise ValueError(err_msg) from e
 
             system = NAMESPACE_TO_SYSTEM_URI.get(source, source)
-            code_ = concept_id.upper() if source == NamespacePrefix.HGNC else source_id
 
             return ConceptMapping(
-                coding=Coding(code=code(code_), system=system), relation=relation
+                coding=Coding(code=code(concept_id), system=system), relation=relation
             )
 
         gene_obj = MappableConcept(
