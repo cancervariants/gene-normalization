@@ -12,7 +12,7 @@ The Gene Normalizer can be installed from `PyPI <https://pypi.org/project/gene-n
     * ``etl`` provides dependencies for regenerating data from sources. It's necessary for users who don't intend to rely on existing database dumps.
     * ``pg`` provides dependencies for connecting to a PostgreSQL database. It's not necessary for users who are using a DynamoDB backend.
     * ``dev`` provides development dependencies, such as static code analysis. It's required for contributing to the Gene Normalizer, but otherwise unnecessary.
-    * ``test`` provides dependencies for running tests. As with ``dev``, it's mostly relevant for contributors.
+    * ``tests`` provides dependencies for running tests. As with ``dev``, it's mostly relevant for contributors.
     * ``docs`` provides dependencies for documentation generation. It's only relevant for contributors.
 
 .. _quick-install:
