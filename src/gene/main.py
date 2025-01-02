@@ -1,13 +1,35 @@
 """Main application for FastAPI"""
 
 import html
+import os
+from enum import Enum
 
 from fastapi import FastAPI, HTTPException, Query
 
 from gene import __version__
-from gene.database import create_db
+from gene.database.database import (
+    AWS_ENV_VAR_NAME,
+    VALID_AWS_ENV_NAMES,
+    create_db,
+)
 from gene.query import InvalidParameterException, QueryHandler
-from gene.schemas import NormalizeService, SearchService, UnmergedNormalizationService
+from gene.schemas import (
+    NormalizeService,
+    SearchService,
+    ServiceEnvironment,
+    ServiceInfo,
+    ServiceOrganization,
+    ServiceType,
+    UnmergedNormalizationService,
+)
+
+
+class _Tag(str, Enum):
+    """Define tag names for endpoints."""
+
+    QUERY = "Query"
+    META = "Meta"
+
 
 db = create_db()
 query_handler = QueryHandler(db)
@@ -62,7 +84,7 @@ search_description = (
     response_description=response_description,
     response_model=SearchService,
     description=search_description,
-    tags=["Query"],
+    tags=[_Tag.QUERY],
 )
 def search(
     q: str = Query(..., description=q_descr),
@@ -100,7 +122,7 @@ normalize_q_descr = "Gene to normalize."
     response_model=NormalizeService,
     response_model_exclude_none=True,
     description=normalize_descr,
-    tags=["Query"],
+    tags=[_Tag.QUERY],
 )
 def normalize(q: str = Query(..., description=normalize_q_descr)) -> NormalizeService:
     """Return strongest match concepts to query string provided by user.
@@ -131,7 +153,7 @@ unmerged_normalize_description = (
     response_description=unmerged_response_descr,
     response_model=UnmergedNormalizationService,
     description=unmerged_normalize_description,
-    tags=["Query"],
+    tags=[_Tag.QUERY],
 )
 def normalize_unmerged(
     q: str = Query(..., description=normalize_q_descr),
@@ -142,3 +164,28 @@ def normalize_unmerged(
     :returns: JSON response with matching normalized record and source metadata
     """
     return query_handler.normalize_unmerged(html.unescape(q))
+
+
+@app.get(
+    "/service_info",
+    summary="Get basic service information",
+    response_model=ServiceInfo,
+    description="Retrieve service metadata, such as versioning and contact info. Structured in conformance with the [GA4GH service info API specification](https://www.ga4gh.org/product/service-info/)",
+    tags=[_Tag.META],
+)
+def service_info() -> ServiceInfo:
+    """Provide service info per GA4GH Service Info spec
+    :return: conformant service info description
+    """
+    if not os.environ.get(AWS_ENV_VAR_NAME):
+        env = ServiceEnvironment.DEV
+    else:
+        raw_env_var = os.environ[AWS_ENV_VAR_NAME]
+        if raw_env_var not in VALID_AWS_ENV_NAMES:
+            env = ServiceEnvironment.DEV
+        # elif raw_env_var == AW
+        # TODO check what env var is used for nonprod box
+
+    return ServiceInfo(
+        organization=ServiceOrganization(), type=ServiceType(), environment=env
+    )

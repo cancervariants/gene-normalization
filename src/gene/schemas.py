@@ -725,3 +725,57 @@ class UnmergedNormalizationService(BaseNormalizationService):
             }
         }
     )
+
+
+class ServiceOrganization(BaseModel):
+    """Define service_info response for organization field"""
+
+    name: Literal["Genomic Medicine Lab at Nationwide Children's Hospital"] = (
+        "Genomic Medicine Lab at Nationwide Children's Hospital"
+    )
+    url: Literal[
+        "https://www.nationwidechildrens.org/specialties/institute-for-genomic-medicine/research-labs/wagner-lab"
+    ] = "https://www.nationwidechildrens.org/specialties/institute-for-genomic-medicine/research-labs/wagner-lab"
+
+
+class ServiceType(BaseModel):
+    """Define service_info response for type field"""
+
+    group: Literal["org.genomicmedlab"] = "org.genomicmedlab"
+    artifact: Literal["Gene Normalizer API"] = "Gene Normalizer API"
+    version: Literal[__version__] = __version__
+
+
+class ServiceEnvironment(str, Enum):
+    """Define current environment for service_info field"""
+
+    DEV = "dev"
+    PROD = "prod"
+    TEST = "test"
+    STAGING = "staging"
+
+
+class ServiceInfo(BaseModel):
+    """Define response structure for GA4GH /service_info endpoint."""
+
+    id: Literal["org.genomicmedlab.gene-normalizer"] = (
+        "org.genomicmedlab.gene-normalizer"
+    )
+    name: Literal["Gene Normalizer"] = "Gene Normalizer"
+    type: ServiceType
+    description: Literal[
+        "Tools for resolving ambiguous gene symbols to richly-annotated concepts"
+    ] = "Tools for resolving ambiguous gene symbols to richly-annotated concepts"
+    organization: ServiceOrganization
+    contactUrl: Literal["Alex.Wagner@nationwidechildrens.org"] = (  # noqa: N815
+        "Alex.Wagner@nationwidechildrens.org"
+    )
+    documentationUrl: Literal["https://gene-normalizer.readthedocs.io/"] = (  # noqa: N815
+        "https://gene-normalizer.readthedocs.io/"
+    )
+    createdAt: Literal["2024-03-04T00:00:00.000000+00:00"] = (  # noqa: N815
+        "2024-03-04T00:00:00.000000+00:00"
+    )
+    updatedAt: str | None = None  # noqa: N815
+    environment: ServiceEnvironment
+    version: Literal[__version__] = __version__

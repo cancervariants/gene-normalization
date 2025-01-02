@@ -19,10 +19,10 @@ from gene.database.database import (
     SKIP_AWS_DB_ENV_NAME,
     VALID_AWS_ENV_NAMES,
     AbstractDatabase,
-    AwsEnvName,
     DatabaseInitializationException,
     DatabaseReadException,
     DatabaseWriteException,
+    EnvironmentName,
     confirm_aws_db_use,
 )
 from gene.schemas import RecordType, RefType, SourceMeta, SourceName
@@ -62,7 +62,7 @@ class DynamoDbDatabase(AbstractDatabase):
 
             boto_params = {"region_name": region_name}
 
-            if aws_env == AwsEnvName.DEVELOPMENT:
+            if aws_env == EnvironmentName.DEVELOPMENT:
                 self.gene_table = environ.get(
                     "GENE_DYNAMO_TABLE", "gene_normalizer_nonprod"
                 )
