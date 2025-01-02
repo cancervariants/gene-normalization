@@ -17,6 +17,7 @@ from pydantic import (
 )
 
 from gene import __version__
+from gene.database.database import AwsEnvName
 
 CURIE_REGEX = r"^\w[^:]*:.+$"
 
@@ -746,15 +747,6 @@ class ServiceType(BaseModel):
     version: Literal[__version__] = __version__
 
 
-class ServiceEnvironment(str, Enum):
-    """Define current environment for service_info field"""
-
-    DEV = "dev"
-    PROD = "prod"
-    TEST = "test"
-    STAGING = "staging"
-
-
 class ServiceInfo(BaseModel):
     """Define response structure for GA4GH /service_info endpoint."""
 
@@ -777,5 +769,5 @@ class ServiceInfo(BaseModel):
         "2024-03-04T00:00:00.000000+00:00"
     )
     updatedAt: str | None = None  # noqa: N815
-    environment: ServiceEnvironment
+    environment: AwsEnvName | None = None
     version: Literal[__version__] = __version__

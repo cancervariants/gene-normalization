@@ -10,13 +10,13 @@ from gene import __version__
 from gene.database.database import (
     AWS_ENV_VAR_NAME,
     VALID_AWS_ENV_NAMES,
+    AwsEnvName,
     create_db,
 )
 from gene.query import InvalidParameterException, QueryHandler
 from gene.schemas import (
     NormalizeService,
     SearchService,
-    ServiceEnvironment,
     ServiceInfo,
     ServiceOrganization,
     ServiceType,
@@ -175,16 +175,17 @@ def normalize_unmerged(
 )
 def service_info() -> ServiceInfo:
     """Provide service info per GA4GH Service Info spec
+
     :return: conformant service info description
     """
     if not os.environ.get(AWS_ENV_VAR_NAME):
-        env = ServiceEnvironment.DEV
+        env = None
     else:
         raw_env_var = os.environ[AWS_ENV_VAR_NAME]
         if raw_env_var not in VALID_AWS_ENV_NAMES:
-            env = ServiceEnvironment.DEV
-        # elif raw_env_var == AW
-        # TODO check what env var is used for nonprod box
+            env = None
+        else:
+            env = AwsEnvName(raw_env_var)
 
     return ServiceInfo(
         organization=ServiceOrganization(), type=ServiceType(), environment=env
