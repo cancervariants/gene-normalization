@@ -246,10 +246,10 @@ class QueryHandler:
 
             except DatabaseReadException as e:
                 _logger.error(
-                    "Encountered DatabaseReadException looking up %s %s: ",
+                    "Encountered DatabaseReadException %s looking up %s %s: ",
+                    e,
                     item_type,
                     term,
-                    e,
                 )
                 continue
 

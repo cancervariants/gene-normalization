@@ -10,10 +10,10 @@ from .hgnc import HGNC
 from .ncbi import NCBI
 
 __all__ = [
-    "Ensembl",
     "HGNC",
     "NCBI",
-    "GeneNormalizerEtlError",
+    "Ensembl",
     "GeneFileVersionError",
+    "GeneNormalizerEtlError",
     "GeneSourceFetchError",
 ]

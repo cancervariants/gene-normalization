@@ -804,12 +804,12 @@ class PostgresDatabase(AbstractDatabase):
                     for chunk in r.iter_content(chunk_size=8192):
                         if chunk:
                             h.write(chunk)
-            tar = tarfile.open(temp_tarfile, "r:gz")
-            tar_dump_file = next(
-                f for f in tar.getmembers() if f.name.startswith("gene_norm_")
-            )
-            tar.extractall(path=tempdir_path, members=[tar_dump_file])  # noqa: S202
-            dump_file = tempdir_path / tar_dump_file.name
+            with tarfile.open(temp_tarfile, "r:gz") as tar:
+                tar_dump_file = next(
+                    f for f in tar.getmembers() if f.name.startswith("gene_norm_")
+                )
+                tar.extractall(path=tempdir_path, members=[tar_dump_file])  # noqa: S202
+                dump_file = tempdir_path / tar_dump_file.name
 
             self.drop_db()
             system_call = f"psql {self.conninfo} -f {dump_file.absolute()}"
