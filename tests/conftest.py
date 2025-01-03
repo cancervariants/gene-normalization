@@ -15,7 +15,7 @@ def database() -> AbstractDatabase:
 
 def pytest_addoption(parser):
     """Add custom commands to pytest invocation.
-    See https://docs.pytest.org/en/7.1.x/reference/reference.html#parser
+    See https://docs.pytest.org/en/8.1.x/reference/reference.html#parser
     """
     parser.addoption(
         "--verbose-logs",

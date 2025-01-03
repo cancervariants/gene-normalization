@@ -17,7 +17,6 @@ from pydantic import (
 )
 
 from gene import __version__
-from gene.database.database import AwsEnvName
 
 CURIE_REGEX = r"^\w[^:]*:.+$"
 
@@ -745,6 +744,14 @@ class ServiceType(BaseModel):
     group: Literal["org.genomicmedlab"] = "org.genomicmedlab"
     artifact: Literal["Gene Normalizer API"] = "Gene Normalizer API"
     version: Literal[__version__] = __version__
+
+
+class AwsEnvName(str, Enum):
+    """AWS environment name that is being used"""
+
+    DEVELOPMENT = "Dev"
+    STAGING = "Staging"
+    PRODUCTION = "Prod"
 
 
 class ServiceInfo(BaseModel):

@@ -3,14 +3,13 @@
 import abc
 import sys
 from collections.abc import Generator
-from enum import Enum
 from os import environ
 from pathlib import Path
 from typing import Any
 
 import click
 
-from gene.schemas import RecordType, RefType, SourceMeta, SourceName
+from gene.schemas import AwsEnvName, RecordType, RefType, SourceMeta, SourceName
 
 
 class DatabaseException(Exception):  # noqa: N818
@@ -248,14 +247,6 @@ AWS_ENV_VAR_NAME = "GENE_NORM_ENV"
 # Set to "true" if want to skip db confirmation check. Should ONLY be used for
 # deployment needs
 SKIP_AWS_DB_ENV_NAME = "SKIP_AWS_CONFIRMATION"
-
-
-class AwsEnvName(str, Enum):
-    """AWS environment name that is being used"""
-
-    DEVELOPMENT = "Dev"
-    STAGING = "Staging"
-    PRODUCTION = "Prod"
 
 
 VALID_AWS_ENV_NAMES = {v.value for v in AwsEnvName.__members__.values()}
