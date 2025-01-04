@@ -57,13 +57,13 @@ class Merge:
                     self._database.update_merge_ref(concept_id, merge_ref)
                 except DatabaseWriteException as dw:
                     if str(dw).startswith("No such record exists"):
-                        _logger.error(
+                        _logger.exception(
                             "Updating nonexistent record: %s for merge ref to %s",
                             concept_id,
                             merge_ref,
                         )
                     else:
-                        _logger.error(str(dw))
+                        _logger.exception("Encountered unknown DB write exception")
             uploaded_ids |= group
         self._database.complete_write_transaction()
         _logger.info("Merged concept generation successful.")
@@ -135,9 +135,9 @@ class Merge:
                 source_rank = SourcePriority[src].value
             else:
                 err_msg = (
-                    f"Prohibited source: {src} in concept_id " f"{record['concept_id']}"
+                    f"Prohibited source: {src} in concept_id {record['concept_id']}"
                 )
-                raise Exception(err_msg)
+                raise ValueError(err_msg)
             return source_rank, record["concept_id"]
 
         records.sort(key=record_order)

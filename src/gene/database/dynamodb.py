@@ -105,8 +105,8 @@ class DynamoDbDatabase(AbstractDatabase):
         try:
             if not self._check_delete_okay():
                 return
-        except DatabaseWriteException as e:
-            raise e
+        except DatabaseWriteException:  # noqa: TRY203
+            raise
 
         if self.gene_table in self.list_tables():
             self.dynamodb.Table(self.gene_table).delete()
@@ -250,9 +250,9 @@ class DynamoDbDatabase(AbstractDatabase):
             response = self.genes.query(KeyConditionExpression=exp)
             record = response["Items"][0]
             del record["label_and_type"]
-            return record
+            return record  # noqa: TRY300
         except ClientError as e:
-            _logger.error(
+            _logger.exception(
                 "boto3 client error on get_records_by_id for search term %s: %s",
                 concept_id,
                 e.response["Error"]["Message"],
@@ -275,7 +275,7 @@ class DynamoDbDatabase(AbstractDatabase):
             matches = self.genes.query(KeyConditionExpression=filter_exp)
             return [m["concept_id"] for m in matches.get("Items", None)]
         except ClientError as e:
-            _logger.error(
+            _logger.exception(
                 "boto3 client error on get_refs_by_type for search term %s: %s",
                 search_term,
                 e.response["Error"]["Message"],
@@ -378,7 +378,7 @@ class DynamoDbDatabase(AbstractDatabase):
         try:
             self.batch.put_item(Item=record)
         except ClientError as e:
-            _logger.error(
+            _logger.exception(
                 "boto3 client error on add_record for %s: %s",
                 concept_id,
                 e.response["Error"]["Message"],
@@ -411,7 +411,7 @@ class DynamoDbDatabase(AbstractDatabase):
         try:
             self.batch.put_item(Item=record)
         except ClientError as e:
-            _logger.error(
+            _logger.exception(
                 "boto3 client error on add_record for " "%s: %s",
                 concept_id,
                 e.response["Error"]["Message"],
@@ -438,7 +438,7 @@ class DynamoDbDatabase(AbstractDatabase):
         try:
             self.batch.put_item(Item=record)
         except ClientError as e:
-            _logger.error(
+            _logger.exception(
                 "boto3 client error adding reference %s for %s with match type %s: %s",
                 term,
                 concept_id,
@@ -473,7 +473,7 @@ class DynamoDbDatabase(AbstractDatabase):
                 )
                 raise DatabaseWriteException(err_msg) from e
 
-            _logger.error(
+            _logger.exception(
                 "boto3 client error in `database.update_record()`: %s",
                 e.response["Error"]["Message"],
             )

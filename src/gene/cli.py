@@ -206,7 +206,7 @@ def _load_source(
     try:
         processed_ids += source.perform_etl(use_existing)
     except GeneNormalizerEtlError as e:
-        _logger.error(e)
+        _logger.exception("ETL error while loading %s", n)
         click.echo(f"Encountered error while loading {n}: {e}.")
         click.get_current_context().exit()
     end_load = timer()
@@ -322,13 +322,13 @@ def update_normalizer_db(
 
         if len(sources_split) == 0:
             err_msg = "Must enter 1 or more source names to update"
-            raise Exception(err_msg)
+            raise ValueError(err_msg)
 
         non_sources = set(sources_split) - set(SOURCES)
 
         if len(non_sources) != 0:
             err_msg = f"Not valid source(s): {non_sources}"
-            raise Exception(err_msg)
+            raise ValueError(err_msg)
 
         parsed_source_names = {SourceName(SOURCES[s]) for s in sources_split}
         _update_normalizer(parsed_source_names, db, update_merged, use_existing)
