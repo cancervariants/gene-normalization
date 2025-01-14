@@ -103,8 +103,8 @@ search_description = (
 def search(
     request: Request,
     q: Annotated[str, Query(..., description=q_descr)],
-    incl: Annotated[str | None, Query(None, description=incl_descr)],
-    excl: Annotated[str | None, Query(None, description=excl_descr)],
+    incl: Annotated[str | None, Query(description=incl_descr)] = None,
+    excl: Annotated[str | None, Query(description=excl_descr)] = None,
 ) -> SearchService:
     """Return strongest match concepts to query string provided by user.
 
@@ -192,7 +192,7 @@ def normalize_unmerged(
 
 
 @app.get(
-    "/service_info",
+    "/gene/service_info",
     summary="Get basic service information",
     description="Retrieve service metadata, such as versioning and contact info. Structured in conformance with the [GA4GH service info API specification](https://www.ga4gh.org/product/service-info/)",
     tags=[_Tag.META],
