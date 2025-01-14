@@ -121,8 +121,8 @@ class PostgresDatabase(AbstractDatabase):
         try:
             if not self._check_delete_okay():
                 return
-        except DatabaseWriteException as e:
-            raise e
+        except DatabaseWriteException:  # noqa: TRY203
+            raise
 
         with self.conn.cursor() as cur:
             cur.execute(self._drop_db_query)
@@ -601,7 +601,7 @@ class PostgresDatabase(AbstractDatabase):
                     cur.execute(self._ins_symbol_query, [record["symbol"], concept_id])
                 self.conn.commit()
             except UniqueViolation:
-                _logger.error("Record with ID %s already exists", concept_id)
+                _logger.exception("Record with ID %s already exists", concept_id)
                 self.conn.rollback()
 
     _add_merged_record_query = b"""
@@ -804,7 +804,7 @@ class PostgresDatabase(AbstractDatabase):
                     for chunk in r.iter_content(chunk_size=8192):
                         if chunk:
                             h.write(chunk)
-            tar = tarfile.open(temp_tarfile, "r:gz")
+            tar = tarfile.open(temp_tarfile, "r:gz")  # noqa: SIM115
             tar_dump_file = next(
                 f for f in tar.getmembers() if f.name.startswith("gene_norm_")
             )
