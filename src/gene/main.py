@@ -2,9 +2,12 @@
 
 import html
 import os
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 from enum import Enum
+from typing import Annotated
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 
 from gene import __version__
 from gene.database.database import (
@@ -13,6 +16,7 @@ from gene.database.database import (
     AwsEnvName,
     create_db,
 )
+from gene.logging import initialize_logs
 from gene.query import InvalidParameterException, QueryHandler
 from gene.schemas import (
     NormalizeService,
@@ -31,8 +35,19 @@ class _Tag(str, Enum):
     META = "Meta"
 
 
-db = create_db()
-query_handler = QueryHandler(db)
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator:
+    """Perform operations that interact with the lifespan of the FastAPI instance.
+    See https://fastapi.tiangolo.com/advanced/events/#lifespan.
+
+    :param app: FastAPI instance
+    """
+    initialize_logs()
+
+    db = create_db()
+    app.state.query_handler = QueryHandler(db)
+    yield
+
 
 description = """
 The Gene Normalizer provides tools for resolving ambiguous gene references to
@@ -82,17 +97,19 @@ search_description = (
     "/gene/search",
     summary=read_query_summary,
     response_description=response_description,
-    response_model=SearchService,
     description=search_description,
     tags=[_Tag.QUERY],
 )
 def search(
-    q: str = Query(..., description=q_descr),
-    incl: str | None = Query(None, description=incl_descr),
-    excl: str | None = Query(None, description=excl_descr),
+    request: Request,
+    q: Annotated[str, Query(..., description=q_descr)],
+    incl: Annotated[str | None, Query(None, description=incl_descr)],
+    excl: Annotated[str | None, Query(None, description=excl_descr)],
 ) -> SearchService:
     """Return strongest match concepts to query string provided by user.
 
+    :param request: the HTTP request context, supplied by FastAPI, used to get
+        query response class
     :param str q: gene search term
     :param Optional[str] incl: comma-separated list of sources to include,
         with all others excluded. Raises HTTPException if both `incl` and
@@ -103,7 +120,9 @@ def search(
     :return: JSON response with matched records and source metadata
     """
     try:
-        resp = query_handler.search(html.unescape(q), incl=incl, excl=excl)
+        resp = request.app.state.query_handler.search(
+            html.unescape(q), incl=incl, excl=excl
+        )
     except InvalidParameterException as e:
         raise HTTPException(status_code=422, detail=str(e)) from e
     return resp
@@ -119,18 +138,22 @@ normalize_q_descr = "Gene to normalize."
     "/gene/normalize",
     summary=normalize_summary,
     response_description=normalize_response_descr,
-    response_model=NormalizeService,
     response_model_exclude_none=True,
     description=normalize_descr,
     tags=[_Tag.QUERY],
 )
-def normalize(q: str = Query(..., description=normalize_q_descr)) -> NormalizeService:
+def normalize(
+    request: Request,
+    q: Annotated[str, Query(..., description=normalize_q_descr)],
+) -> NormalizeService:
     """Return strongest match concepts to query string provided by user.
 
+    :param request: the HTTP request context, supplied by FastAPI, used to get
+        query response class
     :param str q: gene search term
     :return: JSON response with normalized gene concept
     """
-    return query_handler.normalize(html.unescape(q))
+    return request.app.state.query_handler.normalize(html.unescape(q))
 
 
 unmerged_matches_summary = (
@@ -151,25 +174,26 @@ unmerged_normalize_description = (
     summary=unmerged_matches_summary,
     operation_id="getUnmergedRecords",
     response_description=unmerged_response_descr,
-    response_model=UnmergedNormalizationService,
     description=unmerged_normalize_description,
     tags=[_Tag.QUERY],
 )
 def normalize_unmerged(
-    q: str = Query(..., description=normalize_q_descr),
+    request: Request,
+    q: Annotated[str, Query(..., description=normalize_q_descr)],
 ) -> UnmergedNormalizationService:
     """Return all individual records associated with a normalized concept.
 
+    :param request: the HTTP request context, supplied by FastAPI, used to get
+        query response class
     :param q: Gene search term
     :returns: JSON response with matching normalized record and source metadata
     """
-    return query_handler.normalize_unmerged(html.unescape(q))
+    return request.app.state.query_handler.normalize_unmerged(html.unescape(q))
 
 
 @app.get(
     "/service_info",
     summary="Get basic service information",
-    response_model=ServiceInfo,
     description="Retrieve service metadata, such as versioning and contact info. Structured in conformance with the [GA4GH service info API specification](https://www.ga4gh.org/product/service-info/)",
     tags=[_Tag.META],
 )

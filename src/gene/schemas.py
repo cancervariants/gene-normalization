@@ -746,6 +746,9 @@ class ServiceType(BaseModel):
     version: Literal[__version__] = __version__
 
 
+LOCAL_DEV_ENV_NAME = "local_dev"
+
+
 class AwsEnvName(str, Enum):
     """AWS environment name that is being used"""
 
@@ -776,5 +779,5 @@ class ServiceInfo(BaseModel):
         "2024-03-04T00:00:00.000000+00:00"
     )
     updatedAt: str | None = None  # noqa: N815
-    environment: AwsEnvName | None = None
+    environment: AwsEnvName | Literal[LOCAL_DEV_ENV_NAME] | None = None
     version: Literal[__version__] = __version__

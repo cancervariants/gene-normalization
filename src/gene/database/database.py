@@ -9,6 +9,7 @@ from typing import Any
 
 import click
 
+from gene.config import config
 from gene.schemas import AwsEnvName, RecordType, RefType, SourceMeta, SourceName
 
 
@@ -62,7 +63,7 @@ class AbstractDatabase(abc.ABC):
         :raise DatabaseWriteException: if skip confirmation variable is set -- manual
         approval is required.
         """
-        if environ.get(AWS_ENV_VAR_NAME, "") == AwsEnvName.PRODUCTION:
+        if config.env == AwsEnvName.PRODUCTION:
             if environ.get(SKIP_AWS_DB_ENV_NAME, "") == "true":
                 err_msg = f"Must unset {SKIP_AWS_DB_ENV_NAME} env variable to enable drop_db()"
                 raise DatabaseWriteException(err_msg)
