@@ -57,6 +57,7 @@ The Gene Normalizer was created to support the `Knowledgebase Integration Projec
     Normalizing data<normalizing_data/index>
     Managing data<managing_data/index>
     API Reference<reference/index>
+    CLI Reference<cli>
     Changelog<changelog>
     Contributing<contributing>
     License<license>
