@@ -77,12 +77,13 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
           {
               "coding": {
                   "code": "HGNC:1097",
-                  "system": "https://www.genenames.org",
+                  "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
               },
               "relation": "exactMatch",
           },
           {
               "coding": {
+                  "id": "ncbigene:673",
                   "code": "673",
                   "system": "https://www.ncbi.nlm.nih.gov/gene/",
               },
@@ -90,76 +91,97 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
           },
           {
               "coding": {
+                  "id": "ensembl:ENSG00000157764",
                   "code": "ENSG00000157764",
-                  "system": "https://www.ensembl.org",
+                  "system": "https://www.ensembl.org/id/",
               },
               "relation": "relatedMatch",
           },
           {
               "coding": {
+                  "id": "iuphar:1943",
                   "code": "1943",
-                  "system": "https://www.guidetopharmacology.org",
+                  "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
               },
               "relation": "relatedMatch",
           },
           {
-              "coding": {"code": "119066", "system": "orphanet"},
+              "coding": {
+                  "id": "orphanet:119066",
+                  "code": "119066",
+                  "system": "http://www.orpha.net/consor/cgi-bin/OC_Exp.php?Lng=EN&Expert=",
+              },
               "relation": "relatedMatch",
           },
           {
               "coding": {
+                  "id": "cosmic:BRAF",
                   "code": "BRAF",
-                  "system": "https://cancer.sanger.ac.uk/cosmic",
+                  "system": "http://cancer.sanger.ac.uk/cosmic/gene/overview?ln=",
               },
               "relation": "relatedMatch",
           },
           {
               "coding": {
+                  "id": "pubmed:2284096",
                   "code": "2284096",
-                  "system": "https://pubmed.ncbi.nlm.nih.gov",
+                  "system": "https://pubmed.ncbi.nlm.nih.gov/",
               },
               "relation": "relatedMatch",
           },
           {
               "coding": {
+                  "id": "ucsc:uc003vwc.5",
                   "code": "uc003vwc.5",
-                  "system": "https://genome.ucsc.edu",
+                  "system": "http://genome.cse.ucsc.edu/cgi-bin/hgGene?org=Human&hgg_chrom=none&hgg_type=knownGene&hgg_gene=",
               },
               "relation": "relatedMatch",
           },
           {
-              "coding": {"code": "164757", "system": "https://www.omim.org"},
+              "coding": {
+                  "id": "omim:164757",
+                  "code": "164757",
+                  "system": "https://www.omim.org/MIM:",
+              },
               "relation": "relatedMatch",
           },
           {
               "coding": {
+                  "id": "refseq:NM_004333",
                   "code": "NM_004333",
-                  "system": "https://www.ncbi.nlm.nih.gov/refseq/",
+                  "system": "https://www.ncbi.nlm.nih.gov/nuccore/",
               },
               "relation": "relatedMatch",
           },
           {
               "coding": {
+                  "id": "uniprot:P15056",
                   "code": "P15056",
-                  "system": "https://www.uniprot.org",
+                  "system": "http://purl.uniprot.org/uniprot/",
               },
               "relation": "relatedMatch",
           },
           {
               "coding": {
+                  "id": "ena.embl:M95712",
                   "code": "M95712",
-                  "system": "https://www.ebi.ac.uk/ena/",
+                  "system": "https://www.ebi.ac.uk/ena/browser/view/",
               },
               "relation": "relatedMatch",
           },
           {
-              "coding": {"code": "OTTHUMG00000157457", "system": "vega"},
+              "coding": {
+                  "id": "vega:OTTHUMG00000157457",
+                  "code": "OTTHUMG00000157457",
+                  "system": "https://vega.archive.ensembl.org/Homo_sapiens/Gene/Summary?g=",
+              },
               "relation": "relatedMatch",
           },
           {
               "coding": {
+                  "id": "pubmed:1565476",
                   "code": "1565476",
-                  "system": "https://pubmed.ncbi.nlm.nih.gov",
+                  "system": "https://pubmed.ncbi.nlm.nih.gov/",
               },
               "relation": "relatedMatch",
           },

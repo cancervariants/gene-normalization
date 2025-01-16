@@ -21,7 +21,6 @@ from gene import ITEM_TYPES, NAMESPACE_LOOKUP, PREFIX_LOOKUP, __version__
 from gene.database import AbstractDatabase, DatabaseReadException
 from gene.schemas import (
     NAMESPACE_TO_SYSTEM_URI,
-    SYSTEM_URI_TO_NAMESPACE,
     BaseGene,
     BaseNormalizationService,
     Gene,
@@ -348,7 +347,7 @@ class QueryHandler:
 
         sources = []
         for m in gene.mappings or []:
-            ns = SYSTEM_URI_TO_NAMESPACE.get(m.coding.system)
+            ns = m.coding.id.split(":")[0]
             if ns in PREFIX_LOOKUP:
                 sources.append(PREFIX_LOOKUP[ns])
 
@@ -406,8 +405,7 @@ class QueryHandler:
         ) -> ConceptMapping:
             """Create concept mapping for identifier
 
-            ``system`` will use source homepage or namespace prefix, in that order of \
-            preference, if available.
+            ``system`` will use system prefix URL or system homepage
 
             :param concept_id: A lowercase concept identifier represented as a curie
             :param relation: SKOS mapping relationship, default is relatedMatch
@@ -415,7 +413,7 @@ class QueryHandler:
                 ``NamespacePrefix``
             :return: Concept mapping for identifier
             """
-            source = concept_id.split(":")[0]
+            source, source_code = concept_id.split(":")
 
             try:
                 source = NamespacePrefix(source)
@@ -423,10 +421,16 @@ class QueryHandler:
                 err_msg = f"Namespace prefix not supported: {source}"
                 raise ValueError(err_msg) from e
 
-            system = NAMESPACE_TO_SYSTEM_URI.get(source, source)
+            if source == NamespacePrefix.HGNC:
+                source_code = concept_id.upper()
 
             return ConceptMapping(
-                coding=Coding(code=code(concept_id), system=system), relation=relation
+                coding=Coding(
+                    id=concept_id,
+                    code=code(source_code),
+                    system=NAMESPACE_TO_SYSTEM_URI[source],
+                ),
+                relation=relation,
             )
 
         gene_obj = MappableConcept(
