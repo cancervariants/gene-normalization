@@ -1,6 +1,7 @@
 """Contains data models for representing VICC normalized gene records."""
 
 from enum import Enum, IntEnum
+from types import MappingProxyType
 from typing import Annotated, Literal
 
 from ga4gh.core.models import (
@@ -178,35 +179,37 @@ class NamespacePrefix(Enum):
 
 
 # Source to URI. Will use system URI prefix or system homepage
-NAMESPACE_TO_SYSTEM_URI: dict[NamespacePrefix, str] = {
-    NamespacePrefix.HGNC: "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
-    NamespacePrefix.ENSEMBL: "https://www.ensembl.org/id/",
-    NamespacePrefix.NCBI: "https://www.ncbi.nlm.nih.gov/gene/",
-    NamespacePrefix.ENTREZ: "https://www.ncbi.nlm.nih.gov/gene/",
-    NamespacePrefix.VEGA: "https://vega.archive.ensembl.org/Homo_sapiens/Gene/Summary?g=",
-    NamespacePrefix.UCSC: "http://genome.cse.ucsc.edu/cgi-bin/hgGene?org=Human&hgg_chrom=none&hgg_type=knownGene&hgg_gene=",
-    NamespacePrefix.ENA: "https://www.ebi.ac.uk/ena/browser/view/",
-    NamespacePrefix.REFSEQ: "https://www.ncbi.nlm.nih.gov/nuccore/",
-    NamespacePrefix.CCDS: "http://www.ncbi.nlm.nih.gov/CCDS/CcdsBrowse.cgi?REQUEST=CCDS&DATA=",
-    NamespacePrefix.UNIPROT: "http://purl.uniprot.org/uniprot/",
-    NamespacePrefix.PUBMED: "https://pubmed.ncbi.nlm.nih.gov/",
-    NamespacePrefix.COSMIC: "http://cancer.sanger.ac.uk/cosmic/gene/overview?ln=",
-    NamespacePrefix.OMIM: "https://www.omim.org/MIM:",
-    NamespacePrefix.MIRBASE: "https://mirbase.org/hairpin/",
-    NamespacePrefix.HOMEODB: "http://homeodb.zoo.ox.ac.uk",
-    NamespacePrefix.SNORNABASE: "http://www-snorna.biotoul.fr/plus.php?id=",
-    NamespacePrefix.ORPHANET: "http://www.orpha.net/consor/cgi-bin/OC_Exp.php?Lng=EN&Expert=",
-    NamespacePrefix.PSEUDOGENE: "http://tables.pseudogene.org/",
-    NamespacePrefix.HORDE: "http://genome.weizmann.ac.il/horde/card/index/symbol:",
-    NamespacePrefix.MEROPS: "https://www.ebi.ac.uk/merops/cgi-bin/pepsum?id=",
-    NamespacePrefix.IUPHAR: "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
-    NamespacePrefix.MAMIT: "http://mamit-trna.u-strasbg.fr/mutations.asp?idAA=",
-    NamespacePrefix.CD: "http://www.hcdm.org/index.php?option=com_molecule&cdnumber=",
-    NamespacePrefix.IMGT: "https://www.imgt.org/genedb/GENElect?species=Homo+sapiens&query=2+",
-    NamespacePrefix.IMGT_GENE_DB: "https://www.imgt.org/genedb/GENElect?species=Homo+sapiens&query=2+",
-    NamespacePrefix.LNCRNADB: "https://rnacentral.org/rna/",
-    NamespacePrefix.RFAM: "https://rfam.org/family/",
-}
+NAMESPACE_TO_SYSTEM_URI: MappingProxyType[NamespacePrefix, str] = MappingProxyType(
+    {
+        NamespacePrefix.HGNC: "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+        NamespacePrefix.ENSEMBL: "https://www.ensembl.org/id/",
+        NamespacePrefix.NCBI: "https://www.ncbi.nlm.nih.gov/gene/",
+        NamespacePrefix.ENTREZ: "https://www.ncbi.nlm.nih.gov/gene/",
+        NamespacePrefix.VEGA: "https://vega.archive.ensembl.org/Homo_sapiens/Gene/Summary?g=",
+        NamespacePrefix.UCSC: "http://genome.cse.ucsc.edu/cgi-bin/hgGene?org=Human&hgg_chrom=none&hgg_type=knownGene&hgg_gene=",
+        NamespacePrefix.ENA: "https://www.ebi.ac.uk/ena/browser/view/",
+        NamespacePrefix.REFSEQ: "https://www.ncbi.nlm.nih.gov/nuccore/",
+        NamespacePrefix.CCDS: "http://www.ncbi.nlm.nih.gov/CCDS/CcdsBrowse.cgi?REQUEST=CCDS&DATA=",
+        NamespacePrefix.UNIPROT: "http://purl.uniprot.org/uniprot/",
+        NamespacePrefix.PUBMED: "https://pubmed.ncbi.nlm.nih.gov/",
+        NamespacePrefix.COSMIC: "http://cancer.sanger.ac.uk/cosmic/gene/overview?ln=",
+        NamespacePrefix.OMIM: "https://www.omim.org/MIM:",
+        NamespacePrefix.MIRBASE: "https://mirbase.org/hairpin/",
+        NamespacePrefix.HOMEODB: "http://homeodb.zoo.ox.ac.uk",
+        NamespacePrefix.SNORNABASE: "http://www-snorna.biotoul.fr/plus.php?id=",
+        NamespacePrefix.ORPHANET: "http://www.orpha.net/consor/cgi-bin/OC_Exp.php?Lng=EN&Expert=",
+        NamespacePrefix.PSEUDOGENE: "http://tables.pseudogene.org/",
+        NamespacePrefix.HORDE: "http://genome.weizmann.ac.il/horde/card/index/symbol:",
+        NamespacePrefix.MEROPS: "https://www.ebi.ac.uk/merops/cgi-bin/pepsum?id=",
+        NamespacePrefix.IUPHAR: "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
+        NamespacePrefix.MAMIT: "http://mamit-trna.u-strasbg.fr/mutations.asp?idAA=",
+        NamespacePrefix.CD: "http://www.hcdm.org/index.php?option=com_molecule&cdnumber=",
+        NamespacePrefix.IMGT: "https://www.imgt.org/genedb/GENElect?species=Homo+sapiens&query=2+",
+        NamespacePrefix.IMGT_GENE_DB: "https://www.imgt.org/genedb/GENElect?species=Homo+sapiens&query=2+",
+        NamespacePrefix.LNCRNADB: "https://rnacentral.org/rna/",
+        NamespacePrefix.RFAM: "https://rfam.org/family/",
+    }
+)
 
 
 class DataLicenseAttributes(BaseModel):
