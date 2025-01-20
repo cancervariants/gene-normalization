@@ -400,10 +400,10 @@ class QueryHandler:
         :return: Response with core Gene
         """
 
-        def _create_concept_mapping(
+        def _get_concept_mapping(
             concept_id: str, relation: Relation = Relation.RELATED_MATCH
         ) -> ConceptMapping:
-            """Create concept mapping for identifier
+            """Get concept mapping for CURIE identifier
 
             ``system`` will use system prefix URL or system homepage
 
@@ -442,10 +442,10 @@ class QueryHandler:
 
         # mappings
         mappings = [
-            _create_concept_mapping(record["concept_id"], relation=Relation.EXACT_MATCH)
+            _get_concept_mapping(record["concept_id"], relation=Relation.EXACT_MATCH)
         ]
         source_ids = record.get("xrefs", []) + record.get("associated_with", [])
-        mappings.extend(_create_concept_mapping(source_id) for source_id in source_ids)
+        mappings.extend(_get_concept_mapping(source_id) for source_id in source_ids)
         if mappings:
             gene_obj.mappings = mappings
 
