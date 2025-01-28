@@ -440,14 +440,17 @@ class QueryHandler:
             conceptType="Gene",
         )
 
-        # mappings
-        mappings = [
-            _get_concept_mapping(record["concept_id"], relation=Relation.EXACT_MATCH)
+        xrefs = [record["concept_id"], *record.get("xrefs", [])]
+        gene_obj.mappings = [
+            _get_concept_mapping(xref_id, relation=Relation.EXACT_MATCH)
+            for xref_id in xrefs
         ]
-        source_ids = record.get("xrefs", []) + record.get("associated_with", [])
-        mappings.extend(_get_concept_mapping(source_id) for source_id in source_ids)
-        if mappings:
-            gene_obj.mappings = mappings
+
+        associated_with = record.get("associated_with", [])
+        gene_obj.mappings.extend(
+            _get_concept_mapping(associated_with_id, relation=Relation.RELATED_MATCH)
+            for associated_with_id in associated_with
+        )
 
         # extensions
         extensions = []

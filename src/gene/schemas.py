@@ -365,7 +365,7 @@ class NormalizeService(BaseNormalizationService):
                                 "code": "673",
                                 "system": "https://www.ncbi.nlm.nih.gov/gene/",
                             },
-                            "relation": "relatedMatch",
+                            "relation": "exactMatch",
                         },
                         {
                             "coding": {
@@ -373,7 +373,7 @@ class NormalizeService(BaseNormalizationService):
                                 "code": "ENSG00000157764",
                                 "system": "https://www.ensembl.org/id/",
                             },
-                            "relation": "relatedMatch",
+                            "relation": "exactMatch",
                         },
                         {
                             "coding": {
