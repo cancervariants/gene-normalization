@@ -51,7 +51,7 @@ def normalized_ache():
                     "code": "ENSG00000087085",
                     "system": "https://www.ensembl.org/id/",
                 },
-                "relation": "relatedMatch",
+                "relation": "exactMatch",
             },
             {
                 "coding": {
@@ -59,7 +59,7 @@ def normalized_ache():
                     "code": "43",
                     "system": "https://www.ncbi.nlm.nih.gov/gene/",
                 },
-                "relation": "relatedMatch",
+                "relation": "exactMatch",
             },
             {
                 "coding": {
@@ -197,7 +197,7 @@ def normalized_braf():
                     "code": "673",
                     "system": "https://www.ncbi.nlm.nih.gov/gene/",
                 },
-                "relation": "relatedMatch",
+                "relation": "exactMatch",
             },
             {
                 "coding": {
@@ -205,7 +205,7 @@ def normalized_braf():
                     "code": "ENSG00000157764",
                     "system": "https://www.ensembl.org/id/",
                 },
-                "relation": "relatedMatch",
+                "relation": "exactMatch",
             },
             {
                 "coding": {
@@ -369,7 +369,7 @@ def normalized_abl1():
                     "code": "ENSG00000097007",
                     "system": "https://www.ensembl.org/id/",
                 },
-                "relation": "relatedMatch",
+                "relation": "exactMatch",
             },
             {
                 "coding": {
@@ -377,7 +377,7 @@ def normalized_abl1():
                     "code": "25",
                     "system": "https://www.ncbi.nlm.nih.gov/gene/",
                 },
-                "relation": "relatedMatch",
+                "relation": "exactMatch",
             },
             {
                 "coding": {
@@ -557,7 +557,7 @@ def normalized_p150():
                     "code": "ENSG00000167670",
                     "system": "https://www.ensembl.org/id/",
                 },
-                "relation": "relatedMatch",
+                "relation": "exactMatch",
             },
             {
                 "coding": {
@@ -565,7 +565,7 @@ def normalized_p150():
                     "code": "10036",
                     "system": "https://www.ncbi.nlm.nih.gov/gene/",
                 },
-                "relation": "relatedMatch",
+                "relation": "exactMatch",
             },
             {
                 "coding": {
@@ -1004,7 +1004,7 @@ def normalized_ifnr():
                     "code": "3466",
                     "system": "https://www.ncbi.nlm.nih.gov/gene/",
                 },
-                "relation": "relatedMatch",
+                "relation": "exactMatch",
             },
             {
                 "coding": {
