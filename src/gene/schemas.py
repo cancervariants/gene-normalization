@@ -1,6 +1,7 @@
 """Contains data models for representing VICC normalized gene records."""
 
 from enum import Enum, IntEnum
+from types import MappingProxyType
 from typing import Annotated, Literal
 
 from ga4gh.core.models import (
@@ -169,7 +170,6 @@ class NamespacePrefix(Enum):
     HORDE = "hordedb"
     MEROPS = "merops"
     IUPHAR = "iuphar"
-    KZNF = "knzfgc"
     MAMIT = "mamittrnadb"
     CD = "hcdmdb"
     LNCRNADB = "lncrnadb"
@@ -178,32 +178,38 @@ class NamespacePrefix(Enum):
     RFAM = "rfam"
 
 
-# Source to URI. Will use source homepage
-NAMESPACE_TO_SYSTEM_URI: dict[NamespacePrefix, str] = {
-    NamespacePrefix.HGNC: "https://www.genenames.org",
-    NamespacePrefix.ENSEMBL: "https://www.ensembl.org",
-    NamespacePrefix.NCBI: "https://www.ncbi.nlm.nih.gov/gene/",
-    NamespacePrefix.ENTREZ: "https://www.ncbi.nlm.nih.gov/gene/",
-    NamespacePrefix.VEGA: "https://www.sanger.ac.uk/tool/vega-genome-browser/",
-    NamespacePrefix.UCSC: "https://genome.ucsc.edu",
-    NamespacePrefix.ENA: "https://www.ebi.ac.uk/ena/",
-    NamespacePrefix.REFSEQ: "https://www.ncbi.nlm.nih.gov/refseq/",
-    NamespacePrefix.CCDS: "https://www.ncbi.nlm.nih.gov/projects/CCDS/CcdsBrowse.cgi",
-    NamespacePrefix.UNIPROT: "https://www.uniprot.org",
-    NamespacePrefix.PUBMED: "https://pubmed.ncbi.nlm.nih.gov",
-    NamespacePrefix.COSMIC: "https://cancer.sanger.ac.uk/cosmic/",
-    NamespacePrefix.OMIM: "https://www.omim.org",
-    NamespacePrefix.SNORNABASE: "https://www-snorna.biotoul.fr",
-    NamespacePrefix.PSEUDOGENE: "http://pseudogene.org",
-    NamespacePrefix.MEROPS: "https://www.ebi.ac.uk/merops/",
-    NamespacePrefix.IUPHAR: "https://www.guidetopharmacology.org",
-    NamespacePrefix.RFAM: "https://rfam.org",
-}
-
-# URI to source
-SYSTEM_URI_TO_NAMESPACE = {
-    system_uri: ns.value for ns, system_uri in NAMESPACE_TO_SYSTEM_URI.items()
-}
+# Source to URI. Will use system URI prefix or system homepage
+NAMESPACE_TO_SYSTEM_URI: MappingProxyType[NamespacePrefix, str] = MappingProxyType(
+    {
+        NamespacePrefix.HGNC: "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+        NamespacePrefix.ENSEMBL: "https://www.ensembl.org/id/",
+        NamespacePrefix.NCBI: "https://www.ncbi.nlm.nih.gov/gene/",
+        NamespacePrefix.ENTREZ: "https://www.ncbi.nlm.nih.gov/gene/",
+        NamespacePrefix.VEGA: "https://vega.archive.ensembl.org/Homo_sapiens/Gene/Summary?g=",
+        NamespacePrefix.UCSC: "http://genome.cse.ucsc.edu/cgi-bin/hgGene?org=Human&hgg_chrom=none&hgg_type=knownGene&hgg_gene=",
+        NamespacePrefix.ENA: "https://www.ebi.ac.uk/ena/browser/view/",
+        NamespacePrefix.REFSEQ: "https://www.ncbi.nlm.nih.gov/nuccore/",
+        NamespacePrefix.CCDS: "http://www.ncbi.nlm.nih.gov/CCDS/CcdsBrowse.cgi?REQUEST=CCDS&DATA=",
+        NamespacePrefix.UNIPROT: "http://purl.uniprot.org/uniprot/",
+        NamespacePrefix.PUBMED: "https://pubmed.ncbi.nlm.nih.gov/",
+        NamespacePrefix.COSMIC: "http://cancer.sanger.ac.uk/cosmic/gene/overview?ln=",
+        NamespacePrefix.OMIM: "https://www.omim.org/MIM:",
+        NamespacePrefix.MIRBASE: "https://mirbase.org/hairpin/",
+        NamespacePrefix.HOMEODB: "http://homeodb.zoo.ox.ac.uk",
+        NamespacePrefix.SNORNABASE: "http://www-snorna.biotoul.fr/plus.php?id=",
+        NamespacePrefix.ORPHANET: "http://www.orpha.net/consor/cgi-bin/OC_Exp.php?Lng=EN&Expert=",
+        NamespacePrefix.PSEUDOGENE: "http://tables.pseudogene.org/",
+        NamespacePrefix.HORDE: "http://genome.weizmann.ac.il/horde/card/index/symbol:",
+        NamespacePrefix.MEROPS: "https://www.ebi.ac.uk/merops/cgi-bin/pepsum?id=",
+        NamespacePrefix.IUPHAR: "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
+        NamespacePrefix.MAMIT: "http://mamit-trna.u-strasbg.fr/mutations.asp?idAA=",
+        NamespacePrefix.CD: "http://www.hcdm.org/index.php?option=com_molecule&cdnumber=",
+        NamespacePrefix.IMGT: "https://www.imgt.org/genedb/GENElect?species=Homo+sapiens&query=2+",
+        NamespacePrefix.IMGT_GENE_DB: "https://www.imgt.org/genedb/GENElect?species=Homo+sapiens&query=2+",
+        NamespacePrefix.LNCRNADB: "https://rnacentral.org/rna/",
+        NamespacePrefix.RFAM: "https://rfam.org/family/",
+    }
+)
 
 
 class DataLicenseAttributes(BaseModel):
@@ -347,96 +353,113 @@ class NormalizeService(BaseNormalizationService):
                     "mappings": [
                         {
                             "coding": {
-                                "code": "hgnc:1097",
-                                "system": "https://www.genenames.org",
+                                "id": "hgnc:1097",
+                                "code": "HGNC:1097",
+                                "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
                             },
                             "relation": "exactMatch",
                         },
                         {
                             "coding": {
-                                "code": "ncbigene:673",
+                                "id": "ncbigene:673",
+                                "code": "673",
                                 "system": "https://www.ncbi.nlm.nih.gov/gene/",
                             },
                             "relation": "relatedMatch",
                         },
                         {
                             "coding": {
-                                "code": "ensembl:ENSG00000157764",
-                                "system": "https://www.ensembl.org",
+                                "id": "ensembl:ENSG00000157764",
+                                "code": "ENSG00000157764",
+                                "system": "https://www.ensembl.org/id/",
                             },
                             "relation": "relatedMatch",
                         },
                         {
                             "coding": {
-                                "code": "iuphar:1943",
-                                "system": "https://www.guidetopharmacology.org",
-                            },
-                            "relation": "relatedMatch",
-                        },
-                        {
-                            "coding": {"code": "orphanet:119066", "system": "orphanet"},
-                            "relation": "relatedMatch",
-                        },
-                        {
-                            "coding": {
-                                "code": "cosmic:BRAF",
-                                "system": "https://cancer.sanger.ac.uk/cosmic",
+                                "id": "iuphar:1943",
+                                "code": "1943",
+                                "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
                             },
                             "relation": "relatedMatch",
                         },
                         {
                             "coding": {
-                                "code": "pubmed:2284096",
-                                "system": "https://pubmed.ncbi.nlm.nih.gov",
+                                "id": "orphanet:119066",
+                                "code": "119066",
+                                "system": "http://www.orpha.net/consor/cgi-bin/OC_Exp.php?Lng=EN&Expert=",
                             },
                             "relation": "relatedMatch",
                         },
                         {
                             "coding": {
-                                "code": "ucsc:uc003vwc.5",
-                                "system": "https://genome.ucsc.edu",
+                                "id": "cosmic:BRAF",
+                                "code": "BRAF",
+                                "system": "http://cancer.sanger.ac.uk/cosmic/gene/overview?ln=",
                             },
                             "relation": "relatedMatch",
                         },
                         {
                             "coding": {
-                                "code": "omim:164757",
-                                "system": "https://www.omim.org",
+                                "id": "pubmed:2284096",
+                                "code": "2284096",
+                                "system": "https://pubmed.ncbi.nlm.nih.gov/",
                             },
                             "relation": "relatedMatch",
                         },
                         {
                             "coding": {
-                                "code": "refseq:NM_004333",
-                                "system": "https://www.ncbi.nlm.nih.gov/refseq/",
+                                "id": "ucsc:uc003vwc.5",
+                                "code": "uc003vwc.5",
+                                "system": "http://genome.cse.ucsc.edu/cgi-bin/hgGene?org=Human&hgg_chrom=none&hgg_type=knownGene&hgg_gene=",
                             },
                             "relation": "relatedMatch",
                         },
                         {
                             "coding": {
-                                "code": "uniprot:P15056",
-                                "system": "https://www.uniprot.org",
+                                "id": "omim:164757",
+                                "code": "164757",
+                                "system": "https://www.omim.org/MIM:",
                             },
                             "relation": "relatedMatch",
                         },
                         {
                             "coding": {
-                                "code": "ena.embl:M95712",
-                                "system": "https://www.ebi.ac.uk/ena/",
+                                "id": "refseq:NM_004333",
+                                "code": "NM_004333",
+                                "system": "https://www.ncbi.nlm.nih.gov/nuccore/",
                             },
                             "relation": "relatedMatch",
                         },
                         {
                             "coding": {
-                                "code": "vega:OTTHUMG00000157457",
-                                "system": "vega",
+                                "id": "uniprot:P15056",
+                                "code": "P15056",
+                                "system": "http://purl.uniprot.org/uniprot/",
                             },
                             "relation": "relatedMatch",
                         },
                         {
                             "coding": {
-                                "code": "pubmed:1565476",
-                                "system": "https://pubmed.ncbi.nlm.nih.gov",
+                                "id": "ena.embl:M95712",
+                                "code": "M95712",
+                                "system": "https://www.ebi.ac.uk/ena/browser/view/",
+                            },
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {
+                                "id": "vega:OTTHUMG00000157457",
+                                "code": "OTTHUMG00000157457",
+                                "system": "https://vega.archive.ensembl.org/Homo_sapiens/Gene/Summary?g=",
+                            },
+                            "relation": "relatedMatch",
+                        },
+                        {
+                            "coding": {
+                                "id": "pubmed:1565476",
+                                "code": "1565476",
+                                "system": "https://pubmed.ncbi.nlm.nih.gov/",
                             },
                             "relation": "relatedMatch",
                         },

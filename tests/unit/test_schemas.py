@@ -4,7 +4,7 @@ import pydantic
 import pytest
 from ga4gh.vrs.models import SequenceLocation, SequenceReference
 
-from gene.schemas import Gene
+from gene.schemas import NAMESPACE_TO_SYSTEM_URI, Gene, NamespacePrefix
 
 
 @pytest.fixture(scope="module")
@@ -104,3 +104,10 @@ def test_gene(gene, sequence_location):
             symbol="BRAF",
             locations=sequence_location,
         )
+
+
+def test_namespace_to_system_uri():
+    """Ensure that each NamespacePrefix is included in NAMESPACE_TO_SYSTEM_URI"""
+    for v in NamespacePrefix.__members__.values():
+        assert v in NAMESPACE_TO_SYSTEM_URI, v
+        assert NAMESPACE_TO_SYSTEM_URI[v].startswith("http"), v
