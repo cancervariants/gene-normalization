@@ -39,7 +39,7 @@ $ curl 'https://normalize.cancervariants.org/gene/normalize?q=BRAF' | python -m 
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:1097"
         "primaryCode": "hgnc:1097",
-        "label": "BRAF",
+        "name": "BRAF",
         "extensions": [
             {
                 "name": "aliases",

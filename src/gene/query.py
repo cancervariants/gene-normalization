@@ -436,7 +436,7 @@ class QueryHandler:
         gene_obj = MappableConcept(
             id=f"normalize.gene.{record['concept_id']}",
             primaryCode=code(root=record["concept_id"]),
-            label=record["symbol"],
+            name=record["symbol"],
             conceptType="Gene",
         )
 

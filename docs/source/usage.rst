@@ -35,7 +35,7 @@ Each search mode can be accessed directly within Python using the :py:mod:`query
     >>> normalized_response
     >>> normalized_response.match_type
     <MatchType.ALIAS: 60>
-    >>> normalized_response.gene.label
+    >>> normalized_response.gene.name
     'ERBB2'
 
 Critically, the ``QueryHandler`` class must receive a database interface instance as its first argument. The most straightforward way to construct a database instance, as demonstrated above, is with the :py:meth:`create_db() <gene.database.database.create_db>` method. This method tries to build a database connection based on a number of conditions, which are resolved in the following order:

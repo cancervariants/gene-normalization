@@ -78,7 +78,7 @@ The beginning of the response to a GET request to http://localhost:5000/gene/nor
      "gene": {
        "primaryCode": "hgnc:1097",
        "id": "normalize.gene.hgnc:1097",
-       "label": "BRAF",
+       "name": "BRAF",
 
        ...
      }

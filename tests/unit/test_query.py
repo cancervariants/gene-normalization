@@ -35,7 +35,7 @@ def normalized_ache():
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:108",
         "primaryCode": "hgnc:108",
-        "label": "ACHE",
+        "name": "ACHE",
         "mappings": [
             {
                 "coding": {
@@ -181,7 +181,7 @@ def normalized_braf():
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:1097",
         "primaryCode": "hgnc:1097",
-        "label": "BRAF",
+        "name": "BRAF",
         "mappings": [
             {
                 "coding": {
@@ -353,7 +353,7 @@ def normalized_abl1():
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:76",
         "primaryCode": "hgnc:76",
-        "label": "ABL1",
+        "name": "ABL1",
         "mappings": [
             {
                 "coding": {
@@ -541,7 +541,7 @@ def normalized_p150():
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:1910",
         "primaryCode": "hgnc:1910",
-        "label": "CHAF1A",
+        "name": "CHAF1A",
         "mappings": [
             {
                 "coding": {
@@ -701,7 +701,7 @@ def normalized_loc_653303():
     """
     params = {
         "conceptType": "Gene",
-        "label": "LOC653303",
+        "name": "LOC653303",
         "primaryCode": "ncbigene:653303",
         "mappings": [
             {
@@ -988,7 +988,7 @@ def normalized_ifnr():
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:5447",
         "primaryCode": "hgnc:5447",
-        "label": "IFNR",
+        "name": "IFNR",
         "mappings": [
             {
                 "coding": {
