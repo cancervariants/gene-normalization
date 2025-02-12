@@ -349,7 +349,7 @@ class NormalizeService(BaseNormalizationService):
                     "conceptType": "Gene",
                     "id": "normalize.gene.hgnc:1097",
                     "primaryCode": "hgnc:1097",
-                    "label": "BRAF",
+                    "name": "BRAF",
                     "mappings": [
                         {
                             "coding": {

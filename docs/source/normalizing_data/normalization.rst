@@ -62,7 +62,7 @@ Normalized gene records are constructed by merging known data from all associate
 The normalized record
 ---------------------
 
-Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2.0-alpha>`_ per the VRS 2.x schema. The normalized gene concept ID is given, and additional metadata such as a label, mappings, aliases, and Extensions (for more complex information such as loci and gene type) is included. For example, the normalized result for the BRAF gene may be described as follows:
+Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2.0-alpha>`_ per the VRS 2.x schema. The normalized gene concept ID is given, and additional metadata such as a name, mappings, aliases, and Extensions (for more complex information such as loci and gene type) is included. For example, the normalized result for the BRAF gene may be described as follows:
 
 .. admonition:: Example
 
@@ -72,7 +72,7 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
       "conceptType": "Gene",
       "id": "normalize.gene.hgnc:1097",
       "primaryCode": "hgnc:1097",
-      "label": "BRAF",
+      "name": "BRAF",
       "mappings": [
           {
               "coding": {
