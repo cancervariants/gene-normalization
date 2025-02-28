@@ -167,9 +167,9 @@ class QueryHandler:
         """
         try:
             match = self.db.get_record_by_id(concept_id, case_sensitive=False)
-        except DatabaseReadException as e:
-            _logger.error(
-                "Encountered DatabaseReadException looking up %s: %s", concept_id, e
+        except DatabaseReadException:
+            _logger.exception(
+                "Encountered DatabaseReadException looking up %s", concept_id
             )
         else:
             if match:
@@ -243,12 +243,11 @@ class QueryHandler:
                             self._fetch_record(resp, ref, MatchType[item_type.upper()])
                             matched_concept_ids.append(ref)
 
-            except DatabaseReadException as e:
-                _logger.error(
+            except DatabaseReadException:
+                _logger.exception(
                     "Encountered DatabaseReadException looking up %s %s: ",
                     item_type,
                     term,
-                    e,
                 )
                 continue
 
