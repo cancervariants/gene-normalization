@@ -91,11 +91,6 @@ def load_source(
         f"Loaded {len(processed_ids)} records from {source.value} in {load_time:.5f} seconds.",
         silent,
     )
-
-    # don't forward any concept IDs that we don't want to use for group generation
-    if not source_class.store_ids:
-        processed_ids = []
-
     return (load_time, set(processed_ids))
 
 
