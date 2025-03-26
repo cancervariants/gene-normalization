@@ -62,10 +62,7 @@ Source = "https://github.com/cancervariants/gene-normalization"
 "Bug Tracker" = "https://github.com/cancervariants/gene-normalization/issues"
 
 [project.scripts]
-gene_norm_update = "gene.cli:update_normalizer_db"
-gene_norm_update_remote = "gene.cli:update_from_remote"
-gene_norm_dump = "gene.cli:dump_database"
-gene_norm_check_db = "gene.cli:check_db"
+gene-normalizer = "gene.cli:cli"
 
 [build-system]
 requires = ["setuptools>=64", "setuptools_scm>=8"]
