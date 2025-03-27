@@ -107,8 +107,8 @@ def _add_formatting_to_string(line: str) -> str:
     """Add fixed-width code formatting to span sections in lines:
 
     * shell options, eg `--update_all`
-    * double-quoted strings, eg `"DO"`
-    * all caps SNAKE_CASE env vars, eg `DISEASE_NORM_REMOTE_DB_URL`
+    * double-quoted strings, eg `"FOO"`
+    * all caps SNAKE_CASE env vars, eg `FOO_CONFIG_LOCATION`
     """
     for pattern in (CMD_PATTERN, STR_PATTERN, SNAKE_PATTERN):
         line = re.sub(pattern, lambda x: f"``{x.group()}``", line)
