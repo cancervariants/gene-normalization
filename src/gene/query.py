@@ -399,18 +399,13 @@ class QueryHandler:
         :return: Response with core Gene
         """
 
-        def _get_concept_mapping(
-            concept_id: str, relation: Relation = Relation.RELATED_MATCH
-        ) -> ConceptMapping:
-            """Get concept mapping for CURIE identifier
+        def _get_coding_object(concept_id: str) -> Coding:
+            """Get coding object for CURIE identifier
 
             ``system`` will use system prefix URL or system homepage
 
             :param concept_id: A lowercase concept identifier represented as a curie
-            :param relation: SKOS mapping relationship, default is relatedMatch
-            :raises ValueError: If source of concept ID is not a valid
-                ``NamespacePrefix``
-            :return: Concept mapping for identifier
+            :return: Coding object for identifier
             """
             source, source_code = concept_id.split(":")
 
@@ -423,32 +418,47 @@ class QueryHandler:
             if source == NamespacePrefix.HGNC:
                 source_code = concept_id.upper()
 
+            return Coding(
+                id=concept_id,
+                code=code(source_code),
+                system=NAMESPACE_TO_SYSTEM_URI[source],
+            )
+
+        def _get_concept_mapping(
+            coding_obj: Coding, relation: Relation = Relation.RELATED_MATCH
+        ) -> ConceptMapping:
+            """Get concept mapping for Coding object
+
+            :param coding: A Coding object
+            :param relation: SKOS mapping relationship, default is relatedMatch
+            :return: Concept mapping for identifier
+            """
             return ConceptMapping(
-                coding=Coding(
-                    id=concept_id,
-                    code=code(source_code),
-                    system=NAMESPACE_TO_SYSTEM_URI[source],
-                ),
+                coding=coding_obj,
                 relation=relation,
             )
 
         gene_obj = MappableConcept(
             id=f"normalize.gene.{record['concept_id']}",
-            primaryCoding=_get_concept_mapping(record["concept_id"]).coding,
+            primaryCoding=_get_coding_object(record["concept_id"]),
             name=record["symbol"],
             conceptType="Gene",
         )
 
         xrefs = [record["concept_id"], *record.get("xrefs", [])]
         gene_obj.mappings = [
-            _get_concept_mapping(xref_id, relation=Relation.EXACT_MATCH)
+            _get_concept_mapping(
+                _get_coding_object(xref_id), relation=Relation.EXACT_MATCH
+            )
             for xref_id in xrefs
             if xref_id != record["concept_id"]
         ]
 
         associated_with = record.get("associated_with", [])
         gene_obj.mappings.extend(
-            _get_concept_mapping(associated_with_id, relation=Relation.RELATED_MATCH)
+            _get_concept_mapping(
+                _get_coding_object(associated_with_id), relation=Relation.RELATED_MATCH
+            )
             for associated_with_id in associated_with
         )
 
