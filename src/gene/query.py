@@ -437,7 +437,7 @@ class QueryHandler:
             id=f"normalize.gene.{record['concept_id']}",
             primaryCoding=Coding(
                 id=record["concept_id"],
-                code=code(record["concept_id"]),
+                code=code(record["concept_id"].upper()),
                 system=NAMESPACE_TO_SYSTEM_URI[source],
             ),
             name=record["symbol"],

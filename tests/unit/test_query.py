@@ -36,7 +36,7 @@ def normalized_ache():
         "id": "normalize.gene.hgnc:108",
         "primaryCoding": {
             "id": "hgnc:108",
-            "code": "hgnc:108",
+            "code": "HGNC:108",
             "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
         },
         "name": "ACHE",
@@ -178,7 +178,7 @@ def normalized_braf():
         "id": "normalize.gene.hgnc:1097",
         "primaryCoding": {
             "id": "hgnc:1097",
-            "code": "hgnc:1097",
+            "code": "HGNC:1097",
             "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
         },
         "name": "BRAF",
@@ -346,7 +346,7 @@ def normalized_abl1():
         "id": "normalize.gene.hgnc:76",
         "primaryCoding": {
             "id": "hgnc:76",
-            "code": "hgnc:76",
+            "code": "HGNC:76",
             "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
         },
         "name": "ABL1",
@@ -530,7 +530,7 @@ def normalized_p150():
         "id": "normalize.gene.hgnc:1910",
         "primaryCoding": {
             "id": "hgnc:1910",
-            "code": "hgnc:1910",
+            "code": "HGNC:1910",
             "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
         },
         "name": "CHAF1A",
@@ -688,7 +688,7 @@ def normalized_loc_653303():
         "name": "LOC653303",
         "primaryCoding": {
             "id": "ncbigene:653303",
-            "code": "ncbigene:653303",
+            "code": "NCBIGENE:653303",
             "system": "https://www.ncbi.nlm.nih.gov/gene/",
         },
         "mappings": [],
@@ -968,7 +968,7 @@ def normalized_ifnr():
         "id": "normalize.gene.hgnc:5447",
         "primaryCoding": {
             "id": "hgnc:5447",
-            "code": "hgnc:5447",
+            "code": "HGNC:5447",
             "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
         },
         "name": "IFNR",

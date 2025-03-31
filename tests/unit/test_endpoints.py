@@ -35,6 +35,11 @@ def test_normalize(api_client):
     response = api_client.get("/gene/normalize?q=braf")
     assert response.status_code == 200
     assert response.json()["gene"]["primaryCoding"]["id"] == "hgnc:1097"
+    assert response.json()["gene"]["primaryCoding"]["code"] == "HGNC:1097"
+    assert (
+        response.json()["gene"]["primaryCoding"]["system"]
+        == "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/"
+    )
 
 
 def test_normalize_unmerged(api_client):

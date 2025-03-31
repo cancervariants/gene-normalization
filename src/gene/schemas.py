@@ -351,7 +351,7 @@ class NormalizeService(BaseNormalizationService):
                     "primaryCoding": {
                         "id": "hgnc:1097",
                         "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
-                        "code": "hgnc:1097",
+                        "code": "HGNC:1097",
                     },
                     "name": "BRAF",
                     "mappings": [
