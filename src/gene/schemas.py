@@ -348,17 +348,13 @@ class NormalizeService(BaseNormalizationService):
                 "gene": {
                     "conceptType": "Gene",
                     "id": "normalize.gene.hgnc:1097",
-                    "primaryCode": "hgnc:1097",
+                    "primaryCoding": {
+                        "id": "hgnc:1097",
+                        "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+                        "code": "hgnc:1097"
+                    },
                     "name": "BRAF",
                     "mappings": [
-                        {
-                            "coding": {
-                                "id": "hgnc:1097",
-                                "code": "HGNC:1097",
-                                "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
-                            },
-                            "relation": "exactMatch",
-                        },
                         {
                             "coding": {
                                 "id": "ncbigene:673",

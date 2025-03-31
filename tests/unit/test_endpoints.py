@@ -34,7 +34,7 @@ def test_normalize(api_client):
     """Test /normalize endpoint."""
     response = api_client.get("/gene/normalize?q=braf")
     assert response.status_code == 200
-    assert response.json()["gene"]["primaryCode"] == "hgnc:1097"
+    assert response.json()["gene"]["primaryCoding"]["id"] == "hgnc:1097"
 
 
 def test_normalize_unmerged(api_client):

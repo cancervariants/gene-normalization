@@ -34,17 +34,13 @@ def normalized_ache():
     params = {
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:108",
-        "primaryCode": "hgnc:108",
+        "primaryCoding": {
+            "id": "hgnc:108",
+            "code": "hgnc:108",
+            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+        },
         "name": "ACHE",
         "mappings": [
-            {
-                "coding": {
-                    "id": "hgnc:108",
-                    "code": "HGNC:108",
-                    "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
-                },
-                "relation": "exactMatch",
-            },
             {
                 "coding": {
                     "id": "ensembl:ENSG00000087085",
@@ -180,17 +176,13 @@ def normalized_braf():
     params = {
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:1097",
-        "primaryCode": "hgnc:1097",
+        "primaryCoding": {
+            "id": "hgnc:1097",
+            "code": "hgnc:1097",
+            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+        },
         "name": "BRAF",
         "mappings": [
-            {
-                "coding": {
-                    "id": "hgnc:1097",
-                    "code": "HGNC:1097",
-                    "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
-                },
-                "relation": "exactMatch",
-            },
             {
                 "coding": {
                     "id": "ncbigene:673",
@@ -352,17 +344,13 @@ def normalized_abl1():
     params = {
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:76",
-        "primaryCode": "hgnc:76",
+        "primaryCoding":  {
+            "id": "hgnc:76",
+            "code": "hgnc:76",
+            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+        },
         "name": "ABL1",
         "mappings": [
-            {
-                "coding": {
-                    "id": "hgnc:76",
-                    "code": "HGNC:76",
-                    "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
-                },
-                "relation": "exactMatch",
-            },
             {
                 "coding": {
                     "id": "ensembl:ENSG00000097007",
@@ -540,17 +528,13 @@ def normalized_p150():
     params = {
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:1910",
-        "primaryCode": "hgnc:1910",
+        "primaryCoding": {
+            "id": "hgnc:1910",
+            "code": "hgnc:1910",
+            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+        },
         "name": "CHAF1A",
         "mappings": [
-            {
-                "coding": {
-                    "id": "hgnc:1910",
-                    "code": "HGNC:1910",
-                    "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
-                },
-                "relation": "exactMatch",
-            },
             {
                 "coding": {
                     "id": "ensembl:ENSG00000167670",
@@ -702,17 +686,12 @@ def normalized_loc_653303():
     params = {
         "conceptType": "Gene",
         "name": "LOC653303",
-        "primaryCode": "ncbigene:653303",
-        "mappings": [
-            {
-                "coding": {
-                    "id": "ncbigene:653303",
-                    "code": "653303",
-                    "system": "https://www.ncbi.nlm.nih.gov/gene/",
-                },
-                "relation": "exactMatch",
-            },
-        ],
+        "primaryCoding":  {
+            "id": "ncbigene:653303",
+            "code": "ncbigene:653303",
+            "system": "https://www.ncbi.nlm.nih.gov/gene/",
+        },
+        "mappings": [],
         "extensions": [
             {
                 "name": "aliases",
@@ -987,17 +966,13 @@ def normalized_ifnr():
     params = {
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:5447",
-        "primaryCode": "hgnc:5447",
+        "primaryCoding": {
+            "id": "hgnc:5447",
+            "code": "hgnc:5447",
+            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+        },
         "name": "IFNR",
         "mappings": [
-            {
-                "coding": {
-                    "id": "hgnc:5447",
-                    "code": "HGNC:5447",
-                    "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
-                },
-                "relation": "exactMatch",
-            },
             {
                 "coding": {
                     "id": "ncbigene:3466",
@@ -1091,7 +1066,7 @@ def compare_normalize_resp(
     assert resp.query == expected_query
     compare_warnings(resp.warnings, expected_warnings)
     assert resp.match_type == expected_match_type
-    assert resp.gene.primaryCode.root == expected_gene.id.split("normalize.gene.")[-1]
+    assert resp.gene.primaryCoding.id == expected_gene.id.split("normalize.gene.")[-1]
     compare_gene(expected_gene, resp.gene)
     if not expected_source_meta:
         assert resp.source_meta_ == {}
@@ -1163,8 +1138,7 @@ def compare_gene(test, actual):
                 loc_id = loc.pop("id")
                 loc_digest = loc.pop("digest")
                 assert loc_id.split("ga4gh:SL.")[-1] == loc_digest
-
-    diff = DeepDiff(actual, test, ignore_order=True)
+    diff = DeepDiff(test, actual, ignore_order=True)
     assert diff == {}, test.id
 
 
@@ -1235,6 +1209,7 @@ def test_ache_query(query_handler, num_sources, normalized_ache, source_meta):
     # Normalize
     q = "ACHE"
     resp = query_handler.normalize(q)
+    source_meta = [SourceName.ENSEMBL, SourceName.NCBI]
     compare_normalize_resp(
         resp, q, MatchType.SYMBOL, normalized_ache, expected_source_meta=source_meta
     )
@@ -1333,6 +1308,7 @@ def test_braf_query(query_handler, num_sources, normalized_braf, source_meta):
     # Normalize
     q = "BRAF"
     resp = query_handler.normalize(q)
+    source_meta = [SourceName.ENSEMBL, SourceName.NCBI]
     compare_normalize_resp(
         resp, q, MatchType.SYMBOL, normalized_braf, expected_source_meta=source_meta
     )
@@ -1411,6 +1387,7 @@ def test_abl1_query(query_handler, num_sources, normalized_abl1, source_meta):
     # Normalize
     q = "ABL1"
     resp = query_handler.normalize(q)
+    source_meta = [SourceName.ENSEMBL, SourceName.NCBI]
     compare_normalize_resp(
         resp, q, MatchType.SYMBOL, normalized_abl1, expected_source_meta=source_meta
     )
@@ -1490,6 +1467,7 @@ def test_multiple_norm_concepts(query_handler, normalized_p150, source_meta):
     """Tests where more than one normalized concept is found."""
     q = "P150"
     resp = query_handler.normalize(q)
+    source_meta = [SourceName.ENSEMBL, SourceName.NCBI]
     expected_warnings = [
         {
             "multiple_normalized_concepts_found": [
@@ -1522,7 +1500,6 @@ def test_normalize_single_entry(query_handler, normalized_loc_653303):
         q,
         MatchType.SYMBOL,
         normalized_loc_653303,
-        expected_source_meta=[SourceName.NCBI],
     )
 
 
@@ -1537,7 +1514,7 @@ def test_normalize_no_locations(query_handler, normalized_ifnr):
         q,
         MatchType.SYMBOL,
         normalized_ifnr,
-        expected_source_meta=[SourceName.HGNC, SourceName.NCBI],
+        expected_source_meta=[SourceName.NCBI],
     )
 
 

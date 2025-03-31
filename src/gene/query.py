@@ -432,9 +432,14 @@ class QueryHandler:
                 relation=relation,
             )
 
+        source = NamespacePrefix(record["concept_id"].split(":")[0])
         gene_obj = MappableConcept(
             id=f"normalize.gene.{record['concept_id']}",
-            primaryCode=code(root=record["concept_id"]),
+            primaryCoding = Coding(
+                id=record["concept_id"],
+                code=code(record["concept_id"]),
+                system=NAMESPACE_TO_SYSTEM_URI[source]
+            ),
             name=record["symbol"],
             conceptType="Gene",
         )
@@ -442,7 +447,7 @@ class QueryHandler:
         xrefs = [record["concept_id"], *record.get("xrefs", [])]
         gene_obj.mappings = [
             _get_concept_mapping(xref_id, relation=Relation.EXACT_MATCH)
-            for xref_id in xrefs
+            for xref_id in xrefs if xref_id != record["concept_id"]
         ]
 
         associated_with = record.get("associated_with", [])
