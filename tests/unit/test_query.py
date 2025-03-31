@@ -688,7 +688,7 @@ def normalized_loc_653303():
         "name": "LOC653303",
         "primaryCoding": {
             "id": "ncbigene:653303",
-            "code": "NCBIGENE:653303",
+            "code": "653303",
             "system": "https://www.ncbi.nlm.nih.gov/gene/",
         },
         "mappings": [],

@@ -432,14 +432,9 @@ class QueryHandler:
                 relation=relation,
             )
 
-        source = NamespacePrefix(record["concept_id"].split(":")[0])
         gene_obj = MappableConcept(
             id=f"normalize.gene.{record['concept_id']}",
-            primaryCoding=Coding(
-                id=record["concept_id"],
-                code=code(record["concept_id"].upper()),
-                system=NAMESPACE_TO_SYSTEM_URI[source],
-            ),
+            primaryCoding=_get_concept_mapping(record["concept_id"]).coding,
             name=record["symbol"],
             conceptType="Gene",
         )
