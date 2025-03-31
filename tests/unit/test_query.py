@@ -344,7 +344,7 @@ def normalized_abl1():
     params = {
         "conceptType": "Gene",
         "id": "normalize.gene.hgnc:76",
-        "primaryCoding":  {
+        "primaryCoding": {
             "id": "hgnc:76",
             "code": "hgnc:76",
             "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
@@ -686,7 +686,7 @@ def normalized_loc_653303():
     params = {
         "conceptType": "Gene",
         "name": "LOC653303",
-        "primaryCoding":  {
+        "primaryCoding": {
             "id": "ncbigene:653303",
             "code": "ncbigene:653303",
             "system": "https://www.ncbi.nlm.nih.gov/gene/",
