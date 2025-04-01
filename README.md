@@ -69,7 +69,7 @@ Or utilize the [Python API](https://gene-normalizer.readthedocs.io/latest/api/qu
 >>> from gene.query import QueryHandler
 >>> q = QueryHandler(create_db())
 >>> result = q.normalize("KRAS")
->>> result.gene.primaryCode
+>>> result.gene.primaryCoding.id
 'hgnc:6407'
 ```
 
