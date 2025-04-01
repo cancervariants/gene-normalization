@@ -573,7 +573,7 @@ class QueryHandler:
         >>> from gene.database import create_db
         >>> q = QueryHandler(create_db())
         >>> result = q.normalize("BRAF")
-        >>> result.gene.primaryCode.root
+        >>> result.gene.primaryCoding.id
         'hgnc:1097'
         >>> next(ext for ext in result.gene.extensions if ext.name == "aliases").value
         ['BRAF1', 'RAFB1', 'B-raf', 'NS7', 'B-RAF1']

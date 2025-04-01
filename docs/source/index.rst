@@ -28,7 +28,7 @@ A `public REST instance of the service <https://normalize.cancervariants.org/gen
 
    >>> import requests
    >>> result = requests.get("https://normalize.cancervariants.org/gene/normalize?q=braf").json()
-   >>> result["gene"]["primaryCode"]
+   >>> result["gene"]["primaryCoding"]["id"]
    'hgnc:1097'
    >>> next(ext for ext in result["gene"]["extensions"] if ext["name"] == "aliases")["value"]
    ['B-raf', 'NS7', 'B-RAF1', 'BRAF-1', 'BRAF1', 'RAFB1']
@@ -41,7 +41,7 @@ The Gene Normalizer can also be installed locally as a Python package for fast a
     >>> from gene.database import create_db
     >>> q = QueryHandler(create_db())
     >>> result = q.normalize("BRAF")
-    >>> result.gene.primaryCode.root
+    >>> result.gene.primaryCoding.id
     'hgnc:1097'
     >>> next(ext for ext in result.gene.extensions if ext.name == "aliases").value
     ['B-raf', 'NS7', 'B-RAF1', 'BRAF-1', 'BRAF1', 'RAFB1']
