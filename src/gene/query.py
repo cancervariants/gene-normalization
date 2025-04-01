@@ -409,6 +409,8 @@ class QueryHandler:
 
             :param concept_id: A lowercase concept identifier represented as a curie
             :return: Coding object for identifier
+            :raises ValueError: If source of concept ID is not a valid
+                ``NamespacePrefix``
             """
             source, source_code = concept_id.split(":")
 
@@ -428,16 +430,16 @@ class QueryHandler:
             )
 
         def _get_concept_mapping(
-            coding_obj: Coding, relation: Relation = Relation.RELATED_MATCH
+            concept_id: str, relation: Relation = Relation.RELATED_MATCH
         ) -> ConceptMapping:
             """Get concept mapping for Coding object
 
-            :param coding: A Coding object
+            :param concept_id: A lowercase concept identifier represented as a curie
             :param relation: SKOS mapping relationship, default is relatedMatch
             :return: Concept mapping for identifier
             """
             return ConceptMapping(
-                coding=coding_obj,
+                coding=_get_coding_object(concept_id),
                 relation=relation,
             )
 
@@ -450,18 +452,14 @@ class QueryHandler:
 
         xrefs = [record["concept_id"], *record.get("xrefs", [])]
         gene_obj.mappings = [
-            _get_concept_mapping(
-                _get_coding_object(xref_id), relation=Relation.EXACT_MATCH
-            )
+            _get_concept_mapping(xref_id, relation=Relation.EXACT_MATCH)
             for xref_id in xrefs
             if xref_id != record["concept_id"]
         ]
 
         associated_with = record.get("associated_with", [])
         gene_obj.mappings.extend(
-            _get_concept_mapping(
-                _get_coding_object(associated_with_id), relation=Relation.RELATED_MATCH
-            )
+            _get_concept_mapping(associated_with_id, relation=Relation.RELATED_MATCH)
             for associated_with_id in associated_with
         )
 
