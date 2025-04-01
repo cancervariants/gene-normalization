@@ -350,6 +350,9 @@ class QueryHandler:
             if ns in PREFIX_LOOKUP:
                 sources.append(PREFIX_LOOKUP[ns])
 
+        # Add metadata for primaryCoding id
+        sources.append(PREFIX_LOOKUP[gene.primaryCoding.id.split(":")[0]])
+
         for src in sources:
             if src not in sources_meta:
                 _source_meta = self.db.get_source_metadata(src)

@@ -1209,7 +1209,6 @@ def test_ache_query(query_handler, num_sources, normalized_ache, source_meta):
     # Normalize
     q = "ACHE"
     resp = query_handler.normalize(q)
-    source_meta = [SourceName.ENSEMBL, SourceName.NCBI]
     compare_normalize_resp(
         resp, q, MatchType.SYMBOL, normalized_ache, expected_source_meta=source_meta
     )
@@ -1308,7 +1307,6 @@ def test_braf_query(query_handler, num_sources, normalized_braf, source_meta):
     # Normalize
     q = "BRAF"
     resp = query_handler.normalize(q)
-    source_meta = [SourceName.ENSEMBL, SourceName.NCBI]
     compare_normalize_resp(
         resp, q, MatchType.SYMBOL, normalized_braf, expected_source_meta=source_meta
     )
@@ -1387,7 +1385,6 @@ def test_abl1_query(query_handler, num_sources, normalized_abl1, source_meta):
     # Normalize
     q = "ABL1"
     resp = query_handler.normalize(q)
-    source_meta = [SourceName.ENSEMBL, SourceName.NCBI]
     compare_normalize_resp(
         resp, q, MatchType.SYMBOL, normalized_abl1, expected_source_meta=source_meta
     )
@@ -1467,7 +1464,6 @@ def test_multiple_norm_concepts(query_handler, normalized_p150, source_meta):
     """Tests where more than one normalized concept is found."""
     q = "P150"
     resp = query_handler.normalize(q)
-    source_meta = [SourceName.ENSEMBL, SourceName.NCBI]
     expected_warnings = [
         {
             "multiple_normalized_concepts_found": [
@@ -1500,6 +1496,7 @@ def test_normalize_single_entry(query_handler, normalized_loc_653303):
         q,
         MatchType.SYMBOL,
         normalized_loc_653303,
+        expected_source_meta=[SourceName.NCBI],
     )
 
 
@@ -1514,7 +1511,7 @@ def test_normalize_no_locations(query_handler, normalized_ifnr):
         q,
         MatchType.SYMBOL,
         normalized_ifnr,
-        expected_source_meta=[SourceName.NCBI],
+        expected_source_meta=[SourceName.HGNC, SourceName.NCBI],
     )
 
 
