@@ -40,5 +40,6 @@ ETL Modules
    gene.etl.ensembl
    gene.etl.hgnc
    gene.etl.ncbi
+   gene.etl.update
    gene.etl.exceptions
    gene.etl.merge
