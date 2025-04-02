@@ -76,8 +76,12 @@ The beginning of the response to a GET request to http://localhost:5000/gene/nor
        "url": "https://github.com/cancervariants/gene-normalization"
      },
      "gene": {
-       "primaryCode": "hgnc:1097",
        "id": "normalize.gene.hgnc:1097",
+       "primaryCoding": {
+            "id": "hgnc:1097",
+            "code": "HGNC:1097",
+            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+        },
        "name": "BRAF",
 
        ...

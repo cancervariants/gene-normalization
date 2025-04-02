@@ -71,16 +71,13 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
     {
       "conceptType": "Gene",
       "id": "normalize.gene.hgnc:1097",
-      "primaryCode": "hgnc:1097",
+      "primaryCoding": {
+            "id": "hgnc:1097",
+            "code": "HGNC:1097",
+            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+        },
       "name": "BRAF",
       "mappings": [
-          {
-              "coding": {
-                  "code": "HGNC:1097",
-                  "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
-              },
-              "relation": "exactMatch",
-          },
           {
               "coding": {
                   "id": "ncbigene:673",

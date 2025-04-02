@@ -350,6 +350,9 @@ class QueryHandler:
             if ns in PREFIX_LOOKUP:
                 sources.append(PREFIX_LOOKUP[ns])
 
+        # Add metadata for primaryCoding id
+        sources.append(PREFIX_LOOKUP[gene.primaryCoding.id.split(":")[0]])
+
         for src in sources:
             if src not in sources_meta:
                 _source_meta = self.db.get_source_metadata(src)
@@ -399,18 +402,15 @@ class QueryHandler:
         :return: Response with core Gene
         """
 
-        def _get_concept_mapping(
-            concept_id: str, relation: Relation = Relation.RELATED_MATCH
-        ) -> ConceptMapping:
-            """Get concept mapping for CURIE identifier
+        def _get_coding_object(concept_id: str) -> Coding:
+            """Get coding object for CURIE identifier
 
             ``system`` will use system prefix URL or system homepage
 
             :param concept_id: A lowercase concept identifier represented as a curie
-            :param relation: SKOS mapping relationship, default is relatedMatch
+            :return: Coding object for identifier
             :raises ValueError: If source of concept ID is not a valid
                 ``NamespacePrefix``
-            :return: Concept mapping for identifier
             """
             source, source_code = concept_id.split(":")
 
@@ -423,18 +423,29 @@ class QueryHandler:
             if source == NamespacePrefix.HGNC:
                 source_code = concept_id.upper()
 
+            return Coding(
+                id=concept_id,
+                code=code(source_code),
+                system=NAMESPACE_TO_SYSTEM_URI[source],
+            )
+
+        def _get_concept_mapping(
+            concept_id: str, relation: Relation = Relation.RELATED_MATCH
+        ) -> ConceptMapping:
+            """Get concept mapping for Coding object
+
+            :param concept_id: A lowercase concept identifier represented as a curie
+            :param relation: SKOS mapping relationship, default is relatedMatch
+            :return: Concept mapping for identifier
+            """
             return ConceptMapping(
-                coding=Coding(
-                    id=concept_id,
-                    code=code(source_code),
-                    system=NAMESPACE_TO_SYSTEM_URI[source],
-                ),
+                coding=_get_coding_object(concept_id),
                 relation=relation,
             )
 
         gene_obj = MappableConcept(
             id=f"normalize.gene.{record['concept_id']}",
-            primaryCode=code(root=record["concept_id"]),
+            primaryCoding=_get_coding_object(record["concept_id"]),
             name=record["symbol"],
             conceptType="Gene",
         )
@@ -443,6 +454,7 @@ class QueryHandler:
         gene_obj.mappings = [
             _get_concept_mapping(xref_id, relation=Relation.EXACT_MATCH)
             for xref_id in xrefs
+            if xref_id != record["concept_id"]
         ]
 
         associated_with = record.get("associated_with", [])
@@ -561,7 +573,7 @@ class QueryHandler:
         >>> from gene.database import create_db
         >>> q = QueryHandler(create_db())
         >>> result = q.normalize("BRAF")
-        >>> result.gene.primaryCode.root
+        >>> result.gene.primaryCoding.id
         'hgnc:1097'
         >>> next(ext for ext in result.gene.extensions if ext.name == "aliases").value
         ['BRAF1', 'RAFB1', 'B-raf', 'NS7', 'B-RAF1']
