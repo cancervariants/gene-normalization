@@ -29,7 +29,7 @@ dependencies = [
     "uvicorn",
     "click",
     "boto3",
-    "ga4gh.vrs==2.0.0a14",
+    "ga4gh.vrs==2.*",
 ]
 dynamic = ["version"]
 
@@ -38,7 +38,7 @@ pg = ["psycopg[binary]"]
 etl = [
     "gffutils",
     "biocommons.seqrepo",
-    "wags-tails~=0.2.1",
+    "wags-tails~=0.3.2",
     "setuptools",  # pinned for 3.12 because yoyo-migrations still uses pkg_resources
 ]
 tests = ["pytest>=6.0", "pytest-cov", "mock", "httpx", "deepdiff"]
@@ -52,6 +52,7 @@ docs = [
     "furo==2023.3.27",
     "gravis==0.1.0",
     "sphinx-github-changelog==1.2.1",
+    "sphinx-click==5.0.1",
 ]
 
 [project.urls]
@@ -62,10 +63,7 @@ Source = "https://github.com/cancervariants/gene-normalization"
 "Bug Tracker" = "https://github.com/cancervariants/gene-normalization/issues"
 
 [project.scripts]
-gene_norm_update = "gene.cli:update_normalizer_db"
-gene_norm_update_remote = "gene.cli:update_from_remote"
-gene_norm_dump = "gene.cli:dump_database"
-gene_norm_check_db = "gene.cli:check_db"
+gene-normalizer = "gene.cli:cli"
 
 [build-system]
 requires = ["setuptools>=64", "setuptools_scm>=8"]

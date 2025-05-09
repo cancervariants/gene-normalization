@@ -76,8 +76,12 @@ The beginning of the response to a GET request to http://localhost:5000/gene/nor
        "url": "https://github.com/cancervariants/gene-normalization"
      },
      "gene": {
-       "primaryCode": "hgnc:1097",
        "id": "normalize.gene.hgnc:1097",
+       "primaryCoding": {
+            "id": "hgnc:1097",
+            "code": "HGNC:1097",
+            "system": "https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/",
+        },
        "name": "BRAF",
 
        ...
@@ -85,6 +89,23 @@ The beginning of the response to a GET request to http://localhost:5000/gene/nor
    }
 
 .. _full-install:
+
+Docker Installation (Preferred)
+-------------------------------
+
+We recommend installing the Gene Normalizer using Docker.
+
+Requirements
+++++++++++++
+
+* `Docker <https://docs.docker.com/get-started/get-docker/>`_
+
+Build, (re)create, and start containers
++++++++++++++++++++++++++++++++++++++++
+
+    docker compose up
+
+Point your browser to http://localhost:8001/gene/.
 
 Full Installation
 -----------------
