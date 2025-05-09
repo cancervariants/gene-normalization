@@ -88,6 +88,10 @@ Creating and Publishing Docker images
 .. note::
 
     This section assumes you have push permissions for the DockerHub organization.
+    It also assumes you have a local `SeqRepo <https://github.com/biocommons/biocommons.seqrepo>`_
+    installed at ``/usr/local/share/seqrepo/2024-12-20``. If you have it installed
+    elsewhere, please update the ``SEQREPO_ROOT_DIR`` environment variable in
+    ``compose-dev.yaml``.
 
 Set your DockerHub organization. ::
 
@@ -97,10 +101,9 @@ If you have an existing volume for DynamoDB already (``gene_norm_ddb_vol``) and 
 
     docker volume rm gene_norm_ddb_vol
 
-Create two Docker volumes for DynamoDB and SeqRepo. ::
+Create Docker volume for DynamoDB. ::
 
     docker volume create --driver local --opt type=none --opt device="$(pwd)/dynamodb_local_latest" --opt o=bind gene_norm_ddb_vol
-    docker volume create --name=seqrepo_vol
 
 To start the services and load DynamoDB (if necessary), from the root of the repository: ::
 
