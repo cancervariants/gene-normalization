@@ -1,0 +1,20 @@
+services:
+  api:
+    image: cancervariants/gene-normalizer-api:latest
+    environment:
+      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
+      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
+      AWS_DEFAULT_REGION: 'us-east-2'
+      GENE_NORM_DB_URL: http://dynamodb-local:8000
+
+    ports:
+      - "8001:80"
+
+    depends_on:
+      dynamodb-local:
+        condition: service_started
+
+  dynamodb-local:
+    image: cancervariants/gene-normalizer-ddb:latest
+    ports:
+     - "8000:8000"

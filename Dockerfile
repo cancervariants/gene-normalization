@@ -1,16 +1,33 @@
-# A simple container for gene-service.
+# A simple container for gene-normalizer service.
 # Runs service on port 80.
-# Healthchecks service up every 5m.
+# Health checks service up every 5m.
 
-FROM python:3.7
-RUN pip install pipenv uvicorn[standard]
-COPY . /app
+FROM python:3.12-slim
+
 WORKDIR /app
-RUN if [ ! -f "Pipfile.lock" ] ; then pipenv lock ; else echo Pipfile.lock exists ; fi
-RUN pipenv sync
-EXPOSE 80
-RUN apt update ; apt install -y rsync
-HEALTHCHECK --interval=5m --timeout=3s \
-    CMD curl -f http://localhost/gene || exit 1
 
-CMD pipenv run uvicorn gene.main:app --port 80 --host 0.0.0.0
+ARG IS_DEV_ENV="false"
+
+ARG VERSION
+
+ENV SETUPTOOLS_SCM_PRETEND_VERSION_FOR_GENE_NORMALIZER=$VERSION
+
+RUN if [ $IS_DEV_ENV = "true" ]; then \
+    apt update ; apt install -y rsync ; \
+  fi
+
+COPY src/ ./src/
+COPY pyproject.toml gene-norm-update.sh ./
+
+RUN pip install --upgrade pip setuptools setuptools_scm
+RUN if [ $IS_DEV_ENV = "true" ]; then \
+    pip install --no-cache-dir '.[etl]'; \
+  else \
+    pip install --no-cache-dir '.'; \
+  fi
+
+EXPOSE 80
+HEALTHCHECK --interval=5m --timeout=3s \
+  CMD curl -f http://localhost/gene || exit 1
+
+CMD ["uvicorn", "gene.main:app", "--port", "80", "--host", "0.0.0.0"]
