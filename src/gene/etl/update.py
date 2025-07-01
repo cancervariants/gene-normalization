@@ -64,7 +64,12 @@ def load_source(
 
     # used to get source class name from string
     try:
-        from gene.etl import HGNC, NCBI, Ensembl, GeneNormalizerEtlError
+        from gene.etl import (  # noqa: PLC0415
+            HGNC,
+            NCBI,
+            Ensembl,
+            GeneNormalizerEtlError,
+        )
     except ModuleNotFoundError as e:
         click.echo(
             f"Encountered ModuleNotFoundError attempting to import {e.name}. {_etl_dependency_help}"
@@ -176,7 +181,7 @@ def update_normalized(
         processed_ids = db.get_all_concept_ids()
 
     try:
-        from gene.etl.merge import Merge
+        from gene.etl.merge import Merge  # noqa: PLC0415
     except ModuleNotFoundError as e:
         msg = f"Encountered ModuleNotFoundError attempting to import {e.name}. {_etl_dependency_help}"
         if not silent:
@@ -190,7 +195,7 @@ def update_normalized(
     merge.create_merged_concepts(processed_ids)
     end = timer()
     _emit_info_msg(
-        f"Merged concept generation completed in " f"{(end - start):.5f} seconds",
+        f"Merged concept generation completed in {(end - start):.5f} seconds",
         silent,
     )
 

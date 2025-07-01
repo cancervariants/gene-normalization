@@ -1072,9 +1072,9 @@ def compare_normalize_resp(
         assert resp.source_meta_ == {}
     else:
         resp_source_meta_keys = resp.source_meta_.keys()
-        assert len(resp_source_meta_keys) == len(
-            expected_source_meta
-        ), "source_meta_keys"
+        assert len(resp_source_meta_keys) == len(expected_source_meta), (
+            "source_meta_keys"
+        )
         for src in expected_source_meta:
             assert src in resp_source_meta_keys
     compare_service_meta(resp.service_meta_)

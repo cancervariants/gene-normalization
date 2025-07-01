@@ -162,7 +162,7 @@ class HGNC(Base):
         else:
             if isinstance(r[src], str) and ":" in r[src]:
                 r[src] = r[src].split(":")[-1].strip()
-            src_type.append(f"{NamespacePrefix[key.upper()].value}" f":{r[src]}")
+            src_type.append(f"{NamespacePrefix[key.upper()].value}:{r[src]}")
 
     def _add_location_annotations(self, r: dict, gene: dict) -> None:
         """Add location annotations to ``gene``

@@ -412,7 +412,7 @@ class DynamoDbDatabase(AbstractDatabase):
             self.batch.put_item(Item=record)
         except ClientError as e:
             _logger.exception(
-                "boto3 client error on add_record for " "%s: %s",
+                "boto3 client error on add_record for %s: %s",
                 concept_id,
                 e.response["Error"]["Message"],
             )

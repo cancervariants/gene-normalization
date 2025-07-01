@@ -51,8 +51,7 @@ excl_descr = """Optional. Comma-separated list of source names to exclude in
              code 422: Unprocessable Entity if both 'incl' and 'excl'
              parameters are given."""
 search_description = (
-    "For each source, return strongest-match concepts "
-    "for query string provided by user"
+    "For each source, return strongest-match concepts for query string provided by user"
 )
 
 
@@ -112,10 +111,10 @@ def normalize(q: str = Query(..., description=normalize_q_descr)) -> NormalizeSe
 
 
 unmerged_matches_summary = (
-    "Given query, provide source records corresponding to " "normalized concept."
+    "Given query, provide source records corresponding to normalized concept."
 )
 unmerged_response_descr = (
-    "Response containing source records contained within " "normalized concept."
+    "Response containing source records contained within normalized concept."
 )
 unmerged_normalize_description = (
     "Return unmerged records associated with the "

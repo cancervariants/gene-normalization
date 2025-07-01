@@ -116,9 +116,7 @@ class NCBI(Base):
                 src_name in NamespacePrefix.__members__
                 and NamespacePrefix[src_name].value in PREFIX_LOOKUP
             ):
-                params["xrefs"].append(
-                    f"{NamespacePrefix[src_name].value}" f":{src_id}"
-                )
+                params["xrefs"].append(f"{NamespacePrefix[src_name].value}:{src_id}")
             else:
                 if src_name.startswith("MIM"):
                     prefix = NamespacePrefix.OMIM.value

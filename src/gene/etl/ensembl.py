@@ -112,7 +112,7 @@ class Ensembl(Base):
                 if len(val) == 1:
                     val = val[0]
                     if key == "ID" and val.startswith("gene"):
-                        val = f"{NamespacePrefix.ENSEMBL.value}:" f"{val.split(':')[1]}"
+                        val = f"{NamespacePrefix.ENSEMBL.value}:{val.split(':')[1]}"
 
                 if key == "description":
                     gene["label"] = val.split("[")[0].strip()

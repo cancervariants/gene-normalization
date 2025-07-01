@@ -213,7 +213,7 @@ class QueryHandler:
         resp = {
             "query": query,
             "warnings": self._emit_warnings(query),
-            "source_matches": {source: None for source in sources},
+            "source_matches": dict.fromkeys(sources),
         }
         if query == "":
             return self._post_process_resp(resp)
