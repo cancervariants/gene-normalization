@@ -318,7 +318,7 @@ def create_db(
     aws_env_var_set = AWS_ENV_VAR_NAME in environ
 
     if aws_env_var_set or aws_instance:
-        from gene.database.dynamodb import DynamoDbDatabase
+        from gene.database.dynamodb import DynamoDbDatabase  # noqa: PLC0415
 
         db = DynamoDbDatabase()
     else:
@@ -331,11 +331,11 @@ def create_db(
 
         # prefer DynamoDB unless connection explicitly reads like a libpq URI
         if endpoint_url.startswith("postgres"):
-            from gene.database.postgresql import PostgresDatabase
+            from gene.database.postgresql import PostgresDatabase  # noqa: PLC0415
 
             db = PostgresDatabase(endpoint_url)
         else:
-            from gene.database.dynamodb import DynamoDbDatabase
+            from gene.database.dynamodb import DynamoDbDatabase  # noqa: PLC0415
 
             db = DynamoDbDatabase(endpoint_url)
     return db
