@@ -6,24 +6,15 @@ Bug reports and feature requests
 
 Bugs and new feature requests can be submitted to the Gene Normalizer `issue tracker on GitHub <https://github.com/cancervariants/gene-normalization/issues>`_. See `this StackOverflow post <https://stackoverflow.com/help/minimal-reproducible-example>`_ for tips on how to craft a helpful bug report.
 
-Development prerequisites
--------------------------
-For a development install, we recommend using Pipenv. See the `Pipenv docs <https://pipenv-fork.readthedocs.io/en/latest/#install-pipenv-today>`_ for direction on installing Pipenv in your environment.
-
 Setup
 -----
+
 Clone the repository: ::
 
     git clone https://github.com/cancervariants/gene-normalization
     cd gene-normalization
 
-Then initialize the Pipenv environment: ::
-
-    pipenv update
-    pipenv install --dev
-    pipenv shell
-
-Alternatively, use a virtual environment and install all dependency groups: ::
+Then initialize the virtual environment: ::
 
     python3 -m venv venv
     source venv/bin/activate
@@ -69,9 +60,8 @@ By default, tests will utilize an existing database, and won't load any new data
 Documentation
 -------------
 
-The documentation is built with Sphinx, which is included as part of the Pipenv developer dependencies, or in the ``docs`` dependency group. Navigate to the `docs/` subdirectory and use `make` to build the HTML version: ::
+The documentation is built with Sphinx, which is included as part of the ``docs`` dependency group. Navigate to the `docs/` subdirectory and use `make` to build the HTML version: ::
 
-    pipenv shell
     cd docs
     make html
 
