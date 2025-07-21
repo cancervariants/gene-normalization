@@ -38,7 +38,7 @@ pg = ["psycopg[binary]"]
 etl = [
     "gffutils",
     "biocommons.seqrepo",
-    "wags-tails~=0.3.2",
+    "wags-tails~=0.4.0",
     "setuptools",  # pinned for 3.12 because yoyo-migrations still uses pkg_resources
 ]
 tests = ["pytest>=6.0", "pytest-cov", "mock", "httpx", "deepdiff"]
