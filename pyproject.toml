@@ -30,13 +30,13 @@ dependencies = [
     "click",
     "boto3",
     "ga4gh.vrs>=2.1.3,<3.0",
+    "gffutils",
 ]
 dynamic = ["version"]
 
 [project.optional-dependencies]
 pg = ["psycopg[binary]"]
 etl = [
-    "gffutils",
     "biocommons.seqrepo",
     "wags-tails~=0.4.0",
     "setuptools",  # pinned for 3.12 because yoyo-migrations still uses pkg_resources
