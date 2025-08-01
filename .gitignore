@@ -151,6 +151,7 @@ src/gene/data/
 .idea/
 .vim/
 *.swp
+.vscode/
 
 # DynamoDB Local
 dynamodb_local_latest/*
