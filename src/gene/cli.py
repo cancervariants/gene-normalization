@@ -9,7 +9,6 @@ import click
 from gene import __version__
 from gene.config import config
 from gene.database.database import DatabaseException, create_db
-from gene.etl.update import update_all_sources, update_normalized, update_source
 from gene.logs import initialize_logs
 from gene.schemas import SourceName
 
@@ -218,6 +217,17 @@ def update(
     db = create_db(db_url, aws_instance)
 
     processed_ids = None
+    try:
+        from gene.etl.update import (  # noqa: PLC0415
+            update_all_sources,
+            update_normalized,
+            update_source,
+        )
+    except ImportError as e:
+        click.echo(
+            f"Encountered ImportError: {e.msg}. Updating source data requires the optional [etl] dependency group. See the 'Full Installation' instructions in the documentation."
+        )
+        click.get_current_context().exit(1)
     if all_:
         processed_ids = update_all_sources(db, use_existing, silent=silent)
     elif sources:
