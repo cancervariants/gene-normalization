@@ -793,11 +793,11 @@ class ServiceInfo(BaseModel):
     documentationUrl: Literal[  # noqa: N815
         "https://github.com/cancervariants/gene-normalization"
     ] = "https://github.com/cancervariants/gene-normalization"
-    createdAt: Literal["{% now 'utc', '%Y-%m-%dT%H:%M:%S+00:00' %}"] = (  # noqa: N815
-        "{% now 'utc', '%Y-%m-%dT%H:%M:%S+00:00' %}"
+    createdAt: Literal["2025-01-01T00:00:00+00:00"] = (  # noqa: N815
+        "2025-01-01T00:00:00+00:00"
     )
-    updatedAt: Literal["{% now 'utc', '%Y-%m-%dT%H:%M:%S+00:00' %}"] = (  # noqa: N815
-        "{% now 'utc', '%Y-%m-%dT%H:%M:%S+00:00' %}"
+    updatedAt: Literal["2025-01-01T00:00:00+00:00"] = (  # noqa: N815
+        "2025-01-01T00:00:00+00:00"
     )
     environment: ServiceEnvironment
     version: Literal[__version__] = __version__

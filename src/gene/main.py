@@ -104,17 +104,7 @@ def search(
     incl: str | None = Query(None, description=incl_descr),
     excl: str | None = Query(None, description=excl_descr),
 ) -> SearchService:
-    """Return strongest match concepts to query string provided by user.
-
-    :param str q: gene search term
-    :param Optional[str] incl: comma-separated list of sources to include,
-        with all others excluded. Raises HTTPException if both `incl` and
-        `excl` are given.
-    :param Optional[str] excl: comma-separated list of sources exclude, with
-        all others included. Raises HTTPException if both `incl` and `excl`
-        are given.
-    :return: JSON response with matched records and source metadata
-    """
+    """Return strongest match concepts to query string provided by user."""
     try:
         resp = request.app.state.query_handler.search(
             html.unescape(q), incl=incl, excl=excl
