@@ -753,7 +753,6 @@ class ServiceEnvironment(str, Enum):
     """Define current runtime environment."""
 
     DEV = "dev"  # local dev
-    TEST = "test"  # local/CI testing
     PROD = "prod"  # main production env on cloud
     STAGING = "staging"  # staging env on cloud
 
