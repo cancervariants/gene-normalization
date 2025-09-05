@@ -1,7 +1,6 @@
 """Test DynamoDB and ETL methods."""
 
 from os import environ
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
