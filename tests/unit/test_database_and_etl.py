@@ -1,6 +1,7 @@
 """Test DynamoDB and ETL methods."""
 
 from os import environ
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -64,9 +65,9 @@ def _get_aliases(seqid):
 
 
 @pytest.fixture(scope="module")
-def etl_data_path(test_data_dir):
+def etl_data_path(test_data_dir: Path):
     """Create a test fixture to return etl data path."""
-    return test_data_dir / "data" / "etl_data"
+    return test_data_dir / "etl_data"
 
 
 def test_tables_created(db_fixture):
