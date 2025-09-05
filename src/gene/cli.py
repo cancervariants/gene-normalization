@@ -7,7 +7,7 @@ from pathlib import Path
 import click
 
 from gene import __version__
-from gene.config import config
+from gene.config import get_config
 from gene.database.database import DatabaseException, create_db
 from gene.logs import initialize_logs
 from gene.schemas import SourceName
@@ -20,7 +20,7 @@ SILENT_MODE_DESCRIPTION = "Suppress output to console."
 
 
 def _initialize_app() -> None:
-    if config.debug:
+    if get_config().debug:
         initialize_logs(logging.DEBUG)
     else:
         initialize_logs()

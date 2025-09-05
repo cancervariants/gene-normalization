@@ -7,11 +7,13 @@ from unittest.mock import patch
 import pytest
 from boto3.dynamodb.conditions import Key
 
+from gene.config import get_config
 from gene.database import AWS_ENV_VAR_NAME
 from gene.etl import HGNC, NCBI, Ensembl
 from gene.etl.merge import Merge
 from gene.schemas import RecordType
 
+IS_DDB_TEST = not get_config().db_url.startswith("postgres")
 ALIASES = {
     "NC_000001.11": ["ga4gh:SQ.Ya6Rs7DHhDeg7YaOSg1EoNi3U_nQ9SvO"],
     "NC_000002.12": ["ga4gh:SQ.pnAqCRBrTsUoBghSD1yp_jXWSmlbdh4g"],
@@ -30,9 +32,6 @@ ALIASES = {
     "NT_167249.2": ["ga4gh:SQ.Q8IworEhpLeXwpz1CHM7C3luysh-ltx-"],
 }
 
-IS_TEST_ENV = environ.get("GENE_TEST", "").lower() == "true"
-IS_DDB_TEST = not environ.get("GENE_NORM_DB_URL", "").lower().startswith("postgres")
-
 
 @pytest.fixture(scope="module")
 def db_fixture(database):
@@ -43,7 +42,7 @@ def db_fixture(database):
             self.db = database
             self.db_name = self.db.__class__.__name__
             self.merge = Merge(database=self.db)
-            if IS_TEST_ENV and AWS_ENV_VAR_NAME not in environ:
+            if get_config().test and AWS_ENV_VAR_NAME not in environ:
                 self.db.drop_db()
                 self.db.initialize_db()
 
@@ -66,10 +65,9 @@ def _get_aliases(seqid):
 
 
 @pytest.fixture(scope="module")
-def etl_data_path():
+def etl_data_path(test_data_dir):
     """Create a test fixture to return etl data path."""
-    test_root = Path(__file__).resolve().parents[2]
-    return test_root / "tests" / "unit" / "data" / "etl_data"
+    return test_data_dir / "data" / "etl_data"
 
 
 def test_tables_created(db_fixture):
@@ -90,7 +88,7 @@ def test_tables_created(db_fixture):
         assert db_fixture.db.gene_table in existing_tables
 
 
-@pytest.mark.skipif(not IS_TEST_ENV, reason="not in test environment")
+@pytest.mark.skipif(not get_config().test, reason="not in test environment")
 @patch.object(Ensembl, "get_seqrepo")
 def test_ensembl_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     """Test that ensembl etl methods work correctly."""
@@ -101,7 +99,7 @@ def test_ensembl_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path)
     processed_ids += ensembl_ids
 
 
-@pytest.mark.skipif(not IS_TEST_ENV, reason="not in test environment")
+@pytest.mark.skipif(not get_config().test, reason="not in test environment")
 @patch.object(HGNC, "get_seqrepo")
 def test_hgnc_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     """Test that hgnc etl methods work correctly."""
@@ -111,7 +109,7 @@ def test_hgnc_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     processed_ids += hgnc_ids
 
 
-@pytest.mark.skipif(not IS_TEST_ENV, reason="not in test environment")
+@pytest.mark.skipif(not get_config().test, reason="not in test environment")
 @patch.object(NCBI, "get_seqrepo")
 def test_ncbi_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     """Test that ncbi etl methods work correctly."""
@@ -122,7 +120,7 @@ def test_ncbi_etl(test_get_seqrepo, processed_ids, db_fixture, etl_data_path):
     processed_ids += ncbi_ids
 
 
-@pytest.mark.skipif(not IS_TEST_ENV, reason="not in test environment")
+@pytest.mark.skipif(not get_config().test, reason="not in test environment")
 def test_merged_concepts(processed_ids, db_fixture):
     """Create merged concepts and load to db."""
     db_fixture.merge.create_merged_concepts(processed_ids)
@@ -162,7 +160,7 @@ def test_item_type(db_fixture):
     assert item["item_type"] == "xref"
 
 
-@pytest.mark.skipif(not IS_TEST_ENV, reason="not in test environment")
+@pytest.mark.skipif(not get_config().test, reason="not in test environment")
 def test_get_all_records(db_fixture):
     """Basic test of get_all_records method.
 
