@@ -13,7 +13,14 @@ from gene.config import get_config
 from gene.database import create_db
 from gene.logs import initialize_logs
 from gene.query import InvalidParameterException, QueryHandler
-from gene.schemas import NormalizeService, SearchService, UnmergedNormalizationService
+from gene.schemas import (
+    NormalizeService,
+    SearchService,
+    ServiceInfo,
+    ServiceOrganization,
+    ServiceType,
+    UnmergedNormalizationService,
+)
 
 
 @asynccontextmanager
@@ -167,3 +174,18 @@ def normalize_unmerged(
 ) -> UnmergedNormalizationService:
     """Return all individual records associated with a normalized concept."""
     return request.app.state.query_handler.normalize_unmerged(html.unescape(q))
+
+
+@app.get(
+    "/service-info",
+    summary="Get basic service information",
+    description="Retrieve service metadata, such as versioning and contact info. Structured in conformance with the [GA4GH service info API specification](https://www.ga4gh.org/product/service-info/)",
+    tags=[_Tag.META],
+)
+def service_info() -> ServiceInfo:
+    """Provide service info per GA4GH Service Info spec"""
+    return ServiceInfo(
+        organization=ServiceOrganization(),
+        type=ServiceType(),
+        environment=get_config().env,
+    )

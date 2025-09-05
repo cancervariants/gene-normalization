@@ -756,3 +756,48 @@ class ServiceEnvironment(str, Enum):
     TEST = "test"  # local/CI testing
     PROD = "prod"  # main production env on cloud
     STAGING = "staging"  # staging env on cloud
+
+
+class ServiceOrganization(BaseModel):
+    """Define service_info response for organization field"""
+
+    name: Literal["Variant Interpretation for Cancer Consortium"] = (
+        "Variant Interpretation for Cancer Consortium"
+    )
+    url: Literal["https://cancervariants.org/"] = "https://cancervariants.org/"
+
+
+class ServiceType(BaseModel):
+    """Define service_info response for type field"""
+
+    group: Literal["org.cancervariants"] = "org.cancervariants"
+    artifact: Literal["Gene Normalizer API"] = "Gene Normalizer API"
+    version: Literal[__version__] = __version__
+
+
+class ServiceInfo(BaseModel):
+    """Define response structure for GA4GH /service_info endpoint."""
+
+    id: Literal["org.cancervariants.gene_normalizer"] = (
+        "org.genomicmedlab.gene_normalizer"
+    )
+    name: Literal["Gene Normalizer"] = "Gene Normalizer"
+    type: ServiceType
+    description: Literal[
+        "The Gene Normalizer provides tools for resolving ambiguous gene references to consistently-structured, normalized terms."
+    ] = "The Gene Normalizer provides tools for resolving ambiguous gene references to consistently-structured, normalized terms."
+    organization: ServiceOrganization
+    contactUrl: Literal["Alex.Wagner@nationwidechildrens.org"] = (  # noqa: N815
+        "Alex.Wagner@nationwidechildrens.org"
+    )
+    documentationUrl: Literal[  # noqa: N815
+        "https://github.com/cancervariants/gene-normalization"
+    ] = "https://github.com/cancervariants/gene-normalization"
+    createdAt: Literal["{% now 'utc', '%Y-%m-%dT%H:%M:%S+00:00' %}"] = (  # noqa: N815
+        "{% now 'utc', '%Y-%m-%dT%H:%M:%S+00:00' %}"
+    )
+    updatedAt: Literal["{% now 'utc', '%Y-%m-%dT%H:%M:%S+00:00' %}"] = (  # noqa: N815
+        "{% now 'utc', '%Y-%m-%dT%H:%M:%S+00:00' %}"
+    )
+    environment: ServiceEnvironment
+    version: Literal[__version__] = __version__
