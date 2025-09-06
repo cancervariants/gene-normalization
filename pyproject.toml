@@ -49,6 +49,7 @@ tests = [
     "httpx",
     "pyyaml",
     "jsonschema",
+    "jsonschema~=4.24",  # pin to avoid deprecation of ref resolver
     "deepdiff"
 ]
 dev = [
