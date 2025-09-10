@@ -22,7 +22,7 @@ jobs:
       AWS_DEFAULT_REGION: us-east-2
       AWS_DEFAULT_OUTPUT: text
       GENE_NORM_DB_URL: ${{ matrix.db_url }}
-      GENE_TEST: true
+      GENE_NORM_TEST: true
     steps:
       - uses: actions/checkout@v4
 

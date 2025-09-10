@@ -1,16 +1,50 @@
 """Main application for FastAPI"""
 
 import html
+import logging
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
+from enum import Enum
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 
 from gene import __version__
+from gene.config import get_config
 from gene.database import create_db
 from gene.query import InvalidParameterException, QueryHandler
-from gene.schemas import NormalizeService, SearchService, UnmergedNormalizationService
+from gene.schemas import (
+    NormalizeService,
+    SearchService,
+    ServiceInfo,
+    ServiceOrganization,
+    ServiceType,
+    UnmergedNormalizationService,
+)
+from gene.utils import initialize_logs
 
-db = create_db()
-query_handler = QueryHandler(db)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator:
+    """Perform operations that interact with the lifespan of the FastAPI instance.
+
+    See https://fastapi.tiangolo.com/advanced/events/#lifespan.
+
+    :param app: FastAPI instance
+    """
+    log_level = logging.DEBUG if get_config().debug else logging.INFO
+    initialize_logs(log_level=log_level)
+    db = create_db()
+    app.state.query_handler = QueryHandler(db)
+
+    yield
+
+
+class _Tag(str, Enum):
+    """Define tag names for endpoints."""
+
+    META = "Meta"
+    QUERY = "Query"
+
 
 description = """
 The Gene Normalizer provides tools for resolving ambiguous gene references to
@@ -36,6 +70,7 @@ app = FastAPI(
     docs_url="/gene",
     openapi_url="/gene/openapi.json",
     swagger_ui_parameters={"tryItOutEnabled": True},
+    lifespan=lifespan,
 )
 
 
@@ -61,26 +96,19 @@ search_description = (
     response_description=response_description,
     response_model=SearchService,
     description=search_description,
-    tags=["Query"],
+    tags=[_Tag.QUERY],
 )
 def search(
+    request: Request,
     q: str = Query(..., description=q_descr),
     incl: str | None = Query(None, description=incl_descr),
     excl: str | None = Query(None, description=excl_descr),
 ) -> SearchService:
-    """Return strongest match concepts to query string provided by user.
-
-    :param str q: gene search term
-    :param Optional[str] incl: comma-separated list of sources to include,
-        with all others excluded. Raises HTTPException if both `incl` and
-        `excl` are given.
-    :param Optional[str] excl: comma-separated list of sources exclude, with
-        all others included. Raises HTTPException if both `incl` and `excl`
-        are given.
-    :return: JSON response with matched records and source metadata
-    """
+    """Return strongest match concepts to query string provided by user."""
     try:
-        resp = query_handler.search(html.unescape(q), incl=incl, excl=excl)
+        resp = request.app.state.query_handler.search(
+            html.unescape(q), incl=incl, excl=excl
+        )
     except InvalidParameterException as e:
         raise HTTPException(status_code=422, detail=str(e)) from e
     return resp
@@ -99,15 +127,13 @@ normalize_q_descr = "Gene to normalize."
     response_model=NormalizeService,
     response_model_exclude_none=True,
     description=normalize_descr,
-    tags=["Query"],
+    tags=[_Tag.QUERY],
 )
-def normalize(q: str = Query(..., description=normalize_q_descr)) -> NormalizeService:
-    """Return strongest match concepts to query string provided by user.
-
-    :param str q: gene search term
-    :return: JSON response with normalized gene concept
-    """
-    return query_handler.normalize(html.unescape(q))
+def normalize(
+    request: Request, q: str = Query(..., description=normalize_q_descr)
+) -> NormalizeService:
+    """Return strongest match concepts to query string provided by user."""
+    return request.app.state.query_handler.normalize(html.unescape(q))
 
 
 unmerged_matches_summary = (
@@ -133,11 +159,23 @@ unmerged_normalize_description = (
     tags=["Query"],
 )
 def normalize_unmerged(
+    request: Request,
     q: str = Query(..., description=normalize_q_descr),
 ) -> UnmergedNormalizationService:
-    """Return all individual records associated with a normalized concept.
+    """Return all individual records associated with a normalized concept."""
+    return request.app.state.query_handler.normalize_unmerged(html.unescape(q))
 
-    :param q: Gene search term
-    :returns: JSON response with matching normalized record and source metadata
-    """
-    return query_handler.normalize_unmerged(html.unescape(q))
+
+@app.get(
+    "/gene/service-info",
+    summary="Get basic service information",
+    description="Retrieve service metadata, such as versioning and contact info. Structured in conformance with the [GA4GH service info API specification](https://www.ga4gh.org/product/service-info/)",
+    tags=[_Tag.META],
+)
+def service_info() -> ServiceInfo:
+    """Provide service info per GA4GH Service Info spec"""
+    return ServiceInfo(
+        organization=ServiceOrganization(),
+        type=ServiceType(),
+        environment=get_config().env,
+    )

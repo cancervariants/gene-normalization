@@ -25,6 +25,7 @@ license = "MIT"
 license-files = ["LICENSE"]
 dependencies = [
     "pydantic==2.*",
+    "pydantic-settings",
     "fastapi",
     "uvicorn",
     "click",
@@ -41,8 +42,18 @@ etl = [
     "wags-tails~=0.4.0",
     "setuptools",  # pinned for 3.12 because yoyo-migrations still uses pkg_resources
 ]
-tests = ["pytest>=6.0", "pytest-cov", "mock", "httpx", "deepdiff"]
+tests = [
+    "pytest>=6.0",
+    "pytest-cov",
+    "mock",
+    "httpx",
+    "pyyaml",
+    "jsonschema",
+    "jsonschema~=4.24",  # pin to avoid deprecation of ref resolver
+    "deepdiff"
+]
 dev = [
+    "fastapi[standard]",
     "pre-commit>=4.2.0",
     "ruff==0.12.1",
 ]
@@ -200,6 +211,7 @@ ignore = [
     "INP001",
     "SLF001",
     "ARG001",
+    "D",
 ]
 "*__init__.py" = ["F401"]
 "gene/schemas.py" = ["ANN001", "ANN201", "N805"]

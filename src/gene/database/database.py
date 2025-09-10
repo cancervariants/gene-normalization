@@ -10,6 +10,7 @@ from typing import Any
 
 import click
 
+from gene.config import get_config
 from gene.schemas import RecordType, RefType, SourceMeta, SourceName
 
 
@@ -290,10 +291,13 @@ def create_db(
     >>> postgres_url = "postgresql://postgres@localhost:5432/gene_normalizer"
     >>> pg_db = create_db(postgres_url)  # creates Postgres connection at port 5432
     >>>
+    >>> db_url = "http://localhost:8001"
+    >>> dynamo_db = create_db(db_url)  # creates DynamoDB connection on port 8001
+
+    Or to bypass other settings:
+
     >>> import os
-    >>> os.environ["GENE_NORM_DB_URL"] = "http://localhost:8001"
-    >>> local_db = create_db()  # creates DynamoDB connection on port 8001
-    >>>
+    >>> from gene.database import create_db
     >>> os.environ["GENE_NORM_ENV"] = "Prod"
     >>> prod_db = create_db()  # creates connection to AWS cloud DynamoDB instance, overruling `GENE_NORM_DB_URL` variable setting
 
@@ -322,12 +326,7 @@ def create_db(
 
         db = DynamoDbDatabase()
     else:
-        if db_url:
-            endpoint_url = db_url
-        elif "GENE_NORM_DB_URL" in environ:
-            endpoint_url = environ["GENE_NORM_DB_URL"]
-        else:
-            endpoint_url = "http://localhost:8000"
+        endpoint_url = db_url if db_url else get_config().db_url
 
         # prefer DynamoDB unless connection explicitly reads like a libpq URI
         if endpoint_url.startswith("postgres"):

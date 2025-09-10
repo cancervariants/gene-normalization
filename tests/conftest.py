@@ -1,6 +1,7 @@
 """Provide utilities for test cases."""
 
 import logging
+from pathlib import Path
 
 import pytest
 
@@ -73,3 +74,9 @@ def _check_resp_single_record(resp, test_gene, match_type):
 def check_resp_single_record():
     """Provide record comparison function for single record"""
     return _check_resp_single_record
+
+
+@pytest.fixture(scope="session")
+def test_data_dir() -> Path:
+    """Provide Path instance pointing to test data directory"""
+    return Path(__file__).parent / "data"

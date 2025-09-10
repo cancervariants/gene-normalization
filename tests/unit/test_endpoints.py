@@ -5,15 +5,21 @@ response objects -- here, we're checking for bad branch logic and for basic assu
 that routes integrate correctly with query methods.
 """
 
+from pathlib import Path
+
+import jsonschema
 import pytest
+import yaml
 from fastapi.testclient import TestClient
 
 from gene.main import app
+from gene.query import QueryHandler
 
 
 @pytest.fixture(scope="module")
-def api_client():
+def api_client(database):
     """Provide test client fixture."""
+    app.state.query_handler = QueryHandler(database)
     return TestClient(app)
 
 
@@ -46,3 +52,19 @@ def test_normalize_unmerged(api_client):
     response = api_client.get("/gene/normalize_unmerged?q=braf")
     assert response.status_code == 200
     assert response.json()["normalized_concept_id"] == "hgnc:1097"
+
+
+def test_service_info(api_client: TestClient, test_data_dir: Path):
+    response = api_client.get("/gene/service-info")
+    response.raise_for_status()
+
+    with (test_data_dir / "service_info_openapi.yaml").open() as f:
+        spec = yaml.safe_load(f)
+
+    resp_schema = spec["paths"]["/service-info"]["get"]["responses"]["200"]["content"][
+        "application/json"
+    ]["schema"]
+
+    resolver = jsonschema.RefResolver.from_schema(spec)
+    data = response.json()
+    jsonschema.validate(instance=data, schema=resp_schema, resolver=resolver)
