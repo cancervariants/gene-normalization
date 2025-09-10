@@ -778,7 +778,7 @@ class ServiceInfo(BaseModel):
     """Define response structure for GA4GH /service_info endpoint."""
 
     id: Literal["org.cancervariants.gene_normalizer"] = (
-        "org.genomicmedlab.gene_normalizer"
+        "org.cancervariants.gene_normalizer"
     )
     name: Literal["Gene Normalizer"] = "Gene Normalizer"
     type: ServiceType
