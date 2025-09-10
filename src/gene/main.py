@@ -33,7 +33,6 @@ async def lifespan(app: FastAPI) -> AsyncGenerator:
     """
     log_level = logging.DEBUG if get_config().debug else logging.INFO
     initialize_logs(log_level=log_level)
-
     db = create_db()
     app.state.query_handler = QueryHandler(db)
 
@@ -71,6 +70,7 @@ app = FastAPI(
     docs_url="/gene",
     openapi_url="/gene/openapi.json",
     swagger_ui_parameters={"tryItOutEnabled": True},
+    lifespan=lifespan,
 )
 
 
@@ -167,7 +167,7 @@ def normalize_unmerged(
 
 
 @app.get(
-    "/service-info",
+    "/gene/service-info",
     summary="Get basic service information",
     description="Retrieve service metadata, such as versioning and contact info. Structured in conformance with the [GA4GH service info API specification](https://www.ga4gh.org/product/service-info/)",
     tags=[_Tag.META],

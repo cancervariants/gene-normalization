@@ -55,7 +55,7 @@ def test_normalize_unmerged(api_client):
 
 
 def test_service_info(api_client: TestClient, test_data_dir: Path):
-    response = api_client.get("/service-info")
+    response = api_client.get("/gene/service-info")
     response.raise_for_status()
 
     with (test_data_dir / "service_info_openapi.yaml").open() as f:
