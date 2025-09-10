@@ -9,8 +9,8 @@ import click
 from gene import __version__
 from gene.config import get_config
 from gene.database.database import DatabaseException, create_db
-from gene.logs import initialize_logs
 from gene.schemas import SourceName
+from gene.utils import initialize_logs
 
 _logger = logging.getLogger(__name__)
 

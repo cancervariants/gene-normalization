@@ -11,7 +11,6 @@ from fastapi import FastAPI, HTTPException, Query, Request
 from gene import __version__
 from gene.config import get_config
 from gene.database import create_db
-from gene.logs import initialize_logs
 from gene.query import InvalidParameterException, QueryHandler
 from gene.schemas import (
     NormalizeService,
@@ -21,6 +20,7 @@ from gene.schemas import (
     ServiceType,
     UnmergedNormalizationService,
 )
+from gene.utils import initialize_logs
 
 
 @asynccontextmanager
