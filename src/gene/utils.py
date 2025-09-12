@@ -1,4 +1,4 @@
-"""Configure useful utilities."""
+"""Provide useful utilities."""
 
 import logging
 from collections.abc import Generator
