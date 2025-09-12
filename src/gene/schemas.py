@@ -122,7 +122,7 @@ class Gene(BaseGene):
     )
 
 
-class SourceName(Enum):
+class SourceName(str, Enum):
     """Define string constraints to ensure consistent capitalization."""
 
     HGNC = "HGNC"
