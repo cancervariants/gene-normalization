@@ -274,18 +274,17 @@ def update(
 def dump_mappings(
     db_url: str, scope: RecordType | SourceName, outfile: Path | None
 ) -> None:
-    """Produce JSON Lines file dump of concept referents (e.g. name/label, alias, xrefs) and
-    the associated concept.
+    """Produce JSON Lines file dump of concept referents (e.g. name/label, alias, xrefs) and the associated concept.
+
     By default, produces output for all known referents to a normalized ID. The --scope
     option can be used to constrain this either to all non-merged identity records:
+
         $ gene-normalizer dump-mappings --scope identity
+
     Or to the identity records of a specific source:
+
         $ gene-normalizer dump-mappings --scope ncit
-    \f
-    :param db_url: connection string for DB
-    :param scope: either record type or source name, to constrain results
-    :param outfile: location to save output at
-    """  # noqa: D301
+    """
     db = create_db(db_url, False)
     if outfile is None:
         outfile = Path() / "gene_normalizer_mappings.jsonl"
