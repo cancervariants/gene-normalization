@@ -1,5 +1,6 @@
 """Provides a CLI util to make updates to normalizer database."""
 
+import json
 import logging
 import os
 from pathlib import Path
@@ -9,8 +10,8 @@ import click
 from gene import __version__
 from gene.config import get_config
 from gene.database.database import DatabaseException, create_db
-from gene.schemas import SourceName
-from gene.utils import initialize_logs
+from gene.schemas import RecordType, SourceName
+from gene.utils import get_term_mappings, initialize_logs
 
 _logger = logging.getLogger(__name__)
 
@@ -253,6 +254,44 @@ def update(
 
     if normalize:
         update_normalized(db, processed_ids, silent=silent)
+
+
+@cli.command()
+@click.option("--db_url", help=URL_DESCRIPTION)
+@click.option(
+    "--scope",
+    type=click.Choice(list(RecordType) + list(SourceName), case_sensitive=False),
+    nargs=1,
+    default=RecordType.MERGER,
+    help="Scope of mappings -- either an item type (merged/normalized vs base source records), or base records of an individaul source",
+)
+@click.option(
+    "--outfile",
+    "-o",
+    help="Output location to write to",
+    type=click.Path(path_type=Path),
+)
+def dump_mappings(
+    db_url: str, scope: RecordType | SourceName, outfile: Path | None
+) -> None:
+    """Produce JSON Lines file dump of concept referents (e.g. name/label, alias, xrefs) and the associated concept.
+
+    By default, produces output for all known referents to a normalized ID. The --scope
+    option can be used to constrain this either to all non-merged identity records:
+
+        $ gene-normalizer dump-mappings --scope identity
+
+    Or to the identity records of a specific source:
+
+        $ gene-normalizer dump-mappings --scope ncit
+    """
+    db = create_db(db_url, False)
+    if outfile is None:
+        outfile = Path() / "gene_normalizer_mappings.jsonl"
+    with outfile.open("w") as f:
+        for mapping in get_term_mappings(db, scope):
+            f.write(json.dumps(mapping))
+            f.write("\n")
 
 
 if __name__ == "__main__":
