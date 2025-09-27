@@ -274,7 +274,7 @@ def update(
 )
 @click.option(
     "--protein-coding-only",
-    help="Whether to constrain mappings to just include genes annotated as protein-coding",
+    help="Whether to constrain mappings to only include genes annotated as protein-coding",
     is_flag=True,
 )
 def dump_mappings(
