@@ -264,6 +264,15 @@ def test_db(null_database_class):
                     "xrefs": ["ncbigene:1956", "ensembl:ENSG00000146648"],
                     "item_type": "merger",
                 },
+                {
+                    "concept_id": "ncbigene:3378",
+                    "label": "inflammatory bowel disease 2",
+                    "gene_type": "unknown",
+                    "associated_with": ["omim:601458"],
+                    "symbol": "IBD2",
+                    "src_name": "NCBI",
+                    "item_type": "identity",
+                },
             ],
         }
     )
@@ -375,6 +384,16 @@ def test_get_term_mappings_merger(test_db: AbstractDatabase):
                 "ensembl:ENSG00000146648",
             ],
         },
+        {
+            "aliases": [],
+            "concept_id": "ncbigene:3378",
+            "label": "inflammatory bowel disease 2",
+            "previous_symbols": [],
+            "symbol": "IBD2",
+            "xrefs": [
+                "omim:601458",
+            ],
+        },
     ]
     diff = DeepDiff(fixture, results, ignore_order=True)
     assert diff == {}
@@ -386,3 +405,9 @@ def test_get_term_mappings_protein_coding_only(test_db: AbstractDatabase):
     )
     assert len(results) == 6
     assert "ensembl:ENSG00000231995" not in [r["concept_id"] for r in results]
+
+    results = list(
+        get_term_mappings(test_db, scope=RecordType.MERGER, protein_coding_only=True)
+    )
+    assert len(results) == 2
+    assert "ncbigene:3378" not in [r["concept_id"] for r in results]

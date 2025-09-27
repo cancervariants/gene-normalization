@@ -57,11 +57,29 @@ def get_term_mappings(
     for record in database.get_all_records(record_type=record_type):
         if src_name and record["src_name"] != src_name:
             continue
-        if (
-            protein_coding_only
-            and record.get("gene_type") not in protein_coding_gene_types
+        if protein_coding_only and (
+            (
+                record_type == RecordType.IDENTITY
+                and record.get("gene_type") not in protein_coding_gene_types
+            )
+            or (
+                record_type == RecordType.MERGER
+                and (
+                    "ensembl_biotype" not in record
+                    or record.get("ensembl_biotype") == "protein_coding"
+                )
+                and (
+                    "ncbi_gene_type" not in record
+                    or record["ncbi_gene_type"] == "protein_coding"
+                )
+                and (
+                    "hgnc_locus_type" not in record
+                    or record["hgnc_locus_type"] == "gene with protein product"
+                )
+            )
         ):
             continue
+
         yield {
             "concept_id": record["concept_id"],
             "symbol": record["symbol"],

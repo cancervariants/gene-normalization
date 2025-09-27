@@ -301,6 +301,7 @@ def dump_mappings(
         outfile = Path() / "gene_normalizer_mappings.jsonl"
     with outfile.open("w") as f:
         meta = {
+            "type": "meta",
             "created_at": datetime.datetime.now(tz=datetime.UTC).isoformat(),
             "scope": scope,
             "protein_coding_only": protein_coding_only,
