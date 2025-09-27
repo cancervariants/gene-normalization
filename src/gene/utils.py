@@ -27,7 +27,9 @@ def initialize_logs(log_level: int = logging.INFO) -> None:
 
 
 def get_term_mappings(
-    database: AbstractDatabase, scope: RecordType | SourceName
+    database: AbstractDatabase,
+    scope: RecordType | SourceName,
+    protein_coding_only: bool = False,
 ) -> Generator[dict, None, None]:
     """Produce dict objects for known concepts (name + ID) plus other possible referents
 
@@ -35,6 +37,7 @@ def get_term_mappings(
 
     :param database: instance of DB connection to get records from
     :param scope: constrain record scope, either to a kind of record or to a specific source
+    :param protein_coding_only: whether to constrain just to protein coding genes
     :return: Generator yielding mapping objects
     """
     if isinstance(scope, SourceName):
@@ -46,8 +49,18 @@ def get_term_mappings(
     else:
         raise TypeError
 
+    protein_coding_gene_types = {
+        "gene with protein product",  # HGNC
+        "protein-coding",  # NCBI
+        "protein_coding",  # Ensembl
+    }
     for record in database.get_all_records(record_type=record_type):
         if src_name and record["src_name"] != src_name:
+            continue
+        if (
+            protein_coding_only
+            and record.get("gene_type") not in protein_coding_gene_types
+        ):
             continue
         yield {
             "concept_id": record["concept_id"],
