@@ -1,5 +1,6 @@
 """Provides a CLI util to make updates to normalizer database."""
 
+import datetime
 import json
 import logging
 import os
@@ -271,8 +272,16 @@ def update(
     help="Output location to write to",
     type=click.Path(path_type=Path),
 )
+@click.option(
+    "--protein-coding-only",
+    help="Whether to constrain mappings to only include genes annotated as protein-coding",
+    is_flag=True,
+)
 def dump_mappings(
-    db_url: str, scope: RecordType | SourceName, outfile: Path | None
+    db_url: str,
+    scope: RecordType | SourceName,
+    outfile: Path | None,
+    protein_coding_only: bool,
 ) -> None:
     """Produce JSON Lines file dump of concept referents (e.g. name/label, alias, xrefs) and the associated concept.
 
@@ -284,12 +293,24 @@ def dump_mappings(
     Or to the identity records of a specific source:
 
         $ gene-normalizer dump-mappings --scope ncit
+
+    The first object in the .jsonl file will contain metadata about parameters used to create the document.
     """
     db = create_db(db_url, False)
     if outfile is None:
         outfile = Path() / "gene_normalizer_mappings.jsonl"
     with outfile.open("w") as f:
-        for mapping in get_term_mappings(db, scope):
+        meta = {
+            "type": "meta",
+            "created_at": datetime.datetime.now(tz=datetime.UTC).isoformat(),
+            "scope": scope,
+            "protein_coding_only": protein_coding_only,
+        }
+        f.write(json.dumps(meta))
+        f.write("\n")
+        for mapping in get_term_mappings(
+            db, scope, protein_coding_only=protein_coding_only
+        ):
             f.write(json.dumps(mapping))
             f.write("\n")
 

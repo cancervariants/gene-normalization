@@ -151,6 +151,25 @@ def test_db(null_database_class):
                     "merge_ref": "hgnc:1097",
                     "item_type": "identity",
                 },
+                {
+                    "concept_id": "ensembl:ENSG00000231995",
+                    "label": "ribosomal protein L7a pseudogene 76",
+                    "strand": "+",
+                    "locations": [
+                        {
+                            "type": "SequenceLocation",
+                            "start": 62266318,
+                            "end": 62266919,
+                            "sequence_id": "ga4gh:SQ.KEO-4XBcm1cxeo_DIQ8_ofqGUkp4iZhI",
+                        }
+                    ],
+                    "gene_type": "transcribed_processed_pseudogene",
+                    "symbol": "RPL7AP76",
+                    "xrefs": ["hgnc:55899"],
+                    "src_name": "Ensembl",
+                    "merge_ref": "hgnc:55899",
+                    "item_type": "identity",
+                },
             ],
             RecordType.MERGER: [
                 {
@@ -244,6 +263,15 @@ def test_db(null_database_class):
                     ],
                     "xrefs": ["ncbigene:1956", "ensembl:ENSG00000146648"],
                     "item_type": "merger",
+                },
+                {
+                    "concept_id": "ncbigene:3378",
+                    "label": "inflammatory bowel disease 2",
+                    "gene_type": "unknown",
+                    "associated_with": ["omim:601458"],
+                    "symbol": "IBD2",
+                    "src_name": "NCBI",
+                    "item_type": "identity",
                 },
             ],
         }
@@ -356,6 +384,30 @@ def test_get_term_mappings_merger(test_db: AbstractDatabase):
                 "ensembl:ENSG00000146648",
             ],
         },
+        {
+            "aliases": [],
+            "concept_id": "ncbigene:3378",
+            "label": "inflammatory bowel disease 2",
+            "previous_symbols": [],
+            "symbol": "IBD2",
+            "xrefs": [
+                "omim:601458",
+            ],
+        },
     ]
     diff = DeepDiff(fixture, results, ignore_order=True)
     assert diff == {}
+
+
+def test_get_term_mappings_protein_coding_only(test_db: AbstractDatabase):
+    results = list(
+        get_term_mappings(test_db, scope=RecordType.IDENTITY, protein_coding_only=True)
+    )
+    assert len(results) == 6
+    assert "ensembl:ENSG00000231995" not in [r["concept_id"] for r in results]
+
+    results = list(
+        get_term_mappings(test_db, scope=RecordType.MERGER, protein_coding_only=True)
+    )
+    assert len(results) == 2
+    assert "ncbigene:3378" not in [r["concept_id"] for r in results]
