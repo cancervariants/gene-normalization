@@ -20,6 +20,7 @@ from psycopg.errors import (
     UniqueViolation,
 )
 
+from gene.config import get_config
 from gene.database import (
     AbstractDatabase,
     DatabaseException,
@@ -62,8 +63,8 @@ class PostgresDatabase(AbstractDatabase):
         """
         if db_url:
             self.conninfo = db_url
-        elif "GENE_NORM_DB_URL" in os.environ:
-            self.conninfo = os.environ["GENE_NORM_DB_URL"]
+        elif "db_url" in get_config().model_fields_set:
+            self.conninfo = get_config().db_url
         else:
             user = db_args.get("user", "postgres")
             password = db_args.get("password", "")
