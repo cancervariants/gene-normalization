@@ -55,7 +55,7 @@ tests = [
 dev = [
     "fastapi[standard]",
     "pre-commit>=4.2.0",
-    "ruff==0.12.1",
+    "ruff==0.14.10",
 ]
 docs = [
     "sphinx==6.1.3",
