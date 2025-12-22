@@ -1,4 +1,4 @@
-﻿gene.database.postgresql
+gene.database.postgresql
 ========================
 
 .. automodule:: gene.database.postgresql

@@ -54,7 +54,7 @@ tests = [
 ]
 dev = [
     "fastapi[standard]",
-    "pre-commit>=4.2.0",
+    "prek>=0.2.23",
     "ruff==0.12.1",
 ]
 docs = [

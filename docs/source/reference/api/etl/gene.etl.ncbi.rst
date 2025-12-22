@@ -1,4 +1,4 @@
-﻿gene.etl.ncbi
+gene.etl.ncbi
 =============
 
 .. automodule:: gene.etl.ncbi

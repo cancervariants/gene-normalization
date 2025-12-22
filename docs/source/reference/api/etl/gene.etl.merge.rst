@@ -1,4 +1,4 @@
-﻿gene.etl.merge
+gene.etl.merge
 ==============
 
 .. automodule:: gene.etl.merge
