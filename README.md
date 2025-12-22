@@ -1,6 +1,6 @@
 <h1 align="center">
 Gene Normalizer
-</h1>
+</h1>     
 
 [![image](https://img.shields.io/pypi/v/gene-normalizer.svg)](https://pypi.python.org/pypi/gene-normalizer) [![image](https://img.shields.io/pypi/l/gene-normalizer.svg)](https://pypi.python.org/pypi/gene-normalizer) [![image](https://img.shields.io/pypi/pyversions/gene-normalizer.svg)](https://pypi.python.org/pypi/gene-normalizer) [![Actions status](https://github.com/cancervariants/gene-normalization/actions/workflows/checks.yaml/badge.svg)](https://github.com/cancervariants/gene-normalization/actions/workflows/checks.yaml) [![DOI](https://zenodo.org/badge/309797998.svg)](https://zenodo.org/badge/latestdoi/309797998)
 
