@@ -101,8 +101,8 @@ search_description = (
 def search(
     request: Request,
     q: Annotated[str, Query(..., description=q_descr)],
-    incl: Annotated[str | None, Query(None, description=incl_descr)],
-    excl: Annotated[str | None, Query(None, description=excl_descr)],
+    incl: Annotated[str | None, Query(..., description=incl_descr)] = None,
+    excl: Annotated[str | None, Query(..., description=excl_descr)] = None,
 ) -> SearchService:
     """Return strongest match concepts to query string provided by user."""
     try:
