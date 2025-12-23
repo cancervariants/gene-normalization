@@ -6,7 +6,7 @@ jobs:
     strategy:
       matrix:
         db_url: ["http://localhost:8000", "postgres://postgres:postgres@localhost:5432/gene_normalizer_test"]
-        python-version: ["3.11", "3.12", "3.13"]
+        python-version: ["3.12", "3.13", "3.14"]
     services:
       postgres:
         image: postgres:14
