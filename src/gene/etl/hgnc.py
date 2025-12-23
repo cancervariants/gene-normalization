@@ -178,15 +178,15 @@ class HGNC(Base):
 
         gene["location_annotations"] = []
         for loc in locations:
-            loc = loc.strip()
-            loc = self._set_annotation(loc, gene)
+            loc_processed = loc.strip()
+            loc_processed = self._set_annotation(loc_processed, gene)
 
-            if loc:
-                if loc == "mitochondria":
+            if loc_processed:
+                if loc_processed == "mitochondria":
                     gene["location_annotations"].append(Chromosome.MITOCHONDRIA.value)
                 else:
                     location = {}
-                    self._set_location(loc, location, gene)
+                    self._set_location(loc_processed, location, gene)
 
         if not gene["location_annotations"]:
             del gene["location_annotations"]
