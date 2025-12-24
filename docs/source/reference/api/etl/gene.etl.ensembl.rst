@@ -1,4 +1,4 @@
-﻿gene.etl.ensembl
+gene.etl.ensembl
 ================
 
 .. automodule:: gene.etl.ensembl

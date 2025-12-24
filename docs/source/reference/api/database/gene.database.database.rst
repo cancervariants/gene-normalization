@@ -1,4 +1,4 @@
-﻿gene.database.database
+gene.database.database
 ======================
 
 .. automodule:: gene.database.database

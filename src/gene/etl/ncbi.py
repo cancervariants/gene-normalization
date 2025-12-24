@@ -4,10 +4,10 @@ import csv
 import logging
 import re
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import gffutils
 from wags_tails import NcbiGenomeData
-from wags_tails.ncbi import NcbiGenePaths
 
 from gene import PREFIX_LOOKUP, SEQREPO_ROOT_DIR
 from gene.database import AbstractDatabase
@@ -24,6 +24,9 @@ from gene.schemas import (
     SourceName,
     SymbolStatus,
 )
+
+if TYPE_CHECKING:
+    from wags_tails.ncbi import NcbiGenePaths
 
 _logger = logging.getLogger(__name__)
 
@@ -316,7 +319,7 @@ class NCBI(Base):
             chromosomes = row[6].split("|") if "|" in row[6] else [row[6]]
 
             if (
-                len(chromosomes) >= 2
+                len(chromosomes) >= 2  # noqa: PLR2004
                 and chromosomes
                 and "X" not in chromosomes
                 and "Y" not in chromosomes
@@ -339,12 +342,12 @@ class NCBI(Base):
                 locations = [row[7]]
 
             # Sometimes locations will store the same location twice
-            if len(locations) == 2 and locations[0] == locations[1]:
+            if len(locations) == 2 and locations[0] == locations[1]:  # noqa: PLR2004
                 locations = [locations[0]]
 
             # Exclude genes where there are multiple distinct locations
             # i.e. OMS: '10q26.3', '19q13.42-q13.43', '3p25.3'
-            if len(locations) > 2:
+            if len(locations) > 2:  # noqa: PLR2004
                 _logger.info(
                     "%s contains multiple distinct locations: %s", row[2], locations
                 )

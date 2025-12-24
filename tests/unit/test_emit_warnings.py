@@ -19,9 +19,6 @@ def test_emit_warnings():
     assert actual_warnings == []
 
     # Test emit warnings
-    actual_warnings = query_handler._emit_warnings("sp ry3")
-    assert actual_warnings == actual_warnings
-
     actual_warnings = query_handler._emit_warnings("sp\u00a0ry3")
     assert expected_warnings == actual_warnings
 

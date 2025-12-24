@@ -1,4 +1,4 @@
-﻿gene.query
+gene.query
 ==========
 
 .. automodule:: gene.query
