@@ -7,19 +7,16 @@ services:
         IS_DEV_ENV: "true"
     environment:
       SEQREPO_ROOT_DIR: /usr/local/share/seqrepo/2024-12-20
-      AWS_ACCESS_KEY_ID: 'DUMMYIDEXAMPLE'
-      AWS_SECRET_ACCESS_KEY: 'DUMMYEXAMPLEKEY'
-      AWS_DEFAULT_REGION: 'us-east-2'
+      # Dummy AWS credentials, don't need to use real ones
+      AWS_ACCESS_KEY_ID: dummy
+      AWS_SECRET_ACCESS_KEY: dummy
+      AWS_DEFAULT_REGION: us-east-2
       GENE_NORM_DB_URL: http://dynamodb-local:8000
 
-    links:
-     - "dynamodb-local"
-
     ports:
-      - "8001:80"
+      - 127.0.0.1:8001:80
 
     volumes:
-      - gene_norm_ddb_vol:/home/dynamodblocal/dynamodb_local_latest
       - /usr/local/share/seqrepo:/usr/local/share/seqrepo
     depends_on:
       dynamodb-local:
@@ -27,11 +24,10 @@ services:
     command: ["/bin/bash", "/app/gene-norm-update.sh"]
 
   dynamodb-local:
-    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/dynamodb_local_latest"
-    image: "amazon/dynamodb-local:latest"
+    command: -jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/dynamodb_local_latest
+    image: amazon/dynamodb-local:3.1.0
     ports:
-     - "8000:8000"
-    user: root
+     - 127.0.0.1:8000:8000
     volumes:
       - gene_norm_ddb_vol:/home/dynamodblocal/dynamodb_local_latest
     working_dir: /home/dynamodblocal
