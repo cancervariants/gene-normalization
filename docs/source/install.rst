@@ -15,6 +15,23 @@ The Gene Normalizer can be installed from `PyPI <https://pypi.org/project/gene-n
     * ``tests`` provides dependencies for running tests. As with ``dev``, it's mostly relevant for contributors.
     * ``docs`` provides dependencies for documentation generation. It's only relevant for contributors.
 
+Docker Installation (Preferred)
+-------------------------------
+
+We recommend installing the Gene Normalizer using Docker.
+
+Requirements
+++++++++++++
+
+* `Docker <https://docs.docker.com/get-started/get-docker/>`_
+
+Build, (re)create, and start containers
++++++++++++++++++++++++++++++++++++++++
+
+    docker compose up
+
+Point your browser to http://localhost:8001/gene/.
+
 .. _quick-install:
 
 Quick Installation
@@ -89,23 +106,6 @@ The beginning of the response to a GET request to http://localhost:5000/gene/nor
    }
 
 .. _full-install:
-
-Docker Installation (Preferred)
--------------------------------
-
-We recommend installing the Gene Normalizer using Docker.
-
-Requirements
-++++++++++++
-
-* `Docker <https://docs.docker.com/get-started/get-docker/>`_
-
-Build, (re)create, and start containers
-+++++++++++++++++++++++++++++++++++++++
-
-    docker compose up
-
-Point your browser to http://localhost:8001/gene/.
 
 Full Installation
 -----------------
