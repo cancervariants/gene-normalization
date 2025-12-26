@@ -123,6 +123,10 @@ Remove the local DynamoDB data directory. ::
 
     rm -rf dynamodb_local_latest
 
+Recreate the local DynamoDB data directory. ::
+
+    mkdir dynamodb_local_latest
+
 Recreate the Docker volume (bind-mounted to a local directory). ::
 
     docker volume create --driver local --opt type=none --opt device="$(pwd)/dynamodb_local_latest" --opt o=bind gene_norm_ddb_vol
