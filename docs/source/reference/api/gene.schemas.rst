@@ -1,4 +1,4 @@
-﻿gene.schemas
+gene.schemas
 ============
 
 .. automodule:: gene.schemas

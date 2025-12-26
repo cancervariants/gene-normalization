@@ -1,4 +1,4 @@
-﻿gene.etl.update
+gene.etl.update
 ===============
 
 .. automodule:: gene.etl.update

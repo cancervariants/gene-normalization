@@ -1,4 +1,4 @@
-﻿gene.etl.exceptions
+gene.etl.exceptions
 ===================
 
 .. automodule:: gene.etl.exceptions

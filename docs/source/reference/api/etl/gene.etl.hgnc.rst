@@ -1,4 +1,4 @@
-﻿gene.etl.hgnc
+gene.etl.hgnc
 =============
 
 .. automodule:: gene.etl.hgnc

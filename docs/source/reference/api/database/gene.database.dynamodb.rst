@@ -1,4 +1,4 @@
-﻿gene.database.dynamodb
+gene.database.dynamodb
 ======================
 
 .. automodule:: gene.database.dynamodb
