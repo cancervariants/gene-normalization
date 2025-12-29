@@ -178,8 +178,8 @@ class HGNC(Base):
 
         gene["location_annotations"] = []
         for loc in locations:
-            loc = loc.strip()
-            loc = self._set_annotation(loc, gene)
+            loc = loc.strip()  # noqa: PLW2901
+            loc = self._set_annotation(loc, gene)  # noqa: PLW2901
 
             if loc:
                 if loc == "mitochondria":

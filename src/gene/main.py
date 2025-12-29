@@ -5,6 +5,7 @@ import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from enum import Enum
+from typing import Annotated
 
 from fastapi import FastAPI, HTTPException, Query, Request
 
@@ -94,15 +95,14 @@ search_description = (
     "/gene/search",
     summary=read_query_summary,
     response_description=response_description,
-    response_model=SearchService,
     description=search_description,
     tags=[_Tag.QUERY],
 )
 def search(
     request: Request,
-    q: str = Query(..., description=q_descr),
-    incl: str | None = Query(None, description=incl_descr),
-    excl: str | None = Query(None, description=excl_descr),
+    q: Annotated[str, Query(..., description=q_descr)],
+    incl: Annotated[str | None, Query(..., description=incl_descr)] = None,
+    excl: Annotated[str | None, Query(..., description=excl_descr)] = None,
 ) -> SearchService:
     """Return strongest match concepts to query string provided by user."""
     try:
@@ -124,13 +124,12 @@ normalize_q_descr = "Gene to normalize."
     "/gene/normalize",
     summary=normalize_summary,
     response_description=normalize_response_descr,
-    response_model=NormalizeService,
     response_model_exclude_none=True,
     description=normalize_descr,
     tags=[_Tag.QUERY],
 )
 def normalize(
-    request: Request, q: str = Query(..., description=normalize_q_descr)
+    request: Request, q: Annotated[str, Query(..., description=normalize_q_descr)]
 ) -> NormalizeService:
     """Return strongest match concepts to query string provided by user."""
     return request.app.state.query_handler.normalize(html.unescape(q))
@@ -154,13 +153,12 @@ unmerged_normalize_description = (
     summary=unmerged_matches_summary,
     operation_id="getUnmergedRecords",
     response_description=unmerged_response_descr,
-    response_model=UnmergedNormalizationService,
     description=unmerged_normalize_description,
     tags=["Query"],
 )
 def normalize_unmerged(
     request: Request,
-    q: str = Query(..., description=normalize_q_descr),
+    q: Annotated[str, Query(..., description=normalize_q_descr)],
 ) -> UnmergedNormalizationService:
     """Return all individual records associated with a normalized concept."""
     return request.app.state.query_handler.normalize_unmerged(html.unescape(q))
