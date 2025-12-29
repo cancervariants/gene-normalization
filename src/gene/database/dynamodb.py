@@ -600,5 +600,7 @@ class DynamoDbDatabase(AbstractDatabase):
                     break
 
         end = timer()
-        _logger.debug("Exported %i items in %.2f seconds", n_items, end - start)
+        _logger.debug(
+            "Exported %i items in %.2f seconds to %s", n_items, end - start, f.name
+        )
         _logger.info("Export to DynamoDB successful.")
