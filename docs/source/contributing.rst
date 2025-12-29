@@ -156,7 +156,7 @@ To archive ``gene_norm_ddb_vol`` into ``./gene_norm_ddb.tar.gz``: ::
     docker run --rm \
         -v gene_norm_ddb_vol:/volume \
         -v "$(pwd)":/backup \
-        alpine \
+        alpine:3.23 \
         sh -c "cd /volume && tar czf /backup/gene_norm_ddb.tar.gz ."
 
 Build and publish DynamoDB images
