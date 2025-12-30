@@ -78,27 +78,68 @@ Creating and Publishing Docker images
 .. note::
 
     This section assumes you have push permissions for the DockerHub organization.
+
     It also assumes you have a local `SeqRepo <https://github.com/biocommons/biocommons.seqrepo>`_
     installed at ``/usr/local/share/seqrepo/2024-12-20``. If you have it installed
     elsewhere, please update the ``SEQREPO_ROOT_DIR`` environment variable in
     ``compose-dev.yaml``.
 
+.. important::
+
+    All commands in this section must be run from the **root of the repository**.
+
+    These instructions assume a **fresh local DynamoDB setup**. The local DynamoDB
+    data is stored in a bind-mounted Docker volume and **must be reset** before
+    loading new data. Reusing an existing local DynamoDB volume is not supported.
+
+Configure environment
+^^^^^^^^^^^^^^^^^^^^^
+
 Set your DockerHub organization. ::
 
     export DOCKERHUB_ORG=your-org
 
-If you have an existing volume for DynamoDB already (``gene_norm_ddb_vol``) and want to load new data: ::
+Set the image version from the most recent Git tag (used for API image). ::
+
+    export VERSION=$(git describe --tags --abbrev=0)
+
+Set the image date tag (used for DynamoDB image). ::
+
+    export DATE=$(date +%F)
+
+Reset local DynamoDB data
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The local DynamoDB volume (``gene_norm_ddb_vol``) is configured as a *bind-mounted*
+Docker volume that maps to the local ``dynamodb_local_latest`` directory. Because of
+this, both the Docker volume **and** the local directory must be removed to ensure a
+completely clean database state.
+
+Remove the existing Docker volume. ::
 
     docker volume rm gene_norm_ddb_vol
 
-Create Docker volume for DynamoDB. ::
+Remove the local DynamoDB data directory. ::
+
+    rm -rf dynamodb_local_latest
+
+Recreate the local DynamoDB data directory. ::
+
+    mkdir dynamodb_local_latest
+
+Recreate the Docker volume (bind-mounted to a local directory). ::
 
     docker volume create --driver local --opt type=none --opt device="$(pwd)/dynamodb_local_latest" --opt o=bind gene_norm_ddb_vol
 
-To start the services and load DynamoDB (if necessary), from the root of the repository: ::
+Build and run services locally
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    export VERSION=$(git describe --tags --abbrev=0)
+To start the services and load DynamoDB: ::
+
     docker compose -f compose-dev.yaml up --build
+
+Build and publish API images
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To tag and push the API images: ::
 
@@ -106,15 +147,23 @@ To tag and push the API images: ::
     docker push $DOCKERHUB_ORG/gene-normalizer-api:$VERSION
     docker push $DOCKERHUB_ORG/gene-normalizer-api:latest
 
+
+Archive local DynamoDB data
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 To archive ``gene_norm_ddb_vol`` into ``./gene_norm_ddb.tar.gz``: ::
 
     docker run --rm \
         -v gene_norm_ddb_vol:/volume \
         -v "$(pwd)":/backup \
-        alpine \
+        alpine:3.23 \
         sh -c "cd /volume && tar czf /backup/gene_norm_ddb.tar.gz ."
 
-To tag and push the DynamoDB images, from the root of the repository: ::
+Build and publish DynamoDB images
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    export DATE=$(date +%F)
+To tag and push the DynamoDB images: ::
+
     docker build -f Dockerfile.ddb -t $DOCKERHUB_ORG/gene-normalizer-ddb:$DATE -t $DOCKERHUB_ORG/gene-normalizer-ddb:latest .
+    docker push $DOCKERHUB_ORG/gene-normalizer-ddb:$DATE
+    docker push $DOCKERHUB_ORG/gene-normalizer-ddb:latest
