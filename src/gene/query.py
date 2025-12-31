@@ -55,18 +55,22 @@ class QueryHandler:
 
     def __init__(self, database: AbstractDatabase) -> None:
         """Initialize QueryHandler instance. Requires a created database object to
-        initialize. The most straightforward way to do this is via the ``create_db``
-        method in the ``gene.database`` module:
+        initialize. The most straightforward way to do this is via the `create_db`
+        method in the `gene.database` module:
 
+        ```pycon
         >>> from gene.query import QueryHandler
         >>> from gene.database import create_db
         >>> q = QueryHandler(create_db())
+        ```
 
-        We'll generally call ``create_db`` without any arguments in code examples, for
-        the sake of brevity. See the `usage` page in the docs and the ``create_db`` API
+        We'll generally call `create_db` without any arguments in code examples, for
+        the sake of brevity. See the `usage` page in the docs and the `create_db` API
         description for more details.
 
-        :param database: storage backend to search against
+        Args:
+          database:
+            storage backend to search against
         """
         self.db = database
 
@@ -273,21 +277,31 @@ class QueryHandler:
     ) -> SearchService:
         """Return highest match for each source.
 
+        ```pycon
         >>> from gene.query import QueryHandler
         >>> from gene.database import create_db
         >>> q = QueryHandler(create_db())
         >>> result = q.search("BRAF")
         >>> result.source_matches[0].records[0].concept_id
         'ncbigene:673'
+        ```
 
-        :param query_str: query, a string, to search for
-        :param incl: str containing comma-separated names of sources to use. Will
-            exclude all other sources. Case-insensitive.
-        :param excl: str containing comma-separated names of source to exclude. Will
-            include all other source. Case-insensitive.
-        :return: SearchService class containing all matches found in sources.
-        :raise InvalidParameterException: if both `incl` and `excl` args are provided,
-            or if invalid source names are given
+        Args:
+          query_str:
+            query, a string, to search for
+          incl:
+            Str containing comma-separated names of sources to use. Will exclude all
+            other sources. Case-insensitive.
+          excl:
+            str containing comma-separated names of source to exclude. Will include all
+            other source. Case-insensitive.
+
+        Returns:
+          SearchService class containing all matches found in sources.
+
+        Raises:
+          InvalidParameterException: if both `incl` and `excl` args are provided, or if
+          invalid source names are given
         """
         possible_sources = {
             name.value.lower(): name.value for name in SourceName.__members__.values()
@@ -569,6 +583,7 @@ class QueryHandler:
 
         Use to retrieve normalized gene concept records:
 
+        ```pycon
         >>> from gene.query import QueryHandler
         >>> from gene.database import create_db
         >>> q = QueryHandler(create_db())
@@ -577,9 +592,14 @@ class QueryHandler:
         'hgnc:1097'
         >>> next(ext for ext in result.gene.extensions if ext.name == "aliases").value
         ['BRAF1', 'RAFB1', 'B-raf', 'NS7', 'B-RAF1']
+        ```
 
-        :param query: String to find normalized concept for
-        :return: Normalized gene concept
+        Args:
+          query:
+            String to find normalized concept for
+
+        Returns:
+          Normalized gene concept
         """
         response = NormalizeService(**self._prepare_normalized_response(query))
         return self._perform_normalized_lookup(response, query, self._add_gene)
@@ -725,6 +745,7 @@ class QueryHandler:
         """Return all source records under the normalized concept for the
         provided query string.
 
+        ```pycon
         >>> from gene.query import QueryHandler
         >>> from gene.database import create_db
         >>> from gene.schemas import SourceName
@@ -734,9 +755,13 @@ class QueryHandler:
         <MatchType.CONCEPT_ID: 100>
         >>> response.source_matches[SourceName.ENSEMBL].concept_id
         'ensembl:ENSG00000157764'
+        ```
 
-        :param query: string to search against
-        :return: Normalized response object
+        Args:
+          query: string to search against
+
+        Returns:
+          Normalized response object
         """
         response = UnmergedNormalizationService(
             source_matches={}, **self._prepare_normalized_response(query)

@@ -1,0 +1,5 @@
+.highlight.language-pycon .gp,
+.highlight.language-pycon .go {
+  -webkit-user-select: none;
+  user-select: none;
+}

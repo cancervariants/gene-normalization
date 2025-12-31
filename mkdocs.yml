@@ -1,0 +1,47 @@
+site_name: VICC Gene Normalizer
+site_url: https://gene-normalizer.readthedocs.io/
+nav:
+  - Home: index.md
+  - Installation: install.md
+  - Usage: usage.md
+  - API Reference: api/index.md
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - admonition
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.superfences
+  - attr_list
+theme:
+  name: material
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - content.code.copy
+hooks:
+  - mkdocs_plugins/version_hook.py
+plugins:
+  - macros
+  - search
+  - autorefs
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_signature_annotations: true
+extra_css:
+  - stylesheets/custom.css
