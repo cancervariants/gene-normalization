@@ -71,6 +71,7 @@ class QueryHandler:
         Args:
           database:
             storage backend to search against
+
         """
         self.db = database
 
@@ -302,6 +303,7 @@ class QueryHandler:
         Raises:
           InvalidParameterException: if both `incl` and `excl` args are provided, or if
           invalid source names are given
+
         """
         possible_sources = {
             name.value.lower(): name.value for name in SourceName.__members__.values()
@@ -600,6 +602,7 @@ class QueryHandler:
 
         Returns:
           Normalized gene concept
+
         """
         response = NormalizeService(**self._prepare_normalized_response(query))
         return self._perform_normalized_lookup(response, query, self._add_gene)
@@ -762,6 +765,7 @@ class QueryHandler:
 
         Returns:
           Normalized response object
+
         """
         response = UnmergedNormalizationService(
             source_matches={}, **self._prepare_normalized_response(query)
