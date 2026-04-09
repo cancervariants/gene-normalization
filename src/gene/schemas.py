@@ -169,7 +169,8 @@ class NamespacePrefix(Enum):
     PSEUDOGENE = "pseudogene.org"
     HORDE = "hordedb"
     MEROPS = "merops"
-    IUPHAR = "iuphar"
+    IUPHAR_RECTEPTOR = "iuphar.receptor"
+    IUPHAR = IUPHAR_RECTEPTOR
     MAMIT = "mamittrnadb"
     CD = "hcdmdb"
     LNCRNADB = "lncrnadb"
@@ -201,7 +202,7 @@ NAMESPACE_TO_SYSTEM_URI: MappingProxyType[NamespacePrefix, str] = MappingProxyTy
         NamespacePrefix.PSEUDOGENE: "http://tables.pseudogene.org/",
         NamespacePrefix.HORDE: "http://genome.weizmann.ac.il/horde/card/index/symbol:",
         NamespacePrefix.MEROPS: "https://www.ebi.ac.uk/merops/cgi-bin/pepsum?id=",
-        NamespacePrefix.IUPHAR: "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
+        NamespacePrefix.IUPHAR_RECTEPTOR: "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
         NamespacePrefix.MAMIT: "http://mamit-trna.u-strasbg.fr/mutations.asp?idAA=",
         NamespacePrefix.CD: "http://www.hcdm.org/index.php?option=com_molecule&cdnumber=",
         NamespacePrefix.IMGT: "https://www.imgt.org/genedb/GENElect?species=Homo+sapiens&query=2+",
