@@ -96,7 +96,7 @@ Normalized records are structured as `Genes <https://github.com/ga4gh/vrs/tree/2
           },
           {
               "coding": {
-                  "id": "iuphar:1943",
+                  "id": "iuphar.receptor:1943",
                   "code": "1943",
                   "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
               },

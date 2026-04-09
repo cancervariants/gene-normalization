@@ -374,7 +374,7 @@ class NormalizeService(BaseNormalizationService):
                         },
                         {
                             "coding": {
-                                "id": "iuphar:1943",
+                                "id": "iuphar.receptor:1943",
                                 "code": "1943",
                                 "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
                             },
@@ -626,7 +626,7 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                     "merops:S09.979",
                                     "ccds:CCDS5710",
                                     "omim:100740",
-                                    "iuphar:2465",
+                                    "iuphar.receptor:2465",
                                     "ccds:CCDS5709",
                                     "refseq:NM_015831",
                                     "pubmed:1380483",

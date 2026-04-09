@@ -107,7 +107,7 @@ def normalized_ache():
             },
             {
                 "coding": {
-                    "id": "iuphar:2465",
+                    "id": "iuphar.receptor:2465",
                     "code": "2465",
                     "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
                 },
@@ -201,7 +201,7 @@ def normalized_braf():
             },
             {
                 "coding": {
-                    "id": "iuphar:1943",
+                    "id": "iuphar.receptor:1943",
                     "code": "1943",
                     "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
                 },
@@ -433,7 +433,7 @@ def normalized_abl1():
             },
             {
                 "coding": {
-                    "id": "iuphar:1923",
+                    "id": "iuphar.receptor:1923",
                     "code": "1923",
                     "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
                 },
@@ -947,7 +947,7 @@ def normalize_unmerged_ache():
                             "vega:OTTHUMG00000157033",
                             "merops:S09.979",
                             "omim:100740",
-                            "iuphar:2465",
+                            "iuphar.receptor:2465",
                             "refseq:NM_015831",
                             "pubmed:1380483",
                             "uniprot:P22303",

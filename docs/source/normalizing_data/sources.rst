@@ -50,7 +50,7 @@ HGNC
        "ccds:CCDS94218",
        "ccds:CCDS94219",
        "refseq:NM_004333",
-       "iuphar:1943"
+       "iuphar.receptor:1943"
      ],
      "gene_type": "gene with protein product",
      "match_type": 100
