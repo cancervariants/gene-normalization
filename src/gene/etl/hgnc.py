@@ -134,6 +134,7 @@ class HGNC(Base):
                     key = src
 
                 if key.upper() == "IUPHAR":
+                    # force correct prefix
                     key = "IUPHAR_RECEPTOR"
                 if key.upper() in NamespacePrefix.__members__:
                     if NamespacePrefix[key.upper()].value in PREFIX_LOOKUP:
