@@ -133,6 +133,8 @@ class HGNC(Base):
                 else:
                     key = src
 
+                if key.upper() == "IUPHAR":
+                    key = "IUPHAR_RECEPTOR"
                 if key.upper() in NamespacePrefix.__members__:
                     if NamespacePrefix[key.upper()].value in PREFIX_LOOKUP:
                         self._get_xref_associated_with(key, src, r, xrefs)
