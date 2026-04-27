@@ -36,6 +36,7 @@ NC_000017.11	RefSeq	region	1	83257441	.	+	.	ID=NC_000017.11:1..83257441;Dbxref=t
 NC_000018.10	RefSeq	region	1	80373285	.	+	.	ID=NC_000018.10:1..80373285;Dbxref=taxon:9606;Name=18;chromosome=18;gbkey=Src;genome=chromosome;mol_type=genomic DNA
 NC_000019.10	RefSeq	region	1	58617616	.	+	.	ID=NC_000019.10:1..58617616;Dbxref=taxon:9606;Name=19;chromosome=19;gbkey=Src;genome=chromosome;mol_type=genomic DNA
 NC_000019.10	BestRefSeq%2CGnomon	gene	4402640	4450830	.	+	.	ID=gene-CHAF1A;Dbxref=GeneID:10036,HGNC:HGNC:1910,MIM:601246;Name=CHAF1A;description=chromatin assembly factor 1 subunit A;gbkey=Gene;gene=CHAF1A;gene_biotype=protein_coding;gene_synonym=CAF-1,CAF1,CAF1B,CAF1P150,P150
+NC_000019.10	BestRefSeq%2CGnomon	gene	38211006	38229695	.	-	.	ID=gene-DPF1;Dbxref=GeneID:8193,HGNC:HGNC:20225,MIM:601670;Name=DPF1;description=double PHD fingers 1;gbkey=Gene;gene=DPF1;gene_biotype=protein_coding;gene_synonym=BAF45b,NEUD4,neuro-d4,SMARCG1
 NC_000020.11	RefSeq	region	1	64444167	.	+	.	ID=NC_000020.11:1..64444167;Dbxref=taxon:9606;Name=20;chromosome=20;gbkey=Src;genome=chromosome;mol_type=genomic DNA
 NC_000021.9	RefSeq	region	1	46709983	.	+	.	ID=NC_000021.9:1..46709983;Dbxref=taxon:9606;Name=21;chromosome=21;gbkey=Src;genome=chromosome;mol_type=genomic DNA
 NC_000022.11	RefSeq	region	1	50818468	.	+	.	ID=NC_000022.11:1..50818468;Dbxref=taxon:9606;Name=22;chromosome=22;gbkey=Src;genome=chromosome;mol_type=genomic DNA

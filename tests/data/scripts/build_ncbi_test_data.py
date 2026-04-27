@@ -3,25 +3,26 @@ from pathlib import Path
 from wags_tails import NcbiGeneData, NcbiGeneSummaryData, NcbiGenomeData
 
 KEEP_GENE_IDS = {
-    "104793947",
     "25",
     "43",
     "290",
+    "293",
     "673",
-    "10036",
+    "8193",
+    "4625",
+    "7637",
     "9646",
-    "106783576",
+    "10036",
+    "10251",
+    "25782",
+    "30849",
     "54704",
     "403313",
-    "30849",
-    "25782",
-    "293",
-    "10251",
-    "7637",
-    "4625",
+    "104793947",
+    "106783576",
     # discontinued
-    "103344718",
     "544580",
+    "103344718",
 }
 NCBI_DATA_PATHS, _ = NcbiGeneData().get_latest()
 
