@@ -131,14 +131,6 @@ def normalized_ache():
             },
             {
                 "coding": {
-                    "id": "iuphar.receptor:108",
-                    "code": "108",
-                    "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
-                },
-                "relation": "relatedMatch",
-            },
-            {
-                "coding": {
                     "id": "refseq:NM_015831",
                     "code": "NM_015831",
                     "system": "https://www.ncbi.nlm.nih.gov/nuccore/",
@@ -261,14 +253,6 @@ def normalized_braf():
                     "system": "https://www.ensembl.org/id/",
                 },
                 "relation": "exactMatch",
-            },
-            {
-                "coding": {
-                    "id": "iuphar.receptor:1097",
-                    "code": "1097",
-                    "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
-                },
-                "relation": "relatedMatch",
             },
             {
                 "coding": {
@@ -514,14 +498,6 @@ def normalized_abl1():
                     "id": "orphanet:117691",
                     "code": "117691",
                     "system": "http://www.orpha.net/consor/cgi-bin/OC_Exp.php?Lng=EN&Expert=",
-                },
-                "relation": "relatedMatch",
-            },
-            {
-                "coding": {
-                    "id": "iuphar.receptor:76",
-                    "code": "76",
-                    "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
                 },
                 "relation": "relatedMatch",
             },
@@ -1043,7 +1019,6 @@ def normalize_unmerged_ache():
                             "ccds:CCDS64736",
                             "ccds:CCDS5710",
                             "ccds:CCDS5709",
-                            "iuphar.receptor:108",
                             "refseq:NM_015831",
                             "pubmed:1380483",
                             "uniprot:P22303",
