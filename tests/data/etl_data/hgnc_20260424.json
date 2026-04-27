@@ -4,7 +4,7 @@
     "status": 0
   },
   "response": {
-    "numFound": 22,
+    "numFound": 23,
     "numFoundExact": true,
     "docs": [
       {
@@ -362,6 +362,57 @@
         "uniprot_ids": [
           "P0DSO3"
         ]
+      },
+      {
+        "status": "Approved",
+        "pubmed_id": [
+          8617495
+        ],
+        "ucsc_id": "uc002zze.4",
+        "hgnc_id": "HGNC:4641",
+        "date_approved_reserved": "1994-08-10",
+        "date_modified": "2023-03-15",
+        "gene_group": [
+          "Soluble glutathione S-transferases"
+        ],
+        "gene_group_id": [
+          567
+        ],
+        "enzyme_id": [
+          "2.5.1.18"
+        ],
+        "name": "glutathione S-transferase theta 1",
+        "uuid": "5fece903-e3ae-407d-9f61-5e992e2edd56",
+        "entrez_id": "2952",
+        "mane_select": [
+          "ENST00000612885.4",
+          "NM_000853.4"
+        ],
+        "location": "22q11.23 alternate reference locus",
+        "mgd_id": [
+          "MGI:107379"
+        ],
+        "uniprot_ids": [
+          "P30711"
+        ],
+        "symbol": "GSTT1",
+        "rgd_id": [
+          "RGD:2765"
+        ],
+        "ensembl_gene_id": "ENSG00000277656",
+        "location_sortable": "22q11.23 alternate reference locus",
+        "locus_type": "gene with protein product",
+        "locus_group": "protein-coding gene",
+        "omim_id": [
+          "600436"
+        ],
+        "refseq_accession": [
+          "NM_000853"
+        ],
+        "ena": [
+          "KI270879"
+        ],
+        "orphanet": 470418
       },
       {
         "pubmed_id": [
