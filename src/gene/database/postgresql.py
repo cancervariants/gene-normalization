@@ -547,9 +547,10 @@ class PostgresDatabase(AbstractDatabase):
     _add_record_query = b"""
     INSERT INTO gene_concepts (
         concept_id, source, symbol_status, label,
-        strand, location_annotations, locations, gene_type
+        strand, location_annotations, locations, gene_type,
+        gene_description
     )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
     _ins_symbol_query = (
         b"INSERT INTO gene_symbols (symbol, concept_id) VALUES (%s, %s);"
@@ -586,6 +587,7 @@ class PostgresDatabase(AbstractDatabase):
                         record.get("location_annotations"),
                         locations,
                         record.get("gene_type"),
+                        record.get("gene_description"),
                     ],
                 )
                 for a in record.get("aliases", []):
@@ -608,9 +610,9 @@ class PostgresDatabase(AbstractDatabase):
         concept_id, symbol, symbol_status, previous_symbols, label, strand,
         location_annotations, ensembl_locations, hgnc_locations, ncbi_locations,
         hgnc_locus_type, ensembl_biotype, ncbi_gene_type, aliases, associated_with,
-        xrefs
+        xrefs, gene_description
     )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
 
     def add_merged_record(self, record: dict) -> None:
@@ -647,6 +649,7 @@ class PostgresDatabase(AbstractDatabase):
                     record.get("aliases"),
                     record.get("associated_with"),
                     record.get("xrefs"),
+                    record.get("gene_description"),
                 ],
             )
             self.conn.commit()

@@ -94,6 +94,7 @@ class BaseGene(BaseModel):
     xrefs: list[Annotated[str, StringConstraints(pattern=CURIE_REGEX)]] = []
     associated_with: list[Annotated[str, StringConstraints(pattern=CURIE_REGEX)]] = []
     gene_type: StrictStr | None = None
+    gene_description: StrictStr | None = None
 
 
 class Gene(BaseGene):

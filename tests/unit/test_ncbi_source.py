@@ -105,6 +105,7 @@ def pdp1_symbol():
             }
         ],
         "gene_type": "protein-coding",
+        "gene_description": "Pyruvate dehydrogenase (E1) is one of the three components (E1, E2, and E3) of the large pyruvate dehydrogenase complex. Pyruvate dehydrogenase kinases catalyze phosphorylation of serine residues of E1 to inactivate the E1 component and inhibit the complex. Pyruvate dehydrogenase phosphatases catalyze the dephosphorylation and activation of the E1 component to reverse the effects of pyruvate dehydrogenase kinases. Pyruvate dehydrogenase phosphatase is a heterodimer consisting of catalytic and regulatory subunits. Two catalytic subunits have been reported; one is predominantly expressed in skeletal muscle and another one is is much more abundant in the liver. The catalytic subunit, encoded by this gene, is the former, and belongs to the protein phosphatase 2C (PP2C) superfamily. Along with the pyruvate dehydrogenase complex and pyruvate dehydrogenase kinases, this enzyme is located in the mitochondrial matrix. Mutation in this gene causes pyruvate dehydrogenase phosphatase deficiency. Multiple alternatively spliced transcript variants encoding different isoforms have been identified.[provided by RefSeq, Jun 2009]",
     }
     return Gene(**params)
 
@@ -294,6 +295,7 @@ def slc25a6():
             },
         ],
         "gene_type": "protein-coding",
+        "gene_description": "This gene is a member of the mitochondrial carrier subfamily of solute carrier protein genes. The product of this gene functions as a gated pore that translocates ADP from the cytoplasm into the mitochondrial matrix and ATP from the mitochondrial matrix into the cytoplasm. The protein is implicated in the function of the permability transition pore complex (PTPC), which regulates the release of mitochondrial products that induce apoptosis. The human genome contains several non-transcribed pseudogenes of this gene. [provided by RefSeq, Jun 2013]",
     }
     return Gene(**params)
 
@@ -316,6 +318,7 @@ def loc106783576():
         "strand": None,
         "locations": [],
         "gene_type": "biological-region",
+        "gene_description": "This region, which is not conserved between human and mouse at the sequence level, can function as an enhancer in human Jurkat T cells. Its chromatin structure represents a histone acetylation island in human T cells based on the diacetylation of histone H3 at lysines 9 and 14. [provided by RefSeq, Nov 2015]",
     }
     return Gene(**params)
 
@@ -370,8 +373,7 @@ def prkrap1():
     """Create gene fixture for PRKRAP1."""
     params = {
         "match_type": MatchType.NO_MATCH,
-        "label": "protein activator of interferon induced protein kinase "
-        "EIF2AK2 pseudogene 1",
+        "label": "PRKRA pseudogene 1",
         "concept_id": "ncbigene:731716",
         "symbol": "PRKRAP1",
         "aliases": [],

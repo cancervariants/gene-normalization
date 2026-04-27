@@ -27,7 +27,8 @@ CREATE TABLE gene_merged (
     ncbi_gene_type TEXT [],
     aliases TEXT [],
     associated_with TEXT [],
-    xrefs TEXT []
+    xrefs TEXT [],
+    gene_description JSON
 );
 CREATE TABLE gene_concepts (
     concept_id VARCHAR(127) PRIMARY KEY,
@@ -38,6 +39,7 @@ CREATE TABLE gene_concepts (
     location_annotations TEXT [],
     locations JSON [],
     gene_type TEXT,
+    gene_description TEXT,
     merge_ref VARCHAR(127) REFERENCES gene_merged (concept_id)
 );
 CREATE TABLE gene_symbols (

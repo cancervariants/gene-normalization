@@ -161,7 +161,7 @@ def spry3():
         "locations": [
             {
                 "end": 155782459,
-                "start": 155612571,
+                "start": 155612297,
                 "sequenceReference": {
                     "type": "SequenceReference",
                     "refgetAccession": "SQ.w0WZEvgJF0zf_P4yyTzjjv9oW1z61HHP",
@@ -302,9 +302,9 @@ def test_meta_info(ensembl):
         resp.source_meta_.data_license_url
         == "https://useast.ensembl.org/info/about/legal/disclaimer.html"
     )
-    assert resp.source_meta_.version == "113"
+    assert resp.source_meta_.version == "115"
     assert resp.source_meta_.data_url == {
-        "genome_annotations": "ftp://ftp.ensembl.org/pub/release-113/gff3/homo_sapiens/Homo_sapiens.GRCh38.113.gff3.gz"
+        "genome_annotations": "ftp://ftp.ensembl.org/pub/release-115/gff3/homo_sapiens/Homo_sapiens.GRCh38.115.gff3.gz"
     }
     assert resp.source_meta_.rdp_url is None
     assert resp.source_meta_.genome_assemblies == ["GRCh38"]

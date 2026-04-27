@@ -20,7 +20,8 @@ CREATE TABLE gene_merged (
     ncbi_gene_type TEXT [],
     aliases TEXT [],
     associated_with TEXT [],
-    xrefs TEXT []
+    xrefs TEXT [],
+    gene_description JSON
 );
 ALTER TABLE gene_concepts ADD CONSTRAINT gene_concepts_merge_ref_fkey
     FOREIGN KEY (merge_ref) REFERENCES gene_merged (concept_id);
