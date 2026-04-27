@@ -176,10 +176,8 @@ class Merge:
                 merged_field = GeneTypeFieldName[record["src_name"].upper()]
                 merged_attrs[merged_field] |= {gene_type}
 
-            if (
-                gene_description := record.get("gene_description")
-                and "gene_description" not in merged_attrs
-            ):
+            if "gene_description" in record and "gene_description" not in merged_attrs:
+                gene_description = record["gene_description"]
                 merged_attrs["gene_description"] = {
                     "description": gene_description,
                     "source": record["concept_id"],

@@ -391,7 +391,7 @@ class QueryHandler:
         match_type: MatchType,
         possible_concepts: list[str] | None = None,
     ) -> NormalizeService:
-        """Add core Gene object to response.
+        """Add core Gene object to normalization response.
 
         :param response: Response object
         :param record: Gene record
@@ -483,6 +483,7 @@ class QueryHandler:
             ("previous_symbols", "previous_symbols"),
             ("location_annotations", "location_annotations"),
             ("strand", "strand"),
+            ("gene_description", "gene_description"),
         ]
         for ext_label, record_label in extension_and_record_labels:
             if record.get(record_label):
