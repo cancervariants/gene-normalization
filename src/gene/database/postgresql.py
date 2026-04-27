@@ -631,6 +631,9 @@ class PostgresDatabase(AbstractDatabase):
         hgnc_locations = record.get("hgnc_locations")
         if hgnc_locations:
             hgnc_locations = [json.dumps(i) for i in hgnc_locations]
+        gene_description = record.get("gene_description")
+        if gene_description:
+            gene_description = json.dumps(gene_description)
         with self.conn.cursor() as cur:
             cur.execute(
                 self._add_merged_record_query,
@@ -651,7 +654,7 @@ class PostgresDatabase(AbstractDatabase):
                     record.get("aliases"),
                     record.get("associated_with"),
                     record.get("xrefs"),
-                    record.get("gene_description"),
+                    gene_description,
                 ],
             )
             self.conn.commit()
