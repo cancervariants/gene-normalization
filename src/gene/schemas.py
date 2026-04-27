@@ -169,8 +169,6 @@ class NamespacePrefix(Enum):
     PSEUDOGENE = "pseudogene.org"
     HORDE = "hordedb"
     MEROPS = "merops"
-    IUPHAR_RECEPTOR = "iuphar.receptor"
-    IUPHAR = "iuphar"  # this is deprecated and should not be used, but is retained for backwards compatibility
     MAMIT = "mamittrnadb"
     CD = "hcdmdb"
     LNCRNADB = "lncrnadb"
@@ -202,8 +200,6 @@ NAMESPACE_TO_SYSTEM_URI: MappingProxyType[NamespacePrefix, str] = MappingProxyTy
         NamespacePrefix.PSEUDOGENE: "http://tables.pseudogene.org/",
         NamespacePrefix.HORDE: "http://genome.weizmann.ac.il/horde/card/index/symbol:",
         NamespacePrefix.MEROPS: "https://www.ebi.ac.uk/merops/cgi-bin/pepsum?id=",
-        NamespacePrefix.IUPHAR: "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
-        NamespacePrefix.IUPHAR_RECEPTOR: "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
         NamespacePrefix.MAMIT: "http://mamit-trna.u-strasbg.fr/mutations.asp?idAA=",
         NamespacePrefix.CD: "http://www.hcdm.org/index.php?option=com_molecule&cdnumber=",
         NamespacePrefix.IMGT: "https://www.imgt.org/genedb/GENElect?species=Homo+sapiens&query=2+",
@@ -372,14 +368,6 @@ class NormalizeService(BaseNormalizationService):
                                 "system": "https://www.ensembl.org/id/",
                             },
                             "relation": "exactMatch",
-                        },
-                        {
-                            "coding": {
-                                "id": "iuphar.receptor:1943",
-                                "code": "1943",
-                                "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
-                            },
-                            "relation": "relatedMatch",
                         },
                         {
                             "coding": {
@@ -627,7 +615,6 @@ class UnmergedNormalizationService(BaseNormalizationService):
                                     "merops:S09.979",
                                     "ccds:CCDS5710",
                                     "omim:100740",
-                                    "iuphar.receptor:2465",
                                     "ccds:CCDS5709",
                                     "refseq:NM_015831",
                                     "pubmed:1380483",

@@ -95,6 +95,8 @@ class HGNC(Base):
         """
         xrefs = []
         associated_with = []
+        # GtoP/IUPHAR is NOT safe to import for now --
+        # see https://github.com/cancervariants/gene-normalization/issues/444
         sources = [
             "entrez_id",
             "ensembl_gene_id",
@@ -112,7 +114,6 @@ class HGNC(Base):
             "horde_id",
             "merops",
             "imgt",
-            "iuphar",
             "kznf_gene_catalog",
             "mamit-trnadb",
             "cd",
@@ -133,9 +134,6 @@ class HGNC(Base):
                 else:
                     key = src
 
-                if key.upper() == "IUPHAR":
-                    # force correct prefix
-                    key = "IUPHAR_RECEPTOR"
                 if key.upper() in NamespacePrefix.__members__:
                     if NamespacePrefix[key.upper()].value in PREFIX_LOOKUP:
                         self._get_xref_associated_with(key, src, r, xrefs)
