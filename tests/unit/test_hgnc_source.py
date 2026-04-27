@@ -327,7 +327,6 @@ def csf2ra():
             "vega:OTTHUMG00000012533",
             "refseq:NM_001161529",
             "orphanet:209477",
-            "iuphar.receptor:2435",
             "hcdmdb:CD116",
             "omim:306250",
             "omim:425000",
