@@ -331,8 +331,9 @@ class PostgresDatabase(AbstractDatabase):
             "previous_symbols": source_row[9],
             "symbol": source_row[10],
             "xrefs": source_row[11],
-            "src_name": source_row[12],
-            "merge_ref": source_row[13],
+            "gene_description": source_row[12],
+            "src_name": source_row[13],
+            "merge_ref": source_row[14],
             "item_type": RecordType.IDENTITY.value,
         }
         return {k: v for k, v in gene_record.items() if v}
@@ -376,6 +377,7 @@ class PostgresDatabase(AbstractDatabase):
             "aliases": merged_row[13],
             "associated_with": merged_row[14],
             "xrefs": merged_row[15],
+            "gene_description": merged_row[16],
             "item_type": RecordType.MERGER.value,
         }
         return {k: v for k, v in merged_record.items() if v}
