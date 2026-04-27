@@ -43,6 +43,30 @@ def normalized_ache():
         "mappings": [
             {
                 "coding": {
+                    "id": "ccds:CCDS64736",
+                    "code": "CCDS64736",
+                    "system": "http://www.ncbi.nlm.nih.gov/CCDS/CcdsBrowse.cgi?REQUEST=CCDS&DATA=",
+                },
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {
+                    "id": "ccds:CCDS5709",
+                    "code": "CCDS5709",
+                    "system": "http://www.ncbi.nlm.nih.gov/CCDS/CcdsBrowse.cgi?REQUEST=CCDS&DATA=",
+                },
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {
+                    "id": "ccds:CCDS5710",
+                    "code": "CCDS5710",
+                    "system": "http://www.ncbi.nlm.nih.gov/CCDS/CcdsBrowse.cgi?REQUEST=CCDS&DATA=",
+                },
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {
                     "id": "ensembl:ENSG00000087085",
                     "code": "ENSG00000087085",
                     "system": "https://www.ensembl.org/id/",
@@ -107,8 +131,8 @@ def normalized_ache():
             },
             {
                 "coding": {
-                    "id": "iuphar.receptor:2465",
-                    "code": "2465",
+                    "id": "iuphar.receptor:108",
+                    "code": "108",
                     "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
                 },
                 "relation": "relatedMatch",
@@ -154,7 +178,7 @@ def normalized_ache():
                             "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                         },
                         "start": 100889993,
-                        "end": 100896974,
+                        "end": 100897022,
                     }
                 ],
             },
@@ -192,6 +216,38 @@ def normalized_braf():
         "mappings": [
             {
                 "coding": {
+                    "id": "ccds:CCDS87555",
+                    "code": "CCDS87555",
+                    "system": "http://www.ncbi.nlm.nih.gov/CCDS/CcdsBrowse.cgi?REQUEST=CCDS&DATA=",
+                },
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {
+                    "id": "ccds:CCDS94218",
+                    "code": "CCDS94218",
+                    "system": "http://www.ncbi.nlm.nih.gov/CCDS/CcdsBrowse.cgi?REQUEST=CCDS&DATA=",
+                },
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {
+                    "id": "ccds:CCDS94219",
+                    "code": "CCDS94219",
+                    "system": "http://www.ncbi.nlm.nih.gov/CCDS/CcdsBrowse.cgi?REQUEST=CCDS&DATA=",
+                },
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {
+                    "id": "ccds:CCDS5863",
+                    "code": "CCDS5863",
+                    "system": "http://www.ncbi.nlm.nih.gov/CCDS/CcdsBrowse.cgi?REQUEST=CCDS&DATA=",
+                },
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {
                     "id": "ncbigene:673",
                     "code": "673",
                     "system": "https://www.ncbi.nlm.nih.gov/gene/",
@@ -208,8 +264,8 @@ def normalized_braf():
             },
             {
                 "coding": {
-                    "id": "iuphar.receptor:1943",
-                    "code": "1943",
+                    "id": "iuphar.receptor:1097",
+                    "code": "1097",
                     "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
                 },
                 "relation": "relatedMatch",
@@ -314,7 +370,7 @@ def normalized_braf():
                             "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                         },
                         "start": 140719326,
-                        "end": 140924929,
+                        "end": 140924976,
                     }
                 ],
             },
@@ -358,6 +414,22 @@ def normalized_abl1():
         },
         "name": "ABL1",
         "mappings": [
+            {
+                "coding": {
+                    "id": "ccds:CCDS35165",
+                    "code": "CCDS35165",
+                    "system": "http://www.ncbi.nlm.nih.gov/CCDS/CcdsBrowse.cgi?REQUEST=CCDS&DATA=",
+                },
+                "relation": "relatedMatch",
+            },
+            {
+                "coding": {
+                    "id": "ccds:CCDS35166",
+                    "code": "CCDS35166",
+                    "system": "http://www.ncbi.nlm.nih.gov/CCDS/CcdsBrowse.cgi?REQUEST=CCDS&DATA=",
+                },
+                "relation": "relatedMatch",
+            },
             {
                 "coding": {
                     "id": "ensembl:ENSG00000097007",
@@ -440,8 +512,8 @@ def normalized_abl1():
             },
             {
                 "coding": {
-                    "id": "iuphar.receptor:1923",
-                    "code": "1923",
+                    "id": "iuphar.receptor:76",
+                    "code": "76",
                     "system": "https://www.guidetopharmacology.org/GRAC/ObjectDisplayForward?objectId=",
                 },
                 "relation": "relatedMatch",
@@ -649,7 +721,7 @@ def normalized_p150():
                             "type": "SequenceReference",
                             "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
                         },
-                        "start": 4402639,
+                        "start": 4402616,
                         "end": 4445018,
                     }
                 ],
@@ -830,7 +902,7 @@ def normalize_unmerged_chaf1a():
                                     "type": "SequenceReference",
                                     "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
                                 },
-                                "start": 4402639,
+                                "start": 4402616,
                                 "end": 4445018,
                             }
                         ],
@@ -925,7 +997,7 @@ def normalize_unmerged_ache():
                                     "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                                 },
                                 "start": 100889993,
-                                "end": 100896974,
+                                "end": 100897022,
                             }
                         ],
                         "aliases": [],
@@ -954,7 +1026,10 @@ def normalize_unmerged_ache():
                             "vega:OTTHUMG00000157033",
                             "merops:S09.979",
                             "omim:100740",
-                            "iuphar.receptor:2465",
+                            "ccds:CCDS64736",
+                            "ccds:CCDS5710",
+                            "ccds:CCDS5709",
+                            "iuphar.receptor:108",
                             "refseq:NM_015831",
                             "pubmed:1380483",
                             "uniprot:P22303",

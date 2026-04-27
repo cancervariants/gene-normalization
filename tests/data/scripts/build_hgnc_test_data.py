@@ -22,6 +22,7 @@ KEEP_HGNC_IDS = {
     "HGNC:37528",
     "HGNC:4059",
     "HGNC:4101",
+    "HGNC:4641",
     "HGNC:500",
     "HGNC:7409",
     "HGNC:76",
