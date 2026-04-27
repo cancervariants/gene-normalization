@@ -5,6 +5,8 @@ from wags_tails import NcbiGeneData, NcbiGeneSummaryData, NcbiGenomeData
 KEEP_GENE_IDS = {
     "25",
     "43",
+    "106",
+    "170",
     "290",
     "293",
     "673",
@@ -17,10 +19,12 @@ KEEP_GENE_IDS = {
     "10251",
     "25782",
     "30849",
+    "50829",
     "54704",
     "403313",
     "653303",
     "731716",
+    "100049159",
     "104793947",
     "106783576",
     # discontinued
