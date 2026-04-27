@@ -45,6 +45,10 @@ with INPUT_GFF.open() as fin, OUTPUT_GFF.open("w") as fout:
         if len(parts) < 9:
             continue  # skip malformed lines
 
+        if parts[1] == "GRCh38" and parts[2] == "chromosome":
+            fout.write(line)
+            continue
+
         gene_id = extract_gene_id(parts[8])
         if gene_id in KEEP_GENES:
             fout.write(line)
