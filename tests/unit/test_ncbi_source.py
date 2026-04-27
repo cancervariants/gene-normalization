@@ -370,8 +370,7 @@ def prkrap1():
     """Create gene fixture for PRKRAP1."""
     params = {
         "match_type": MatchType.NO_MATCH,
-        "label": "protein activator of interferon induced protein kinase "
-        "EIF2AK2 pseudogene 1",
+        "label": "PRKRA pseudogene 1",
         "concept_id": "ncbigene:731716",
         "symbol": "PRKRAP1",
         "aliases": [],
