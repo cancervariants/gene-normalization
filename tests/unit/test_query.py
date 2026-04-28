@@ -181,6 +181,13 @@ def normalized_ache():
             },
             {"name": "ensembl_biotype", "value": "protein_coding"},
             {"name": "strand", "value": "-"},
+            {
+                "name": "gene_description",
+                "value": {
+                    "source": "ncbigene:43",
+                    "description": "Acetylcholinesterase hydrolyzes the neurotransmitter, acetylcholine at neuromuscular junctions and brain cholinergic synapses, and thus terminates signal transmission. It is also found on the red blood cell membranes, where it constitutes the Yt blood group antigen. Acetylcholinesterase exists in multiple molecular forms which possess similar catalytic properties, but differ in their oligomeric assembly and mode of cell attachment to the cell surface. It is encoded by the single ACHE gene, and the structural diversity in the gene products arises from alternative mRNA splicing, and post-translational associations of catalytic and structural subunits. The major form of acetylcholinesterase found in brain, muscle and other tissues is the hydrophilic species, which forms disulfide-linked oligomers with collagenous, or lipid-containing structural subunits. The other, alternatively spliced form, expressed primarily in the erythroid tissues, differs at the C-terminal end, and contains a cleavable hydrophobic peptide with a GPI-anchor site. It associates with the membranes through the phosphoinositide (PI) moieties added post-translationally. AChE activity may constitute a sensitive biomarker of RBC ageing in vivo, and thus, may be of aid in understanding the effects of transfusion[provided by RefSeq, Sep 2019]",
+                },
+            },
         ],
     }
     return MappableConcept(**params)
@@ -373,6 +380,13 @@ def normalized_braf():
             {"name": "ensembl_biotype", "value": "protein_coding"},
             {"name": "strand", "value": "-"},
             {"name": "symbol_status", "value": "approved"},
+            {
+                "name": "gene_description",
+                "value": {
+                    "source": "ncbigene:673",
+                    "description": "This gene encodes a protein belonging to the RAF family of serine/threonine protein kinases. This protein plays a role in regulating the MAP kinase/ERK signaling pathway, which affects cell division, differentiation, and secretion. Mutations in this gene, most commonly the V600E mutation, are the most frequently identified cancer-causing mutations in melanoma, and have been identified in various other cancers as well, including non-Hodgkin lymphoma, colorectal cancer, thyroid carcinoma, non-small cell lung carcinoma, hairy cell leukemia and adenocarcinoma of lung. Mutations in this gene are also associated with cardiofaciocutaneous, Noonan, and Costello syndromes, which exhibit overlapping phenotypes. A pseudogene of this gene has been identified on the X chromosome. [provided by RefSeq, Aug 2017]",
+                },
+            },
         ],
     }
     return MappableConcept(**params)
@@ -565,6 +579,13 @@ def normalized_abl1():
             {"name": "ensembl_biotype", "value": "protein_coding"},
             {"name": "strand", "value": "+"},
             {"name": "symbol_status", "value": "approved"},
+            {
+                "name": "gene_description",
+                "value": {
+                    "source": "ncbigene:25",
+                    "description": "This gene is a protooncogene that encodes a protein tyrosine kinase involved in a variety of cellular processes, including cell division, adhesion, differentiation, and response to stress. The activity of the protein is negatively regulated by its SH3 domain, whereby deletion of the region encoding this domain results in an oncogene. The ubiquitously expressed protein has DNA-binding activity that is regulated by CDC2-mediated phosphorylation, suggesting a cell cycle function. This gene has been found fused to a variety of translocation partner genes in various leukemias, most notably the t(9;22) translocation that results in a fusion with the 5' end of the breakpoint cluster region gene (BCR; MIM:151410). Alternative splicing of this gene results in two transcript variants, which contain alternative first exons that are spliced to the remaining common exons. [provided by RefSeq, Aug 2014]",
+                },
+            },
         ],
     }
     return MappableConcept(**params)

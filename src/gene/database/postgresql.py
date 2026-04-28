@@ -331,8 +331,9 @@ class PostgresDatabase(AbstractDatabase):
             "previous_symbols": source_row[9],
             "symbol": source_row[10],
             "xrefs": source_row[11],
-            "src_name": source_row[12],
-            "merge_ref": source_row[13],
+            "gene_description": source_row[12],
+            "src_name": source_row[13],
+            "merge_ref": source_row[14],
             "item_type": RecordType.IDENTITY.value,
         }
         return {k: v for k, v in gene_record.items() if v}
@@ -376,6 +377,7 @@ class PostgresDatabase(AbstractDatabase):
             "aliases": merged_row[13],
             "associated_with": merged_row[14],
             "xrefs": merged_row[15],
+            "gene_description": merged_row[16],
             "item_type": RecordType.MERGER.value,
         }
         return {k: v for k, v in merged_record.items() if v}
@@ -547,9 +549,10 @@ class PostgresDatabase(AbstractDatabase):
     _add_record_query = b"""
     INSERT INTO gene_concepts (
         concept_id, source, symbol_status, label,
-        strand, location_annotations, locations, gene_type
+        strand, location_annotations, locations, gene_type,
+        gene_description
     )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
     _ins_symbol_query = (
         b"INSERT INTO gene_symbols (symbol, concept_id) VALUES (%s, %s);"
@@ -586,6 +589,7 @@ class PostgresDatabase(AbstractDatabase):
                         record.get("location_annotations"),
                         locations,
                         record.get("gene_type"),
+                        record.get("gene_description"),
                     ],
                 )
                 for a in record.get("aliases", []):
@@ -608,9 +612,9 @@ class PostgresDatabase(AbstractDatabase):
         concept_id, symbol, symbol_status, previous_symbols, label, strand,
         location_annotations, ensembl_locations, hgnc_locations, ncbi_locations,
         hgnc_locus_type, ensembl_biotype, ncbi_gene_type, aliases, associated_with,
-        xrefs
+        xrefs, gene_description
     )
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
 
     def add_merged_record(self, record: dict) -> None:
@@ -627,6 +631,9 @@ class PostgresDatabase(AbstractDatabase):
         hgnc_locations = record.get("hgnc_locations")
         if hgnc_locations:
             hgnc_locations = [json.dumps(i) for i in hgnc_locations]
+        gene_description = record.get("gene_description")
+        if gene_description:
+            gene_description = json.dumps(gene_description)
         with self.conn.cursor() as cur:
             cur.execute(
                 self._add_merged_record_query,
@@ -647,6 +654,7 @@ class PostgresDatabase(AbstractDatabase):
                     record.get("aliases"),
                     record.get("associated_with"),
                     record.get("xrefs"),
+                    gene_description,
                 ],
             )
             self.conn.commit()

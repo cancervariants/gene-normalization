@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import gffutils
-from wags_tails import NcbiGenomeData
+from wags_tails import NcbiGeneSummaryData, NcbiGenomeData
 
 from gene import PREFIX_LOOKUP, SEQREPO_ROOT_DIR
 from gene.database import AbstractDatabase
@@ -50,6 +50,7 @@ class NCBI(Base):
         """
         super().__init__(database, seqrepo_dir, data_path, silent)
         self._genome_data_handler = NcbiGenomeData(data_path, silent)
+        self._gene_summary_data_handler = NcbiGeneSummaryData(data_path, silent)
 
     def _extract_data(self, use_existing: bool) -> None:
         """Acquire NCBI data file and get metadata.
@@ -60,6 +61,16 @@ class NCBI(Base):
         self._gff_src, self._assembly = self._genome_data_handler.get_latest(
             from_local=use_existing
         )
+        gene_summary_data_file, _ = self._gene_summary_data_handler.get_latest(
+            from_local=use_existing
+        )
+        self._gene_summaries = {}
+        with gene_summary_data_file.open() as f:
+            reader = csv.DictReader(f, delimiter="\t")
+            for row in reader:
+                if row["#tax_id"] == "9606" and row["Source"] == "RefSeq":
+                    self._gene_summaries[row["GeneID"]] = row["Summary"]
+
         gene_paths: NcbiGenePaths
         gene_paths, self._version = self._data_source.get_latest(
             from_local=use_existing
@@ -454,9 +465,14 @@ class NCBI(Base):
         )
 
         self._get_gene_gff(db, info_genes)
+        for gene in info_genes.values():
+            if summary := self._gene_summaries.get(
+                gene["concept_id"].removeprefix("ncbigene:")
+            ):
+                gene["gene_description"] = summary
 
-        for gene in info_genes:
-            self._load_gene(info_genes[gene])
+        for gene in info_genes.values():
+            self._load_gene(gene)
         _logger.info("Successfully transformed NCBI.")
 
     def _add_meta(self) -> None:

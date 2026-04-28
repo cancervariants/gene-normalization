@@ -11,6 +11,7 @@ SELECT gc.concept_id,
        gps.previous_symbols,
        gs.symbol,
        gx.xrefs,
+       gc.gene_description,
        gc.source,
        gc.merge_ref,
        lower(gc.concept_id) AS concept_id_lowercase
