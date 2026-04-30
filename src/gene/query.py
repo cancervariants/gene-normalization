@@ -457,11 +457,14 @@ class QueryHandler:
             if xref_id != record["concept_id"]
         ]
 
-        associated_with = record.get("associated_with", [])
-        gene_obj.mappings.extend(
-            _get_concept_mapping(associated_with_id, relation=Relation.RELATED_MATCH)
-            for associated_with_id in associated_with
-        )
+        for aw in record.get("associated_with", []):
+            try:
+                mapping = _get_concept_mapping(aw, relation=Relation.RELATED_MATCH)
+            except ValueError:
+                # catch and ignore to ensure compatibility with older DB releases
+                _logger.debug("Encountered invalid mapping: %s", aw)
+                continue
+            gene_obj.mappings.append(mapping)
 
         # extensions
         extensions = []
