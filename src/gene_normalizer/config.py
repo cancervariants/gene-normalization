@@ -6,7 +6,7 @@ from logging.handlers import RotatingFileHandler
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from gene_normalizer.schemas import ServiceEnvironment
+from gene_normalizer.models import ServiceEnvironment
 
 
 class Settings(BaseSettings):
@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     env: ServiceEnvironment = ServiceEnvironment.DEV
     debug: bool = False
     test: bool = False
-    db_url: str = "http://localhost:8000"
+    db_uri: str = "http://localhost:8000"
 
 
 @cache
