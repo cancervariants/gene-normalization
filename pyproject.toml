@@ -41,6 +41,7 @@ etl = [
     "biocommons.seqrepo",
     "wags-tails~=0.4.1",
     "setuptools",  # pinned for 3.12 because yoyo-migrations still uses pkg_resources
+    "tqdm",
 ]
 tests = [
     "pytest>=6.0",

@@ -3,6 +3,8 @@
 import logging
 from timeit import default_timer as timer
 
+from tqdm import tqdm
+
 from gene.database import AbstractDatabase
 from gene.database.database import DatabaseWriteException
 from gene.schemas import GeneTypeFieldName, RecordType, SourcePriority
@@ -13,13 +15,14 @@ _logger = logging.getLogger(__name__)
 class Merge:
     """Handles record merging."""
 
-    def __init__(self, database: AbstractDatabase) -> None:
+    def __init__(self, database: AbstractDatabase, silent: bool = True) -> None:
         """Initialize Merge instance.
 
         :param database: db instance to use for record retrieval and creation.
         """
         self._database = database
         self._groups = {}  # dict keying concept IDs to group Sets
+        self._silent = silent
 
     def create_merged_concepts(self, record_ids: set[str]) -> None:
         """Create concept groups, generate merged concept records, and update database.
@@ -29,7 +32,7 @@ class Merge:
         """
         _logger.info("Generating record ID sets...")
         start = timer()
-        for record_id in record_ids:
+        for record_id in tqdm(record_ids, ncols=80, disable=self._silent):
             new_group = self._create_record_id_set(record_id)
             if new_group:
                 for concept_id in new_group:
@@ -42,7 +45,9 @@ class Merge:
         _logger.info("Creating merged records and updating database...")
         uploaded_ids = set()
         start = timer()
-        for record_id, group in self._groups.items():
+        for record_id, group in tqdm(
+            self._groups.items(), ncols=80, disable=self._silent
+        ):
             if record_id in uploaded_ids:
                 continue
             merged_record = self._generate_merged_record(group)

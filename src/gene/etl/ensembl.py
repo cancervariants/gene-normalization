@@ -5,6 +5,7 @@ import re
 
 import gffutils
 from gffutils.feature import Feature
+from tqdm import tqdm
 
 from gene.etl.base import Base
 from gene.etl.exceptions import (
@@ -57,7 +58,7 @@ class Ensembl(Base):
         for item in db.features_of_type("chromosome"):
             accession_numbers[item[0]] = item[8]["Alias"][-1]
 
-        for f in db.all_features():
+        for f in tqdm(db.all_features(), ncols=80, disable=self._silent):
             if f.attributes.get("ID"):
                 f_id = f.attributes.get("ID")[0].split(":")[0]
                 if f_id == "gene":
