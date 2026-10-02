@@ -28,7 +28,6 @@ dependencies = [
     "pydantic-settings",
     "fastapi",
     "uvicorn",
-    "click",
     "boto3",
     "ga4gh.vrs>=2.2.0,<3.0",
 ]
@@ -37,9 +36,10 @@ dynamic = ["version"]
 [project.optional-dependencies]
 pg = ["psycopg[binary]"]
 etl = [
+    "click",
     "gffutils",
     "biocommons.seqrepo",
-    "wags-tails~=0.4.1",
+    "wags-tails @ git+https://github.com/GenomicMedLab/wags-tails@6256c167bfc1bda09bfe3529ed56b22f5da65e7b",
     "setuptools",  # pinned for 3.12 because yoyo-migrations still uses pkg_resources
 ]
 tests = [
