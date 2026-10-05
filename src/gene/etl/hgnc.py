@@ -4,6 +4,8 @@ import json
 import logging
 import re
 
+from tqdm import tqdm
+
 from gene import PREFIX_LOOKUP
 from gene.etl.base import Base
 from gene.etl.exceptions import (
@@ -33,7 +35,7 @@ class HGNC(Base):
 
         records = data["response"]["docs"]
 
-        for r in records:
+        for r in tqdm(records, ncols=80, disable=self._silent):
             gene = {}
             gene["concept_id"] = r["hgnc_id"].lower()
             gene["label_and_type"] = f"{gene['concept_id']}##identity"

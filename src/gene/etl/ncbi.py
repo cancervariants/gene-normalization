@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import gffutils
+from tqdm import tqdm
 from wags_tails import NcbiGeneSummaryData, NcbiGenomeData
 
 from gene import PREFIX_LOOKUP, SEQREPO_ROOT_DIR
@@ -471,7 +472,7 @@ class NCBI(Base):
             ):
                 gene["gene_description"] = summary
 
-        for gene in info_genes.values():
+        for gene in tqdm(info_genes.values(), disable=self._silent, ncols=80):
             self._load_gene(gene)
         _logger.info("Successfully transformed NCBI.")
 
