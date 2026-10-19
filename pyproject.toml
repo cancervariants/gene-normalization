@@ -47,7 +47,7 @@ tests = [
     "pytest>=6.0",
     "pytest-cov",
     "mock",
-    "httpx",
+    "httpx>=0.28",  # Endpoint tests use the current httpx API through Starlette TestClient
     "pyyaml",
     "jsonschema",
     "jsonschema~=4.24",  # pin to avoid deprecation of ref resolver
