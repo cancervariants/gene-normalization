@@ -302,9 +302,9 @@ def test_meta_info(ensembl):
         resp.source_meta_.data_license_url
         == "https://useast.ensembl.org/info/about/legal/disclaimer.html"
     )
-    assert resp.source_meta_.version == "115"
+    assert resp.source_meta_.version == "116"
     assert resp.source_meta_.data_url == {
-        "genome_annotations": "ftp://ftp.ensembl.org/pub/release-115/gff3/homo_sapiens/Homo_sapiens.GRCh38.115.gff3.gz"
+        "genome_annotations": "ftp://ftp.ensembl.org/pub/release-116/gff3/homo_sapiens/Homo_sapiens.GRCh38.116.gff3.gz"
     }
     assert resp.source_meta_.rdp_url is None
     assert resp.source_meta_.genome_assemblies == ["GRCh38"]

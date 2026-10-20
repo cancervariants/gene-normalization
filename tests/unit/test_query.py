@@ -169,7 +169,7 @@ def normalized_ache():
                             "type": "SequenceReference",
                             "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                         },
-                        "start": 100889993,
+                        "start": 100889992,
                         "end": 100897022,
                     }
                 ],
@@ -354,7 +354,7 @@ def normalized_braf():
                             "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                         },
                         "start": 140719326,
-                        "end": 140924976,
+                        "end": 140925199,
                     }
                 ],
             },
@@ -711,7 +711,7 @@ def normalized_p150():
                             "type": "SequenceReference",
                             "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
                         },
-                        "start": 4402616,
+                        "start": 4402521,
                         "end": 4445018,
                     }
                 ],
@@ -892,7 +892,7 @@ def normalize_unmerged_chaf1a():
                                     "type": "SequenceReference",
                                     "refgetAccession": "SQ.IIB53T8CNeJJdUqzn9V_JnRtQadwWCbl",
                                 },
-                                "start": 4402616,
+                                "start": 4402521,
                                 "end": 4445018,
                             }
                         ],
@@ -986,7 +986,7 @@ def normalize_unmerged_ache():
                                     "type": "SequenceReference",
                                     "refgetAccession": "SQ.F-LrLMe1SRpfUZHkQmvkVKFEGaoDeHul",
                                 },
-                                "start": 100889993,
+                                "start": 100889992,
                                 "end": 100897022,
                             }
                         ],
