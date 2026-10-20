@@ -1,6 +1,6 @@
 services:
   api:
-    image: cancervariants/gene-normalizer-api:0.11.1
+    image: ghcr.io/cancervariants/gene-normalizer-api:0.12.0
     environment:
       # Dummy AWS credentials, don't need to use real ones
       AWS_ACCESS_KEY_ID: dummy
@@ -25,6 +25,6 @@ services:
       - /tmp
 
   dynamodb-local:
-    image: cancervariants/gene-normalizer-ddb:2025-12-29
+    image: ghcr.io/cancervariants/gene-normalizer-ddb:2026-10-19
     ports:
-     - 127.0.0.1:8000:8000
+      - 127.0.0.1:8000:8000
